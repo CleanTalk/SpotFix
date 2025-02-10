@@ -3,11 +3,13 @@
  */
 class CleanTalkWidgetDoboard {
     selectedText = '';
+    selectedData = {};
 
     /**
      * Constructor
      */
     constructor(selectedData, type) {
+        this.selectedData = selectedData;
         this.selectedText = selectedData.selectedText;
         this.widgetElement = this.createWidgetElement(type);
         this.taskDescription = this.widgetElement.querySelector('#doboard_task_description');
@@ -87,10 +89,10 @@ class CleanTalkWidgetDoboard {
                         taskTitle: taskTitle,
                         taskDescription: taskDescription,
                         typeSend: typeSend,
-                        selectedData: selectedData,
+                        selectedData: this.selectedData,
                     };
                     this.submitTask(taskDetails);
-                    selectedData = {};
+                    this.selectedData = {};
                 });
                 document.querySelector('.doboard_task_widget-close_btn').addEventListener('click', () => {
                     this.hide();
@@ -186,7 +188,7 @@ class CleanTalkWidgetDoboard {
 
     /**
      * Get the task
-     * @return {JSON}
+     * @return {[]}
      */
     getTasks() {
         //let tasksDoboard = getTasksDoboard();

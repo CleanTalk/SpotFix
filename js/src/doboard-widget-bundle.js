@@ -117,6 +117,8 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
   function CleanTalkWidgetDoboard(selectedData, type) {
     _classCallCheck(this, CleanTalkWidgetDoboard);
     _defineProperty(this, "selectedText", '');
+    _defineProperty(this, "selectedData", {});
+    this.selectedData = selectedData;
     this.selectedText = selectedData.selectedText;
     this.widgetElement = this.createWidgetElement(type);
     this.taskDescription = this.widgetElement.querySelector('#doboard_task_description');
@@ -166,10 +168,10 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               taskTitle: taskTitle,
               taskDescription: taskDescription,
               typeSend: typeSend,
-              selectedData: selectedData
+              selectedData: _this.selectedData
             };
             _this.submitTask(taskDetails);
-            selectedData = {};
+            _this.selectedData = {};
           });
           document.querySelector('.doboard_task_widget-close_btn').addEventListener('click', function () {
             _this.hide();
@@ -254,7 +256,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
 
     /**
      * Get the task
-     * @return {JSON}
+     * @return {[]}
      */
   }, {
     key: "getTasks",
@@ -286,13 +288,13 @@ document.head.appendChild(cssLink);
 document.addEventListener('DOMContentLoaded', function () {
   new CleanTalkWidgetDoboard('', 'wrap');
 });
-document.addEventListener('selectionchange', function (e) {
-  console.log(document.getSelection());
-  /*if (e.target.parentElement && e.target.parentElement.className.indexOf('doboard_task_widget') < 0) {
-      selectedData = getSelectedData(window.getSelection(), e.target);
-      let widgetExist = document.querySelector('.task-widget');
-      openWidget(selectedData, widgetExist, 'create_task');
-  }*/
+document.addEventListener('mouseup', function (e) {
+  var selection = window.getSelection();
+  if (selection.type === 'Range' && e.target.parentElement && e.target.parentElement.className.indexOf('doboard_task_widget') < 0) {
+    var _selectedData = getSelectedData(selection);
+    var widgetExist = document.querySelector('.task-widget');
+    openWidget(_selectedData, widgetExist, 'create_task');
+  }
 });
 
 /**
@@ -304,55 +306,65 @@ function openWidget(selectedData, widgetExist, type) {
     new CleanTalkWidgetDoboard(selectedData, type);
   }
 }
-function getSelectedData(selectedData, selectedTarget) {
+function getSelectedData(selectedData) {
   var pageURL = window.location.href;
-  var selectedTagName = selectedTarget.tagName;
   var selectedText = selectedData.toString();
-  var selectedDataObj = {
+  return {
     startSelectPosition: selectedData.anchorOffset,
     endSelectPosition: selectedData.focusOffset,
     selectedText: selectedText,
     pageURL: pageURL,
-    selectedTagName: selectedTagName,
-    selectedClassName: selectedTarget.className,
-    selectedParentClassName: selectedTarget.parentNode.className
+    nodePath: calculateNodePath(selectedData.focusNode.parentNode)
   };
-  return selectedDataObj;
 }
-function findSelectElem(elem, parentClassName, tagName, selectedText) {
-  var taskElement = '';
-  if (elem.length > 0) {
-    for (var i = 0; i < elem.length; i++) {
-      var el = elem[i];
-      if (el.parentNode.className == parentClassName && el.tagName == tagName && el.outerHTML.match(selectedText)) {
-        taskElement = el;
-      } else {
-        console.log('Not match element');
+
+/**
+ * Calculate the path of a DOM node
+ *
+ * @param {Node} node
+ * @return {int[]}
+ */
+function calculateNodePath(node) {
+  var path = [];
+  while (node) {
+    var index = 0;
+    var sibling = node.previousSibling;
+    while (sibling) {
+      if (sibling.nodeType === 1) {
+        index++;
       }
+      sibling = sibling.previousSibling;
     }
-    ;
-  } else {
-    console.log('Empty element');
+    path.unshift(index);
+    node = node.parentNode;
   }
-  return taskElement;
+
+  // Hard fix - need to remove first element to work correctly
+  path.shift();
+  return path;
 }
-function taskAnalysis(task) {
-  var className = task.selectedClassName;
-  var parentClassName = task.selectedParentClassName;
-  var tagName = task.selectedTagName;
-  var selectedText = task.selectedText;
-  var taskElement = '';
-  console.log(task);
-  if (className && parentClassName) {
-    var elemByClassName = document.getElementsByClassName(className);
-    taskElement = findSelectElem(elemByClassName, parentClassName, tagName, selectedText);
+
+/**
+ * Retrieve a DOM node from a path
+ *
+ * @param {int[]} path
+ * @return {*|null}
+ */
+function retrieveNodeFromPath(path) {
+  // @ToDo check if the path is correct
+  if (!path) {
+    return null;
   }
-  if (!className && parentClassName) {
-    var elemByparentClassName = document.getElementsByClassName(parentClassName);
-    for (var i = 0; i < elemByparentClassName.length; i++) {
-      var childrenEl = elemByparentClassName[i].children;
-      taskElement = findSelectElem(childrenEl, parentClassName, tagName, selectedText);
+  var node = document;
+  for (var i = 0; i < path.length; i++) {
+    node = node.children[path[i]];
+    if (!node) {
+      return null;
     }
   }
-  return taskElement;
+  return node;
+}
+function taskAnalysis(taskSelectedData) {
+  var nodePath = taskSelectedData.nodePath;
+  return retrieveNodeFromPath(nodePath);
 }

@@ -10,8 +10,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('mouseup', function(e) {
-    if (e.target.parentElement && e.target.parentElement.className.indexOf('doboard_task_widget') < 0) {
-        selectedData = getSelectedData(window.getSelection(), e.target);
+    const selection = window.getSelection();
+    if (
+        selection.type === 'Range' &&
+        e.target.parentElement &&
+        e.target.parentElement.className.indexOf('doboard_task_widget') < 0
+    ) {
+        const selectedData = getSelectedData(selection);
+
         let widgetExist = document.querySelector('.task-widget');
         openWidget(selectedData, widgetExist, 'create_task');
     }
@@ -27,67 +33,68 @@ function openWidget(selectedData, widgetExist, type) {
     }
 }
 
-function getSelectedData(selectedData, selectedTarget) {
+function getSelectedData(selectedData) {
     let pageURL = window.location.href;
-    let selectedTagName = selectedTarget.tagName;
     let selectedText = selectedData.toString();
-    let selectedDataObj = {
+    return {
         startSelectPosition: selectedData.anchorOffset,
         endSelectPosition: selectedData.focusOffset,
         selectedText: selectedText,
         pageURL: pageURL,
-        selectedTagName: selectedTagName,
-        selectedClassName: selectedTarget.className,
-        selectedParentClassName: selectedTarget.parentNode.className,
-    }
-
-    return selectedDataObj;
+        nodePath: calculateNodePath(selectedData.focusNode.parentNode),
+    };
 }
 
-function findSelectElem(elem, parentClassName, tagName, selectedText) {
-    let taskElement = '';
-    if (elem.length > 0) {
-        for (let i = 0; i < elem.length; i++) {
-            const el = elem[i];
-            if (
-                (el.parentNode.className == parentClassName) &&
-                (el.tagName == tagName) &&
-                (el.outerHTML.match(selectedText))
-            ) {
-                taskElement = el;
-            } else {
-                console.log('Not match element');
+/**
+ * Calculate the path of a DOM node
+ *
+ * @param {Node} node
+ * @return {int[]}
+ */
+function calculateNodePath(node) {
+    let path = [];
+    while (node) {
+        let index = 0;
+        let sibling = node.previousSibling;
+        while (sibling) {
+            if (sibling.nodeType === 1) {
+                index++;
             }
-        };
-    } else {
-        console.log('Empty element');
+            sibling = sibling.previousSibling;
+        }
+        path.unshift(index);
+        node = node.parentNode;
     }
 
-    return taskElement;
+    // Hard fix - need to remove first element to work correctly
+    path.shift();
+
+    return path;
 }
 
-function taskAnalysis(task) {
-    const className = task.selectedClassName;
-    const parentClassName = task.selectedParentClassName;
-    const tagName = task.selectedTagName;
-    const selectedText = task.selectedText;
-
-    let taskElement = '';
-    console.log(task);
-
-    if (className && parentClassName) {
-        let elemByClassName = document.getElementsByClassName(className);
-        taskElement = findSelectElem(elemByClassName, parentClassName, tagName, selectedText);
+/**
+ * Retrieve a DOM node from a path
+ *
+ * @param {int[]} path
+ * @return {*|null}
+ */
+function retrieveNodeFromPath(path) {
+    // @ToDo check if the path is correct
+    if ( ! path ) {
+        return null;
     }
 
-    if (!className && parentClassName) {
-        let elemByparentClassName = document.getElementsByClassName(parentClassName);
-
-        for (let i = 0; i < elemByparentClassName.length; i++) {
-            const childrenEl = elemByparentClassName[i].children;
-            taskElement = findSelectElem(childrenEl, parentClassName, tagName, selectedText);
+    let node = document;
+    for (let i = 0; i < path.length; i++) {
+        node = node.children[path[i]];
+        if ( ! node ) {
+            return null;
         }
     }
+    return node;
+}
 
-    return taskElement;
+function taskAnalysis(taskSelectedData) {
+    const nodePath = taskSelectedData.nodePath;
+    return retrieveNodeFromPath(nodePath);
 }
