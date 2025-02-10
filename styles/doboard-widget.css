@@ -1,0 +1,53 @@
+.doboard_task_widget {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    margin-bottom: 20px;
+    margin-right: 20px;
+    z-index: 9999;
+}
+
+.doboard_task_widget-container {
+    display: grid;
+}
+
+.doboard_task_widget-close_btn {
+    cursor: pointer;
+}
+
+.doboard_task_widget-container{
+    width: 300px;
+    background: #575757f5;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.doboard_task_widget-wrap {
+    width: auto;
+    background: #57575700;
+}
+
+.doboard_task_widget-title-input {
+    height: 35px;
+}
+
+.doboard_task_widget-description-textarea {
+    height: 100px;
+}
+
+.doboard_task_widget-submit_button {
+    height: 35px;
+}
+
+.doboard_task_widget-task_row {
+    cursor: pointer;
+    border-bottom: 1px solid #ffffff;
+}
+
+.doboard_task_widget-task-text_bold {
+    font-weight: bold;
+}
+
+.doboard_task_widget-text_selection {
+    background: #d0d57fad;
+}

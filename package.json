@@ -1,0 +1,42 @@
+{
+  "name": "doboard-widget",
+  "version": "1.0.0",
+  "description": "A JavaScript widget for creating tasks from selected text on websites.",
+  "main": "src/main.js",
+  "scripts": {
+    "eslint": "./node_modules/.bin/eslint -c ./.eslintrc.json js/*.js",
+    "eslint-windows": ".\\node_modules\\.bin\\eslint -c .\\.eslintrc.json js\\*.js"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.7",
+    "@babel/plugin-transform-class-properties": "^7.25.9",
+    "@babel/preset-env": "^7.26.7",
+    "eslint": "^8.45.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.6.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-cssmin": "^0.2.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-sourcemap": "^1.0.1",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify": "^3.0.2"
+  },
+  "keywords": [
+    "doboard",
+    "widget",
+    "task",
+    "API",
+    "JavaScript"
+  ],
+  "author": "CleanTalk",
+  "dependencies": {
+    "browserify": "^17.0.1",
+    "gulp-wrap": "^0.15.0",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0"
+  }
+}
