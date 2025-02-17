@@ -132,9 +132,18 @@ class CleanTalkWidgetDoboard {
                         </div>
                         `;
 
-                        let taskElement = taskAnalysis(elTask.selectedData);
+                        const taskSelectedData = elTask.selectedData;
+                        let taskElement = taskAnalysis(taskSelectedData);
                         if (taskElement) {
-                            taskElement.classList.add('doboard_task_widget-text_selection');
+                            if ( taskSelectedData.startSelectPosition && taskSelectedData.endSelectPosition ) {
+                                let text = taskNode.innerHTML;
+                                let start = taskSelectedData.startSelectPosition;
+                                let end = taskSelectedData.endSelectPosition;
+                                let selectedText = text.substring(start, end);
+                                let beforeText = text.substring(0, start);
+                                let afterText = text.substring(end);
+                                taskElement.innerHTML = beforeText + '<span class="doboard_task_widget-text_selection">' + selectedText + '</span>' + afterText;
+                            }
                         }
                     }
                 };
@@ -204,8 +213,13 @@ class CleanTalkWidgetDoboard {
         this.createWidgetElement('wrap');
 
         const textSelectionclassName = 'doboard_task_widget-text_selection';
-        document.querySelectorAll('.' + textSelectionclassName).forEach(n => {
-            n.classList.remove(textSelectionclassName);
+        const spans = document.querySelectorAll('.' + textSelectionclassName);
+        spans.forEach(span => {
+            const parent = span.parentNode;
+            while (span.firstChild) {
+                parent.insertBefore(span.firstChild, span);
+            }
+            parent.removeChild(span);
         });
     }
 }

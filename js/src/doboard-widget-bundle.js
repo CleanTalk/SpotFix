@@ -199,9 +199,18 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
 
             if (currentPageURL == selectedPageURL) {
               document.querySelector(".doboard_task_widget-task_list-container").innerHTML += "\n                        <div class=\"doboard_task_widget-task_row\">\n                            <div class=\"doboard_task_widget-task_title\">\n                                <span class=\"doboard_task_widget-task-text_bold\">Title: </span>\n                                <span>".concat(taskTitle, "</span>\n                            </div>\n                            <div class=\"doboard_task_widget-task_description\">\n                                <span class=\"doboard_task_widget-task-text_bold\">Description: </span>\n                                <span>").concat(taskDescription, "</span>\n                            </div>\n                        </div>\n                        ");
-              var taskElement = taskAnalysis(elTask.selectedData);
+              var taskSelectedData = elTask.selectedData;
+              var taskElement = taskAnalysis(taskSelectedData);
               if (taskElement) {
-                taskElement.classList.add('doboard_task_widget-text_selection');
+                if (taskSelectedData.startSelectPosition && taskSelectedData.endSelectPosition) {
+                  var text = taskNode.innerHTML;
+                  var start = taskSelectedData.startSelectPosition;
+                  var end = taskSelectedData.endSelectPosition;
+                  var selectedText = text.substring(start, end);
+                  var beforeText = text.substring(0, start);
+                  var afterText = text.substring(end);
+                  taskElement.innerHTML = beforeText + '<span class="doboard_task_widget-text_selection">' + selectedText + '</span>' + afterText;
+                }
               }
             }
           }
@@ -274,8 +283,13 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
     value: function hide() {
       this.createWidgetElement('wrap');
       var textSelectionclassName = 'doboard_task_widget-text_selection';
-      document.querySelectorAll('.' + textSelectionclassName).forEach(function (n) {
-        n.classList.remove(textSelectionclassName);
+      var spans = document.querySelectorAll('.' + textSelectionclassName);
+      spans.forEach(function (span) {
+        var parent = span.parentNode;
+        while (span.firstChild) {
+          parent.insertBefore(span.firstChild, span);
+        }
+        parent.removeChild(span);
       });
     }
   }]);
