@@ -9,18 +9,23 @@ document.addEventListener('DOMContentLoaded', () => {
     new CleanTalkWidgetDoboard('', 'wrap');
 });
 
-document.addEventListener('mouseup', function(e) {
-    const selection = window.getSelection();
-    if (
-        selection.type === 'Range' &&
-        e.target.parentElement &&
-        e.target.parentElement.className.indexOf('doboard_task_widget') < 0
-    ) {
-        const selectedData = getSelectedData(selection);
 
-        let widgetExist = document.querySelector('.task-widget');
-        openWidget(selectedData, widgetExist, 'create_task');
+let widgetTimeout;
+document.addEventListener('selectionchange', function(e) {
+    if (widgetTimeout) {
+        clearTimeout(widgetTimeout);
     }
+    widgetTimeout = setTimeout(() => {
+        const selection = window.getSelection();
+        if (
+            selection.type === 'Range'
+        ) {
+            const selectedData = getSelectedData(selection);
+
+            let widgetExist = document.querySelector('.task-widget');
+            openWidget(selectedData, widgetExist, 'create_task');
+        }
+    }, 1000);
 });
 
 /**

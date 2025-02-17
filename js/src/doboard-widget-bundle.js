@@ -203,7 +203,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               var taskElement = taskAnalysis(taskSelectedData);
               if (taskElement) {
                 if (taskSelectedData.startSelectPosition && taskSelectedData.endSelectPosition) {
-                  var text = taskNode.innerHTML;
+                  var text = taskElement.innerHTML;
                   var start = taskSelectedData.startSelectPosition;
                   var end = taskSelectedData.endSelectPosition;
                   var selectedText = text.substring(start, end);
@@ -302,13 +302,19 @@ document.head.appendChild(cssLink);
 document.addEventListener('DOMContentLoaded', function () {
   new CleanTalkWidgetDoboard('', 'wrap');
 });
-document.addEventListener('mouseup', function (e) {
-  var selection = window.getSelection();
-  if (selection.type === 'Range' && e.target.parentElement && e.target.parentElement.className.indexOf('doboard_task_widget') < 0) {
-    var _selectedData = getSelectedData(selection);
-    var widgetExist = document.querySelector('.task-widget');
-    openWidget(_selectedData, widgetExist, 'create_task');
+var widgetTimeout;
+document.addEventListener('selectionchange', function (e) {
+  if (widgetTimeout) {
+    clearTimeout(widgetTimeout);
   }
+  widgetTimeout = setTimeout(function () {
+    var selection = window.getSelection();
+    if (selection.type === 'Range') {
+      var _selectedData = getSelectedData(selection);
+      var widgetExist = document.querySelector('.task-widget');
+      openWidget(_selectedData, widgetExist, 'create_task');
+    }
+  }, 1000);
 });
 
 /**

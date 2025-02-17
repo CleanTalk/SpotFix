@@ -136,7 +136,7 @@ class CleanTalkWidgetDoboard {
                         let taskElement = taskAnalysis(taskSelectedData);
                         if (taskElement) {
                             if ( taskSelectedData.startSelectPosition && taskSelectedData.endSelectPosition ) {
-                                let text = taskNode.innerHTML;
+                                let text = taskElement.innerHTML;
                                 let start = taskSelectedData.startSelectPosition;
                                 let end = taskSelectedData.endSelectPosition;
                                 let selectedText = text.substring(start, end);
