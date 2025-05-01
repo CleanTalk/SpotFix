@@ -1,9 +1,9 @@
 var selectedData = {};
 
-let cssLink = document.createElement('link');
+/*let cssLink = document.createElement('link');
 cssLink.rel = 'stylesheet';
 cssLink.href = '/spotfix/styles/doboard-widget.css';
-document.head.appendChild(cssLink);
+document.head.appendChild(cssLink);*/
 
 document.addEventListener('DOMContentLoaded', () => {
     new CleanTalkWidgetDoboard('', 'wrap');

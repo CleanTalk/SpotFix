@@ -11,17 +11,26 @@ class CleanTalkWidgetDoboard {
     constructor(selectedData, type) {
         this.selectedData = selectedData;
         this.selectedText = selectedData.selectedText;
-        this.widgetElement = this.createWidgetElement(type);
+        this.widgetElement = null; // Инициализируем как null
+        this.init(type); // Вызываем метод инициализации
+    }
+
+    /**
+     * Initialize the widget
+     */
+    async init(type) {
+        this.widgetElement = await this.createWidgetElement(type); // Дожидаемся создания виджета
         this.taskDescription = this.widgetElement.querySelector('#doboard_task_description');
         this.submitButton = this.widgetElement.querySelector('#doboard_task_widget-submit_button');
-        //this.bindEvents();
+        // Здесь можно вызвать bindEvents или другие методы
     }
+
 
     /**
      * Create widget element
      * @return {HTMLElement} widget element
      */
-    createWidgetElement(type) {
+    async createWidgetElement(type) {
         let auth = true;
         if (!auth) {
             type = 'auth';
@@ -32,52 +41,28 @@ class CleanTalkWidgetDoboard {
         widgetContainer.innerHTML = '';
         switch (type) {
             case 'create_task':
-                widgetContainer.innerHTML = `
-                    <div class="doboard_task_widget-container doboard_task_widget-create">
-                        <div class="doboard_task_widget-close_btn">X</div>
-                        <h2>Doboard</h2>
-                        <input id="doboard_task_widget-title" class="doboard_task_widget-title-input" name="title" placeholder="Title...">
-                        <textarea id="doboard_task_widget-description" class="doboard_task_widget-description-textarea" name="description" placeholder="Task description...">${this.selectedText}</textarea>
-                        <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button">Create Task</button>
-                    </div>
-                `;
+                templateName = 'create_task';
+                variables = { selectedText: this.selectedText };
                 break;
-
             case 'wrap':
-                widgetContainer.innerHTML = `
-                    <div class="doboard_task_widget-container doboard_task_widget-wrap">
-                        <img src="/spotfix/img/doboard-widget-logo.svg" alt="Doboard logo">
-                    </div>
-                `;
+                templateName = 'wrap';
+                variables = { themeUrl: themeData?.themeUrl || '' };
                 break;
-
             case 'auth':
-                widgetContainer.innerHTML = `
-                    <div class="doboard_task_widget-container doboard_task_widget-authorization">
-                        <div class="doboard_task_widget-close_btn">X</div>
-                        <h2>Doboard</h2>
-                        <input id="doboard_task_login" name="login" placeholder="Login or email">
-                        <input id="doboard_task_password" name="password" placeholder="Password">
-                        <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button">Authorization</button>
-                    </div>
-                `;
+                templateName = 'auth';
+                variables = {};
                 break;
             case 'task_list':
-                widgetContainer.innerHTML = `
-                    <div class="doboard_task_widget-container doboard_task_widget-task_list">
-                        <div class="doboard_task_widget-close_btn">X</div>
-                        <h2>Doboard</h2>
-                        <div class="doboard_task_widget-task_list-container"></div>
-                    </div>
-                `;
+                templateName = 'task_list';
+                variables = {};
                 break;
 
             default:
-
                 break;
         }
-
+        widgetContainer.innerHTML = await this.loadTemplate(templateName, variables);
         document.body.appendChild(widgetContainer);
+
 
         switch (type) {
             case 'create_task':
@@ -158,6 +143,20 @@ class CleanTalkWidgetDoboard {
 
 
         return widgetContainer;
+    }
+
+    async loadTemplate(templateName, variables = {}) {
+        // Загружаем HTML-шаблон
+        const response = await fetch(`/wp-content/themes/twentytwentyfourspotfix/spotfix/templates/${templateName}.html`);
+        let template = await response.text();
+    
+        // Заменяем плейсхолдеры на значения переменных
+        for (const [key, value] of Object.entries(variables)) {
+            const placeholder = `{{${key}}}`;
+            template = template.replaceAll(placeholder, value);
+        }
+    
+        return template;
     }
 
     /**
