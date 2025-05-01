@@ -4,6 +4,7 @@
 class CleanTalkWidgetDoboard {
     selectedText = '';
     selectedData = {};
+    widgetElement = null;
 
     /**
      * Constructor
@@ -11,30 +12,74 @@ class CleanTalkWidgetDoboard {
     constructor(selectedData, type) {
         this.selectedData = selectedData;
         this.selectedText = selectedData.selectedText;
-        this.widgetElement = null; // Инициализируем как null
-        this.init(type); // Вызываем метод инициализации
+        this.init(type);
     }
 
     /**
      * Initialize the widget
      */
     async init(type) {
-        this.widgetElement = await this.createWidgetElement(type); // Дожидаемся создания виджета
+        this.widgetElement = await this.createWidgetElement(type);
         this.taskDescription = this.widgetElement.querySelector('#doboard_task_description');
         this.submitButton = this.widgetElement.querySelector('#doboard_task_widget-submit_button');
-        // Здесь можно вызвать bindEvents или другие методы
     }
 
+    bindAuthEvents() {
+        const authWidget = document.querySelector('.doboard_task_widget-authorization');
+        if (authWidget) {
+            const loginInput = document.getElementById('doboard_task_login');
+            const passwordInput = document.getElementById('doboard_task_password');
+            const submitButton = document.getElementById('doboard_task_widget-submit_button');
+
+            submitButton.addEventListener('click', () => {
+                const login = loginInput.value;
+                const password = passwordInput.value;
+
+                console.log('Login:', login);
+                console.log('Password:', password);
+
+                // Устанавливаем куку авторизации
+                document.cookie = "user_authorized=true; path=/";
+
+                console.log('Authorization cookie set.');
+
+                // Закрываем виджет после авторизации
+                this.hide();
+            });
+        }
+    }
+
+    /**
+     * Привязка событий для создания задачи
+     */
+    bindCreateTaskEvents() {
+        const submitButton = document.getElementById('doboard_task_widget-submit_button');
+        if (submitButton) {
+            submitButton.addEventListener('click', () => {
+                const taskTitle = document.getElementById('doboard_task_widget-title').value;
+                const taskDescription = document.getElementById('doboard_task_widget-description').value;
+                const typeSend = 'private';
+                const taskDetails = {
+                    taskTitle: taskTitle,
+                    taskDescription: taskDescription,
+                    typeSend: typeSend,
+                    selectedData: this.selectedData,
+                };
+                this.submitTask(taskDetails);
+                this.selectedData = {};
+            });
+        }
+    }
 
     /**
      * Create widget element
      * @return {HTMLElement} widget element
      */
     async createWidgetElement(type) {
-        let auth = true;
+        /*let auth = true;
         if (!auth) {
             type = 'auth';
-        }
+        }*/
 
         const widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
         widgetContainer.className = 'doboard_task_widget';
@@ -66,7 +111,8 @@ class CleanTalkWidgetDoboard {
 
         switch (type) {
             case 'create_task':
-                document.getElementById('doboard_task_widget-submit_button').addEventListener('click', () => {
+                this.bindCreateTaskEvents();
+                /*document.getElementById('doboard_task_widget-submit_button').addEventListener('click', () => {
                     const taskTitle = document.getElementById('doboard_task_widget-title').value;
                     const taskDescription = document.getElementById('doboard_task_widget-description').value;
                     const typeSend = 'private';
@@ -77,21 +123,19 @@ class CleanTalkWidgetDoboard {
                         selectedData: this.selectedData,
                     };
                     this.submitTask(taskDetails);
-                    this.selectedData = {};
-                });
-                document.querySelector('.doboard_task_widget-close_btn').addEventListener('click', () => {
-                    this.hide();
-                });
+                    this*/
                 break;
             case 'wrap':
                 document.querySelector('.doboard_task_widget-wrap').addEventListener('click', () => {
-                    this.createWidgetElement('task_list');
+                    if (!isUserAuthorized()) {
+                        this.createWidgetElement('auth');
+                    } else {
+                        this.createWidgetElement('task_list');
+                    }
                 });
                 break;
             case 'auth':
-                document.querySelector('.doboard_task_widget-close_btn').addEventListener('click', () => {
-                    this.hide();
-                });
+                this.bindAuthEvents(); // Привязываем события для авторизации
                 break;
             case 'task_list':
                 let tasks = this.getTasks();
@@ -132,25 +176,28 @@ class CleanTalkWidgetDoboard {
                         }
                     }
                 };
-                document.querySelector('.doboard_task_widget-close_btn').addEventListener('click', () => {
-                    this.hide();
-                });
                 break;
 
             default:
                 break;
         }
 
-
+        document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', () => {
+            this.hide();
+        }) || '';
         return widgetContainer;
     }
 
+    /**
+     * Load the template
+     * @param {string} templateName
+     * @param {object} variables
+     * @return {string} template
+     */
     async loadTemplate(templateName, variables = {}) {
-        // Загружаем HTML-шаблон
         const response = await fetch(`/wp-content/themes/twentytwentyfourspotfix/spotfix/templates/${templateName}.html`);
         let template = await response.text();
     
-        // Заменяем плейсхолдеры на значения переменных
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
             template = template.replaceAll(placeholder, value);

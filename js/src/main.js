@@ -6,7 +6,14 @@ cssLink.href = '/spotfix/styles/doboard-widget.css';
 document.head.appendChild(cssLink);*/
 
 document.addEventListener('DOMContentLoaded', () => {
-    new CleanTalkWidgetDoboard('', 'wrap');
+    // Проверяем, авторизован ли пользователь
+    if (!isUserAuthorized()) {
+        // Если пользователь не авторизован, открываем интерфейс авторизации
+        new CleanTalkWidgetDoboard({}, 'auth');
+    } else {
+        // Если пользователь авторизован, открываем интерфейс wrap или другой
+        new CleanTalkWidgetDoboard({}, 'wrap');
+    }
 });
 
 
@@ -15,15 +22,20 @@ document.addEventListener('selectionchange', function(e) {
     if (widgetTimeout) {
         clearTimeout(widgetTimeout);
     }
+
     widgetTimeout = setTimeout(() => {
         const selection = window.getSelection();
         if (
             selection.type === 'Range'
         ) {
             const selectedData = getSelectedData(selection);
-
             let widgetExist = document.querySelector('.task-widget');
-            openWidget(selectedData, widgetExist, 'create_task');
+
+            if (!isUserAuthorized()) {
+                openWidget(selectedData, widgetExist, 'auth');
+            } else {
+                openWidget(selectedData, widgetExist, 'create_task');
+            }
         }
     }, 1000);
 });
@@ -31,13 +43,20 @@ document.addEventListener('selectionchange', function(e) {
 /**
  * Open the widget to create a task.
  * @param {*} selectedText
+ * @param {*} widgetExist
+ * @param {*} type
  */
-function openWidget(selectedData, widgetExist, type) {
+function openWidget(selectedData, widgetExist, type) {    
     if (selectedData && !widgetExist) {
         new CleanTalkWidgetDoboard(selectedData, type);
     }
 }
 
+/**
+ * Get the selected data from the DOM
+ * @param {Selection} selectedData
+ * @returns {Object}
+ */
 function getSelectedData(selectedData) {
     let pageURL = window.location.href;
     let selectedText = selectedData.toString();
@@ -99,7 +118,35 @@ function retrieveNodeFromPath(path) {
     return node;
 }
 
+/**
+ * Analyze the task selected data
+ * @param {Object} taskSelectedData
+ * @return {Element|null}
+ */
 function taskAnalysis(taskSelectedData) {
     const nodePath = taskSelectedData.nodePath;
     return retrieveNodeFromPath(nodePath);
+}
+
+/**
+ * Get the value of a cookie by name
+ * @param {string} name
+ * @return {string|null}
+ */
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+        return parts.pop().split(';').shift();
+    }
+    return null;
+}
+
+/**
+ * Check if the user is authorized
+ * @return {boolean}
+ */
+function isUserAuthorized() {
+    const authCookie = getCookie('user_authorized'); // Замените 'user_authorized' на имя вашей куки
+    return authCookie === 'true'; // Предполагается, что кука содержит 'true' для авторизованных пользователей
 }
