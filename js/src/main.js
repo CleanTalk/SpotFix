@@ -34,7 +34,7 @@ document.addEventListener('selectionchange', function(e) {
             if (!isUserAuthorized()) {
                 openWidget(selectedData, widgetExist, 'auth');
             } else {
-                openWidget(selectedData, widgetExist, 'create_task');
+                openWidget(selectedData, widgetExist, 'create_issue');
             }
         }
     }, 1000);
@@ -147,6 +147,6 @@ function getCookie(name) {
  * @return {boolean}
  */
 function isUserAuthorized() {
-    const authCookie = getCookie('user_authorized'); // Замените 'user_authorized' на имя вашей куки
+    const authCookie = getCookie('doboard_task_widget_user_authorized'); // Замените 'doboard_task_widget_user_authorized' на имя вашей куки
     return authCookie === 'true'; // Предполагается, что кука содержит 'true' для авторизованных пользователей
 }
