@@ -38,12 +38,12 @@ class CleanTalkWidgetDoboard {
                 console.log('Login:', login);
                 console.log('Password:', password);
 
-                // Устанавливаем куку авторизации
+                // Setting the authorization cookie
                 document.cookie = "doboard_task_widget_user_authorized=true; path=/";
 
                 console.log('Authorization cookie set.');
 
-                // Закрываем виджет после авторизации
+                // Closing the widget after authorization
                 this.hide();
             });
         }
