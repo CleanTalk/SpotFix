@@ -41,3 +41,20 @@ function getTasksLS() {
 
      return tasks;
 };
+
+const authorizeUser = async (email, password) => {
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('password', password);
+
+    const response = await fetch(`https://api.doboard.com/user_authorize`, {
+        method: 'POST',
+        body: formData,
+    });
+
+    if (!response.ok) {
+        throw new Error('Authorization failed');
+    }
+
+    return await response.json();
+};

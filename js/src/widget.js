@@ -27,24 +27,31 @@ class CleanTalkWidgetDoboard {
     bindAuthEvents() {
         const authWidget = document.querySelector('.doboard_task_widget-authorization');
         if (authWidget) {
-            const loginInput = document.getElementById('doboard_task_widget_login');
+            const emailInput = document.getElementById('doboard_task_widget_email');
             const passwordInput = document.getElementById('doboard_task_widget_password');
             const submitButton = document.getElementById('doboard_task_widget-submit_button');
 
-            submitButton.addEventListener('click', () => {
-                const login = loginInput.value;
+            submitButton.addEventListener('click', async () => {
+                const email = emailInput.value;
                 const password = passwordInput.value;
+                if (!email || !password) {
+                    alert('Please enter email and password.');
+                    return;
+                }
+                try {
+                    // Ожидаем выполнения промиса
+                    const authResult = await this.authorizeUser(email, password);
+                    console.log(authResult);
 
-                console.log('Login:', login);
-                console.log('Password:', password);
-
-                // Setting the authorization cookie
-                document.cookie = "doboard_task_widget_user_authorized=true; path=/";
-
-                console.log('Authorization cookie set.');
-
-                // Closing the widget after authorization
-                this.hide();
+                    if (authResult.isUserAuthorized) {
+                        this.createWidgetElement('all_issues');
+                    } else {
+                        alert(authResult.error_message);
+                    }
+                } catch (error) {
+                    console.error('Authorization error:', error);
+                    alert('An error occurred during authorization.');
+                }
             });
         }
     }
@@ -241,6 +248,49 @@ class CleanTalkWidgetDoboard {
         let tasksLS = getTasksLS();
 
         return tasksLS;
+    }
+
+    /**
+     * Authorize the user
+     * @param {string} email
+     * @param {string} password
+     * @return {Promise<{isUserAuthorized: boolean, session_id: string, user_token: string, user_id: string}>}
+     */
+    async authorizeUser(email, password) {
+        // Call the API to authorize the user
+        // This function should be implemented in api.js
+        try {
+            const auth = await authorizeUser(email, password);
+            console.log(auth);
+            console.log('Auth session_id:', auth.data.session_id);
+            
+            if (auth.data.session_id && auth.data.user_token && auth.data.user_id) {
+                const oneMonthFromNow = new Date();
+                oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1);
+
+                setCookie('doboard_task_widget_session_id', auth.data.session_id, oneMonthFromNow);
+                setCookie('doboard_task_widget_user_token', auth.data.user_token, oneMonthFromNow);
+                setCookie('doboard_task_widget_user_id', auth.data.user_id, oneMonthFromNow);
+
+                return {
+                    isUserAuthorized: true,
+                    session_id: auth.data.session_id,
+                    user_token: auth.data.user_token,
+                    user_id: auth.data.user_id
+                };
+            } else {
+                return {
+                    isUserAuthorized: false,
+                    error_message: auth.error_message
+                };
+            }
+        } catch (error) {
+            console.error('Authorization failed:', error);
+            return {
+                isUserAuthorized: false,
+                error_message: auth.error_message
+            };
+        }
     }
 
     /**
