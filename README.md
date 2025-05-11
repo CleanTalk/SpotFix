@@ -6,19 +6,18 @@ SpotFix Widget is a WordPress widget that allows you to create and manage tasks 
 ## Installation
 
 ### 1. Copy the files
-Copy the `spotfix` folder to your WordPress theme directory:  
-`wp-content/themes/your-theme/spotfix`.
+Copy the `spotfix` folder to the root of your WordPress site
 
 ### 2. Enqueue scripts and styles
 Make sure the following code is added to the `functions.php` file of your theme to enqueue the scripts and styles:
 
 ```php
 add_action( 'wp_enqueue_scripts', 'connecting_spotfix' );
-function connecting_spotfix() {
-    wp_enqueue_style( 'spotfix-style', get_template_directory_uri() . '/spotfix/styles/doboard-widget.css' );
+function connecting_spotfix(){
+    wp_enqueue_style( 'spotfix-style', '/spotfix/styles/doboard-widget.css');
     wp_enqueue_script(
-        'spotfix-script',
-        get_template_directory_uri() . '/spotfix/js/doboard-widget-bundle.min.js',
+        'spotfix-script', 
+        '/spotfix/js/doboard-widget-bundle.min.js',
         array(),
         '1.3.0',
         true
