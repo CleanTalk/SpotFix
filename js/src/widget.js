@@ -195,7 +195,7 @@ class CleanTalkWidgetDoboard {
      * @return {string} template
      */
     async loadTemplate(templateName, variables = {}) {
-        const response = await fetch(`/wp-content/themes/twentytwentyfourspotfix/spotfix/templates/${templateName}.html`);
+        const response = await fetch(`/spotfix/templates/${templateName}.html`);
         let template = await response.text();
     
         for (const [key, value] of Object.entries(variables)) {

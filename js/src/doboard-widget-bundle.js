@@ -361,7 +361,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
             case 0:
               variables = _args6.length > 1 && _args6[1] !== undefined ? _args6[1] : {};
               _context6.next = 3;
-              return fetch("/wp-content/themes/twentytwentyfourspotfix/spotfix/templates/".concat(templateName, ".html"));
+              return fetch("/spotfix/templates/".concat(templateName, ".html"));
             case 3:
               response = _context6.sent;
               _context6.next = 6;
