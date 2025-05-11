@@ -113,6 +113,43 @@ function getTasksLS() {
   return tasks;
 }
 ;
+var _authorizeUser = /*#__PURE__*/function () {
+  var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(email, password) {
+    var formData, response;
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+      while (1) switch (_context4.prev = _context4.next) {
+        case 0:
+          formData = new FormData();
+          formData.append('email', email);
+          formData.append('password', password);
+          _context4.next = 5;
+          return fetch("https://api.doboard.com/user_authorize", {
+            method: 'POST',
+            body: formData
+          });
+        case 5:
+          response = _context4.sent;
+          if (response.ok) {
+            _context4.next = 8;
+            break;
+          }
+          throw new Error('Authorization failed');
+        case 8:
+          _context4.next = 10;
+          return response.json();
+        case 10:
+          return _context4.abrupt("return", _context4.sent);
+        case 11:
+        case "end":
+          return _context4.stop();
+      }
+    }, _callee4);
+  }));
+  return function authorizeUser(_x3, _x4) {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
 /**
  * Widget class to create a task widget
  */
@@ -136,23 +173,23 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
   return _createClass(CleanTalkWidgetDoboard, [{
     key: "init",
     value: (function () {
-      var _init = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(type) {
-        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-          while (1) switch (_context4.prev = _context4.next) {
+      var _init = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(type) {
+        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+          while (1) switch (_context5.prev = _context5.next) {
             case 0:
-              _context4.next = 2;
+              _context5.next = 2;
               return this.createWidgetElement(type);
             case 2:
-              this.widgetElement = _context4.sent;
+              this.widgetElement = _context5.sent;
               this.taskDescription = this.widgetElement.querySelector('#doboard_task_description');
               this.submitButton = this.widgetElement.querySelector('#doboard_task_widget-submit_button');
             case 5:
             case "end":
-              return _context4.stop();
+              return _context5.stop();
           }
-        }, _callee4, this);
+        }, _callee5, this);
       }));
-      function init(_x3) {
+      function init(_x5) {
         return _init.apply(this, arguments);
       }
       return init;
@@ -163,27 +200,52 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
       var _this = this;
       var authWidget = document.querySelector('.doboard_task_widget-authorization');
       if (authWidget) {
-        var loginInput = document.getElementById('doboard_task_login');
-        var passwordInput = document.getElementById('doboard_task_password');
+        var emailInput = document.getElementById('doboard_task_widget_email');
+        var passwordInput = document.getElementById('doboard_task_widget_password');
         var submitButton = document.getElementById('doboard_task_widget-submit_button');
-        submitButton.addEventListener('click', function () {
-          var login = loginInput.value;
-          var password = passwordInput.value;
-          console.log('Login:', login);
-          console.log('Password:', password);
-
-          // Устанавливаем куку авторизации
-          document.cookie = "user_authorized=true; path=/";
-          console.log('Authorization cookie set.');
-
-          // Закрываем виджет после авторизации
-          _this.hide();
-        });
+        submitButton.addEventListener('click', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
+          var email, password, authResult;
+          return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+            while (1) switch (_context6.prev = _context6.next) {
+              case 0:
+                email = emailInput.value;
+                password = passwordInput.value;
+                if (!(!email || !password)) {
+                  _context6.next = 5;
+                  break;
+                }
+                alert('Please enter email and password.');
+                return _context6.abrupt("return");
+              case 5:
+                _context6.prev = 5;
+                _context6.next = 8;
+                return _this.authorizeUser(email, password);
+              case 8:
+                authResult = _context6.sent;
+                console.log(authResult);
+                if (authResult.isUserAuthorized) {
+                  _this.createWidgetElement('all_issues');
+                } else {
+                  alert(authResult.error_message);
+                }
+                _context6.next = 17;
+                break;
+              case 13:
+                _context6.prev = 13;
+                _context6.t0 = _context6["catch"](5);
+                console.error('Authorization error:', _context6.t0);
+                alert('An error occurred during authorization.');
+              case 17:
+              case "end":
+                return _context6.stop();
+            }
+          }, _callee6, null, [[5, 13]]);
+        })));
       }
     }
 
     /**
-     * Привязка событий для создания задачи
+     * Binding events to create a task
      */
   }, {
     key: "bindCreateTaskEvents",
@@ -214,123 +276,145 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
   }, {
     key: "createWidgetElement",
     value: (function () {
-      var _createWidgetElement = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(type) {
+      var _createWidgetElement = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee7(type) {
         var _themeData,
+          _themeData2,
+          _themeData3,
+          _themeData4,
           _this3 = this,
           _document$querySelect;
-        var widgetContainer, tasks, i, elTask, taskTitle, taskDescription, currentPageURL, selectedPageURL, taskSelectedData, taskElement, text, start, end, selectedText, beforeText, afterText;
-        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
+        var widgetContainer, tasks, issuesQuantityOnPage, i, elTask, taskTitle, taskDescription, currentPageURL, selectedPageURL, _themeData5, taskSelectedData, taskElement, text, start, end, selectedText, beforeText, afterText;
+        return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+          while (1) switch (_context7.prev = _context7.next) {
             case 0:
-              /*let auth = true;
-              if (!auth) {
-                  type = 'auth';
-              }*/
               widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
               widgetContainer.className = 'doboard_task_widget';
               widgetContainer.innerHTML = '';
-              _context5.t0 = type;
-              _context5.next = _context5.t0 === 'create_task' ? 6 : _context5.t0 === 'wrap' ? 9 : _context5.t0 === 'auth' ? 12 : _context5.t0 === 'task_list' ? 15 : 18;
+              tasks = this.getTasks();
+              _context7.t0 = type;
+              _context7.next = _context7.t0 === 'create_issue' ? 7 : _context7.t0 === 'wrap' ? 10 : _context7.t0 === 'auth' ? 13 : _context7.t0 === 'all_issues' ? 16 : 19;
               break;
-            case 6:
-              templateName = 'create_task';
+            case 7:
+              templateName = 'create_issue';
               variables = {
-                selectedText: this.selectedText
+                selectedText: this.selectedText,
+                themeUrl: ((_themeData = themeData) === null || _themeData === void 0 ? void 0 : _themeData.themeUrl) || '',
+                currentDomain: document.location.hostname || ''
               };
-              return _context5.abrupt("break", 19);
-            case 9:
+              return _context7.abrupt("break", 20);
+            case 10:
               templateName = 'wrap';
               variables = {
-                themeUrl: ((_themeData = themeData) === null || _themeData === void 0 ? void 0 : _themeData.themeUrl) || ''
+                themeUrl: ((_themeData2 = themeData) === null || _themeData2 === void 0 ? void 0 : _themeData2.themeUrl) || ''
               };
-              return _context5.abrupt("break", 19);
-            case 12:
+              return _context7.abrupt("break", 20);
+            case 13:
               templateName = 'auth';
-              variables = {};
-              return _context5.abrupt("break", 19);
-            case 15:
-              templateName = 'task_list';
-              variables = {};
-              return _context5.abrupt("break", 19);
-            case 18:
-              return _context5.abrupt("break", 19);
+              variables = {
+                themeUrl: ((_themeData3 = themeData) === null || _themeData3 === void 0 ? void 0 : _themeData3.themeUrl) || ''
+              };
+              return _context7.abrupt("break", 20);
+            case 16:
+              templateName = 'all_issues';
+              variables = {
+                themeUrl: ((_themeData4 = themeData) === null || _themeData4 === void 0 ? void 0 : _themeData4.themeUrl) || ''
+              };
+              return _context7.abrupt("break", 20);
             case 19:
-              _context5.next = 21;
+              return _context7.abrupt("break", 20);
+            case 20:
+              _context7.next = 22;
               return this.loadTemplate(templateName, variables);
-            case 21:
-              widgetContainer.innerHTML = _context5.sent;
+            case 22:
+              widgetContainer.innerHTML = _context7.sent;
               document.body.appendChild(widgetContainer);
-              _context5.t1 = type;
-              _context5.next = _context5.t1 === 'create_task' ? 26 : _context5.t1 === 'wrap' ? 28 : _context5.t1 === 'auth' ? 30 : _context5.t1 === 'task_list' ? 32 : 36;
+              _context7.t1 = type;
+              _context7.next = _context7.t1 === 'create_issue' ? 27 : _context7.t1 === 'wrap' ? 29 : _context7.t1 === 'auth' ? 31 : _context7.t1 === 'all_issues' ? 33 : 57;
               break;
-            case 26:
+            case 27:
               this.bindCreateTaskEvents();
-              /*document.getElementById('doboard_task_widget-submit_button').addEventListener('click', () => {
-                  const taskTitle = document.getElementById('doboard_task_widget-title').value;
-                  const taskDescription = document.getElementById('doboard_task_widget-description').value;
-                  const typeSend = 'private';
-                  const taskDetails = {
-                      taskTitle: taskTitle,
-                      taskDescription: taskDescription,
-                      typeSend: typeSend,
-                      selectedData: this.selectedData,
-                  };
-                  this.submitTask(taskDetails);
-                  this*/
-              return _context5.abrupt("break", 37);
-            case 28:
+              return _context7.abrupt("break", 58);
+            case 29:
               document.querySelector('.doboard_task_widget-wrap').addEventListener('click', function () {
                 if (!isUserAuthorized()) {
                   _this3.createWidgetElement('auth');
                 } else {
-                  _this3.createWidgetElement('task_list');
+                  _this3.createWidgetElement('all_issues');
                 }
               });
-              return _context5.abrupt("break", 37);
-            case 30:
-              this.bindAuthEvents(); // Привязываем события для авторизации
-              return _context5.abrupt("break", 37);
-            case 32:
-              tasks = this.getTasks();
-              for (i = 0; i < tasks.length; i++) {
-                elTask = tasks[i];
-                taskTitle = elTask.taskTitle;
-                taskDescription = elTask.taskDescription;
-                currentPageURL = elTask.selectedData.pageURL;
-                selectedPageURL = window.location.href; //console.log(elTask);
-                if (currentPageURL == selectedPageURL) {
-                  document.querySelector(".doboard_task_widget-task_list-container").innerHTML += "\n                        <div class=\"doboard_task_widget-task_row\">\n                            <div class=\"doboard_task_widget-task_title\">\n                                <span class=\"doboard_task_widget-task-text_bold\">Title: </span>\n                                <span>".concat(taskTitle, "</span>\n                            </div>\n                            <div class=\"doboard_task_widget-task_description\">\n                                <span class=\"doboard_task_widget-task-text_bold\">Description: </span>\n                                <span>").concat(taskDescription, "</span>\n                            </div>\n                        </div>\n                        ");
-                  taskSelectedData = elTask.selectedData;
-                  taskElement = taskAnalysis(taskSelectedData);
-                  if (taskElement) {
-                    if (taskSelectedData.startSelectPosition && taskSelectedData.endSelectPosition) {
-                      text = taskElement.innerHTML;
-                      start = taskSelectedData.startSelectPosition;
-                      end = taskSelectedData.endSelectPosition;
-                      selectedText = text.substring(start, end);
-                      beforeText = text.substring(0, start);
-                      afterText = text.substring(end);
-                      taskElement.innerHTML = beforeText + '<span class="doboard_task_widget-text_selection">' + selectedText + '</span>' + afterText;
-                    }
-                  }
+              return _context7.abrupt("break", 58);
+            case 31:
+              this.bindAuthEvents(); // Binding events for authorization
+              return _context7.abrupt("break", 58);
+            case 33:
+              issuesQuantityOnPage = 0;
+              if (!(tasks.length > 0)) {
+                _context7.next = 55;
+                break;
+              }
+              i = 0;
+            case 36:
+              if (!(i < tasks.length)) {
+                _context7.next = 55;
+                break;
+              }
+              elTask = tasks[i];
+              taskTitle = elTask.taskTitle;
+              taskDescription = elTask.taskDescription;
+              currentPageURL = elTask.selectedData.pageURL;
+              selectedPageURL = window.location.href;
+              if (!(currentPageURL == selectedPageURL)) {
+                _context7.next = 52;
+                break;
+              }
+              issuesQuantityOnPage++;
+              variables = {
+                taskTitle: taskTitle || '',
+                taskDescription: taskDescription || '',
+                themeUrl: ((_themeData5 = themeData) === null || _themeData5 === void 0 ? void 0 : _themeData5.themeUrl) || '',
+                avatarImg: '/spotfix/img/empty_avatar.png'
+              };
+              _context7.t2 = document.querySelector(".doboard_task_widget-all_issues-container").innerHTML;
+              _context7.next = 48;
+              return this.loadTemplate('list_issues', variables);
+            case 48:
+              document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = _context7.t2 += _context7.sent;
+              taskSelectedData = elTask.selectedData;
+              taskElement = taskAnalysis(taskSelectedData);
+              if (taskElement) {
+                if (taskSelectedData.startSelectPosition && taskSelectedData.endSelectPosition) {
+                  text = taskElement.innerHTML;
+                  start = taskSelectedData.startSelectPosition;
+                  end = taskSelectedData.endSelectPosition;
+                  selectedText = text.substring(start, end);
+                  beforeText = text.substring(0, start);
+                  afterText = text.substring(end);
+                  taskElement.innerHTML = beforeText + '<span class="doboard_task_widget-text_selection">' + selectedText + '</span>' + afterText;
                 }
               }
-              ;
-              return _context5.abrupt("break", 37);
-            case 36:
-              return _context5.abrupt("break", 37);
-            case 37:
+            case 52:
+              i++;
+              _context7.next = 36;
+              break;
+            case 55:
+              if (tasks.length == 0 || issuesQuantityOnPage == 0) {
+                document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
+              }
+              return _context7.abrupt("break", 58);
+            case 57:
+              return _context7.abrupt("break", 58);
+            case 58:
               ((_document$querySelect = document.querySelector('.doboard_task_widget-close_btn')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('click', function () {
                 _this3.hide();
               })) || '';
-              return _context5.abrupt("return", widgetContainer);
-            case 39:
+              return _context7.abrupt("return", widgetContainer);
+            case 60:
             case "end":
-              return _context5.stop();
+              return _context7.stop();
           }
-        }, _callee5, this);
+        }, _callee7, this);
       }));
-      function createWidgetElement(_x4) {
+      function createWidgetElement(_x6) {
         return _createWidgetElement.apply(this, arguments);
       }
       return createWidgetElement;
@@ -345,7 +429,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
   }, {
     key: "loadTemplate",
     value: (function () {
-      var _loadTemplate = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(templateName) {
+      var _loadTemplate = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee8(templateName) {
         var variables,
           response,
           template,
@@ -355,32 +439,32 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           key,
           value,
           placeholder,
-          _args6 = arguments;
-        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-          while (1) switch (_context6.prev = _context6.next) {
+          _args8 = arguments;
+        return _regeneratorRuntime().wrap(function _callee8$(_context8) {
+          while (1) switch (_context8.prev = _context8.next) {
             case 0:
-              variables = _args6.length > 1 && _args6[1] !== undefined ? _args6[1] : {};
-              _context6.next = 3;
+              variables = _args8.length > 1 && _args8[1] !== undefined ? _args8[1] : {};
+              _context8.next = 3;
               return fetch("/spotfix/templates/".concat(templateName, ".html"));
             case 3:
-              response = _context6.sent;
-              _context6.next = 6;
+              response = _context8.sent;
+              _context8.next = 6;
               return response.text();
             case 6:
-              template = _context6.sent;
+              template = _context8.sent;
               for (_i = 0, _Object$entries = Object.entries(variables); _i < _Object$entries.length; _i++) {
                 _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2), key = _Object$entries$_i[0], value = _Object$entries$_i[1];
                 placeholder = "{{".concat(key, "}}");
                 template = template.replaceAll(placeholder, value);
               }
-              return _context6.abrupt("return", template);
+              return _context8.abrupt("return", template);
             case 9:
             case "end":
-              return _context6.stop();
+              return _context8.stop();
           }
-        }, _callee6);
+        }, _callee8);
       }));
-      function loadTemplate(_x5) {
+      function loadTemplate(_x7) {
         return _loadTemplate.apply(this, arguments);
       }
       return loadTemplate;
@@ -400,7 +484,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
     value: function submitTask(taskDetails) {
       if (taskDetails && taskDetails.taskTitle) {
         this.createTask(taskDetails);
-        //this.taskInput.value = ''; нужна очистка полей
+        //this.taskInput.value = ''; We need to clear the fields
         this.hide();
       } else {
         alert('Please enter task title.');
@@ -436,8 +520,72 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
     }
 
     /**
+     * Authorize the user
+     * @param {string} email
+     * @param {string} password
+     * @return {Promise<{isUserAuthorized: boolean, session_id: string, user_token: string, user_id: string}>}
+     */
+  }, {
+    key: "authorizeUser",
+    value: (function () {
+      var _authorizeUser2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee9(email, password) {
+        var _auth, oneMonthFromNow;
+        return _regeneratorRuntime().wrap(function _callee9$(_context9) {
+          while (1) switch (_context9.prev = _context9.next) {
+            case 0:
+              _context9.prev = 0;
+              _context9.next = 3;
+              return _authorizeUser(email, password);
+            case 3:
+              _auth = _context9.sent;
+              console.log(_auth);
+              console.log('Auth session_id:', _auth.data.session_id);
+              if (!(_auth.data.session_id && _auth.data.user_token && _auth.data.user_id)) {
+                _context9.next = 15;
+                break;
+              }
+              oneMonthFromNow = new Date();
+              oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1);
+              setCookie('doboard_task_widget_session_id', _auth.data.session_id, oneMonthFromNow);
+              setCookie('doboard_task_widget_user_token', _auth.data.user_token, oneMonthFromNow);
+              setCookie('doboard_task_widget_user_id', _auth.data.user_id, oneMonthFromNow);
+              return _context9.abrupt("return", {
+                isUserAuthorized: true,
+                session_id: _auth.data.session_id,
+                user_token: _auth.data.user_token,
+                user_id: _auth.data.user_id
+              });
+            case 15:
+              return _context9.abrupt("return", {
+                isUserAuthorized: false,
+                error_message: _auth.error_message
+              });
+            case 16:
+              _context9.next = 22;
+              break;
+            case 18:
+              _context9.prev = 18;
+              _context9.t0 = _context9["catch"](0);
+              console.error('Authorization failed:', _context9.t0);
+              return _context9.abrupt("return", {
+                isUserAuthorized: false,
+                error_message: auth.error_message
+              });
+            case 22:
+            case "end":
+              return _context9.stop();
+          }
+        }, _callee9, null, [[0, 18]]);
+      }));
+      function authorizeUser(_x8, _x9) {
+        return _authorizeUser2.apply(this, arguments);
+      }
+      return authorizeUser;
+    }()
+    /**
      * Hide the widget
      */
+    )
   }, {
     key: "hide",
     value: function hide() {
@@ -462,12 +610,9 @@ cssLink.href = '/spotfix/styles/doboard-widget.css';
 document.head.appendChild(cssLink);*/
 
 document.addEventListener('DOMContentLoaded', function () {
-  // Проверяем, авторизован ли пользователь
   if (!isUserAuthorized()) {
-    // Если пользователь не авторизован, открываем интерфейс авторизации
     new CleanTalkWidgetDoboard({}, 'auth');
   } else {
-    // Если пользователь авторизован, открываем интерфейс wrap или другой
     new CleanTalkWidgetDoboard({}, 'wrap');
   }
 });
@@ -484,7 +629,7 @@ document.addEventListener('selectionchange', function (e) {
       if (!isUserAuthorized()) {
         openWidget(_selectedData, widgetExist, 'auth');
       } else {
-        openWidget(_selectedData, widgetExist, 'create_task');
+        openWidget(_selectedData, widgetExist, 'create_issue');
       }
     }
   }, 1000);
@@ -591,10 +736,22 @@ function getCookie(name) {
 }
 
 /**
+ * Set a cookie with specified parameters
+ * @param {string} name - The name of the cookie
+ * @param {string} value - The value of the cookie
+ * @param {Date} expires - Expiration date of the cookie
+ */
+function setCookie(name, value, expires) {
+  document.cookie = "".concat(name, "=").concat(value, "; path=/; expires=").concat(expires.toUTCString(), "; Secure; SameSite=Strict");
+}
+
+/**
  * Check if the user is authorized
  * @return {boolean}
  */
 function isUserAuthorized() {
-  var authCookie = getCookie('user_authorized'); // Замените 'user_authorized' на имя вашей куки
-  return authCookie === 'true'; // Предполагается, что кука содержит 'true' для авторизованных пользователей
+  var session_id = getCookie('doboard_task_widget_session_id');
+  var user_token = getCookie('doboard_task_widget_user_token');
+  return session_id && user_token;
+  ;
 }

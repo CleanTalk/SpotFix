@@ -6,12 +6,9 @@ cssLink.href = '/spotfix/styles/doboard-widget.css';
 document.head.appendChild(cssLink);*/
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Проверяем, авторизован ли пользователь
     if (!isUserAuthorized()) {
-        // Если пользователь не авторизован, открываем интерфейс авторизации
         new CleanTalkWidgetDoboard({}, 'auth');
     } else {
-        // Если пользователь авторизован, открываем интерфейс wrap или другой
         new CleanTalkWidgetDoboard({}, 'wrap');
     }
 });
@@ -34,7 +31,7 @@ document.addEventListener('selectionchange', function(e) {
             if (!isUserAuthorized()) {
                 openWidget(selectedData, widgetExist, 'auth');
             } else {
-                openWidget(selectedData, widgetExist, 'create_task');
+                openWidget(selectedData, widgetExist, 'create_issue');
             }
         }
     }, 1000);
@@ -143,10 +140,22 @@ function getCookie(name) {
 }
 
 /**
+ * Set a cookie with specified parameters
+ * @param {string} name - The name of the cookie
+ * @param {string} value - The value of the cookie
+ * @param {Date} expires - Expiration date of the cookie
+ */
+function setCookie(name, value, expires) {
+    document.cookie = `${name}=${value}; path=/; expires=${expires.toUTCString()}; Secure; SameSite=Strict`;
+}
+
+
+/**
  * Check if the user is authorized
  * @return {boolean}
  */
 function isUserAuthorized() {
-    const authCookie = getCookie('user_authorized'); // Замените 'user_authorized' на имя вашей куки
-    return authCookie === 'true'; // Предполагается, что кука содержит 'true' для авторизованных пользователей
+    const session_id = getCookie('doboard_task_widget_session_id');
+    const user_token = getCookie('doboard_task_widget_user_token');
+    return session_id && user_token; ;
 }

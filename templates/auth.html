@@ -1,7 +1,15 @@
+<div class="doboard_task_widget-header">
+    <div style="display: flex;align-items: center;gap: 8px;">
+        <img src="/spotfix/img/white-logo-doboard.svg"  alt="">
+        <span>Authorization</span>
+    </div>
+    <img src="/spotfix/img/close.svg"  alt="" class="doboard_task_widget-close_btn">
+</div>
 <div class="doboard_task_widget-container doboard_task_widget-authorization">
-    <div class="doboard_task_widget-close_btn">X</div>
-    <h2>Doboard</h2>
-    <input id="doboard_task_login" name="login" placeholder="Login or email">
-    <input id="doboard_task_password" name="password" placeholder="Password">
+    <span>Sign in to doBoard</span>
+    <input id="doboard_task_widget_email" class="doboard_task_widget-field" type="email" name="email" placeholder="Enter your email address *">
+    <input id="doboard_task_widget_password" class="doboard_task_widget-field" type="password" name="password" placeholder="Password *">
+    <span style="margin: 20px 0;">If you are a CleanTalk user, use same Email and Password as at <a href="https://cleantalk.org/" style="text-decoration: none;color: #000000;">cleantalk.org</a></span>
     <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button">Authorization</button>
+    <span style="margin-top: 20px;text-align: center;">Don’t have an account? <a href="https://doboard.com/1/signup" style="color: #22a475;font-weight: 700;text-decoration: none;">Get started</a></span>
 </div>

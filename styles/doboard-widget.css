@@ -3,12 +3,14 @@
     right: 0;
     bottom: 0;
     margin-bottom: 20px;
-    margin-right: 20px;
+    margin-right: 70px;
     z-index: 9999;
-}
-
-.doboard_task_widget-container {
-    display: grid;
+    color: #40484F;
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 100%;
+    vertical-align: middle;
 }
 
 .doboard_task_widget-close_btn {
@@ -16,32 +18,62 @@
 }
 
 .doboard_task_widget-container{
-    width: 300px;
-    background: #575757f5;
-    border-radius: 10px;
-    padding: 20px;
+    display: grid;
+    width: 326px;
+    max-height: 486px;
+    background: #FFFFFF;
+    border-radius: 0 0 8px 8px;
+    border: 1px;
+    border-style: none solid solid solid;
+    border-color: #BBC7D1;
+    padding: 16px;
+    box-shadow: 0px 4px 15px 8px #CACACA40;
+}
+
+.doboard_task_widget-header {
+    display: flex;
+    height: 41px;
+    padding: 8px 16px;
+    background: #1C7857;
+    border-radius: 8px 8px 0 0;
+    justify-content: space-between;
+    align-items: center;
+    color: #FFFFFF;
 }
 
 .doboard_task_widget-wrap {
     width: auto;
-    background: #57575700;
-}
-
-.doboard_task_widget-title-input {
-    height: 35px;
-}
-
-.doboard_task_widget-description-textarea {
-    height: 100px;
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
 }
 
 .doboard_task_widget-submit_button {
-    height: 35px;
+    height: 48px;
+    margin-top: 20px;
+    color: #FFFFFF;
+    background: #22A475;
+    border: none;
+    border-radius: 6px;
+    font-family: Inter;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 150%;
+    cursor: pointer;
+}
+
+.doboard_task_widget-submit_button:hover {
+    background: #1C7857;
 }
 
 .doboard_task_widget-task_row {
+    display: flex;
+    max-height: 44px;
+    gap: 8px;
+    margin-bottom: 20px;
     cursor: pointer;
-    border-bottom: 1px solid #ffffff;
+    align-items: center;
 }
 
 .doboard_task_widget-task-text_bold {
@@ -50,4 +82,60 @@
 
 .doboard_task_widget-text_selection {
     background: #d0d57fad;
+}
+
+.doboard_task_widget-field {
+    margin-top: 20px;
+    padding: 0 12px;
+    border-radius: 4px;
+    border: 1px solid #707A83;
+    min-height: 41px;
+}
+
+.doboard_task_widget-field::placeholder {
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 100%;
+    vertical-align: middle;
+    color: #000000;
+}
+
+.doboard_task_widget-description-textarea {
+    height: 100px;
+    padding: 12px;
+}
+
+.doboard_task_widget-issues_list_empty {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.doboard_task_widget-description_container {
+    display: grid;
+    height: 44px;
+    width: 100%;
+    align-items: center;
+    border-bottom: 1px solid #EBF0F4;
+}
+
+.doboard_task_widget-avatar {
+    width: 44px;
+    height: 44px; 
+}
+
+.doboard_task_widget-all_issues {
+    overflow: scroll;
+}
+
+.doboard_task_widget-all_issues::-webkit-scrollbar {
+    width: 0;
+}
+
+.doboard_task_widget-task_title {
+    font-weight: 700;
+}
+
+.doboard_task_widget-description-textarea {
+    resize: none;
 }
