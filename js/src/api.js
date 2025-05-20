@@ -42,7 +42,7 @@ function getTasksLS() {
      return tasks;
 };
 
-const authorizeUser = async (email, password) => {
+/*const authorizeUser = async (email, password) => {
     const formData = new FormData();
     formData.append('email', email);
     formData.append('password', password);
@@ -57,4 +57,4 @@ const authorizeUser = async (email, password) => {
     }
 
     return await response.json();
-};
+};*/

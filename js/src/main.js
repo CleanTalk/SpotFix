@@ -1,20 +1,10 @@
 var selectedData = {};
-
-/*let cssLink = document.createElement('link');
-cssLink.rel = 'stylesheet';
-cssLink.href = '/spotfix/styles/doboard-widget.css';
-document.head.appendChild(cssLink);*/
+var widgetTimeout = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (!isUserAuthorized()) {
-        new CleanTalkWidgetDoboard({}, 'auth');
-    } else {
-        new CleanTalkWidgetDoboard({}, 'wrap');
-    }
+    new CleanTalkWidgetDoboard({}, 'wrap');
 });
 
-
-let widgetTimeout;
 document.addEventListener('selectionchange', function(e) {
     if (widgetTimeout) {
         clearTimeout(widgetTimeout);
@@ -27,12 +17,7 @@ document.addEventListener('selectionchange', function(e) {
         ) {
             const selectedData = getSelectedData(selection);
             let widgetExist = document.querySelector('.task-widget');
-
-            if (!isUserAuthorized()) {
-                openWidget(selectedData, widgetExist, 'auth');
-            } else {
-                openWidget(selectedData, widgetExist, 'create_issue');
-            }
+            openWidget(selectedData, widgetExist, 'create_issue');
         }
     }, 1000);
 });
@@ -149,13 +134,16 @@ function setCookie(name, value, expires) {
     document.cookie = `${name}=${value}; path=/; expires=${expires.toUTCString()}; Secure; SameSite=Strict`;
 }
 
-
 /**
- * Check if the user is authorized
- * @return {boolean}
+ * Scroll to an element by tag, class, and text content
+ * @param {string} path - The path to the element
+ * @return {boolean} - True if the element was found and scrolled to, false otherwise
  */
-function isUserAuthorized() {
-    const session_id = getCookie('doboard_task_widget_session_id');
-    const user_token = getCookie('doboard_task_widget_user_token');
-    return session_id && user_token; ;
+function scrollToNodePath(path) {
+    const node = retrieveNodeFromPath(path);
+    if (node && node.scrollIntoView) {
+        node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return true;
+    }
+    return false;
 }

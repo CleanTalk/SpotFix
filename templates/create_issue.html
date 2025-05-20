@@ -1,13 +1,30 @@
-<div class="doboard_task_widget-header">
-    <div style="display: flex;align-items: center;gap: 8px;">
-        <img src="/spotfix/img/white-logo-doboard.svg"  alt="">
-        <span>Report an issue</span>
+<div class="doboard_task_widget-container">
+    <div class="doboard_task_widget-header">
+        <div style="display: flex;align-items: center;gap: 8px;">
+            <img src="/spotfix/img/white-logo-doboard.svg"  alt="">
+            <span>Report an issue</span>
+        </div>
+        <img src="/spotfix/img/close.svg"  alt="" class="doboard_task_widget-close_btn">
     </div>
-    <img src="/spotfix/img/close.svg"  alt="" class="doboard_task_widget-close_btn">
-</div>
-<div class="doboard_task_widget-container doboard_task_widget-create">
-    <span>If you found issue with <span style="color: #000000;">{{currentDomain}}</span> page, you in right place. Please use his form to tell us about the issue you’re experiencing. </span>
-    <input id="doboard_task_widget-title" class="doboard_task_widget-field" name="title" placeholder="Title...*">
-    <textarea id="doboard_task_widget-description" class="doboard_task_widget-field doboard_task_widget-description-textarea" name="description" placeholder="Description...*">{{selectedText}}</textarea>
-    <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button">Submit</button>
+    <div class="doboard_task_widget-content">
+        <span>If you found issue with <span style="color: #000000;">{{currentDomain}}</span> page, you in right place. Please use his form to tell us about the issue you’re experiencing. </span>
+        <input id="doboard_task_widget-title" class="doboard_task_widget-field" name="title" placeholder="Title...*" value="{{selectedText}}">
+        <textarea id="doboard_task_widget-description" class="doboard_task_widget-field doboard_task_widget-description-textarea" name="description" placeholder="Description...*"></textarea>
+        <input id="doboard_task_widget-user_name" class="doboard_task_widget-field" type="text" name="user_name" placeholder="Name...*">
+        <input id="doboard_task_widget-user_email" class="doboard_task_widget-field" type="email" name="user_email" placeholder="Email...*">
+        <div class="doboard_task_widget-switch_row">
+            <img id="doboard_task_widget-switch-img" class="doboard_task_widget-switch-img" src="/spotfix/img/public.svg" alt="status">
+            <div class="doboard_task_widget-switch-center">
+                <span id="doboard_task_widget-switch-label" class="doboard_task_widget-switch-label">Public</span>
+                <span id="doboard_task_widget-switch-desc" class="doboard_task_widget-switch-desc">
+                    Anyone can see this conversation.
+                </span>
+            </div>
+            <label class="doboard_task_widget-switch">
+                <input type="checkbox" id="doboard_task_widget-switch" checked>
+                <span class="doboard_task_widget-slider"></span>
+            </label>
+        </div>
+        <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button">Submit</button>
+    </div>
 </div>

@@ -24,50 +24,47 @@ class CleanTalkWidgetDoboard {
         this.submitButton = this.widgetElement.querySelector('#doboard_task_widget-submit_button');
     }
 
-    bindAuthEvents() {
-        const authWidget = document.querySelector('.doboard_task_widget-authorization');
-        if (authWidget) {
-            const emailInput = document.getElementById('doboard_task_widget_email');
-            const passwordInput = document.getElementById('doboard_task_widget_password');
-            const submitButton = document.getElementById('doboard_task_widget-submit_button');
-
-            submitButton.addEventListener('click', async () => {
-                const email = emailInput.value;
-                const password = passwordInput.value;
-                if (!email || !password) {
-                    alert('Please enter email and password.');
-                    return;
-                }
-                try {
-                    const authResult = await this.authorizeUser(email, password);
-                    if (authResult.isUserAuthorized) {
-                        this.createWidgetElement('all_issues');
-                    } else {
-                        alert(authResult.error_message);
-                    }
-                } catch (error) {
-                    console.error('Authorization error:', error);
-                    alert('An error occurred during authorization.');
-                }
-            });
-        }
-    }
-
     /**
      * Binding events to create a task
      */
     bindCreateTaskEvents() {
         const submitButton = document.getElementById('doboard_task_widget-submit_button');
+        const checkbox = document.getElementById('doboard_task_widget-switch');
+        const label = document.getElementById('doboard_task_widget-switch-label');
+        const img = document.getElementById('doboard_task_widget-switch-img');
+        const desc = document.getElementById('doboard_task_widget-switch-desc');
+
+        const updateSwitch = () => {
+            if (checkbox.checked) {
+                label.textContent = 'Public';
+                img.src = '/spotfix/img/public.svg';
+                if (desc) desc.textContent = 'Anyone can see this conversation.';
+            } else {
+                label.textContent = 'Private';
+                img.src = '/spotfix/img/private.svg';
+                if (desc) desc.textContent = 'This conversation can see only you and support';
+            }
+        };
+
+        if (checkbox && label && img) {
+            checkbox.addEventListener('change', updateSwitch);
+            updateSwitch();
+        }
+
         if (submitButton) {
             submitButton.addEventListener('click', () => {
                 const taskTitle = document.getElementById('doboard_task_widget-title').value;
                 const taskDescription = document.getElementById('doboard_task_widget-description').value;
-                const typeSend = 'private';
+                const userName = document.getElementById('doboard_task_widget-user_name').value;
+                const userEmail = document.getElementById('doboard_task_widget-user_email').value;
+                const typeSend = checkbox && !checkbox.checked ? 'private' : 'public';
                 const taskDetails = {
                     taskTitle: taskTitle,
                     taskDescription: taskDescription,
                     typeSend: typeSend,
                     selectedData: this.selectedData,
+                    userName: userName,
+                    userEmail: userEmail,
                 };
                 this.submitTask(taskDetails);
                 this.selectedData = {};
@@ -98,10 +95,6 @@ class CleanTalkWidgetDoboard {
                 templateName = 'wrap';
                 variables = { themeUrl: themeData?.themeUrl || '' };
                 break;
-            case 'auth':
-                templateName = 'auth';
-                variables = { themeUrl: themeData?.themeUrl || '' };
-                break;
             case 'all_issues':
                 templateName = 'all_issues';                
                 variables = {
@@ -122,15 +115,8 @@ class CleanTalkWidgetDoboard {
                 break;
             case 'wrap':
                 document.querySelector('.doboard_task_widget-wrap').addEventListener('click', () => {
-                    if (!isUserAuthorized()) {
-                        this.createWidgetElement('auth');
-                    } else {
-                        this.createWidgetElement('all_issues');
-                    }
+                    this.createWidgetElement('all_issues');
                 });
-                break;
-            case 'auth':
-                this.bindAuthEvents(); // Binding events for authorization
                 break;
             case 'all_issues':
                 let issuesQuantityOnPage = 0;
@@ -141,6 +127,7 @@ class CleanTalkWidgetDoboard {
                         const taskDescription = elTask.taskDescription;
                         const currentPageURL = elTask.selectedData.pageURL;
                         const selectedPageURL = window.location.href;
+                        const taskNodePath = elTask.selectedData.nodePath;
 
                         if (currentPageURL == selectedPageURL) {
                             issuesQuantityOnPage++;
@@ -148,7 +135,8 @@ class CleanTalkWidgetDoboard {
                                 taskTitle: taskTitle || '',
                                 taskDescription: taskDescription || '',
                                 themeUrl: themeData?.themeUrl || '',
-                                avatarImg: '/spotfix/img/empty_avatar.png'
+                                avatarImg: '/spotfix/img/empty_avatar.png',
+                                nodePath: taskNodePath,
                             };
                             document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += await this.loadTemplate('list_issues', variables);
 
@@ -171,6 +159,9 @@ class CleanTalkWidgetDoboard {
                 if (tasks.length == 0 || issuesQuantityOnPage == 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
                 }
+
+                // Bind the click event to the task elements for scrolling to the selected text
+                this.bindIssuesScroll();
                 break;
 
             default:
@@ -181,6 +172,15 @@ class CleanTalkWidgetDoboard {
             this.hide();
         }) || '';
         return widgetContainer;
+    }
+
+    bindIssuesScroll() {
+        document.querySelectorAll('.issue-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const nodePath = JSON.parse(this.getAttribute('data-node-path'));
+                scrollToNodePath(nodePath);
+            });
+        });
     }
 
     /**
@@ -213,12 +213,18 @@ class CleanTalkWidgetDoboard {
      */
     submitTask(taskDetails) {
 
-        if (taskDetails && taskDetails.taskTitle) {
+        if (
+            taskDetails &&
+            taskDetails.taskTitle &&
+            taskDetails.taskDescription &&
+            taskDetails.userName &&
+            taskDetails.userEmail
+        ) {
             this.createTask(taskDetails);
             //this.taskInput.value = ''; We need to clear the fields
             this.hide();
         } else {
-            alert('Please enter task title.');
+            alert('Please fill in all fields.');
         }
     }
 
@@ -245,49 +251,6 @@ class CleanTalkWidgetDoboard {
         let tasksLS = getTasksLS();
 
         return tasksLS;
-    }
-
-    /**
-     * Authorize the user
-     * @param {string} email
-     * @param {string} password
-     * @return {Promise<{isUserAuthorized: boolean, session_id: string, user_token: string, user_id: string}>}
-     */
-    async authorizeUser(email, password) {
-        // Call the API to authorize the user
-        // This function should be implemented in api.js
-        try {
-            const auth = await authorizeUser(email, password);
-            console.log(auth);
-            console.log('Auth session_id:', auth.data.session_id);
-            
-            if (auth.data.session_id && auth.data.user_token && auth.data.user_id) {
-                const oneMonthFromNow = new Date();
-                oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1);
-
-                setCookie('doboard_task_widget_session_id', auth.data.session_id, oneMonthFromNow);
-                setCookie('doboard_task_widget_user_token', auth.data.user_token, oneMonthFromNow);
-                setCookie('doboard_task_widget_user_id', auth.data.user_id, oneMonthFromNow);
-
-                return {
-                    isUserAuthorized: true,
-                    session_id: auth.data.session_id,
-                    user_token: auth.data.user_token,
-                    user_id: auth.data.user_id
-                };
-            } else {
-                return {
-                    isUserAuthorized: false,
-                    error_message: auth.error_message
-                };
-            }
-        } catch (error) {
-            console.error('Authorization failed:', error);
-            return {
-                isUserAuthorized: false,
-                error_message: auth.error_message
-            };
-        }
     }
 
     /**
