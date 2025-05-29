@@ -1,29 +1,23 @@
 var selectedData = {};
-
-let cssLink = document.createElement('link');
-cssLink.rel = 'stylesheet';
-cssLink.href = '/spotfix/styles/doboard-widget.css';
-document.head.appendChild(cssLink);
+var widgetTimeout = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    new CleanTalkWidgetDoboard('', 'wrap');
+    new CleanTalkWidgetDoboard({}, 'wrap');
 });
 
-
-let widgetTimeout;
 document.addEventListener('selectionchange', function(e) {
     if (widgetTimeout) {
         clearTimeout(widgetTimeout);
     }
+
     widgetTimeout = setTimeout(() => {
         const selection = window.getSelection();
         if (
             selection.type === 'Range'
         ) {
             const selectedData = getSelectedData(selection);
-
             let widgetExist = document.querySelector('.task-widget');
-            openWidget(selectedData, widgetExist, 'create_task');
+            openWidget(selectedData, widgetExist, 'create_issue');
         }
     }, 1000);
 });
@@ -31,13 +25,20 @@ document.addEventListener('selectionchange', function(e) {
 /**
  * Open the widget to create a task.
  * @param {*} selectedText
+ * @param {*} widgetExist
+ * @param {*} type
  */
-function openWidget(selectedData, widgetExist, type) {
+function openWidget(selectedData, widgetExist, type) {    
     if (selectedData && !widgetExist) {
         new CleanTalkWidgetDoboard(selectedData, type);
     }
 }
 
+/**
+ * Get the selected data from the DOM
+ * @param {Selection} selectedData
+ * @returns {Object}
+ */
 function getSelectedData(selectedData) {
     let pageURL = window.location.href;
     let selectedText = selectedData.toString();
@@ -99,7 +100,50 @@ function retrieveNodeFromPath(path) {
     return node;
 }
 
+/**
+ * Analyze the task selected data
+ * @param {Object} taskSelectedData
+ * @return {Element|null}
+ */
 function taskAnalysis(taskSelectedData) {
     const nodePath = taskSelectedData.nodePath;
     return retrieveNodeFromPath(nodePath);
+}
+
+/**
+ * Get the value of a cookie by name
+ * @param {string} name
+ * @return {string|null}
+ */
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+        return parts.pop().split(';').shift();
+    }
+    return null;
+}
+
+/**
+ * Set a cookie with specified parameters
+ * @param {string} name - The name of the cookie
+ * @param {string} value - The value of the cookie
+ * @param {Date} expires - Expiration date of the cookie
+ */
+function setCookie(name, value, expires) {
+    document.cookie = `${name}=${value}; path=/; expires=${expires.toUTCString()}; Secure; SameSite=Strict`;
+}
+
+/**
+ * Scroll to an element by tag, class, and text content
+ * @param {string} path - The path to the element
+ * @return {boolean} - True if the element was found and scrolled to, false otherwise
+ */
+function scrollToNodePath(path) {
+    const node = retrieveNodeFromPath(path);
+    if (node && node.scrollIntoView) {
+        node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return true;
+    }
+    return false;
 }
