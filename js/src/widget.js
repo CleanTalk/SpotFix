@@ -5,6 +5,7 @@ class CleanTalkWidgetDoboard {
     selectedText = '';
     selectedData = {};
     widgetElement = null;
+    params = {};
 
     /**
      * Constructor
@@ -19,9 +20,26 @@ class CleanTalkWidgetDoboard {
      * Initialize the widget
      */
     async init(type) {
+        this.params = this.getParams();
         this.widgetElement = await this.createWidgetElement(type);
-        this.taskDescription = this.widgetElement.querySelector('#doboard_task_description');
-        this.submitButton = this.widgetElement.querySelector('#doboard_task_widget-submit_button');
+    }
+
+    getParams() {
+        const script = document.querySelector(`script[src*="doboard-widget-bundle.min.js"]`);
+        if ( ! script || ! script.src ) {
+            throw new Error('Script not provided');
+        }
+
+        const url = new URL(script.src);
+        let params = Object.fromEntries(url.searchParams.entries());
+        if ( ! params ) {
+            throw new Error('Script params not provided');
+        }
+        if ( ! params.projectToken || ! params.accountId || ! params.projectId ) {
+            throw new Error('Necessary script params not provided');
+
+        }
+        return params;
     }
 
     /**
@@ -52,7 +70,8 @@ class CleanTalkWidgetDoboard {
         }
 
         if (submitButton) {
-            submitButton.addEventListener('click', () => {
+            submitButton.addEventListener('click', async () => {
+                // @ToDo make the submit button disable with spinner
                 const taskTitle = document.getElementById('doboard_task_widget-title').value;
                 const taskDescription = document.getElementById('doboard_task_widget-description').value;
                 const userName = document.getElementById('doboard_task_widget-user_name').value;
@@ -65,9 +84,14 @@ class CleanTalkWidgetDoboard {
                     selectedData: this.selectedData,
                     userName: userName,
                     userEmail: userEmail,
+                    projectToken: this.params.projectToken,
+                    projectId: this.params.projectId,
+                    accountId: this.params.accountId,
                 };
-                this.submitTask(taskDetails);
+                const submitTaskResult = await this.submitTask(taskDetails);
+                localStorage.setItem(`spotfix_task_data_${submitTaskResult.taskId}`, JSON.stringify(this.selectedData));
                 this.selectedData = {};
+                await this.createWidgetElement('all_issues');
             });
         }
     }
@@ -80,26 +104,23 @@ class CleanTalkWidgetDoboard {
         const widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
         widgetContainer.className = 'doboard_task_widget';
         widgetContainer.innerHTML = '';
-        let tasks = this.getTasks();
+
+        let templateName = '';
+        let variables = {};
 
         switch (type) {
             case 'create_issue':
                 templateName = 'create_issue';
                 variables = {
                     selectedText: this.selectedText,
-                    themeUrl: themeData?.themeUrl || '',
                     currentDomain: document.location.hostname || ''
                 };
                 break;
             case 'wrap':
                 templateName = 'wrap';
-                variables = { themeUrl: themeData?.themeUrl || '' };
                 break;
             case 'all_issues':
-                templateName = 'all_issues';                
-                variables = {
-                    themeUrl: themeData?.themeUrl || '',
-                };
+                templateName = 'all_issues';
                 break;
 
             default:
@@ -120,6 +141,7 @@ class CleanTalkWidgetDoboard {
                 break;
             case 'all_issues':
                 let issuesQuantityOnPage = 0;
+                let tasks = await this.getTasks();
                 if (tasks.length > 0) {
                     for (let i = 0; i < tasks.length; i++) {
                         const elTask = tasks[i];
@@ -131,10 +153,9 @@ class CleanTalkWidgetDoboard {
 
                         if (currentPageURL == selectedPageURL) {
                             issuesQuantityOnPage++;
-                            variables = {
+                            const variables = {
                                 taskTitle: taskTitle || '',
                                 taskDescription: taskDescription || '',
-                                themeUrl: themeData?.themeUrl || '',
                                 avatarImg: '/spotfix/img/empty_avatar.png',
                                 nodePath: taskNodePath,
                             };
@@ -188,16 +209,18 @@ class CleanTalkWidgetDoboard {
      * @param {string} templateName
      * @param {object} variables
      * @return {string} template
+     *
+     * @ToDo have to refactor templates loaded method: need to be templates included into the bundle
      */
     async loadTemplate(templateName, variables = {}) {
         const response = await fetch(`/spotfix/templates/${templateName}.html`);
         let template = await response.text();
-    
+
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
             template = template.replaceAll(placeholder, value);
         }
-    
+
         return template;
     }
 
@@ -211,35 +234,47 @@ class CleanTalkWidgetDoboard {
     /**
      * Submit the task
      */
-    submitTask(taskDetails) {
+    async submitTask(taskDetails) {
 
-        if (
-            taskDetails &&
-            taskDetails.taskTitle &&
-            taskDetails.taskDescription &&
-            taskDetails.userName &&
-            taskDetails.userEmail
-        ) {
-            this.createTask(taskDetails);
-            //this.taskInput.value = ''; We need to clear the fields
-            this.hide();
-        } else {
-            alert('Please fill in all fields.');
+        if (!localStorage.getItem('spotfix_session_id')) {
+            await this.registerUser(taskDetails);
         }
+
+        const sessionId = localStorage.getItem('spotfix_session_id');
+        return await this.createTask(sessionId, taskDetails);
     }
 
     /**
      * Create a task
      * @param {*} taskDetails
+     * @param {string} sessionId
      */
-    createTask(taskDetails) {
-        // Call the API to create a task
-        // This function should be implemented in api.js
-        if (taskDetails.typeSend == 'private') {
-            createTaskLS(taskDetails);
-        } else {
-            createTaskDoboard(taskDetails);
-        }
+    createTask(sessionId, taskDetails) {
+        return createTaskDoboard(sessionId, taskDetails)
+            .then(response => {
+                return response;
+            });
+    }
+
+    registerUser(taskDetails) {
+        const userEmail = taskDetails.userEmail;
+        const userName = taskDetails.userName;
+        const projectToken = taskDetails.projectToken;
+        const accountId = taskDetails.accountId;
+
+        return registerUser(projectToken, accountId, userEmail, userName)
+            .then(response => {
+                if (response.sessionId) {
+                    localStorage.setItem('spotfix_session_id', response.sessionId);
+                    localStorage.setItem('spotfix_user_id', response.userId);
+                    localStorage.setItem('spotfix_email', response.email);
+                } else {
+                    throw new Error('Session ID not found in response');
+                }
+            })
+            .catch(error => {
+                throw error;
+            });
     }
 
     /**
@@ -247,10 +282,12 @@ class CleanTalkWidgetDoboard {
      * @return {[]}
      */
     getTasks() {
-        //let tasksDoboard = getTasksDoboard();
-        let tasksLS = getTasksLS();
+        if (!localStorage.getItem('spotfix_session_id')) {
+            return {};
+        }
+        const sessionId = localStorage.getItem('spotfix_session_id');
 
-        return tasksLS;
+        return getTasksDoboard(sessionId, this.params.accountId, this.params.projectId);
     }
 
     /**

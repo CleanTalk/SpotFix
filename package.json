@@ -2,10 +2,10 @@
   "name": "doboard-widget",
   "version": "1.0.0",
   "description": "A JavaScript widget for creating tasks from selected text on websites.",
+  "author": "CleanTalk Team",
   "main": "src/main.js",
   "scripts": {
-    "eslint": "./node_modules/.bin/eslint -c ./.eslintrc.json js/*.js",
-    "eslint-windows": ".\\node_modules\\.bin\\eslint -c .\\.eslintrc.json js\\*.js"
+    "eslint": "./node_modules/.bin/eslint -c ./.eslintrc.json js/*.js"
   },
   "devDependencies": {
     "@babel/core": "^7.26.7",
@@ -23,7 +23,11 @@
     "gulp-rename": "^1.4.0",
     "gulp-sourcemap": "^1.0.1",
     "gulp-sourcemaps": "^2.6.5",
-    "gulp-uglify": "^3.0.2"
+    "gulp-uglify": "^3.0.2",
+    "browserify": "^17.0.1",
+    "gulp-wrap": "^0.15.0",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0"
   },
   "keywords": [
     "doboard",
@@ -31,12 +35,5 @@
     "task",
     "API",
     "JavaScript"
-  ],
-  "author": "CleanTalk",
-  "dependencies": {
-    "browserify": "^17.0.1",
-    "gulp-wrap": "^0.15.0",
-    "vinyl-buffer": "^1.0.1",
-    "vinyl-source-stream": "^2.0.0"
-  }
+  ]
 }

@@ -24,11 +24,11 @@ document.addEventListener('selectionchange', function(e) {
 
 /**
  * Open the widget to create a task.
- * @param {*} selectedText
+ * @param {*} selectedData
  * @param {*} widgetExist
  * @param {*} type
  */
-function openWidget(selectedData, widgetExist, type) {    
+function openWidget(selectedData, widgetExist, type) {
     if (selectedData && !widgetExist) {
         new CleanTalkWidgetDoboard(selectedData, type);
     }
@@ -108,30 +108,6 @@ function retrieveNodeFromPath(path) {
 function taskAnalysis(taskSelectedData) {
     const nodePath = taskSelectedData.nodePath;
     return retrieveNodeFromPath(nodePath);
-}
-
-/**
- * Get the value of a cookie by name
- * @param {string} name
- * @return {string|null}
- */
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) {
-        return parts.pop().split(';').shift();
-    }
-    return null;
-}
-
-/**
- * Set a cookie with specified parameters
- * @param {string} name - The name of the cookie
- * @param {string} value - The value of the cookie
- * @param {Date} expires - Expiration date of the cookie
- */
-function setCookie(name, value, expires) {
-    document.cookie = `${name}=${value}; path=/; expires=${expires.toUTCString()}; Secure; SameSite=Strict`;
 }
 
 /**
