@@ -22,6 +22,7 @@ class CleanTalkWidgetDoboard {
     async init(type) {
         this.params = this.getParams();
         this.widgetElement = await this.createWidgetElement(type);
+        this.bindWidgetInputsInteractive();
     }
 
     getParams() {
@@ -305,5 +306,37 @@ class CleanTalkWidgetDoboard {
             }
             parent.removeChild(span);
         });
+    }
+
+    bindWidgetInputsInteractive() {
+        // Customising placeholders
+        const inputs = document.querySelectorAll('.doboard_task_widget-field');
+        inputs.forEach(input => {
+            if (input.value) {
+                input.classList.add('has-value');
+            }
+
+            input.addEventListener('input', () => {
+                if (input.value) {
+                    input.classList.add('has-value');
+                } else {
+                    input.classList.remove('has-value');
+                }
+            });
+
+            input.addEventListener('blur', () => {
+                if (!input.value) {
+                    input.classList.remove('has-value');
+                }
+            });
+        });
+
+        // Customising accordion dropdown
+        const accordionController = document.querySelector('.doboard_task_widget-login span');
+        if ( accordionController ) {
+            accordionController.addEventListener('click', function() {
+                this.closest('.doboard_task_widget-login').classList.toggle('active');
+            });
+        }
     }
 }

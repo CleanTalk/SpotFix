@@ -238,7 +238,8 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               return this.createWidgetElement(type);
             case 3:
               this.widgetElement = _context4.sent;
-            case 4:
+              this.bindWidgetInputsInteractive();
+            case 5:
             case "end":
               return _context4.stop();
           }
@@ -485,6 +486,8 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
      * @param {string} templateName
      * @param {object} variables
      * @return {string} template
+     *
+     * @ToDo have to refactor templates loaded method: need to be templates included into the bundle
      */
   }, {
     key: "loadTemplate",
@@ -635,11 +638,35 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
       });
     }
   }, {
-    key: "delay",
-    value: function delay(ms) {
-      return new Promise(function (resolve) {
-        return setTimeout(resolve, ms);
+    key: "bindWidgetInputsInteractive",
+    value: function bindWidgetInputsInteractive() {
+      // Customising placeholders
+      var inputs = document.querySelectorAll('.doboard_task_widget-field');
+      inputs.forEach(function (input) {
+        if (input.value) {
+          input.classList.add('has-value');
+        }
+        input.addEventListener('input', function () {
+          if (input.value) {
+            input.classList.add('has-value');
+          } else {
+            input.classList.remove('has-value');
+          }
+        });
+        input.addEventListener('blur', function () {
+          if (!input.value) {
+            input.classList.remove('has-value');
+          }
+        });
       });
+
+      // Customising accordion dropdown
+      var accordionController = document.querySelector('.doboard_task_widget-login span');
+      if (accordionController) {
+        accordionController.addEventListener('click', function () {
+          this.closest('.doboard_task_widget-login').classList.toggle('active');
+        });
+      }
     }
   }]);
 }();
@@ -746,30 +773,6 @@ function retrieveNodeFromPath(path) {
 function taskAnalysis(taskSelectedData) {
   var nodePath = taskSelectedData.nodePath;
   return retrieveNodeFromPath(nodePath);
-}
-
-/**
- * Get the value of a cookie by name
- * @param {string} name
- * @return {string|null}
- */
-function getCookie(name) {
-  var value = "; ".concat(document.cookie);
-  var parts = value.split("; ".concat(name, "="));
-  if (parts.length === 2) {
-    return parts.pop().split(';').shift();
-  }
-  return null;
-}
-
-/**
- * Set a cookie with specified parameters
- * @param {string} name - The name of the cookie
- * @param {string} value - The value of the cookie
- * @param {Date} expires - Expiration date of the cookie
- */
-function setCookie(name, value, expires) {
-  document.cookie = "".concat(name, "=").concat(value, "; path=/; expires=").concat(expires.toUTCString(), "; Secure; SameSite=Strict");
 }
 
 /**
