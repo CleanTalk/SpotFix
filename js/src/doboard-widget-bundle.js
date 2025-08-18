@@ -143,64 +143,65 @@ var _registerUser = /*#__PURE__*/function () {
   };
 }();
 var getTasksDoboard = /*#__PURE__*/function () {
-  var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(sessionId, accountId, projectId) {
+  var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(projectToken, sessionId, accountId, projectId) {
     var formData, response, responseBody;
     return _regeneratorRuntime().wrap(function _callee3$(_context3) {
       while (1) switch (_context3.prev = _context3.next) {
         case 0:
           formData = new FormData();
+          formData.append('project_token', projectToken);
           formData.append('session_id', sessionId);
           formData.append('user_id', localStorage.getItem('spotfix_user_id'));
           formData.append('project_id', projectId);
-          _context3.next = 6;
+          formData.append('status', 'ACTIVE');
+          _context3.next = 8;
           return fetch(DOBOARD_API_URL + '/' + accountId + '/task_get', {
             method: 'POST',
             body: formData
           });
-        case 6:
+        case 8:
           response = _context3.sent;
-          console.log(response);
           if (response.ok) {
-            _context3.next = 10;
+            _context3.next = 11;
             break;
           }
           throw new Error('Getting tasks failed');
-        case 10:
-          _context3.next = 12;
+        case 11:
+          _context3.next = 13;
           return response.json();
-        case 12:
+        case 13:
           responseBody = _context3.sent;
           if (!(!responseBody || !responseBody.data)) {
-            _context3.next = 15;
+            _context3.next = 16;
             break;
           }
           throw new Error('Invalid response from server');
-        case 15:
+        case 16:
           if (!(responseBody.data.operation_status === 'FAILED')) {
-            _context3.next = 17;
+            _context3.next = 18;
             break;
           }
           throw new Error(responseBody.data.operation_message);
-        case 17:
+        case 18:
           if (!(responseBody.data.operation_status === 'SUCCESS')) {
-            _context3.next = 19;
+            _context3.next = 20;
             break;
           }
           return _context3.abrupt("return", responseBody.data.tasks.map(function (task) {
             return {
               taskId: task.task_id,
-              userId: task.user_id
+              taskTitle: task.name
             };
           }));
-        case 19:
-          throw new Error('Unknown error occurred during getting tasks');
         case 20:
+          throw new Error('Unknown error occurred during getting tasks');
+        case 21:
         case "end":
           return _context3.stop();
       }
     }, _callee3);
   }));
-  return function getTasksDoboard(_x7, _x8, _x9) {
+  return function getTasksDoboard(_x7, _x8, _x9, _x10) {
     return _ref3.apply(this, arguments);
   };
 }();
@@ -245,7 +246,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           }
         }, _callee4, this);
       }));
-      function init(_x10) {
+      function init(_x11) {
         return _init.apply(this, arguments);
       }
       return init;
@@ -276,41 +277,80 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
     value: function bindCreateTaskEvents() {
       var _this = this;
       var submitButton = document.getElementById('doboard_task_widget-submit_button');
-      var checkbox = document.getElementById('doboard_task_widget-switch');
-      var label = document.getElementById('doboard_task_widget-switch-label');
-      var img = document.getElementById('doboard_task_widget-switch-img');
-      var desc = document.getElementById('doboard_task_widget-switch-desc');
-      var updateSwitch = function updateSwitch() {
-        if (checkbox.checked) {
-          label.textContent = 'Public';
-          img.src = '/spotfix/img/public.svg';
-          if (desc) desc.textContent = 'Anyone can see this conversation.';
-        } else {
-          label.textContent = 'Private';
-          img.src = '/spotfix/img/private.svg';
-          if (desc) desc.textContent = 'This conversation can see only you and support';
-        }
-      };
-      if (checkbox && label && img) {
-        checkbox.addEventListener('change', updateSwitch);
-        updateSwitch();
-      }
       if (submitButton) {
         submitButton.addEventListener('click', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-          var taskTitle, taskDescription, userName, userEmail, typeSend, taskDetails, submitTaskResult;
+          var taskTitleElement, taskTitle, taskDescriptionElement, taskDescription, userName, userEmail, loginSectionElement, userNameElement, userEmailElement, taskDetails, submitTaskResult;
           return _regeneratorRuntime().wrap(function _callee5$(_context5) {
             while (1) switch (_context5.prev = _context5.next) {
               case 0:
-                // @ToDo make the submit button disable with spinner
-                taskTitle = document.getElementById('doboard_task_widget-title').value;
-                taskDescription = document.getElementById('doboard_task_widget-description').value;
-                userName = document.getElementById('doboard_task_widget-user_name').value;
-                userEmail = document.getElementById('doboard_task_widget-user_email').value;
-                typeSend = checkbox && !checkbox.checked ? 'private' : 'public';
+                // Check required fields: Report about and Description
+                taskTitleElement = document.getElementById('doboard_task_widget-title');
+                taskTitle = taskTitleElement.value;
+                if (taskTitle) {
+                  _context5.next = 7;
+                  break;
+                }
+                taskTitleElement.style.borderColor = 'red';
+                taskTitleElement.focus();
+                taskTitleElement.addEventListener('input', function () {
+                  this.style.borderColor = '';
+                });
+                return _context5.abrupt("return");
+              case 7:
+                taskDescriptionElement = document.getElementById('doboard_task_widget-description');
+                taskDescription = taskDescriptionElement.value;
+                if (taskDescription) {
+                  _context5.next = 14;
+                  break;
+                }
+                taskDescriptionElement.style.borderColor = 'red';
+                taskDescriptionElement.focus();
+                taskDescriptionElement.addEventListener('input', function () {
+                  this.style.borderColor = '';
+                });
+                return _context5.abrupt("return");
+              case 14:
+                // If login section is open, check required fields: Nickname, Email
+                userName = '';
+                userEmail = '';
+                loginSectionElement = document.querySelector('.doboard_task_widget-login');
+                if (!loginSectionElement.classList.contains('active')) {
+                  _context5.next = 32;
+                  break;
+                }
+                userNameElement = document.getElementById('doboard_task_widget-user_name');
+                userName = userNameElement.value;
+                if (userName) {
+                  _context5.next = 25;
+                  break;
+                }
+                userNameElement.style.borderColor = 'red';
+                userNameElement.focus();
+                userNameElement.addEventListener('input', function () {
+                  this.style.borderColor = '';
+                });
+                return _context5.abrupt("return");
+              case 25:
+                userEmailElement = document.getElementById('doboard_task_widget-user_email');
+                userEmail = userEmailElement.value;
+                if (userEmail) {
+                  _context5.next = 32;
+                  break;
+                }
+                userEmailElement.style.borderColor = 'red';
+                userEmailElement.focus();
+                userEmailElement.addEventListener('input', function () {
+                  this.style.borderColor = '';
+                });
+                return _context5.abrupt("return");
+              case 32:
+                // Make the submit button disable with spinner
+                target.disabled = true;
+                target.style.cursor = 'waiting';
                 taskDetails = {
                   taskTitle: taskTitle,
                   taskDescription: taskDescription,
-                  typeSend: typeSend,
+                  //typeSend: typeSend,
                   selectedData: _this.selectedData,
                   userName: userName,
                   userEmail: userEmail,
@@ -318,15 +358,18 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                   projectId: _this.params.projectId,
                   accountId: _this.params.accountId
                 };
-                _context5.next = 8;
+                _context5.next = 37;
                 return _this.submitTask(taskDetails);
-              case 8:
+              case 37:
                 submitTaskResult = _context5.sent;
+                // Return the submit button normal state
+                target.disabled = false;
+                target.style.cursor = 'pointer';
                 localStorage.setItem("spotfix_task_data_".concat(submitTaskResult.taskId), JSON.stringify(_this.selectedData));
                 _this.selectedData = {};
-                _context5.next = 13;
+                _context5.next = 44;
                 return _this.createWidgetElement('all_issues');
-              case 13:
+              case 44:
               case "end":
                 return _context5.stop();
             }
@@ -345,7 +388,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
       var _createWidgetElement = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6(type) {
         var _this2 = this,
           _document$querySelect;
-        var widgetContainer, templateName, variables, issuesQuantityOnPage, tasks, i, elTask, taskTitle, taskDescription, currentPageURL, selectedPageURL, taskNodePath, _variables, taskSelectedData, taskElement, text, start, end, selectedText, beforeText, afterText;
+        var widgetContainer, templateName, variables, issuesQuantityOnPage, tasks, i, elTask, taskId, taskTitle, taskDataString, taskData, currentPageURL, taskNodePath, _variables, taskElement, text, start, end, selectedText, beforeText, afterText;
         return _regeneratorRuntime().wrap(function _callee6$(_context6) {
           while (1) switch (_context6.prev = _context6.next) {
             case 0:
@@ -379,16 +422,16 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               widgetContainer.innerHTML = _context6.sent;
               document.body.appendChild(widgetContainer);
               _context6.t1 = type;
-              _context6.next = _context6.t1 === 'create_issue' ? 23 : _context6.t1 === 'wrap' ? 25 : _context6.t1 === 'all_issues' ? 27 : 56;
+              _context6.next = _context6.t1 === 'create_issue' ? 23 : _context6.t1 === 'wrap' ? 25 : _context6.t1 === 'all_issues' ? 27 : 57;
               break;
             case 23:
               this.bindCreateTaskEvents();
-              return _context6.abrupt("break", 57);
+              return _context6.abrupt("break", 58);
             case 25:
               document.querySelector('.doboard_task_widget-wrap').addEventListener('click', function () {
                 _this2.createWidgetElement('all_issues');
               });
-              return _context6.abrupt("break", 57);
+              return _context6.abrupt("break", 58);
             case 27:
               issuesQuantityOnPage = 0;
               _context6.next = 30;
@@ -396,23 +439,25 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
             case 30:
               tasks = _context6.sent;
               if (!(tasks.length > 0)) {
-                _context6.next = 53;
+                _context6.next = 54;
                 break;
               }
+              document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
               i = 0;
-            case 33:
+            case 34:
               if (!(i < tasks.length)) {
-                _context6.next = 53;
+                _context6.next = 54;
                 break;
               }
-              elTask = tasks[i];
-              taskTitle = elTask.taskTitle;
-              taskDescription = elTask.taskDescription;
-              currentPageURL = elTask.selectedData.pageURL;
-              selectedPageURL = window.location.href;
-              taskNodePath = elTask.selectedData.nodePath;
-              if (!(currentPageURL == selectedPageURL)) {
-                _context6.next = 50;
+              elTask = tasks[i]; // Data from api
+              taskId = elTask.taskId;
+              taskTitle = elTask.taskTitle; // Data from local storage
+              taskDataString = localStorage.getItem("spotfix_task_data_".concat(taskId));
+              taskData = taskDataString ? JSON.parse(taskDataString) : null;
+              currentPageURL = taskData.pageURL;
+              taskNodePath = taskData.nodePath;
+              if (!(currentPageURL === window.location.href)) {
+                _context6.next = 51;
                 break;
               }
               issuesQuantityOnPage++;
@@ -423,49 +468,48 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                 nodePath: taskNodePath
               };
               _context6.t2 = document.querySelector(".doboard_task_widget-all_issues-container").innerHTML;
-              _context6.next = 46;
+              _context6.next = 48;
               return this.loadTemplate('list_issues', _variables);
-            case 46:
+            case 48:
               document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = _context6.t2 += _context6.sent;
-              taskSelectedData = elTask.selectedData;
-              taskElement = taskAnalysis(taskSelectedData);
+              taskElement = taskAnalysis(taskData);
               if (taskElement) {
-                if (taskSelectedData.startSelectPosition && taskSelectedData.endSelectPosition) {
+                if (taskData.startSelectPosition !== undefined && taskData.endSelectPosition !== undefined) {
                   text = taskElement.innerHTML;
-                  start = taskSelectedData.startSelectPosition;
-                  end = taskSelectedData.endSelectPosition;
+                  start = taskData.startSelectPosition;
+                  end = taskData.endSelectPosition;
                   selectedText = text.substring(start, end);
                   beforeText = text.substring(0, start);
                   afterText = text.substring(end);
                   taskElement.innerHTML = beforeText + '<span class="doboard_task_widget-text_selection">' + selectedText + '</span>' + afterText;
                 }
               }
-            case 50:
+            case 51:
               i++;
-              _context6.next = 33;
+              _context6.next = 34;
               break;
-            case 53:
-              if (tasks.length == 0 || issuesQuantityOnPage == 0) {
+            case 54:
+              if (tasks.length === 0 || issuesQuantityOnPage === 0) {
                 document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
               }
 
               // Bind the click event to the task elements for scrolling to the selected text
               this.bindIssuesScroll();
-              return _context6.abrupt("break", 57);
-            case 56:
-              return _context6.abrupt("break", 57);
+              return _context6.abrupt("break", 58);
             case 57:
+              return _context6.abrupt("break", 58);
+            case 58:
               ((_document$querySelect = document.querySelector('.doboard_task_widget-close_btn')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('click', function () {
                 _this2.hide();
               })) || '';
               return _context6.abrupt("return", widgetContainer);
-            case 59:
+            case 60:
             case "end":
               return _context6.stop();
           }
         }, _callee6, this);
       }));
-      function createWidgetElement(_x11) {
+      function createWidgetElement(_x12) {
         return _createWidgetElement.apply(this, arguments);
       }
       return createWidgetElement;
@@ -483,11 +527,12 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
 
     /**
      * Load the template
-     * @param {string} templateName
-     * @param {object} variables
-     * @return {string} template
      *
+     * @param templateName
+     * @param variables
+     * @return {Promise<string>}
      * @ToDo have to refactor templates loaded method: need to be templates included into the bundle
+     *
      */
   }, {
     key: "loadTemplate",
@@ -527,7 +572,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           }
         }, _callee7);
       }));
-      function loadTemplate(_x12) {
+      function loadTemplate(_x13) {
         return _loadTemplate.apply(this, arguments);
       }
       return loadTemplate;
@@ -568,7 +613,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           }
         }, _callee8, this);
       }));
-      function submitTask(_x13) {
+      function submitTask(_x14) {
         return _submitTask.apply(this, arguments);
       }
       return submitTask;
@@ -608,7 +653,8 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
 
     /**
      * Get the task
-     * @return {[]}
+     *
+     * @return {any|Promise<*|undefined>|{}}
      */
   }, {
     key: "getTasks",
@@ -616,8 +662,9 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
       if (!localStorage.getItem('spotfix_session_id')) {
         return {};
       }
+      var projectToken = this.params.projectToken;
       var sessionId = localStorage.getItem('spotfix_session_id');
-      return getTasksDoboard(sessionId, this.params.accountId, this.params.projectId);
+      return getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
     }
 
     /**

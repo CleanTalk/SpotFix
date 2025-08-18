@@ -175,14 +175,21 @@ class CleanTalkWidgetDoboard {
                 let issuesQuantityOnPage = 0;
                 let tasks = await this.getTasks();
                 if (tasks.length > 0) {
+                    document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
                     for (let i = 0; i < tasks.length; i++) {
                         const elTask = tasks[i];
-                        const taskTitle = elTask.taskTitle;
-                        const taskDescription = elTask.taskDescription;
-                        const currentPageURL = elTask.selectedData.pageURL;
-                        const selectedPageURL = window.location.href;
 
-                        if (currentPageURL == selectedPageURL) {
+                        // Data from api
+                        const taskId = elTask.taskId;
+                        const taskTitle = elTask.taskTitle;
+
+                        // Data from local storage
+                        const taskDataString = localStorage.getItem(`spotfix_task_data_${taskId}`);
+                        const taskData = taskDataString ? JSON.parse(taskDataString) : null;
+                        const currentPageURL = taskData.pageURL;
+                        const taskNodePath = taskData.nodePath;
+
+                        if (currentPageURL === window.location.href) {
                             issuesQuantityOnPage++;
                             const variables = {
                                 taskTitle: taskTitle || '',
@@ -192,13 +199,12 @@ class CleanTalkWidgetDoboard {
                             };
                             document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += await this.loadTemplate('list_issues', variables);
 
-                            const taskSelectedData = elTask.selectedData;
-                            let taskElement = taskAnalysis(taskSelectedData);
+                            let taskElement = taskAnalysis(taskData);
                             if (taskElement) {
-                                if ( taskSelectedData.startSelectPosition && taskSelectedData.endSelectPosition ) {
+                                if ( taskData.startSelectPosition !== undefined && taskData.endSelectPosition !== undefined ) {
                                     let text = taskElement.innerHTML;
-                                    let start = taskSelectedData.startSelectPosition;
-                                    let end = taskSelectedData.endSelectPosition;
+                                    let start = taskData.startSelectPosition;
+                                    let end = taskData.endSelectPosition;
                                     let selectedText = text.substring(start, end);
                                     let beforeText = text.substring(0, start);
                                     let afterText = text.substring(end);
@@ -208,7 +214,7 @@ class CleanTalkWidgetDoboard {
                         }
                     }
                 }
-                if (tasks.length == 0 || issuesQuantityOnPage == 0) {
+                if (tasks.length === 0 || issuesQuantityOnPage === 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
                 }
 
@@ -237,11 +243,12 @@ class CleanTalkWidgetDoboard {
 
     /**
      * Load the template
-     * @param {string} templateName
-     * @param {object} variables
-     * @return {string} template
      *
+     * @param templateName
+     * @param variables
+     * @return {Promise<string>}
      * @ToDo have to refactor templates loaded method: need to be templates included into the bundle
+     *
      */
     async loadTemplate(templateName, variables = {}) {
         const response = await fetch(`/spotfix/templates/${templateName}.html`);
@@ -310,15 +317,18 @@ class CleanTalkWidgetDoboard {
 
     /**
      * Get the task
-     * @return {[]}
+     *
+     * @return {any|Promise<*|undefined>|{}}
      */
     getTasks() {
         if (!localStorage.getItem('spotfix_session_id')) {
             return {};
         }
+
+        const projectToken = this.params.projectToken;
         const sessionId = localStorage.getItem('spotfix_session_id');
 
-        return getTasksDoboard(sessionId, this.params.accountId, this.params.projectId);
+        return getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
     }
 
     /**
