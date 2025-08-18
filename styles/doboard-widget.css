@@ -184,10 +184,12 @@
     font-size: 16px;
     line-height: 150%;
     cursor: pointer;
+    transition: all 0.2s ease-in-out;
 }
 
 .doboard_task_widget-submit_button:hover {
     background: #1C7857;
+    color: #FFFFFF;
 }
 
 
