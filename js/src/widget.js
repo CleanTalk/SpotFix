@@ -48,40 +48,66 @@ class CleanTalkWidgetDoboard {
      */
     bindCreateTaskEvents() {
         const submitButton = document.getElementById('doboard_task_widget-submit_button');
-        const checkbox = document.getElementById('doboard_task_widget-switch');
-        const label = document.getElementById('doboard_task_widget-switch-label');
-        const img = document.getElementById('doboard_task_widget-switch-img');
-        const desc = document.getElementById('doboard_task_widget-switch-desc');
-
-        const updateSwitch = () => {
-            if (checkbox.checked) {
-                label.textContent = 'Public';
-                img.src = '/spotfix/img/public.svg';
-                if (desc) desc.textContent = 'Anyone can see this conversation.';
-            } else {
-                label.textContent = 'Private';
-                img.src = '/spotfix/img/private.svg';
-                if (desc) desc.textContent = 'This conversation can see only you and support';
-            }
-        };
-
-        if (checkbox && label && img) {
-            checkbox.addEventListener('change', updateSwitch);
-            updateSwitch();
-        }
 
         if (submitButton) {
             submitButton.addEventListener('click', async () => {
-                // @ToDo make the submit button disable with spinner
-                const taskTitle = document.getElementById('doboard_task_widget-title').value;
-                const taskDescription = document.getElementById('doboard_task_widget-description').value;
-                const userName = document.getElementById('doboard_task_widget-user_name').value;
-                const userEmail = document.getElementById('doboard_task_widget-user_email').value;
-                const typeSend = checkbox && !checkbox.checked ? 'private' : 'public';
+                // Check required fields: Report about and Description
+                const taskTitleElement = document.getElementById('doboard_task_widget-title');
+                const taskTitle = taskTitleElement.value;
+                if ( ! taskTitle ) {
+                    taskTitleElement.style.borderColor = 'red';
+                    taskTitleElement.focus();
+                    taskTitleElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                }
+                const taskDescriptionElement = document.getElementById('doboard_task_widget-description')
+                const taskDescription = taskDescriptionElement.value;
+                if ( ! taskDescription ) {
+                    taskDescriptionElement.style.borderColor = 'red';
+                    taskDescriptionElement.focus();
+                    taskDescriptionElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                }
+
+                // If login section is open, check required fields: Nickname, Email
+                let userName = '';
+                let userEmail = '';
+                const loginSectionElement = document.querySelector('.doboard_task_widget-login')
+                if ( loginSectionElement.classList.contains('active') ) {
+                    const userNameElement = document.getElementById('doboard_task_widget-user_name');
+                    userName = userNameElement.value;
+                    if ( ! userName ) {
+                        userNameElement.style.borderColor = 'red';
+                        userNameElement.focus();
+                        userNameElement.addEventListener('input', function() {
+                            this.style.borderColor = '';
+                        });
+                        return;
+                    }
+                    const userEmailElement = document.getElementById('doboard_task_widget-user_email');
+                    userEmail = userEmailElement.value;
+                    if ( ! userEmail ) {
+                        userEmailElement.style.borderColor = 'red';
+                        userEmailElement.focus();
+                        userEmailElement.addEventListener('input', function() {
+                            this.style.borderColor = '';
+                        });
+                        return;
+                    }
+                }
+
+                // Make the submit button disable with spinner
+                target.disabled = true;
+                target.style.cursor = 'waiting';
+
                 const taskDetails = {
                     taskTitle: taskTitle,
                     taskDescription: taskDescription,
-                    typeSend: typeSend,
+                    //typeSend: typeSend,
                     selectedData: this.selectedData,
                     userName: userName,
                     userEmail: userEmail,
@@ -90,6 +116,11 @@ class CleanTalkWidgetDoboard {
                     accountId: this.params.accountId,
                 };
                 const submitTaskResult = await this.submitTask(taskDetails);
+
+                // Return the submit button normal state
+                target.disabled = false;
+                target.style.cursor = 'pointer';
+
                 localStorage.setItem(`spotfix_task_data_${submitTaskResult.taskId}`, JSON.stringify(this.selectedData));
                 this.selectedData = {};
                 await this.createWidgetElement('all_issues');
@@ -150,7 +181,6 @@ class CleanTalkWidgetDoboard {
                         const taskDescription = elTask.taskDescription;
                         const currentPageURL = elTask.selectedData.pageURL;
                         const selectedPageURL = window.location.href;
-                        const taskNodePath = elTask.selectedData.nodePath;
 
                         if (currentPageURL == selectedPageURL) {
                             issuesQuantityOnPage++;
