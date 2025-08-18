@@ -101,8 +101,9 @@ class CleanTalkWidgetDoboard {
                 }
 
                 // Make the submit button disable with spinner
-                target.disabled = true;
-                target.style.cursor = 'waiting';
+                const submitButton = document.getElementById('doboard_task_widget-submit_button');
+                submitButton.disabled = true;
+                submitButton.style.cursor = 'waiting';
 
                 const taskDetails = {
                     taskTitle: taskTitle,
@@ -118,8 +119,8 @@ class CleanTalkWidgetDoboard {
                 const submitTaskResult = await this.submitTask(taskDetails);
 
                 // Return the submit button normal state
-                target.disabled = false;
-                target.style.cursor = 'pointer';
+                submitButton.disabled = false;
+                submitButton.style.cursor = 'pointer';
 
                 localStorage.setItem(`spotfix_task_data_${submitTaskResult.taskId}`, JSON.stringify(this.selectedData));
                 this.selectedData = {};
@@ -193,7 +194,7 @@ class CleanTalkWidgetDoboard {
                             issuesQuantityOnPage++;
                             const variables = {
                                 taskTitle: taskTitle || '',
-                                taskDescription: taskDescription || '',
+                                //taskDescription: taskDescription || '',
                                 avatarImg: '/spotfix/img/empty_avatar.png',
                                 nodePath: taskNodePath,
                             };

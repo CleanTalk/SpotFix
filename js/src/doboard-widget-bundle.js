@@ -279,7 +279,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
       var submitButton = document.getElementById('doboard_task_widget-submit_button');
       if (submitButton) {
         submitButton.addEventListener('click', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-          var taskTitleElement, taskTitle, taskDescriptionElement, taskDescription, userName, userEmail, loginSectionElement, userNameElement, userEmailElement, taskDetails, submitTaskResult;
+          var taskTitleElement, taskTitle, taskDescriptionElement, taskDescription, userName, userEmail, loginSectionElement, userNameElement, userEmailElement, submitButton, taskDetails, submitTaskResult;
           return _regeneratorRuntime().wrap(function _callee5$(_context5) {
             while (1) switch (_context5.prev = _context5.next) {
               case 0:
@@ -345,8 +345,9 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                 return _context5.abrupt("return");
               case 32:
                 // Make the submit button disable with spinner
-                target.disabled = true;
-                target.style.cursor = 'waiting';
+                submitButton = document.getElementById('doboard_task_widget-submit_button');
+                submitButton.disabled = true;
+                submitButton.style.cursor = 'waiting';
                 taskDetails = {
                   taskTitle: taskTitle,
                   taskDescription: taskDescription,
@@ -358,18 +359,18 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                   projectId: _this.params.projectId,
                   accountId: _this.params.accountId
                 };
-                _context5.next = 37;
+                _context5.next = 38;
                 return _this.submitTask(taskDetails);
-              case 37:
+              case 38:
                 submitTaskResult = _context5.sent;
                 // Return the submit button normal state
-                target.disabled = false;
-                target.style.cursor = 'pointer';
+                submitButton.disabled = false;
+                submitButton.style.cursor = 'pointer';
                 localStorage.setItem("spotfix_task_data_".concat(submitTaskResult.taskId), JSON.stringify(_this.selectedData));
                 _this.selectedData = {};
-                _context5.next = 44;
+                _context5.next = 45;
                 return _this.createWidgetElement('all_issues');
-              case 44:
+              case 45:
               case "end":
                 return _context5.stop();
             }
@@ -463,7 +464,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               issuesQuantityOnPage++;
               _variables = {
                 taskTitle: taskTitle || '',
-                taskDescription: taskDescription || '',
+                //taskDescription: taskDescription || '',
                 avatarImg: '/spotfix/img/empty_avatar.png',
                 nodePath: taskNodePath
               };
