@@ -1,7 +1,17 @@
 @font-face {
     font-family: 'Inter';
     src: url('../fonts/Inter_18pt-Regular.ttf');
+    font-weight: 400;
+    font-style: normal;
 }
+@font-face {
+    font-family: 'Inter';
+    src: url('../fonts/Inter_18pt-Bold.ttf');
+    font-weight: 700;
+    font-style: normal;
+}
+
+/** COMMON CLASSES **/
 
 .doboard_task_widget * {
     font-family: Inter, sans-serif;
@@ -30,26 +40,6 @@
     margin-right: 70px;
     z-index: 9999;
     vertical-align: middle;
-}
-
-#doboard_task_widget-task_count {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 22px;
-    height: 22px;
-    opacity: 1;
-    background: #ef8b43;
-    border-radius: 50%;
-    color: #FFFFFF;
-    text-align: center;
-    line-height: 22px;
-    transition: all 0.2s ease-in-out;
-}
-#doboard_task_widget-task_count.hidden {
-    width: 0;
-    height: 0;
-    opacity: 0;
 }
 
 .doboard_task_widget-close_btn {
@@ -84,6 +74,36 @@
 
 .doboard_task_widget-element-container {
     margin-bottom: 30px;
+}
+
+/*** `WRAP` INTERFACE ***/
+
+.doboard_task_widget-wrap {
+    width: auto;
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+#doboard_task_widget-task_count {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 22px;
+    height: 22px;
+    opacity: 1;
+    background: #ef8b43;
+    border-radius: 50%;
+    color: #FFFFFF;
+    text-align: center;
+    line-height: 22px;
+    transition: all 0.2s ease-in-out;
+}
+#doboard_task_widget-task_count.hidden {
+    width: 0;
+    height: 0;
+    opacity: 0;
 }
 
 /*** `CREATE ISSUE` INTERFACE ***/
@@ -218,23 +238,17 @@
 
 /*** `LIST ISSUES` INTERFACE ***/
 
-.doboard_task_widget-wrap {
-    width: auto;
-    background: none;
-    border: none;
-    box-shadow: none;
-    padding: 0;
-}
-
-
-
 .doboard_task_widget-task_row {
     display: flex;
     max-height: 44px;
-    gap: 8px;
+    padding-bottom: 4px;
     margin-bottom: 20px;
     cursor: pointer;
     align-items: center;
+    justify-content: space-between;
+}
+.doboard_task_widget-task_row:last-child {
+    margin-bottom: 0;
 }
 
 .doboard_task_widget-task-text_bold {
@@ -250,17 +264,22 @@
     margin: 20px 0;
 }
 
-.doboard_task_widget-description_container {
-    display: grid;
-    height: 44px;
-    width: 100%;
-    align-items: center;
-    border-bottom: 1px solid #EBF0F4;
+.doboard_task_widget-avatar_container {
+    min-height: 44px;
 }
 
 .doboard_task_widget-avatar {
     width: 44px;
     height: 44px;
+}
+
+.doboard_task_widget-description_container {
+    height: 44px;
+    width: calc(100% - 44px - 8px);
+    border-bottom: 1px solid #EBF0F4;
+}
+.doboard_task_widget-task_row:last-child .doboard_task_widget-description_container {
+    border-bottom: none;
 }
 
 .doboard_task_widget-all_issues {
@@ -273,6 +292,14 @@
 
 .doboard_task_widget-task_title {
     font-weight: 700;
+}
+
+.doboard_task_widget-task_title span {
+    font-weight: 700;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .doboard_task_widget-description-textarea {

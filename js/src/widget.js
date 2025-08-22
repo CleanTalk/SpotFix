@@ -212,6 +212,7 @@ class CleanTalkWidgetDoboard {
             case 'all_issues':
                 let issuesQuantityOnPage = 0;
                 let tasks = await this.getTasks();
+                this.saveUserData(tasks);
                 if (tasks.length > 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
                     for (let i = 0; i < tasks.length; i++) {
@@ -231,7 +232,6 @@ class CleanTalkWidgetDoboard {
                             issuesQuantityOnPage++;
                             const variables = {
                                 taskTitle: taskTitle || '',
-                                //taskDescription: taskDescription || '',
                                 avatarImg: '/spotfix/img/empty_avatar.png',
                                 nodePath: taskNodePath,
                             };
@@ -251,6 +251,7 @@ class CleanTalkWidgetDoboard {
                             }
                         }
                     }
+                    document.querySelector('.doboard_task_widget-header span').innerText += ' (' + issuesQuantityOnPage + ')';
                 }
                 if (tasks.length === 0 || issuesQuantityOnPage === 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
@@ -417,6 +418,10 @@ class CleanTalkWidgetDoboard {
         const userId =  localStorage.getItem('spotfix_user_id');
 
         return getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId, userId);
+    }
+
+    saveUserData(tasks) {
+        // Save users avatars to local storage
     }
 
     /**

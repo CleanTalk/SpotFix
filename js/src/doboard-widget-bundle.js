@@ -529,17 +529,17 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               widgetContainer.innerHTML = _context7.sent;
               document.body.appendChild(widgetContainer);
               _context7.t1 = type;
-              _context7.next = _context7.t1 === 'create_issue' ? 23 : _context7.t1 === 'wrap' ? 25 : _context7.t1 === 'all_issues' ? 28 : 58;
+              _context7.next = _context7.t1 === 'create_issue' ? 23 : _context7.t1 === 'wrap' ? 25 : _context7.t1 === 'all_issues' ? 28 : 59;
               break;
             case 23:
               this.bindCreateTaskEvents();
-              return _context7.abrupt("break", 59);
+              return _context7.abrupt("break", 60);
             case 25:
               this.getTaskCount();
               document.querySelector('.doboard_task_widget-wrap').addEventListener('click', function () {
                 _this2.createWidgetElement('all_issues');
               });
-              return _context7.abrupt("break", 59);
+              return _context7.abrupt("break", 60);
             case 28:
               issuesQuantityOnPage = 0;
               _context7.next = 31;
@@ -547,7 +547,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
             case 31:
               tasks = _context7.sent;
               if (!(tasks.length > 0)) {
-                _context7.next = 55;
+                _context7.next = 56;
                 break;
               }
               document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
@@ -597,21 +597,23 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               _context7.next = 35;
               break;
             case 55:
+              document.querySelector('.doboard_task_widget-header span').innerText += ' ' + issuesQuantityOnPage;
+            case 56:
               if (tasks.length === 0 || issuesQuantityOnPage === 0) {
                 document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
               }
 
               // Bind the click event to the task elements for scrolling to the selected text
               this.bindIssuesScroll();
-              return _context7.abrupt("break", 59);
-            case 58:
-              return _context7.abrupt("break", 59);
+              return _context7.abrupt("break", 60);
             case 59:
+              return _context7.abrupt("break", 60);
+            case 60:
               ((_document$querySelect = document.querySelector('.doboard_task_widget-close_btn')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('click', function () {
                 _this2.hide();
               })) || '';
               return _context7.abrupt("return", widgetContainer);
-            case 61:
+            case 62:
             case "end":
               return _context7.stop();
           }
