@@ -76,19 +76,14 @@ class CleanTalkWidgetDoboard {
                 // If login section is open, check required fields: Nickname, Email
                 let userName = '';
                 let userEmail = '';
-                const loginSectionElement = document.querySelector('.doboard_task_widget-login')
-                if ( loginSectionElement.classList.contains('active') ) {
-                    const userNameElement = document.getElementById('doboard_task_widget-user_name');
-                    userName = userNameElement.value;
-                    if ( ! userName ) {
-                        userNameElement.style.borderColor = 'red';
-                        userNameElement.focus();
-                        userNameElement.addEventListener('input', function() {
-                            this.style.borderColor = '';
-                        });
-                        return;
-                    }
+                let userPassword = '';
+                const loginSectionElement = document.querySelector('.doboard_task_widget-login');
+
+                if ( loginSectionElement && loginSectionElement.classList.contains('active') ) {
                     const userEmailElement = document.getElementById('doboard_task_widget-user_email');
+                    const userNameElement = document.getElementById('doboard_task_widget-user_name');
+                    const userPasswordElement = document.getElementById('doboard_task_widget-user_password');
+
                     userEmail = userEmailElement.value;
                     if ( ! userEmail ) {
                         userEmailElement.style.borderColor = 'red';
@@ -98,29 +93,70 @@ class CleanTalkWidgetDoboard {
                         });
                         return;
                     }
+
+                    // This is the registration request
+                    if ( userEmailElement && userNameElement ) {
+                        userName = userNameElement.value;
+                        if ( ! userName ) {
+                            userNameElement.style.borderColor = 'red';
+                            userNameElement.focus();
+                            userNameElement.addEventListener('input', function() {
+                                this.style.borderColor = '';
+                            });
+                            return;
+                        }
+                    }
+
+                    // This is the login request
+                    if ( userEmailElement && userPasswordElement && ! userNameElement ) {
+                        userPassword = userPasswordElement.value;
+                        if ( ! userPassword ) {
+                            userPasswordElement.style.borderColor = 'red';
+                            userPasswordElement.focus();
+                            userPasswordElement.addEventListener('input', function() {
+                                this.style.borderColor = '';
+                            });
+                            return;
+                        }
+                    }
+
                 }
+
+                // If it is the login request
+                const userEmailElement = document.getElementById('doboard_task_widget-user_email');
+                userEmail = userEmailElement.value;
 
                 // Make the submit button disable with spinner
                 const submitButton = document.getElementById('doboard_task_widget-submit_button');
                 submitButton.disabled = true;
                 submitButton.style.cursor = 'waiting';
 
-                const taskDetails = {
+                let taskDetails = {
                     taskTitle: taskTitle,
                     taskDescription: taskDescription,
                     //typeSend: typeSend,
                     selectedData: this.selectedData,
                     userName: userName,
-                    userEmail: userEmail,
                     projectToken: this.params.projectToken,
                     projectId: this.params.projectId,
                     accountId: this.params.accountId,
                 };
+                if ( userEmail ) {
+                    taskDetails.userEmail = userEmail
+                }
+                if ( userPassword ) {
+                    taskDetails.userPassword = userPassword
+                }
                 const submitTaskResult = await this.submitTask(taskDetails);
 
                 // Return the submit button normal state
                 submitButton.disabled = false;
                 submitButton.style.cursor = 'pointer';
+
+                if ( submitTaskResult.needToLogin ) {
+                    // @ToDo Do not know what to de here: throw an error or pass log message?
+                    return;
+                }
 
                 localStorage.setItem(`spotfix_task_data_${submitTaskResult.taskId}`, JSON.stringify(this.selectedData));
                 this.selectedData = {};
@@ -276,10 +312,20 @@ class CleanTalkWidgetDoboard {
     async submitTask(taskDetails) {
 
         if (!localStorage.getItem('spotfix_session_id')) {
-            await this.registerUser(taskDetails);
+            if ( taskDetails.userName ) {
+                await this.registerUser(taskDetails);
+            }
+            if ( taskDetails.userPassword ) {
+                await this.loginUser(taskDetails);
+            }
         }
 
         const sessionId = localStorage.getItem('spotfix_session_id');
+
+        if ( ! sessionId ) {
+            // @ToDo move this return in register block code
+            return {needToLogin: true};
+        }
         return await this.createTask(sessionId, taskDetails);
     }
 
@@ -302,6 +348,29 @@ class CleanTalkWidgetDoboard {
         const accountId = taskDetails.accountId;
 
         return registerUser(projectToken, accountId, userEmail, userName)
+            .then(response => {
+                if (response.accountExists) {
+                    document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container").innerText = 'Account already exists. Please, login usin your password.';
+                    document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container.hidden").classList.remove('hidden');
+                    document.getElementById("doboard_task_widget-user_password").focus();
+                } else if (response.sessionId) {
+                    localStorage.setItem('spotfix_session_id', response.sessionId);
+                    localStorage.setItem('spotfix_user_id', response.userId);
+                    localStorage.setItem('spotfix_email', response.email);
+                } else {
+                    throw new Error('Session ID not found in response');
+                }
+            })
+            .catch(error => {
+                throw error;
+            });
+    }
+
+    loginUser(taskDetails) {
+        const userEmail = taskDetails.userEmail;
+        const userPassword = taskDetails.userPassword;
+
+        return loginUser(userEmail, userPassword)
             .then(response => {
                 if (response.sessionId) {
                     localStorage.setItem('spotfix_session_id', response.sessionId);

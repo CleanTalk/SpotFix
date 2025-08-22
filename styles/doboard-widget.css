@@ -72,6 +72,9 @@
     position: relative;
     margin-bottom: 24px;
 }
+.doboard_task_widget-input-container.hidden {
+    display: none;
+}
 
 .doboard_task_widget-input-container .doboard_task_widget-field {
     padding: 0 8px;

@@ -34,15 +34,52 @@ const createTaskDoboard = async (sessionId, taskDetails) => {
     throw new Error('Unknown error occurred during creating task');
 };
 
-const registerUser = async (projectToken, accountId, email, password) => {
+const registerUser = async (projectToken, accountId, email, nickname) => {
     const formData = new FormData();
     formData.append('project_token', projectToken);
     formData.append('account_id', accountId);
-    if (email && password) {
+    if (email && nickname) {
         formData.append('email', email);
-        formData.append('password', password);
+        formData.append('nickname', nickname);
     }
     const response = await fetch(DOBOARD_API_URL + '/user_registration', {
+        method: 'POST',
+        body: formData,
+    });
+
+    if ( ! response.ok ) {
+        throw new Error('Registration failed');
+    }
+
+    const responseBody = await response.json();
+
+    if ( ! responseBody || ! responseBody.data ) {
+        throw new Error('Invalid response from server');
+    }
+    if ( responseBody.data.operation_status === 'FAILED') {
+        throw new Error(responseBody.data.operation_message);
+    }
+    if ( responseBody.data.operation_status === 'SUCCESS' ) {
+        if (responseBody.data.user_email_confirmed === 1) {
+            return {
+                accountExists: true
+            }
+        }
+        return {
+            sessionId: responseBody.data.session_id,
+            userId: responseBody.data.user_id,
+            email: responseBody.data.email
+        }
+    }
+    throw new Error('Unknown error occurred during registration');
+};
+
+const loginUser = async (email, password) => {
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('password', password);
+
+    const response = await fetch(DOBOARD_API_URL + '/user_authorize', {
         method: 'POST',
         body: formData,
     });
@@ -63,11 +100,11 @@ const registerUser = async (projectToken, accountId, email, password) => {
         return {
             sessionId: responseBody.data.session_id,
             userId: responseBody.data.user_id,
-            email: responseBody.data.email
+            email: email
         }
     }
     throw new Error('Unknown error occurred during registration');
-};
+}
 
 const getTasksDoboard = async (projectToken, sessionId, accountId, projectId) => {
     const formData = new FormData();
