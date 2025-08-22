@@ -32,6 +32,26 @@
     vertical-align: middle;
 }
 
+#doboard_task_widget-task_count {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 22px;
+    height: 22px;
+    opacity: 1;
+    background: #ef8b43;
+    border-radius: 50%;
+    color: #FFFFFF;
+    text-align: center;
+    line-height: 22px;
+    transition: all 0.2s ease-in-out;
+}
+#doboard_task_widget-task_count.hidden {
+    width: 0;
+    height: 0;
+    opacity: 0;
+}
+
 .doboard_task_widget-close_btn {
     cursor: pointer;
 }

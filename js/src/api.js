@@ -106,13 +106,15 @@ const loginUser = async (email, password) => {
     throw new Error('Unknown error occurred during registration');
 }
 
-const getTasksDoboard = async (projectToken, sessionId, accountId, projectId) => {
+const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, userId) => {
     const formData = new FormData();
     formData.append('project_token', projectToken);
     formData.append('session_id', sessionId);
-    formData.append('user_id', localStorage.getItem('spotfix_user_id'));
     formData.append('project_id', projectId);
     formData.append('status', 'ACTIVE');
+    if ( userId ) {
+        formData.append('user_id', userId);
+    }
     const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/task_get', {
         method: 'POST',
         body: formData,

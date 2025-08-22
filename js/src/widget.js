@@ -204,6 +204,7 @@ class CleanTalkWidgetDoboard {
                 this.bindCreateTaskEvents();
                 break;
             case 'wrap':
+                this.getTaskCount();
                 document.querySelector('.doboard_task_widget-wrap').addEventListener('click', () => {
                     this.createWidgetElement('all_issues');
                 });
@@ -297,6 +298,22 @@ class CleanTalkWidgetDoboard {
         }
 
         return template;
+    }
+
+    async getTaskCount() {
+        if (!localStorage.getItem('spotfix_session_id')) {
+            return {};
+        }
+
+        const projectToken = this.params.projectToken;
+        const sessionId = localStorage.getItem('spotfix_session_id');
+
+        const tasks = await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
+        const taskCountElement = document.getElementById('doboard_task_widget-task_count');
+        if ( taskCountElement ) {
+            taskCountElement.innerText = tasks.length;
+            taskCountElement.classList.remove('hidden');
+        }
     }
 
     /**
@@ -397,8 +414,9 @@ class CleanTalkWidgetDoboard {
 
         const projectToken = this.params.projectToken;
         const sessionId = localStorage.getItem('spotfix_session_id');
+        const userId =  localStorage.getItem('spotfix_user_id');
 
-        return getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
+        return getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId, userId);
     }
 
     /**
