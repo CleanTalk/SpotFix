@@ -136,13 +136,15 @@ class CleanTalkWidgetDoboard {
                     taskDescription: taskDescription,
                     //typeSend: typeSend,
                     selectedData: this.selectedData,
-                    userName: userName,
                     projectToken: this.params.projectToken,
                     projectId: this.params.projectId,
                     accountId: this.params.accountId,
                 };
                 if ( userEmail ) {
                     taskDetails.userEmail = userEmail
+                }
+                if ( userName ) {
+                    taskDetails.userName = userName
                 }
                 if ( userPassword ) {
                     taskDetails.userPassword = userPassword
@@ -330,9 +332,9 @@ class CleanTalkWidgetDoboard {
     async submitTask(taskDetails) {
 
         if (!localStorage.getItem('spotfix_session_id')) {
-            if ( taskDetails.userName ) {
-                await this.registerUser(taskDetails);
-            }
+
+            await this.registerUser(taskDetails);
+
             if ( taskDetails.userPassword ) {
                 await this.loginUser(taskDetails);
             }
