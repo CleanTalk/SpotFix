@@ -42,9 +42,11 @@ function openWidget(selectedData, widgetExist, type) {
 function getSelectedData(selectedData) {
     let pageURL = window.location.href;
     let selectedText = selectedData.toString();
+    const anchorOffset = selectedData.anchorOffset;
+    const focusOffset = selectedData.focusOffset;
     return {
-        startSelectPosition: selectedData.anchorOffset,
-        endSelectPosition: selectedData.focusOffset,
+        startSelectPosition: Math.min(anchorOffset, focusOffset),
+        endSelectPosition: Math.max(anchorOffset, focusOffset),
         selectedText: selectedText,
         pageURL: pageURL,
         nodePath: calculateNodePath(selectedData.focusNode.parentNode),
