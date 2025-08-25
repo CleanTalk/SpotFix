@@ -6,6 +6,7 @@ class CleanTalkWidgetDoboard {
     selectedData = {};
     widgetElement = null;
     params = {};
+    currentActiveTaskId = 0;
 
     /**
      * Constructor
@@ -193,7 +194,9 @@ class CleanTalkWidgetDoboard {
             case 'all_issues':
                 templateName = 'all_issues';
                 break;
-
+            case 'concrete_issue':
+                templateName = 'concrete_issue';
+                break;
             default:
                 break;
         }
@@ -236,6 +239,7 @@ class CleanTalkWidgetDoboard {
                                 taskTitle: taskTitle || '',
                                 avatarImg: '/spotfix/img/empty_avatar.png',
                                 nodePath: taskNodePath,
+                                taskId: taskId
                             };
                             document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += await this.loadTemplate('list_issues', variables);
 
@@ -259,8 +263,30 @@ class CleanTalkWidgetDoboard {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
                 }
 
-                // Bind the click event to the task elements for scrolling to the selected text
-                this.bindIssuesScroll();
+                // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
+                this.bindIssuesClick();
+                break;
+
+            case 'concrete_issue':
+                const taskDetails = await this.getTaskDetails();
+                variables = {
+                    issueTitle: taskDetails.issueTitle,
+                    issueComments: taskDetails.issueComments,
+                };
+                if ( taskDetails.issueComments.length > 0 ) {
+                    document.querySelector('.doboard_task_widget-concrete_issues-container').innerHTML = '';
+                    for (const comment of taskDetails.issueComments) {
+                        const commentData = {
+                            author: comment.commentAuthor,
+                            commentBody: comment.commentBody,
+                            date: comment.commentDate,
+                            time: comment.commentTime
+                        }
+                        document.querySelector('.doboard_task_widget-concrete_issues-container').innerHTML += await this.loadTemplate('concrete_issue_messages', commentData);
+                    }
+                } else {
+                    document.querySelector('.doboard_task_widget-concrete_issues-container').innerHTML = 'No comments';
+                }
                 break;
 
             default:
@@ -273,11 +299,13 @@ class CleanTalkWidgetDoboard {
         return widgetContainer;
     }
 
-    bindIssuesScroll() {
+    bindIssuesClick() {
         document.querySelectorAll('.issue-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const nodePath = JSON.parse(this.getAttribute('data-node-path'));
+            item.addEventListener('click', async () => {
+                const nodePath = JSON.parse(item.getAttribute('data-node-path'));
                 scrollToNodePath(nodePath);
+                this.currentActiveTaskId = item.getAttribute('data-task-id');
+                await this.createWidgetElement('concrete_issue');
             });
         });
     }
@@ -420,6 +448,26 @@ class CleanTalkWidgetDoboard {
         const userId =  localStorage.getItem('spotfix_user_id');
 
         return getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId, userId);
+    }
+
+    getTaskDetails(taskId) {
+        return  {
+            issueTitle: 'Test Title',
+            issueComments: [
+                {
+                    commentAuthor: '/spotfix/img/empty_avatar.png',
+                    commentBody: 'Test Body 1',
+                    commentDate: 'August 31',
+                    commentTime: '14:15',
+                },
+                {
+                    commentAuthor: '/spotfix/img/empty_avatar.png',
+                    commentBody: 'Test Body 2',
+                    commentDate: 'August 31',
+                    commentTime: '14:16',
+                }
+            ],
+        };
     }
 
     saveUserData(tasks) {
