@@ -345,6 +345,69 @@ var getLogsDoboard = /*#__PURE__*/function () {
     return _ref5.apply(this, arguments);
   };
 }();
+function getUserTasks(params) {
+  if (!localStorage.getItem('spotfix_session_id')) {
+    return {};
+  }
+  var projectToken = params.projectToken;
+  var sessionId = localStorage.getItem('spotfix_session_id');
+  var userId = localStorage.getItem('spotfix_user_id');
+  return getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId, userId);
+}
+function getAllTasks(params) {
+  if (!localStorage.getItem('spotfix_session_id')) {
+    return {};
+  }
+  var projectToken = params.projectToken;
+  var sessionId = localStorage.getItem('spotfix_session_id');
+  return getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
+}
+function getTaskDetails(taskId) {
+  //contract mock
+  return {
+    issueTitle: 'Test Title',
+    issueComments: [{
+      commentAuthorAvatarSrc: '/spotfix/img/empty_avatar.png',
+      commentAuthorName: 'testName 1',
+      commentBody: 'Test Body 1',
+      commentDate: 'August 31',
+      commentTime: '14:15'
+    }, {
+      commentAuthorAvatarSrc: '/spotfix/img/empty_avatar.png',
+      commentAuthorName: 'testName 2',
+      commentBody: 'Test Body 2',
+      commentDate: 'August 31',
+      commentTime: '14:16'
+    }]
+  };
+}
+function getTaskAuthorDetails(taskId) {
+  var mockUsersData = [{
+    'taskId': '1',
+    'taskAuthorAvatarImgSrc': '/spotfix/img/empty_avatar.png',
+    'taskAuthorName': 'Test All Issues Single Author Name'
+  }];
+  var defaultData = {
+    'taskId': null,
+    'taskAuthorAvatarImgSrc': '/spotfix/img/empty_avatar.png',
+    'taskAuthorName': 'Unknown Author'
+  };
+  var data = mockUsersData.find(function (element) {
+    return element.taskId === taskId;
+  });
+  return data === undefined ? defaultData : data;
+}
+function getIssuesCounterString() {
+  var mock = {
+    'totalTasks': 15,
+    'tasksOnPage': 1
+  };
+  return "(".concat(mock.tasksOnPage, "/").concat(mock.totalTasks, ")");
+}
+function saveUserData(tasks) {
+  // Save users avatars to local storage
+}
+
 /**
  * Widget class to create a task widget
  */
@@ -628,13 +691,13 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               templateName = 'concrete_issue';
               // todo: this is call duplicate!
               _context8.next = 19;
-              return this.getTaskDetails();
+              return getTaskDetails();
             case 19:
               taskDetails = _context8.sent;
               variables = {
                 issueTitle: taskDetails.issueTitle,
                 issueComments: taskDetails.issueComments,
-                issuesCounter: this.getIssuesCounterString()
+                issuesCounter: getIssuesCounterString()
               };
               return _context8.abrupt("break", 23);
             case 22:
@@ -660,11 +723,11 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
             case 35:
               issuesQuantityOnPage = 0;
               _context8.next = 38;
-              return this.getUserTasks();
+              return getUserTasks(this.params);
             case 38:
               tasks = _context8.sent;
-              //let tasks = await this.getAllTasks();
-              this.saveUserData(tasks);
+              //let tasks = await getAllTasks(this.params);
+              saveUserData(tasks);
               if (!(tasks.length > 0)) {
                 _context8.next = 65;
                 break;
@@ -688,7 +751,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                 break;
               }
               issuesQuantityOnPage++;
-              authorDetails = this.getTaskAuthorDetails(taskId);
+              authorDetails = getTaskAuthorDetails(taskId);
               _variables = {
                 taskTitle: taskTitle || '',
                 taskAuthorAvatarImgSrc: authorDetails.taskAuthorAvatarImgSrc,
@@ -729,13 +792,13 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               return _context8.abrupt("break", 100);
             case 68:
               _context8.next = 70;
-              return this.getTaskDetails();
+              return getTaskDetails();
             case 70:
               _taskDetails = _context8.sent;
               variables = {
                 issueTitle: _taskDetails.issueTitle,
                 issueComments: _taskDetails.issueComments,
-                issuesCounter: this.getIssuesCounterString()
+                issuesCounter: getIssuesCounterString()
               };
               issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
               if (!(_taskDetails.issueComments.length > 0)) {
@@ -1027,65 +1090,6 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
     }
 
     /**
-     * Get the user tasks
-     *
-     * @return {any|Promise<*|undefined>|{}}
-     */
-  }, {
-    key: "getUserTasks",
-    value: function getUserTasks() {
-      if (!localStorage.getItem('spotfix_session_id')) {
-        return {};
-      }
-      var projectToken = this.params.projectToken;
-      var sessionId = localStorage.getItem('spotfix_session_id');
-      var userId = localStorage.getItem('spotfix_user_id');
-      return getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId, userId);
-    }
-
-    /**
-     * Get the all tasks for project
-     *
-     * @return {any|Promise<*|undefined>|{}}
-     */
-  }, {
-    key: "getAllTasks",
-    value: function getAllTasks() {
-      if (!localStorage.getItem('spotfix_session_id')) {
-        return {};
-      }
-      var projectToken = this.params.projectToken;
-      var sessionId = localStorage.getItem('spotfix_session_id');
-      return getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
-    }
-  }, {
-    key: "getTaskDetails",
-    value: function getTaskDetails(taskId) {
-      //contract mock
-      return {
-        issueTitle: 'Test Title',
-        issueComments: [{
-          commentAuthorAvatarSrc: '/spotfix/img/empty_avatar.png',
-          commentAuthorName: 'testName 1',
-          commentBody: 'Test Body 1',
-          commentDate: 'August 31',
-          commentTime: '14:15'
-        }, {
-          commentAuthorAvatarSrc: '/spotfix/img/empty_avatar.png',
-          commentAuthorName: 'testName 2',
-          commentBody: 'Test Body 2',
-          commentDate: 'August 31',
-          commentTime: '14:16'
-        }]
-      };
-    }
-  }, {
-    key: "saveUserData",
-    value: function saveUserData(tasks) {
-      // Save users avatars to local storage
-    }
-
-    /**
      * Hide the widget
      */
   }, {
@@ -1132,36 +1136,6 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           this.closest('.doboard_task_widget-login').classList.toggle('active');
         });
       }
-    }
-  }, {
-    key: "getTaskAuthorDetails",
-    value: function getTaskAuthorDetails(taskId) {
-      var mockUsersData = [{
-        'taskId': '1',
-        'taskAuthorAvatarImgSrc': '/spotfix/img/empty_avatar.png',
-        'taskAuthorName': 'Test All Issues Single Author Name'
-      }];
-      var defaultData = {
-        'taskId': null,
-        'taskAuthorAvatarImgSrc': '/spotfix/img/empty_avatar.png',
-        'taskAuthorName': 'Unknown Author'
-      };
-      var data = mockUsersData.find(function (element) {
-        return element.taskId === taskId;
-      });
-
-      //probably use refilling vai API there instead of default val
-
-      return data === undefined ? defaultData : data;
-    }
-  }, {
-    key: "getIssuesCounterString",
-    value: function getIssuesCounterString() {
-      var mock = {
-        'totalTasks': 15,
-        'tasksOnPage': 1
-      };
-      return "(".concat(mock.tasksOnPage, "/").concat(mock.totalTasks, ")");
     }
   }]);
 }();

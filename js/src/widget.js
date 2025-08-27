@@ -197,11 +197,11 @@ class CleanTalkWidgetDoboard {
             case 'concrete_issue':
                 templateName = 'concrete_issue';
                 // todo: this is call duplicate!
-                const taskDetails = await this.getTaskDetails();
+                const taskDetails = await getTaskDetails();
                 variables = {
                     issueTitle: taskDetails.issueTitle,
                     issueComments: taskDetails.issueComments,
-                    issuesCounter: this.getIssuesCounterString()
+                    issuesCounter: getIssuesCounterString()
                 };
                 break;
             default:
@@ -223,9 +223,9 @@ class CleanTalkWidgetDoboard {
                 break;
             case 'all_issues':
                 let issuesQuantityOnPage = 0;
-                let tasks = await this.getUserTasks();
-                //let tasks = await this.getAllTasks();
-                this.saveUserData(tasks);
+                let tasks = await getUserTasks(this.params);
+                //let tasks = await getAllTasks(this.params);
+                saveUserData(tasks);
                 if (tasks.length > 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
                     for (let i = 0; i < tasks.length; i++) {
@@ -243,7 +243,7 @@ class CleanTalkWidgetDoboard {
 
                         if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
                             issuesQuantityOnPage++;
-                            const authorDetails= this.getTaskAuthorDetails(taskId);
+                            const authorDetails = getTaskAuthorDetails(taskId);
                             const variables = {
                                 taskTitle: taskTitle || '',
                                 taskAuthorAvatarImgSrc: authorDetails.taskAuthorAvatarImgSrc,
@@ -278,11 +278,11 @@ class CleanTalkWidgetDoboard {
                 break;
 
             case 'concrete_issue':
-                const taskDetails = await this.getTaskDetails();
+                const taskDetails = await getTaskDetails();
                 variables = {
                     issueTitle: taskDetails.issueTitle,
                     issueComments: taskDetails.issueComments,
-                    issuesCounter: this.getIssuesCounterString()
+                    issuesCounter: getIssuesCounterString()
                 };
                 const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
                 if ( taskDetails.issueComments.length > 0 ) {
@@ -449,66 +449,6 @@ class CleanTalkWidgetDoboard {
     }
 
     /**
-     * Get the user tasks
-     *
-     * @return {any|Promise<*|undefined>|{}}
-     */
-    getUserTasks() {
-        if (!localStorage.getItem('spotfix_session_id')) {
-            return {};
-        }
-
-        const projectToken = this.params.projectToken;
-        const sessionId = localStorage.getItem('spotfix_session_id');
-        const userId =  localStorage.getItem('spotfix_user_id');
-
-        return getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId, userId);
-    }
-
-    /**
-     * Get the all tasks for project
-     *
-     * @return {any|Promise<*|undefined>|{}}
-     */
-    getAllTasks() {
-        if (!localStorage.getItem('spotfix_session_id')) {
-            return {};
-        }
-
-        const projectToken = this.params.projectToken;
-        const sessionId = localStorage.getItem('spotfix_session_id');
-
-        return getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
-    }
-
-    getTaskDetails(taskId) {
-        //contract mock
-        return  {
-            issueTitle: 'Test Title',
-            issueComments: [
-                {
-                    commentAuthorAvatarSrc: '/spotfix/img/empty_avatar.png',
-                    commentAuthorName: 'testName 1',
-                    commentBody: 'Test Body 1',
-                    commentDate: 'August 31',
-                    commentTime: '14:15',
-                },
-                {
-                    commentAuthorAvatarSrc: '/spotfix/img/empty_avatar.png',
-                    commentAuthorName: 'testName 2',
-                    commentBody: 'Test Body 2',
-                    commentDate: 'August 31',
-                    commentTime: '14:16',
-                }
-            ],
-        };
-    }
-
-    saveUserData(tasks) {
-        // Save users avatars to local storage
-    }
-
-    /**
      * Hide the widget
      */
     hide() {
@@ -555,37 +495,5 @@ class CleanTalkWidgetDoboard {
                 this.closest('.doboard_task_widget-login').classList.toggle('active');
             });
         }
-    }
-
-    getTaskAuthorDetails(taskId) {
-        const mockUsersData =
-            [
-                {
-                    'taskId': '1',
-                    'taskAuthorAvatarImgSrc': '/spotfix/img/empty_avatar.png',
-                    'taskAuthorName': 'Test All Issues Single Author Name'
-                }
-            ]
-
-        const defaultData =
-            {
-                'taskId': null,
-                'taskAuthorAvatarImgSrc': '/spotfix/img/empty_avatar.png',
-                'taskAuthorName': 'Unknown Author'
-            };
-
-        const data = mockUsersData.find((element) => element.taskId === taskId);
-
-        //probably use refilling vai API there instead of default val
-
-        return data === undefined ? defaultData : data;
-    }
-
-    getIssuesCounterString() {
-        const mock = {
-            'totalTasks': 15,
-            'tasksOnPage': 1
-        }
-        return `(${mock.tasksOnPage}/${mock.totalTasks})`;
     }
 }

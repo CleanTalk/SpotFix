@@ -10,6 +10,7 @@ var gulp       = require('gulp'),
 function bundle_src_js() {
     return gulp.src([
             'js/src/api.js',
+            'js/src/handlers.js',
             'js/src/widget.js',
             'js/src/main.js'
         ])
@@ -39,7 +40,7 @@ gulp.task('compress-js', gulp.series(bundle_src_js, bundle_js, minify_js));
 
 gulp.task('watch-js', function() {
     gulp.watch(
-        ['js/src/api.js', 'js/src/widget.js', 'js/src/main.js'],
+        ['js/src/api.js', 'js/src/handlers.js', 'js/src/widget.js', 'js/src/main.js'],
         gulp.series('compress-js')
     );
 });
