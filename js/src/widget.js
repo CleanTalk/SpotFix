@@ -172,7 +172,7 @@ class CleanTalkWidgetDoboard {
      * Create widget element
      * @return {HTMLElement} widget element
      */
-    async createWidgetElement(type) {
+    async createWidgetElement(type, showOnlyCurrentPage = true) {
         const widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
         widgetContainer.className = 'doboard_task_widget';
         widgetContainer.innerHTML = '';
@@ -216,7 +216,8 @@ class CleanTalkWidgetDoboard {
                 break;
             case 'all_issues':
                 let issuesQuantityOnPage = 0;
-                let tasks = await this.getTasks();
+                let tasks = await this.getUserTasks();
+                //let tasks = await this.getAllTasks();
                 this.saveUserData(tasks);
                 if (tasks.length > 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
@@ -233,7 +234,7 @@ class CleanTalkWidgetDoboard {
                         const currentPageURL = taskData.pageURL;
                         const taskNodePath = taskData.nodePath;
 
-                        if (currentPageURL === window.location.href) {
+                        if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
                             issuesQuantityOnPage++;
                             const variables = {
                                 taskTitle: taskTitle || '',
@@ -338,9 +339,8 @@ class CleanTalkWidgetDoboard {
 
         const projectToken = this.params.projectToken;
         const sessionId = localStorage.getItem('spotfix_session_id');
-        const user_id =  localStorage.getItem('spotfix_user_id') ? localStorage.getItem('spotfix_user_id') : '';
 
-        const tasks = await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId, user_id);
+        const tasks = await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
         if ( taskCountElement ) {
             taskCountElement.innerText = tasks.length;
@@ -435,11 +435,11 @@ class CleanTalkWidgetDoboard {
     }
 
     /**
-     * Get the task
+     * Get the user tasks
      *
      * @return {any|Promise<*|undefined>|{}}
      */
-    getTasks() {
+    getUserTasks() {
         if (!localStorage.getItem('spotfix_session_id')) {
             return {};
         }
@@ -449,6 +449,22 @@ class CleanTalkWidgetDoboard {
         const userId =  localStorage.getItem('spotfix_user_id');
 
         return getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId, userId);
+    }
+
+    /**
+     * Get the all tasks for project
+     *
+     * @return {any|Promise<*|undefined>|{}}
+     */
+    getAllTasks() {
+        if (!localStorage.getItem('spotfix_session_id')) {
+            return {};
+        }
+
+        const projectToken = this.params.projectToken;
+        const sessionId = localStorage.getItem('spotfix_session_id');
+
+        return getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
     }
 
     getTaskDetails(taskId) {
