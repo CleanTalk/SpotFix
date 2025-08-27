@@ -45,7 +45,7 @@ function getTaskAuthorDetails(taskId) {
 		[
 			{
 				'taskId': '1',
-				'taskAuthorAvatarImgSrc': '/spotfix/img/empty_avatar.png',
+				'taskAuthorAvatarImgSrc': 'https://s3.eu-central-1.amazonaws.com/cleantalk-ctask-atts/accounts/1/avatars/081a1b65d20fe318/m.jpg',
 				'taskAuthorName': 'Test All Issues Single Author Name'
 			}
 		]
@@ -72,3 +72,47 @@ function getIssuesCounterString() {
 function saveUserData(tasks) {
 	// Save users avatars to local storage
 }
+
+function getTaskLastMessageDetails(taskId) {
+	const mockTasksData =
+		[
+			{
+				'taskId': '1',
+				'lastMessageTimestamp': Math.floor(Date.now() / 1000),  //todo MOCK!,
+				'lastMessageText': 'This is mocked last message', //todo MOCK!,
+			}
+		]
+
+	const defaultData =
+		{
+			'taskId': null,
+			'lastMessageTimestamp': null,
+			'lastMessageText': 'No messages yet',
+		};
+
+	let result = {
+		'lastMessageText': '',
+		'lastMessageTime': ''
+	}
+
+	let hours = '00';
+	let minutes = '00';
+
+	let resultData = mockTasksData.find((element) => element.taskId === taskId);
+
+	if (resultData === undefined) {
+		resultData = defaultData;
+	}
+
+	if (resultData.lastMessageTimestamp !== null) {
+		const dateFull = new Date(resultData.lastMessageTimestamp * 1000);
+		hours = dateFull.getHours().toString().padStart(2, '0');
+		minutes = dateFull.getMinutes().toString().padStart(2, '0');
+	}
+
+	result.lastMessageText = resultData.lastMessageText;
+	result.lastMessageTime = `${hours}:${minutes}`
+
+	return result;
+}
+

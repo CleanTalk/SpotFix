@@ -4,7 +4,16 @@
     </div>
     <div class="doboard_task_widget-description_container">
         <div class="doboard_task_widget-task_title">
-            <span>{{taskTitle}}</span>
+            <div class="doboard_task_widget-task_title-details">
+                <span class="doboard_task_widget-task_title-text">{{taskTitle}}</span>
+                <div class="doboard_task_widget-task_title_public_status_img">
+                    <img src="{{taskPublicStatusImgSrc}}" alt="" title="{{taskPublicStatusHint}}">
+                </div>
+            </div>
+            <div class="doboard_task_widget-task_title-last_update_time">{{taskLastUpdate}}</div>
+        </div>
+        <div class="doboard_task_widget-task_last_message">
+            <span>{{taskLastMessage}}</span>
         </div>
     </div>
 </div>
