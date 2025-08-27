@@ -66,7 +66,8 @@ var createTaskDoboard = /*#__PURE__*/function () {
             break;
           }
           return _context.abrupt("return", {
-            taskId: responseBody.data.task_id
+            taskId: responseBody.data.task_id,
+            isPublic: 1 //todo MOCK!
           });
         case 22:
           throw new Error('Unknown error occurred during creating task');
@@ -362,7 +363,7 @@ function getTaskDetails(params, taskId) {
   //return getTaskCommentsDoboard(taskId, params.sessionId, params.accountId, params.projectToken);
   //contract mock
   return {
-    issueTitle: 'Test Title',
+    issueTitle: 'Test Very Long Title Lorem Ipsum Bla Bla Bla',
     issueComments: [{
       commentAuthorAvatarSrc: '/spotfix/img/empty_avatar.png',
       commentAuthorName: 'testName 1',
@@ -381,7 +382,7 @@ function getTaskDetails(params, taskId) {
 function getTaskAuthorDetails(taskId) {
   var mockUsersData = [{
     'taskId': '1',
-    'taskAuthorAvatarImgSrc': '/spotfix/img/empty_avatar.png',
+    'taskAuthorAvatarImgSrc': 'https://s3.eu-central-1.amazonaws.com/cleantalk-ctask-atts/accounts/1/avatars/081a1b65d20fe318/m.jpg',
     'taskAuthorName': 'Test All Issues Single Author Name'
   }];
   var defaultData = {
@@ -403,6 +404,39 @@ function getIssuesCounterString() {
 }
 function saveUserData(tasks) {
   // Save users avatars to local storage
+}
+function getTaskLastMessageDetails(taskId) {
+  var mockTasksData = [{
+    'taskId': '1',
+    'lastMessageTimestamp': Math.floor(Date.now() / 1000),
+    //todo MOCK!,
+    'lastMessageText': 'This is mocked last message' //todo MOCK!,
+  }];
+  var defaultData = {
+    'taskId': null,
+    'lastMessageTimestamp': null,
+    'lastMessageText': 'No messages yet'
+  };
+  var result = {
+    'lastMessageText': '',
+    'lastMessageTime': ''
+  };
+  var hours = '00';
+  var minutes = '00';
+  var resultData = mockTasksData.find(function (element) {
+    return element.taskId === taskId;
+  });
+  if (resultData === undefined) {
+    resultData = defaultData;
+  }
+  if (resultData.lastMessageTimestamp !== null) {
+    var dateFull = new Date(resultData.lastMessageTimestamp * 1000);
+    hours = dateFull.getHours().toString().padStart(2, '0');
+    minutes = dateFull.getMinutes().toString().padStart(2, '0');
+  }
+  result.lastMessageText = resultData.lastMessageText;
+  result.lastMessageTime = "".concat(hours, ":").concat(minutes);
+  return result;
 }
 
 /**
@@ -605,11 +639,14 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                 }
                 return _context7.abrupt("return");
               case 58:
+                if (submitTaskResult.isPublic !== undefined) {
+                  _this.selectedData.isPublic = submitTaskResult.isPublic;
+                }
                 localStorage.setItem("spotfix_task_data_".concat(submitTaskResult.taskId), JSON.stringify(_this.selectedData));
                 _this.selectedData = {};
-                _context7.next = 62;
+                _context7.next = 63;
                 return _this.createWidgetElement('all_issues');
-              case 62:
+              case 63:
               case "end":
                 return _context7.stop();
             }
@@ -643,6 +680,9 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           taskData,
           currentPageURL,
           taskNodePath,
+          taskPublicStatusImgSrc,
+          taskPublicStatusHint,
+          lastMessageDetails,
           authorDetails,
           _variables,
           taskElement,
@@ -658,6 +698,8 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           _step,
           comment,
           commentData,
+          backToAllIssuesController,
+          widgetClass,
           _args8 = arguments;
         return _regeneratorRuntime().wrap(function _callee8$(_context8) {
           while (1) switch (_context8.prev = _context8.next) {
@@ -706,17 +748,17 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               widgetContainer.innerHTML = _context8.sent;
               document.body.appendChild(widgetContainer);
               _context8.t1 = type;
-              _context8.next = _context8.t1 === 'create_issue' ? 30 : _context8.t1 === 'wrap' ? 32 : _context8.t1 === 'all_issues' ? 35 : _context8.t1 === 'concrete_issue' ? 68 : 99;
+              _context8.next = _context8.t1 === 'create_issue' ? 30 : _context8.t1 === 'wrap' ? 32 : _context8.t1 === 'all_issues' ? 35 : _context8.t1 === 'concrete_issue' ? 72 : 103;
               break;
             case 30:
               this.bindCreateTaskEvents();
-              return _context8.abrupt("break", 100);
+              return _context8.abrupt("break", 104);
             case 32:
               this.getTaskCount();
               document.querySelector('.doboard_task_widget-wrap').addEventListener('click', function () {
                 _this2.createWidgetElement('all_issues');
               });
-              return _context8.abrupt("break", 100);
+              return _context8.abrupt("break", 104);
             case 35:
               issuesQuantityOnPage = 0;
               _context8.next = 38;
@@ -726,14 +768,14 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               //let tasks = await getAllTasks(this.params);
               saveUserData(tasks);
               if (!(tasks.length > 0)) {
-                _context8.next = 65;
+                _context8.next = 69;
                 break;
               }
               document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
               i = 0;
             case 43:
               if (!(i < tasks.length)) {
-                _context8.next = 64;
+                _context8.next = 68;
                 break;
               }
               elTask = tasks[i]; // Data from api
@@ -742,24 +784,41 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               taskDataString = localStorage.getItem("spotfix_task_data_".concat(taskId));
               taskData = taskDataString ? JSON.parse(taskDataString) : null;
               currentPageURL = taskData.pageURL;
-              taskNodePath = taskData.nodePath;
+              taskNodePath = taskData.nodePath; // Define publicity details
+              taskPublicStatusImgSrc = '';
+              taskPublicStatusHint = 'Task publicity is unknown';
+              if (taskData.isPublic !== undefined) {
+                if (taskData.isPublic) {
+                  taskPublicStatusImgSrc = '/spotfix/img/public.svg';
+                  taskPublicStatusHint = 'The task is public';
+                } else {
+                  taskPublicStatusImgSrc = '/spotfix/img/private.svg';
+                  taskPublicStatusHint = 'The task is private and visible only for registered DoBoard users';
+                }
+              }
               if (!(!showOnlyCurrentPage || currentPageURL === window.location.href)) {
-                _context8.next = 61;
+                _context8.next = 65;
                 break;
               }
               issuesQuantityOnPage++;
-              authorDetails = getTaskAuthorDetails(taskId);
+              //define last message and update time
+              lastMessageDetails = getTaskLastMessageDetails(taskId);
+              authorDetails = getTaskAuthorDetails('1'); // todo MOCK!
               _variables = {
                 taskTitle: taskTitle || '',
                 taskAuthorAvatarImgSrc: authorDetails.taskAuthorAvatarImgSrc,
                 taskAuthorName: authorDetails.taskAuthorName,
+                taskPublicStatusImgSrc: taskPublicStatusImgSrc,
+                taskPublicStatusHint: taskPublicStatusHint,
+                taskLastMessage: lastMessageDetails.lastMessageText,
+                taskLastUpdate: lastMessageDetails.lastMessageTime,
                 nodePath: taskNodePath,
                 taskId: taskId
               };
               _context8.t2 = document.querySelector(".doboard_task_widget-all_issues-container").innerHTML;
-              _context8.next = 58;
+              _context8.next = 62;
               return this.loadTemplate('list_issues', _variables);
-            case 58:
+            case 62:
               document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = _context8.t2 += _context8.sent;
               taskElement = taskAnalysis(taskData);
               if (taskElement) {
@@ -773,42 +832,43 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                   taskElement.innerHTML = beforeText + '<span class="doboard_task_widget-text_selection">' + selectedText + '</span>' + afterText;
                 }
               }
-            case 61:
+            case 65:
               i++;
               _context8.next = 43;
               break;
-            case 64:
+            case 68:
               document.querySelector('.doboard_task_widget-header span').innerText += ' (' + issuesQuantityOnPage + ')';
-            case 65:
+            case 69:
               if (tasks.length === 0 || issuesQuantityOnPage === 0) {
                 document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
               }
 
               // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
               this.bindIssuesClick();
-              return _context8.abrupt("break", 100);
-            case 68:
-              _context8.next = 70;
+              return _context8.abrupt("break", 104);
+            case 72:
+              _context8.next = 74;
               return getTaskDetails(this.params, this.currentActiveTaskId);
-            case 70:
+            case 74:
               _taskDetails = _context8.sent;
               variables = {
                 issueTitle: _taskDetails.issueTitle,
                 issueComments: _taskDetails.issueComments,
-                issuesCounter: getIssuesCounterString()
+                issuesCounter: getIssuesCounterString(),
+                chevronBackTitle: 'Back to all issues'
               };
               issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
               if (!(_taskDetails.issueComments.length > 0)) {
-                _context8.next = 97;
+                _context8.next = 101;
                 break;
               }
               issuesCommentsContainer.innerHTML = '';
               _iterator = _createForOfIteratorHelper(_taskDetails.issueComments);
-              _context8.prev = 76;
+              _context8.prev = 80;
               _iterator.s();
-            case 78:
+            case 82:
               if ((_step = _iterator.n()).done) {
-                _context8.next = 87;
+                _context8.next = 91;
                 break;
               }
               comment = _step.value;
@@ -822,43 +882,51 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                 issuesCounter: variables.issuesCounter
               };
               _context8.t3 = issuesCommentsContainer.innerHTML;
-              _context8.next = 84;
+              _context8.next = 88;
               return this.loadTemplate('concrete_issue_messages', commentData);
-            case 84:
+            case 88:
               issuesCommentsContainer.innerHTML = _context8.t3 += _context8.sent;
-            case 85:
-              _context8.next = 78;
-              break;
-            case 87:
-              _context8.next = 92;
-              break;
             case 89:
-              _context8.prev = 89;
-              _context8.t4 = _context8["catch"](76);
-              _iterator.e(_context8.t4);
-            case 92:
-              _context8.prev = 92;
-              _iterator.f();
-              return _context8.finish(92);
-            case 95:
-              _context8.next = 98;
+              _context8.next = 82;
               break;
-            case 97:
-              issuesCommentsContainer.innerHTML = 'No comments';
-            case 98:
-              return _context8.abrupt("break", 100);
+            case 91:
+              _context8.next = 96;
+              break;
+            case 93:
+              _context8.prev = 93;
+              _context8.t4 = _context8["catch"](80);
+              _iterator.e(_context8.t4);
+            case 96:
+              _context8.prev = 96;
+              _iterator.f();
+              return _context8.finish(96);
             case 99:
-              return _context8.abrupt("break", 100);
-            case 100:
+              _context8.next = 102;
+              break;
+            case 101:
+              issuesCommentsContainer.innerHTML = 'No comments';
+            case 102:
+              return _context8.abrupt("break", 104);
+            case 103:
+              return _context8.abrupt("break", 104);
+            case 104:
+              backToAllIssuesController = document.querySelector('.doboard_task_widget_return_to_all');
+              if (backToAllIssuesController) {
+                widgetClass = this;
+                backToAllIssuesController.addEventListener('click', function (e) {
+                  var self = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : widgetClass;
+                  self.createWidgetElement('all_issues');
+                });
+              }
               ((_document$querySelect = document.querySelector('.doboard_task_widget-close_btn')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('click', function () {
                 _this2.hide();
               })) || '';
               return _context8.abrupt("return", widgetContainer);
-            case 102:
+            case 108:
             case "end":
               return _context8.stop();
           }
-        }, _callee8, this, [[76, 89, 92, 95]]);
+        }, _callee8, this, [[80, 93, 96, 99]]);
       }));
       function createWidgetElement(_x17) {
         return _createWidgetElement.apply(this, arguments);

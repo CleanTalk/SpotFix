@@ -28,7 +28,8 @@ const createTaskDoboard = async (sessionId, taskDetails) => {
     }
     if ( responseBody.data.operation_status === 'SUCCESS' ) {
         return {
-            taskId: responseBody.data.task_id
+            taskId: responseBody.data.task_id,
+            isPublic: 1, //todo MOCK!
         }
     }
     throw new Error('Unknown error occurred during creating task');

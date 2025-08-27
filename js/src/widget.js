@@ -161,6 +161,10 @@ class CleanTalkWidgetDoboard {
                     return;
                 }
 
+                if ( submitTaskResult.isPublic !== undefined ) {
+                    this.selectedData.isPublic = submitTaskResult.isPublic
+                }
+
                 localStorage.setItem(`spotfix_task_data_${submitTaskResult.taskId}`, JSON.stringify(this.selectedData));
                 this.selectedData = {};
                 await this.createWidgetElement('all_issues');
@@ -241,13 +245,32 @@ class CleanTalkWidgetDoboard {
                         const currentPageURL = taskData.pageURL;
                         const taskNodePath = taskData.nodePath;
 
+                        // Define publicity details
+                        let taskPublicStatusImgSrc = '';
+                        let taskPublicStatusHint = 'Task publicity is unknown'
+                        if (taskData.isPublic !== undefined) {
+                            if (taskData.isPublic) {
+                                taskPublicStatusImgSrc = '/spotfix/img/public.svg';
+                                taskPublicStatusHint = 'The task is public';
+                            } else {
+                                taskPublicStatusImgSrc = '/spotfix/img/private.svg';
+                                taskPublicStatusHint = 'The task is private and visible only for registered DoBoard users';
+                            }
+                        }
+
                         if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
                             issuesQuantityOnPage++;
-                            const authorDetails = getTaskAuthorDetails(taskId);
+                            //define last message and update time
+                            let lastMessageDetails = getTaskLastMessageDetails(taskId)
+                            const authorDetails = getTaskAuthorDetails('1'); // todo MOCK!
                             const variables = {
                                 taskTitle: taskTitle || '',
                                 taskAuthorAvatarImgSrc: authorDetails.taskAuthorAvatarImgSrc,
                                 taskAuthorName: authorDetails.taskAuthorName,
+                                taskPublicStatusImgSrc: taskPublicStatusImgSrc,
+                                taskPublicStatusHint: taskPublicStatusHint,
+                                taskLastMessage: lastMessageDetails.lastMessageText,
+                                taskLastUpdate: lastMessageDetails.lastMessageTime,
                                 nodePath: taskNodePath,
                                 taskId: taskId
                             };
@@ -282,7 +305,8 @@ class CleanTalkWidgetDoboard {
                 variables = {
                     issueTitle: taskDetails.issueTitle,
                     issueComments: taskDetails.issueComments,
-                    issuesCounter: getIssuesCounterString()
+                    issuesCounter: getIssuesCounterString(),
+                    chevronBackTitle: 'Back to all issues',
                 };
                 const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
                 if ( taskDetails.issueComments.length > 0 ) {
@@ -306,6 +330,14 @@ class CleanTalkWidgetDoboard {
 
             default:
                 break;
+        }
+
+        const backToAllIssuesController = document.querySelector('.doboard_task_widget_return_to_all');
+        if ( backToAllIssuesController ) {
+            const widgetClass = this;
+            backToAllIssuesController.addEventListener('click', function(e, self = widgetClass) {
+                self.createWidgetElement('all_issues');
+            });
         }
 
         document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', () => {
