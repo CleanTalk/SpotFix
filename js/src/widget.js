@@ -197,7 +197,7 @@ class CleanTalkWidgetDoboard {
             case 'concrete_issue':
                 templateName = 'concrete_issue';
                 // todo: this is call duplicate!
-                const taskDetails = await getTaskDetails();
+                const taskDetails = await getTaskDetails(this.params, this.currentActiveTaskId);
                 variables = {
                     issueTitle: taskDetails.issueTitle,
                     issueComments: taskDetails.issueComments,
@@ -278,7 +278,7 @@ class CleanTalkWidgetDoboard {
                 break;
 
             case 'concrete_issue':
-                const taskDetails = await getTaskDetails();
+                const taskDetails = await getTaskDetails(this.params, this.currentActiveTaskId);
                 variables = {
                     issueTitle: taskDetails.issueTitle,
                     issueComments: taskDetails.issueComments,

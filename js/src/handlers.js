@@ -17,7 +17,9 @@ function getAllTasks(params) {
 	return getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
 }
 
-function getTaskDetails(taskId) {
+function getTaskDetails(params, taskId) {
+	const sessionId = localStorage.getItem('spotfix_session_id');
+	//return getTaskCommentsDoboard(taskId, params.sessionId, params.accountId, params.projectToken);
 	//contract mock
 	return  {
 		issueTitle: 'Test Title',

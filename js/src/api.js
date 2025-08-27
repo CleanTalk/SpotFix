@@ -142,16 +142,21 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
 }
 
 
-const getLogsDoboard = async (taskId, sessionId, accountId, start = 0, status = 'IMPORTANT') => {
-    const formData = new FormData();
+const getTaskCommentsDoboard = async (taskId, sessionId, accountId, projectToken, status = 'ACTIVE') => {
+    /*const formData = new FormData();
     formData.append('session_id', sessionId);
     formData.append('task_id', taskId);
-    formData.append('start', start);
     formData.append('status', status);
+    formData.append('project_token', projectToken);*/
 
-    const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/logs_get', {
-        method: 'POST',
-        body: formData,
+    const response = await fetch(
+        DOBOARD_API_URL + '/' + accountId + '/comment_get' +
+        '?session_id=' + sessionId +
+        '&status=' + status +
+        '&task_id=' + taskId +
+        '&project_token=' + projectToken,
+    {
+        method: 'GET',
     });
     console.log(response);
     if ( ! response.ok ) {
@@ -167,10 +172,15 @@ const getLogsDoboard = async (taskId, sessionId, accountId, start = 0, status = 
         throw new Error(responseBody.data.operation_message);
     }
     if ( responseBody.data.operation_status === 'SUCCESS' ) {
-        return responseBody.data.logs.map(log => ({
-            logId: log.log_id,
-            logMessage: log.message,
-        }))
+        return responseBody.data.comments.map(comment => ({
+            commentId: comment.comment_id,
+            userId: comment.user_id,
+            comment: comment.comment,
+            commentText: comment.comment_text,
+            created: comment.created,
+            status: comment.status,
+
+        }));
     }
-    throw new Error('Unknown error occurred during getting logs');
+    throw new Error('Unknown error occurred during getting comments');
 };

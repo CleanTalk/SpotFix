@@ -275,73 +275,68 @@ var getTasksDoboard = /*#__PURE__*/function () {
     return _ref4.apply(this, arguments);
   };
 }();
-var getLogsDoboard = /*#__PURE__*/function () {
-  var _ref5 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(taskId, sessionId, accountId) {
-    var start,
-      status,
-      formData,
+var getTaskCommentsDoboard = /*#__PURE__*/function () {
+  var _ref5 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(taskId, sessionId, accountId, projectToken) {
+    var status,
       response,
       responseBody,
       _args5 = arguments;
     return _regeneratorRuntime().wrap(function _callee5$(_context5) {
       while (1) switch (_context5.prev = _context5.next) {
         case 0:
-          start = _args5.length > 3 && _args5[3] !== undefined ? _args5[3] : 0;
-          status = _args5.length > 4 && _args5[4] !== undefined ? _args5[4] : 'IMPORTANT';
-          formData = new FormData();
-          formData.append('session_id', sessionId);
-          formData.append('task_id', taskId);
-          formData.append('start', start);
-          formData.append('status', status);
-          _context5.next = 9;
-          return fetch(DOBOARD_API_URL + '/' + accountId + '/logs_get', {
-            method: 'POST',
-            body: formData
+          status = _args5.length > 4 && _args5[4] !== undefined ? _args5[4] : 'ACTIVE';
+          _context5.next = 3;
+          return fetch(DOBOARD_API_URL + '/' + accountId + '/comment_get' + '?session_id=' + sessionId + '&status=' + status + '&task_id=' + taskId + '&project_token=' + projectToken, {
+            method: 'GET'
           });
-        case 9:
+        case 3:
           response = _context5.sent;
           console.log(response);
           if (response.ok) {
-            _context5.next = 13;
+            _context5.next = 7;
             break;
           }
           throw new Error('Getting logs failed');
-        case 13:
-          _context5.next = 15;
+        case 7:
+          _context5.next = 9;
           return response.json();
-        case 15:
+        case 9:
           responseBody = _context5.sent;
           if (!(!responseBody || !responseBody.data)) {
-            _context5.next = 18;
+            _context5.next = 12;
             break;
           }
           throw new Error('Invalid response from server');
-        case 18:
+        case 12:
           if (!(responseBody.data.operation_status === 'FAILED')) {
-            _context5.next = 20;
+            _context5.next = 14;
             break;
           }
           throw new Error(responseBody.data.operation_message);
-        case 20:
+        case 14:
           if (!(responseBody.data.operation_status === 'SUCCESS')) {
-            _context5.next = 22;
+            _context5.next = 16;
             break;
           }
-          return _context5.abrupt("return", responseBody.data.logs.map(function (log) {
+          return _context5.abrupt("return", responseBody.data.comments.map(function (comment) {
             return {
-              logId: log.log_id,
-              logMessage: log.message
+              commentId: comment.comment_id,
+              userId: comment.user_id,
+              comment: comment.comment,
+              commentText: comment.comment_text,
+              created: comment.created,
+              status: comment.status
             };
           }));
-        case 22:
-          throw new Error('Unknown error occurred during getting logs');
-        case 23:
+        case 16:
+          throw new Error('Unknown error occurred during getting comments');
+        case 17:
         case "end":
           return _context5.stop();
       }
     }, _callee5);
   }));
-  return function getLogsDoboard(_x12, _x13, _x14) {
+  return function getTaskCommentsDoboard(_x12, _x13, _x14, _x15) {
     return _ref5.apply(this, arguments);
   };
 }();
@@ -362,7 +357,9 @@ function getAllTasks(params) {
   var sessionId = localStorage.getItem('spotfix_session_id');
   return getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
 }
-function getTaskDetails(taskId) {
+function getTaskDetails(params, taskId) {
+  var sessionId = localStorage.getItem('spotfix_session_id');
+  //return getTaskCommentsDoboard(taskId, params.sessionId, params.accountId, params.projectToken);
   //contract mock
   return {
     issueTitle: 'Test Title',
@@ -449,7 +446,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           }
         }, _callee6, this);
       }));
-      function init(_x15) {
+      function init(_x16) {
         return _init.apply(this, arguments);
       }
       return init;
@@ -691,7 +688,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               templateName = 'concrete_issue';
               // todo: this is call duplicate!
               _context8.next = 19;
-              return getTaskDetails();
+              return getTaskDetails(this.params, this.currentActiveTaskId);
             case 19:
               taskDetails = _context8.sent;
               variables = {
@@ -792,7 +789,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               return _context8.abrupt("break", 100);
             case 68:
               _context8.next = 70;
-              return getTaskDetails();
+              return getTaskDetails(this.params, this.currentActiveTaskId);
             case 70:
               _taskDetails = _context8.sent;
               variables = {
@@ -863,7 +860,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           }
         }, _callee8, this, [[76, 89, 92, 95]]);
       }));
-      function createWidgetElement(_x16) {
+      function createWidgetElement(_x17) {
         return _createWidgetElement.apply(this, arguments);
       }
       return createWidgetElement;
@@ -939,7 +936,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           }
         }, _callee0);
       }));
-      function loadTemplate(_x17) {
+      function loadTemplate(_x18) {
         return _loadTemplate.apply(this, arguments);
       }
       return loadTemplate;
@@ -1030,7 +1027,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           }
         }, _callee10, this);
       }));
-      function submitTask(_x18) {
+      function submitTask(_x19) {
         return _submitTask.apply(this, arguments);
       }
       return submitTask;
