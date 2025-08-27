@@ -494,7 +494,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
       var _createWidgetElement = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee7(type) {
         var _this2 = this,
           _document$querySelect;
-        var widgetContainer, templateName, variables, taskDetails, issuesQuantityOnPage, tasks, i, elTask, taskId, taskTitle, taskDataString, taskData, currentPageURL, taskNodePath, authorDetails, _variables, taskElement, text, start, end, selectedText, beforeText, afterText, _taskDetails, issuesCommentsContainer, _iterator, _step, comment, commentData, _t, _t2, _t3, _t4, _t5;
+        var widgetContainer, templateName, variables, taskDetails, issuesQuantityOnPage, tasks, i, elTask, taskId, taskTitle, taskDataString, taskData, currentPageURL, taskNodePath, authorDetails, _variables, taskElement, text, start, end, selectedText, beforeText, afterText, _taskDetails, issuesCommentsContainer, _iterator, _step, comment, commentData, backToAllIssuesController, widgetClass, _t, _t2, _t3, _t4, _t5;
         return _regenerator().w(function (_context7) {
           while (1) switch (_context7.p = _context7.n) {
             case 0:
@@ -684,6 +684,14 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
             case 30:
               return _context7.a(3, 31);
             case 31:
+              backToAllIssuesController = document.querySelector('.doboard_task_widget_return_to_all');
+              if (backToAllIssuesController) {
+                widgetClass = this;
+                backToAllIssuesController.addEventListener('click', function (e) {
+                  var self = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : widgetClass;
+                  self.createWidgetElement('all_issues');
+                });
+              }
               ((_document$querySelect = document.querySelector('.doboard_task_widget-close_btn')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('click', function () {
                 _this2.hide();
               })) || '';

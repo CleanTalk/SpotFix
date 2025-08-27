@@ -307,6 +307,14 @@ class CleanTalkWidgetDoboard {
                 break;
         }
 
+        const backToAllIssuesController = document.querySelector('.doboard_task_widget_return_to_all');
+        if ( backToAllIssuesController ) {
+            const widgetClass = this;
+            backToAllIssuesController.addEventListener('click', function(e, self = widgetClass) {
+                self.createWidgetElement('all_issues');
+            });
+        }
+
         document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', () => {
             this.hide();
         }) || '';
