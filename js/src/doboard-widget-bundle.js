@@ -362,7 +362,7 @@ function getAllTasks(params) {
 function getTaskDetails(taskId) {
   //contract mock
   return {
-    issueTitle: 'Test Title',
+    issueTitle: 'Test Very Long Title Lorem Ipsum Bla Bla Bla',
     issueComments: [{
       commentAuthorAvatarSrc: '/spotfix/img/empty_avatar.png',
       commentAuthorName: 'testName 1',
@@ -787,7 +787,6 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               taskData = taskDataString ? JSON.parse(taskDataString) : null;
               currentPageURL = taskData.pageURL;
               taskNodePath = taskData.nodePath; // Define publicity details
-              console.table('taskData', taskData);
               taskPublicStatusImgSrc = '';
               taskPublicStatusHint = 'Task publicity is unknown';
               if (taskData.isPublic !== undefined) {
@@ -806,8 +805,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               issuesQuantityOnPage++;
               //define last message and update time
               lastMessageDetails = getTaskLastMessageDetails(taskId);
-              console.table('lastMessageDetails', lastMessageDetails);
-              authorDetails = getTaskAuthorDetails('1');
+              authorDetails = getTaskAuthorDetails('1'); // todo MOCK!
               _variables = {
                 taskTitle: taskTitle || '',
                 taskAuthorAvatarImgSrc: authorDetails.taskAuthorAvatarImgSrc,
@@ -858,7 +856,8 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               variables = {
                 issueTitle: _taskDetails.issueTitle,
                 issueComments: _taskDetails.issueComments,
-                issuesCounter: getIssuesCounterString()
+                issuesCounter: getIssuesCounterString(),
+                chevronBackTitle: 'Back to all issues'
               };
               issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
               if (!(_taskDetails.issueComments.length > 0)) {

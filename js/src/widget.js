@@ -305,7 +305,8 @@ class CleanTalkWidgetDoboard {
                 variables = {
                     issueTitle: taskDetails.issueTitle,
                     issueComments: taskDetails.issueComments,
-                    issuesCounter: getIssuesCounterString()
+                    issuesCounter: getIssuesCounterString(),
+                    chevronBackTitle: 'Back to all issues',
                 };
                 const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
                 if ( taskDetails.issueComments.length > 0 ) {

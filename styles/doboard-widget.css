@@ -236,6 +236,13 @@
     color: #FFFFFF;
 }
 
+.doboard_task_widget-issue-title {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 
 /*** `LIST ISSUES` INTERFACE ***/
 
@@ -319,6 +326,14 @@
 
 .doboard_task_widget-task_last_message {
 
+}
+
+.doboard_task_widget_return_to_all {
+    display: flex;
+    gap: 8px;
+    flex-direction: row;
+    align-content: center;
+    flex-wrap: wrap;
 }
 
 .doboard_task_widget-task_title-last_update_time {

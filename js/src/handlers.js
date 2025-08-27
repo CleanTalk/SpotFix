@@ -20,7 +20,7 @@ function getAllTasks(params) {
 function getTaskDetails(taskId) {
 	//contract mock
 	return  {
-		issueTitle: 'Test Title',
+		issueTitle: 'Test Very Long Title Lorem Ipsum Bla Bla Bla',
 		issueComments: [
 			{
 				commentAuthorAvatarSrc: '/spotfix/img/empty_avatar.png',
