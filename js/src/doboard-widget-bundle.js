@@ -572,6 +572,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           widgetContainer,
           templateName,
           variables,
+          taskDetails,
           issuesQuantityOnPage,
           tasks,
           i,
@@ -582,6 +583,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           taskData,
           currentPageURL,
           taskNodePath,
+          authorDetails,
           _variables,
           taskElement,
           text,
@@ -590,7 +592,8 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           selectedText,
           beforeText,
           afterText,
-          taskDetails,
+          _taskDetails,
+          issuesCommentsContainer,
           _iterator,
           _step,
           comment,
@@ -606,7 +609,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               templateName = '';
               variables = {};
               _context8.t0 = type;
-              _context8.next = _context8.t0 === 'create_issue' ? 9 : _context8.t0 === 'wrap' ? 12 : _context8.t0 === 'all_issues' ? 14 : _context8.t0 === 'concrete_issue' ? 16 : 18;
+              _context8.next = _context8.t0 === 'create_issue' ? 9 : _context8.t0 === 'wrap' ? 12 : _context8.t0 === 'all_issues' ? 14 : _context8.t0 === 'concrete_issue' ? 16 : 22;
               break;
             case 9:
               templateName = 'create_issue';
@@ -614,53 +617,63 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                 selectedText: this.selectedText,
                 currentDomain: document.location.hostname || ''
               };
-              return _context8.abrupt("break", 19);
+              return _context8.abrupt("break", 23);
             case 12:
               templateName = 'wrap';
-              return _context8.abrupt("break", 19);
+              return _context8.abrupt("break", 23);
             case 14:
               templateName = 'all_issues';
-              return _context8.abrupt("break", 19);
+              return _context8.abrupt("break", 23);
             case 16:
               templateName = 'concrete_issue';
-              return _context8.abrupt("break", 19);
-            case 18:
-              return _context8.abrupt("break", 19);
+              // todo: this is call duplicate!
+              _context8.next = 19;
+              return this.getTaskDetails();
             case 19:
-              _context8.next = 21;
+              taskDetails = _context8.sent;
+              variables = {
+                issueTitle: taskDetails.issueTitle,
+                issueComments: taskDetails.issueComments,
+                issuesCounter: this.getIssuesCounterString()
+              };
+              return _context8.abrupt("break", 23);
+            case 22:
+              return _context8.abrupt("break", 23);
+            case 23:
+              _context8.next = 25;
               return this.loadTemplate(templateName, variables);
-            case 21:
+            case 25:
               widgetContainer.innerHTML = _context8.sent;
               document.body.appendChild(widgetContainer);
               _context8.t1 = type;
-              _context8.next = _context8.t1 === 'create_issue' ? 26 : _context8.t1 === 'wrap' ? 28 : _context8.t1 === 'all_issues' ? 31 : _context8.t1 === 'concrete_issue' ? 63 : 93;
+              _context8.next = _context8.t1 === 'create_issue' ? 30 : _context8.t1 === 'wrap' ? 32 : _context8.t1 === 'all_issues' ? 35 : _context8.t1 === 'concrete_issue' ? 68 : 99;
               break;
-            case 26:
+            case 30:
               this.bindCreateTaskEvents();
-              return _context8.abrupt("break", 94);
-            case 28:
+              return _context8.abrupt("break", 100);
+            case 32:
               this.getTaskCount();
               document.querySelector('.doboard_task_widget-wrap').addEventListener('click', function () {
                 _this2.createWidgetElement('all_issues');
               });
-              return _context8.abrupt("break", 94);
-            case 31:
+              return _context8.abrupt("break", 100);
+            case 35:
               issuesQuantityOnPage = 0;
-              _context8.next = 34;
+              _context8.next = 38;
               return this.getUserTasks();
-            case 34:
+            case 38:
               tasks = _context8.sent;
               //let tasks = await this.getAllTasks();
               this.saveUserData(tasks);
               if (!(tasks.length > 0)) {
-                _context8.next = 60;
+                _context8.next = 65;
                 break;
               }
               document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
               i = 0;
-            case 39:
+            case 43:
               if (!(i < tasks.length)) {
-                _context8.next = 59;
+                _context8.next = 64;
                 break;
               }
               elTask = tasks[i]; // Data from api
@@ -671,20 +684,22 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               currentPageURL = taskData.pageURL;
               taskNodePath = taskData.nodePath;
               if (!(!showOnlyCurrentPage || currentPageURL === window.location.href)) {
-                _context8.next = 56;
+                _context8.next = 61;
                 break;
               }
               issuesQuantityOnPage++;
+              authorDetails = this.getTaskAuthorDetails(taskId);
               _variables = {
                 taskTitle: taskTitle || '',
-                avatarImg: '/spotfix/img/empty_avatar.png',
+                taskAuthorAvatarImgSrc: authorDetails.taskAuthorAvatarImgSrc,
+                taskAuthorName: authorDetails.taskAuthorName,
                 nodePath: taskNodePath,
                 taskId: taskId
               };
               _context8.t2 = document.querySelector(".doboard_task_widget-all_issues-container").innerHTML;
-              _context8.next = 53;
+              _context8.next = 58;
               return this.loadTemplate('list_issues', _variables);
-            case 53:
+            case 58:
               document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = _context8.t2 += _context8.sent;
               taskElement = taskAnalysis(taskData);
               if (taskElement) {
@@ -698,87 +713,92 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                   taskElement.innerHTML = beforeText + '<span class="doboard_task_widget-text_selection">' + selectedText + '</span>' + afterText;
                 }
               }
-            case 56:
+            case 61:
               i++;
-              _context8.next = 39;
+              _context8.next = 43;
               break;
-            case 59:
+            case 64:
               document.querySelector('.doboard_task_widget-header span').innerText += ' (' + issuesQuantityOnPage + ')';
-            case 60:
+            case 65:
               if (tasks.length === 0 || issuesQuantityOnPage === 0) {
                 document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
               }
 
               // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
               this.bindIssuesClick();
-              return _context8.abrupt("break", 94);
-            case 63:
-              _context8.next = 65;
+              return _context8.abrupt("break", 100);
+            case 68:
+              _context8.next = 70;
               return this.getTaskDetails();
-            case 65:
-              taskDetails = _context8.sent;
+            case 70:
+              _taskDetails = _context8.sent;
               variables = {
-                issueTitle: taskDetails.issueTitle,
-                issueComments: taskDetails.issueComments
+                issueTitle: _taskDetails.issueTitle,
+                issueComments: _taskDetails.issueComments,
+                issuesCounter: this.getIssuesCounterString()
               };
-              if (!(taskDetails.issueComments.length > 0)) {
-                _context8.next = 91;
+              issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
+              if (!(_taskDetails.issueComments.length > 0)) {
+                _context8.next = 97;
                 break;
               }
-              document.querySelector('.doboard_task_widget-concrete_issues-container').innerHTML = '';
-              _iterator = _createForOfIteratorHelper(taskDetails.issueComments);
-              _context8.prev = 70;
+              issuesCommentsContainer.innerHTML = '';
+              _iterator = _createForOfIteratorHelper(_taskDetails.issueComments);
+              _context8.prev = 76;
               _iterator.s();
-            case 72:
+            case 78:
               if ((_step = _iterator.n()).done) {
-                _context8.next = 81;
+                _context8.next = 87;
                 break;
               }
               comment = _step.value;
               commentData = {
-                author: comment.commentAuthor,
+                commentAuthorAvatarSrc: comment.commentAuthorAvatarSrc,
+                commentAuthorName: comment.commentAuthorName,
                 commentBody: comment.commentBody,
-                date: comment.commentDate,
-                time: comment.commentTime
+                commentDate: comment.commentDate,
+                commentTime: comment.commentTime,
+                issueTitle: variables.issueTitle,
+                issuesCounter: variables.issuesCounter
               };
-              _context8.t3 = document.querySelector('.doboard_task_widget-concrete_issues-container').innerHTML;
-              _context8.next = 78;
+              _context8.t3 = issuesCommentsContainer.innerHTML;
+              _context8.next = 84;
               return this.loadTemplate('concrete_issue_messages', commentData);
-            case 78:
-              document.querySelector('.doboard_task_widget-concrete_issues-container').innerHTML = _context8.t3 += _context8.sent;
-            case 79:
-              _context8.next = 72;
+            case 84:
+              issuesCommentsContainer.innerHTML = _context8.t3 += _context8.sent;
+            case 85:
+              _context8.next = 78;
               break;
-            case 81:
-              _context8.next = 86;
-              break;
-            case 83:
-              _context8.prev = 83;
-              _context8.t4 = _context8["catch"](70);
-              _iterator.e(_context8.t4);
-            case 86:
-              _context8.prev = 86;
-              _iterator.f();
-              return _context8.finish(86);
-            case 89:
+            case 87:
               _context8.next = 92;
               break;
-            case 91:
-              document.querySelector('.doboard_task_widget-concrete_issues-container').innerHTML = 'No comments';
+            case 89:
+              _context8.prev = 89;
+              _context8.t4 = _context8["catch"](76);
+              _iterator.e(_context8.t4);
             case 92:
-              return _context8.abrupt("break", 94);
-            case 93:
-              return _context8.abrupt("break", 94);
-            case 94:
+              _context8.prev = 92;
+              _iterator.f();
+              return _context8.finish(92);
+            case 95:
+              _context8.next = 98;
+              break;
+            case 97:
+              issuesCommentsContainer.innerHTML = 'No comments';
+            case 98:
+              return _context8.abrupt("break", 100);
+            case 99:
+              return _context8.abrupt("break", 100);
+            case 100:
               ((_document$querySelect = document.querySelector('.doboard_task_widget-close_btn')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('click', function () {
                 _this2.hide();
               })) || '';
               return _context8.abrupt("return", widgetContainer);
-            case 96:
+            case 102:
             case "end":
               return _context8.stop();
           }
-        }, _callee8, this, [[70, 83, 86, 89]]);
+        }, _callee8, this, [[76, 89, 92, 95]]);
       }));
       function createWidgetElement(_x16) {
         return _createWidgetElement.apply(this, arguments);
@@ -1041,15 +1061,18 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
   }, {
     key: "getTaskDetails",
     value: function getTaskDetails(taskId) {
+      //contract mock
       return {
         issueTitle: 'Test Title',
         issueComments: [{
-          commentAuthor: '/spotfix/img/empty_avatar.png',
+          commentAuthorAvatarSrc: '/spotfix/img/empty_avatar.png',
+          commentAuthorName: 'testName 1',
           commentBody: 'Test Body 1',
           commentDate: 'August 31',
           commentTime: '14:15'
         }, {
-          commentAuthor: '/spotfix/img/empty_avatar.png',
+          commentAuthorAvatarSrc: '/spotfix/img/empty_avatar.png',
+          commentAuthorName: 'testName 2',
           commentBody: 'Test Body 2',
           commentDate: 'August 31',
           commentTime: '14:16'
@@ -1109,6 +1132,36 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           this.closest('.doboard_task_widget-login').classList.toggle('active');
         });
       }
+    }
+  }, {
+    key: "getTaskAuthorDetails",
+    value: function getTaskAuthorDetails(taskId) {
+      var mockUsersData = [{
+        'taskId': '1',
+        'taskAuthorAvatarImgSrc': '/spotfix/img/empty_avatar.png',
+        'taskAuthorName': 'Test All Issues Single Author Name'
+      }];
+      var defaultData = {
+        'taskId': null,
+        'taskAuthorAvatarImgSrc': '/spotfix/img/empty_avatar.png',
+        'taskAuthorName': 'Unknown Author'
+      };
+      var data = mockUsersData.find(function (element) {
+        return element.taskId === taskId;
+      });
+
+      //probably use refilling vai API there instead of default val
+
+      return data === undefined ? defaultData : data;
+    }
+  }, {
+    key: "getIssuesCounterString",
+    value: function getIssuesCounterString() {
+      var mock = {
+        'totalTasks': 15,
+        'tasksOnPage': 1
+      };
+      return "(".concat(mock.tasksOnPage, "/").concat(mock.totalTasks, ")");
     }
   }]);
 }();
