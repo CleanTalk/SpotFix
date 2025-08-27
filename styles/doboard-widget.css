@@ -126,6 +126,7 @@
     height: 40px;
     background: #FFFFFF;
     color: #000000;
+    max-width: -webkit-fill-available;
 }
 
 .doboard_task_widget-field:focus {

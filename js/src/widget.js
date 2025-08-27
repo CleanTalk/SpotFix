@@ -196,6 +196,13 @@ class CleanTalkWidgetDoboard {
                 break;
             case 'concrete_issue':
                 templateName = 'concrete_issue';
+                // todo: this is call duplicate!
+                const taskDetails = await this.getTaskDetails();
+                variables = {
+                    issueTitle: taskDetails.issueTitle,
+                    issueComments: taskDetails.issueComments,
+                    issuesCounter: this.getIssuesCounterString()
+                };
                 break;
             default:
                 break;
@@ -235,9 +242,11 @@ class CleanTalkWidgetDoboard {
 
                         if (currentPageURL === window.location.href) {
                             issuesQuantityOnPage++;
+                            const authorDetails= this.getTaskAuthorDetails(taskId);
                             const variables = {
                                 taskTitle: taskTitle || '',
-                                avatarImg: '/spotfix/img/empty_avatar.png',
+                                taskAuthorAvatarImgSrc: authorDetails.taskAuthorAvatarImgSrc,
+                                taskAuthorName: authorDetails.taskAuthorName,
                                 nodePath: taskNodePath,
                                 taskId: taskId
                             };
@@ -272,20 +281,25 @@ class CleanTalkWidgetDoboard {
                 variables = {
                     issueTitle: taskDetails.issueTitle,
                     issueComments: taskDetails.issueComments,
+                    issuesCounter: this.getIssuesCounterString()
                 };
+                const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
                 if ( taskDetails.issueComments.length > 0 ) {
-                    document.querySelector('.doboard_task_widget-concrete_issues-container').innerHTML = '';
+                    issuesCommentsContainer.innerHTML = '';
                     for (const comment of taskDetails.issueComments) {
                         const commentData = {
-                            author: comment.commentAuthor,
+                            commentAuthorAvatarSrc: comment.commentAuthorAvatarSrc,
+                            commentAuthorName: comment.commentAuthorName,
                             commentBody: comment.commentBody,
-                            date: comment.commentDate,
-                            time: comment.commentTime
+                            commentDate: comment.commentDate,
+                            commentTime: comment.commentTime,
+                            issueTitle: variables.issueTitle,
+                            issuesCounter: variables.issuesCounter
                         }
-                        document.querySelector('.doboard_task_widget-concrete_issues-container').innerHTML += await this.loadTemplate('concrete_issue_messages', commentData);
+                        issuesCommentsContainer.innerHTML += await this.loadTemplate('concrete_issue_messages', commentData);
                     }
                 } else {
-                    document.querySelector('.doboard_task_widget-concrete_issues-container').innerHTML = 'No comments';
+                    issuesCommentsContainer.innerHTML = 'No comments';
                 }
                 break;
 
@@ -452,17 +466,20 @@ class CleanTalkWidgetDoboard {
     }
 
     getTaskDetails(taskId) {
+        //contract mock
         return  {
             issueTitle: 'Test Title',
             issueComments: [
                 {
-                    commentAuthor: '/spotfix/img/empty_avatar.png',
+                    commentAuthorAvatarSrc: '/spotfix/img/empty_avatar.png',
+                    commentAuthorName: 'testName 1',
                     commentBody: 'Test Body 1',
                     commentDate: 'August 31',
                     commentTime: '14:15',
                 },
                 {
-                    commentAuthor: '/spotfix/img/empty_avatar.png',
+                    commentAuthorAvatarSrc: '/spotfix/img/empty_avatar.png',
+                    commentAuthorName: 'testName 2',
                     commentBody: 'Test Body 2',
                     commentDate: 'August 31',
                     commentTime: '14:16',
@@ -522,5 +539,37 @@ class CleanTalkWidgetDoboard {
                 this.closest('.doboard_task_widget-login').classList.toggle('active');
             });
         }
+    }
+
+    getTaskAuthorDetails(taskId) {
+        const mockUsersData =
+            [
+                {
+                    'taskId': '1',
+                    'taskAuthorAvatarImgSrc': '/spotfix/img/empty_avatar.png',
+                    'taskAuthorName': 'Test All Issues Single Author Name'
+                }
+            ]
+
+        const defaultData =
+            {
+                'taskId': null,
+                'taskAuthorAvatarImgSrc': '/spotfix/img/empty_avatar.png',
+                'taskAuthorName': 'Unknown Author'
+            };
+
+        const data = mockUsersData.find((element) => element.taskId === taskId);
+
+        //probably use refilling vai API there instead of default val
+
+        return data === undefined ? defaultData : data;
+    }
+
+    getIssuesCounterString() {
+        const mock = {
+            'totalTasks': 15,
+            'tasksOnPage': 1
+        }
+        return `(${mock.tasksOnPage}/${mock.totalTasks})`;
     }
 }
