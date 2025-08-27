@@ -140,3 +140,37 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
     }
     throw new Error('Unknown error occurred during getting tasks');
 }
+
+
+const getLogsDoboard = async (taskId, sessionId, accountId, start = 0, status = 'IMPORTANT') => {
+    const formData = new FormData();
+    formData.append('session_id', sessionId);
+    formData.append('task_id', taskId);
+    formData.append('start', start);
+    formData.append('status', status);
+
+    const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/logs_get', {
+        method: 'POST',
+        body: formData,
+    });
+    console.log(response);
+    if ( ! response.ok ) {
+        throw new Error('Getting logs failed');
+    }
+
+    const responseBody = await response.json();
+
+    if ( ! responseBody || ! responseBody.data ) {
+        throw new Error('Invalid response from server');
+    }
+    if ( responseBody.data.operation_status === 'FAILED') {
+        throw new Error(responseBody.data.operation_message);
+    }
+    if ( responseBody.data.operation_status === 'SUCCESS' ) {
+        return responseBody.data.logs.map(log => ({
+            logId: log.log_id,
+            logMessage: log.message,
+        }))
+    }
+    throw new Error('Unknown error occurred during getting logs');
+};
