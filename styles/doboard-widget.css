@@ -42,7 +42,7 @@
     vertical-align: middle;
 }
 
-.doboard_task_widget-close_btn {
+.doboard_task_widget_cursor-pointer {
     cursor: pointer;
 }
 
@@ -236,12 +236,19 @@
     color: #FFFFFF;
 }
 
+.doboard_task_widget-issue-title {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 
 /*** `LIST ISSUES` INTERFACE ***/
 
 .doboard_task_widget-task_row {
     display: flex;
-    max-height: 44px;
+    max-height: 55px;
     padding-bottom: 4px;
     margin-bottom: 20px;
     cursor: pointer;
@@ -266,18 +273,23 @@
 }
 
 .doboard_task_widget-avatar_container {
-    min-height: 44px;
+    width: 44px;
+    height: 44px;
 }
 
 .doboard_task_widget-avatar {
     width: 44px;
     height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .doboard_task_widget-description_container {
-    height: 44px;
+    height: 55px;
     width: calc(100% - 44px - 8px);
     border-bottom: 1px solid #EBF0F4;
+    display: block;
+    margin-left: 8px;
 }
 .doboard_task_widget-task_row:last-child .doboard_task_widget-description_container {
     border-bottom: none;
@@ -293,14 +305,50 @@
 
 .doboard_task_widget-task_title {
     font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .doboard_task_widget-task_title span {
     font-weight: 700;
-    display: block;
+    display: inline-block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.doboard_task_widget-task_title-details {
+    display: flex;
+    max-width: calc(100% - 40px);
+    align-items: center;
+}
+
+.doboard_task_widget-task_last_message {
+
+}
+
+.doboard_task_widget_return_to_all {
+    display: flex;
+    gap: 8px;
+    flex-direction: row;
+    align-content: center;
+    flex-wrap: wrap;
+}
+
+.doboard_task_widget-task_title-last_update_time {
+    font-family: Inter, serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 11px;
+    leading-trim: NONE;
+    line-height: 100%;
+}
+
+.doboard_task_widget-task_title_public_status_img {
+    opacity: 50%;
+    margin-left: 5px;
+    scale: 90%;
 }
 
 .doboard_task_widget-description-textarea {
