@@ -243,6 +243,10 @@
     text-overflow: ellipsis;
 }
 
+.doboard_task_widget-hidden_element {
+    opacity: 0;
+}
+
 
 /*** `LIST ISSUES` INTERFACE ***/
 
@@ -436,6 +440,72 @@
     max-width: 180px;
     word-break: break-word;
 }
+
+/*** `COMMENTS` INTERFACE ***/
+
+.doboard_task_widget-concrete_issue-day_content {
+    display: flex;
+    flex-direction: column;
+}
+
+.doboard_task_widget-concrete_issue_day_content-month_day {
+    text-align: center;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 100%;
+    padding: 8px;
+    opacity: 0.75;
+}
+
+.doboard_task_widget-concrete_issue_day_content-messages_wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.doboard_task_widget-comment_data_wrapper {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 15px;
+    align-items: flex-end;
+}
+
+.doboard_task_widget-comment_text_container {
+    position: relative;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    margin-left: 5px;
+    padding: 5px;
+}
+
+.doboard_task_widget-comment_text_container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+}
+
+.doboard_task_widget-comment_body,
+.doboard_task_widget-comment_time {
+    position: relative;
+    z-index: 1;
+}
+
+.doboard_task_widget-comment_body {
+    padding: 10px;
+}
+
+.doboard_task_widget-comment_time {
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 100%;
+    text-align: right;
+    padding: 0px 8px 4px 0;
+    opacity: 0.8;
+}
+
 
 @media (max-width: 480px) {
     .doboard_task_widget {

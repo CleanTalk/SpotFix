@@ -27,16 +27,26 @@ function getTaskDetails(params, taskId) {
 			{
 				commentAuthorAvatarSrc: '/spotfix/img/empty_avatar.png',
 				commentAuthorName: 'testName 1',
-				commentBody: 'Test Body 1',
+				commentBody: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+				commentDate: 'August 27',
+				commentTime: '14:11',
+				commentUserId: 1118418
+			},
+			{
+				commentAuthorAvatarSrc: 'https://s3.eu-central-1.amazonaws.com/cleantalk-ctask-atts/accounts/1/avatars/081a1b65d20fe318/m.jpg',
+				commentAuthorName: 'testName 2',
+				commentBody: 'Test Body 2 Lorem Ipsum Lorem Ipsum ',
 				commentDate: 'August 31',
-				commentTime: '14:15',
+				commentTime: '14:16',
+				commentUserId: 1
 			},
 			{
 				commentAuthorAvatarSrc: '/spotfix/img/empty_avatar.png',
 				commentAuthorName: 'testName 2',
-				commentBody: 'Test Body 2',
+				commentBody: 'Test Body 2 Lorem Ipsum Lorem Ipsum ',
 				commentDate: 'August 31',
-				commentTime: '14:16',
+				commentTime: '18:16',
+				commentUserId: 1
 			}
 		],
 	};
