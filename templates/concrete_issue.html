@@ -11,8 +11,20 @@
         <div class="doboard_task_widget-concrete_issues-container">LOADING...</div>
         <div class="doboard_task_widget-send_message">
             <form>
-                <input type="text" class="doboard_task_widget-send_message_input" placeholder="Send a message">
-                <input type="submit" class="doboard_task_widget-send_message_btn">
+                <div class="doboard_task_widget-send_message_elements_wrapper">
+                <button type="button" class="doboard_task_widget-send_message_paperclip">
+                    <img src="{{paperclipImgSrc}}" alt="Attach a file" title="Attach a file">
+                </button>
+
+                <div class="doboard_task_widget-send_message_input_wrapper">
+                    <img class="doboard_task_widget-send_message_input-icon" src="{{msgFieldBackgroundImgSrc}}" alt="" title="">
+                    <input type="text" class="doboard_task_widget-send_message_input" placeholder="Write a message...">
+                </div>
+
+                <button type="submit" class="doboard_task_widget-send_message_button">
+                    <img src="{{sendButtonImgSrc}}" alt="Send message" title="Send message">
+                </button>
+                </div>
             </form>
         </div>
     </div>

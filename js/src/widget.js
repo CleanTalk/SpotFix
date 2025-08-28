@@ -205,7 +205,10 @@ class CleanTalkWidgetDoboard {
                 variables = {
                     issueTitle: taskDetails.issueTitle,
                     issueComments: taskDetails.issueComments,
-                    issuesCounter: getIssuesCounterString()
+                    issuesCounter: getIssuesCounterString(),
+                    paperclipImgSrc: '/spotfix/img/send-message--paperclip.svg',
+                    sendButtonImgSrc: '/spotfix/img/send-message--button.svg',
+                    msgFieldBackgroundImgSrc: '/spotfix/img/send-message--input-background.svg',
                 };
                 break;
             default:
@@ -346,6 +349,7 @@ class CleanTalkWidgetDoboard {
                     for (const day in dayMessagesData) {
                         let currentDayMessages = dayMessagesData[day];
                         let dayMessagesWrapperHTML = '';
+                        currentDayMessages.sort((a, b) => a.commentTime.localeCompare(b.commentTime));
                         for (const messageId in currentDayMessages) {
                             let currentMessageData = currentDayMessages[messageId];
                             dayMessagesWrapperHTML += await this.loadTemplate('concrete_issue_messages', currentMessageData);
@@ -386,6 +390,15 @@ class CleanTalkWidgetDoboard {
             const widgetClass = this;
             backToAllIssuesController.addEventListener('click', function(e, self = widgetClass) {
                 self.createWidgetElement('all_issues');
+            });
+        }
+
+        const paperclipController = document.querySelector('.doboard_task_widget-send_message_paperclip');
+        if ( paperclipController ) {
+            paperclipController.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('click')
+                alert('This action is not implemented yet..');
             });
         }
 
