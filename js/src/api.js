@@ -35,6 +35,39 @@ const createTaskDoboard = async (sessionId, taskDetails) => {
     throw new Error('Unknown error occurred during creating task');
 };
 
+const createTaskCommentDoboard = async (accountId, sessionId, taskId, comment, projectToken, status = 'ACTIVE') => {
+    const response = await fetch(
+        DOBOARD_API_URL + '/' + accountId + '/comment_add' +
+        '?session_id=' + sessionId +
+        '&task_id=' + taskId +
+        '&comment=' + comment +
+        '&project_token=' + projectToken +
+        '&status=' + status,
+    {
+        method: 'GET',
+    });
+
+
+    if (!response.ok) {
+        throw new Error('Failed to create task comment');
+    }
+
+    const responseBody = await response.json();
+
+    if (!responseBody || !responseBody.data) {
+        throw new Error('Invalid response from server');
+    }
+    if (responseBody.data.operation_status === 'FAILED') {
+        throw new Error(responseBody.data.operation_message);
+    }
+    if (responseBody.data.operation_status === 'SUCCESS') {
+        return {
+            commentId: responseBody.data.comment_id,
+        };
+    }
+    throw new Error('Unknown error occurred during creating task comment');
+};
+
 const registerUser = async (projectToken, accountId, email, nickname) => {
     const formData = new FormData();
     formData.append('project_token', projectToken);
@@ -137,6 +170,9 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         return responseBody.data.tasks.map(task => ({
             taskId: task.task_id,
             taskTitle: task.name,
+            taskLastUpdate: task.updated,
+            taskCreated: task.created,
+            taskCreatorTaskUser: task.creator_user_id,
         }))
     }
     throw new Error('Unknown error occurred during getting tasks');
@@ -144,12 +180,6 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
 
 
 const getTaskCommentsDoboard = async (taskId, sessionId, accountId, projectToken, status = 'ACTIVE') => {
-    /*const formData = new FormData();
-    formData.append('session_id', sessionId);
-    formData.append('task_id', taskId);
-    formData.append('status', status);
-    formData.append('project_token', projectToken);*/
-
     const response = await fetch(
         DOBOARD_API_URL + '/' + accountId + '/comment_get' +
         '?session_id=' + sessionId +
@@ -159,7 +189,7 @@ const getTaskCommentsDoboard = async (taskId, sessionId, accountId, projectToken
     {
         method: 'GET',
     });
-    console.log(response);
+
     if ( ! response.ok ) {
         throw new Error('Getting logs failed');
     }
@@ -177,10 +207,10 @@ const getTaskCommentsDoboard = async (taskId, sessionId, accountId, projectToken
             commentId: comment.comment_id,
             userId: comment.user_id,
             comment: comment.comment,
-            commentText: comment.comment_text,
-            created: comment.created,
+            commentBody: comment.comment_text,
+            commentDate: comment.updated,
             status: comment.status,
-
+            issueTitle: comment.task_name,
         }));
     }
     throw new Error('Unknown error occurred during getting comments');

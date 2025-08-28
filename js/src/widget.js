@@ -227,8 +227,8 @@ class CleanTalkWidgetDoboard {
                 break;
             case 'all_issues':
                 let issuesQuantityOnPage = 0;
-                let tasks = await getUserTasks(this.params);
-                //let tasks = await getAllTasks(this.params);
+                //let tasks = await getUserTasks(this.params);
+                let tasks = await getAllTasks(this.params);
                 saveUserData(tasks);
                 if (tasks.length > 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
@@ -238,6 +238,7 @@ class CleanTalkWidgetDoboard {
                         // Data from api
                         const taskId = elTask.taskId;
                         const taskTitle = elTask.taskTitle;
+                        const { time: lastMessageTime } = formatDate(elTask.taskLastUpdate);
 
                         // Data from local storage
                         const taskDataString = localStorage.getItem(`spotfix_task_data_${taskId}`);
@@ -261,7 +262,7 @@ class CleanTalkWidgetDoboard {
                         if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
                             issuesQuantityOnPage++;
                             //define last message and update time
-                            let lastMessageDetails = getTaskLastMessageDetails(taskId)
+                            let lastMessageDetails = getTaskLastMessageDetails(taskId);
                             const authorDetails = getTaskAuthorDetails('1'); // todo MOCK!
                             const variables = {
                                 taskTitle: taskTitle || '',
@@ -270,7 +271,7 @@ class CleanTalkWidgetDoboard {
                                 taskPublicStatusImgSrc: taskPublicStatusImgSrc,
                                 taskPublicStatusHint: taskPublicStatusHint,
                                 taskLastMessage: lastMessageDetails.lastMessageText,
-                                taskLastUpdate: lastMessageDetails.lastMessageTime,
+                                taskLastUpdate: lastMessageTime,
                                 nodePath: taskNodePath,
                                 taskId: taskId
                             };
@@ -302,6 +303,8 @@ class CleanTalkWidgetDoboard {
 
             case 'concrete_issue':
                 const taskDetails = await getTaskDetails(this.params, this.currentActiveTaskId);
+	            console.log(taskDetails);
+
                 variables = {
                     issueTitle: taskDetails.issueTitle,
                     issueComments: taskDetails.issueComments,
@@ -325,6 +328,25 @@ class CleanTalkWidgetDoboard {
                     }
                 } else {
                     issuesCommentsContainer.innerHTML = 'No comments';
+                }
+
+                const sendForm = document.querySelector('.doboard_task_widget-send_message form');
+                if (sendForm) {
+                    sendForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const input = sendForm.querySelector('.doboard_task_widget-send_message_input');
+                        const commentText = input.value.trim();
+                        if (!commentText) return;
+                        input.disabled = true;
+                        try {
+                            await addTaskComment(this.params, this.currentActiveTaskId, commentText);
+                            input.value = '';
+                            await this.createWidgetElement('concrete_issue');
+                        } catch (err) {
+                            alert('Error when adding a comment: ' + err.message);
+                        }
+                        input.disabled = false;
+                    });
                 }
                 break;
 
