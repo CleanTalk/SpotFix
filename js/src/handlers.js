@@ -1,3 +1,10 @@
+async function addTaskComment(params, taskId, commentText) {
+	const sessionId = localStorage.getItem('spotfix_session_id');
+	if (!sessionId) throw new Error('No session');
+	if (!params.projectToken || !params.accountId) throw new Error('Missing params');
+	return await createTaskCommentDoboard(params.accountId, sessionId, taskId, commentText, params.projectToken);
+}
+
 function getUserTasks(params) {
 	if (!localStorage.getItem('spotfix_session_id')) {
 		return {};
@@ -8,48 +15,61 @@ function getUserTasks(params) {
 	return getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId, userId);
 }
 
-function getAllTasks(params) {
+async function getAllTasks(params) {
 	if (!localStorage.getItem('spotfix_session_id')) {
 		return {};
 	}
 	const projectToken = params.projectToken;
 	const sessionId = localStorage.getItem('spotfix_session_id');
+	const tasksData = await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
+	//console.log(tasksData);
+
 	return getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
 }
 
-function getTaskDetails(params, taskId) {
+async function getTaskDetails(params, taskId) {
 	const sessionId = localStorage.getItem('spotfix_session_id');
-	//return getTaskCommentsDoboard(taskId, params.sessionId, params.accountId, params.projectToken);
-	//contract mock
-	return  {
-		issueTitle: 'Test Very Long Title Lorem Ipsum Bla Bla Bla',
-		issueComments: [
-			{
-				commentAuthorAvatarSrc: '/spotfix/img/empty_avatar.png',
-				commentAuthorName: 'testName 1',
-				commentBody: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-				commentDate: 'August 27',
-				commentTime: '14:11',
-				commentUserId: 1118418
-			},
-			{
-				commentAuthorAvatarSrc: 'https://s3.eu-central-1.amazonaws.com/cleantalk-ctask-atts/accounts/1/avatars/081a1b65d20fe318/m.jpg',
-				commentAuthorName: 'testName 2',
-				commentBody: 'Test Body 2 Lorem Ipsum Lorem Ipsum ',
-				commentDate: 'August 31',
-				commentTime: '14:16',
-				commentUserId: 1
-			},
-			{
-				commentAuthorAvatarSrc: '/spotfix/img/empty_avatar.png',
-				commentAuthorName: 'testName 2',
-				commentBody: 'Test Body 2 Lorem Ipsum Lorem Ipsum ',
-				commentDate: 'August 31',
-				commentTime: '18:16',
-				commentUserId: 1
-			}
-		],
+	const comments = await getTaskCommentsDoboard(taskId, sessionId, params.accountId, params.projectToken);
+
+	return {
+		issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
+		issueComments: comments.map(comment => {
+ 				const { date, time } = formatDate(comment.commentDate);
+ 				return {
+ 					commentAuthorAvatarSrc: comment.commentAuthorAvatarSrc || '/spotfix/img/empty_avatar.png',
+ 					commentAuthorName: comment.commentAuthorName || 'Unknown Author',
+ 					commentBody: comment.commentBody,
+ 					commentDate: date,
+ 					commentTime: time,
+					commentUserId: comment.userId || 'Unknown User',
+ 				};
+		})
 	};
+}
+
+function formatDate(dateStr) {
+	 const months = [
+	 	"January", "February", "March", "April", "May", "June",
+	 	"July", "August", "September", "October", "November", "December"
+	 ];
+	 // dateStr expected format: 'YYYY-MM-DD HH:mm:ss' or 'YYYY-MM-DDTHH:mm:ssZ'
+	 if (!dateStr) return { date: '', time: '' };
+	 let dateObj;
+	 if (dateStr.includes('T')) {
+	 	dateObj = new Date(dateStr);
+	 } else if (dateStr.includes(' ')) {
+	 	dateObj = new Date(dateStr.replace(' ', 'T'));
+	 } else {
+	 	dateObj = new Date(dateStr);
+	 }
+	 if (isNaN(dateObj.getTime())) return { date: '', time: '' };
+	 const month = months[dateObj.getMonth()];
+	 const day = dateObj.getDate();
+	 const date = `${month} ${day}`;
+	 const hours = dateObj.getHours().toString().padStart(2, '0');
+	 const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+	 const time = `${hours}:${minutes}`;
+	 return { date, time };
 }
 
 function getTaskAuthorDetails(taskId) {
