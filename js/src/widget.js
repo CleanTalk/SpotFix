@@ -265,7 +265,8 @@ class CleanTalkWidgetDoboard {
                         if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
                             issuesQuantityOnPage++;
                             //define last message and update time
-                            let lastMessageDetails = getTaskLastMessageDetails(taskId);
+                            let lastMessageDetails = await getTaskLastMessageDetails(this.params, taskId);
+                            console.log(lastMessageDetails);
                             const authorDetails = getTaskAuthorDetails('1'); // todo MOCK!
                             const variables = {
                                 taskTitle: taskTitle || '',
