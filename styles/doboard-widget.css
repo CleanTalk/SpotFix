@@ -506,6 +506,73 @@
     opacity: 0.8;
 }
 
+/** SENDING NEW COMMENT **/
+
+.doboard_task_widget-send_message {
+    padding-top: 10px;
+    border-top: 1px solid #BBC7D1;
+}
+
+.doboard_task_widget-send_message_elements_wrapper {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.doboard_task_widget-send_message_input_wrapper {
+    position: relative;
+    display: inline-grid;
+    align-items: center;
+    justify-items: center;
+}
+
+.doboard_task_widget-send_message_input-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.doboard_task_widget-send_message_input_wrapper input {
+    width: 90%;
+    position: relative;
+    border: none;
+    background: none;
+    z-index: 1;
+    overflow-wrap: break-word;
+}
+
+.doboard_task_widget-send_message_input_wrapper input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.doboard_task_widget-send_message_input_wrapper input:focus + .input-icon {
+    color: #007bff;
+}
+
+.doboard_task_widget-send_message_button, .doboard_task_widget-send_message_paperclip {
+    display: inline-grid;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    align-items: center;
+}
+
+.doboard_task_widget-send_message_button:hover, .doboard_task_widget-send_message_paperclip:hover rect {
+    fill: #45a049;
+}
+
+.doboard_task_widget-send_message_button:active, .doboard_task_widget-send_message_paperclip:active {
+    transform: scale(0.98);
+}
+
 
 @media (max-width: 480px) {
     .doboard_task_widget {
