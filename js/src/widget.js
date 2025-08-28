@@ -309,9 +309,14 @@ class CleanTalkWidgetDoboard {
                     chevronBackTitle: 'Back to all issues',
                 };
                 const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
+                let dayMessagesData = [];
+                const initIssuerID = localStorage.getItem('spotfix_user_id');
+                console.table('initIssuerID',initIssuerID)
+                let userIsIssuer = false;
                 if ( taskDetails.issueComments.length > 0 ) {
                     issuesCommentsContainer.innerHTML = '';
                     for (const comment of taskDetails.issueComments) {
+                        userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
                         const commentData = {
                             commentAuthorAvatarSrc: comment.commentAuthorAvatarSrc,
                             commentAuthorName: comment.commentAuthorName,
@@ -319,10 +324,32 @@ class CleanTalkWidgetDoboard {
                             commentDate: comment.commentDate,
                             commentTime: comment.commentTime,
                             issueTitle: variables.issueTitle,
-                            issuesCounter: variables.issuesCounter
+                            issuesCounter: variables.issuesCounter,
+                            commentContainerBackgroundSrc: userIsIssuer
+                                ? '/spotfix/img/comment-self-background.png'
+                                : '/spotfix/img/comment-other-background.png',
+                            additionalClasses: userIsIssuer
+                                ? 'doboard_task_widget-hidden_element'
+                                : ''
+                        };
+                        if (dayMessagesData[comment.commentDate] === undefined) {
+                            dayMessagesData[comment.commentDate] = [];
+                            dayMessagesData[comment.commentDate].push(commentData);
+                        } else {
+                            dayMessagesData[comment.commentDate].push(commentData);
                         }
-                        issuesCommentsContainer.innerHTML += await this.loadTemplate('concrete_issue_messages', commentData);
                     }
+                    let daysWrapperHTML = '';
+                    for (const day in dayMessagesData) {
+                        let currentDayMessages = dayMessagesData[day];
+                        let dayMessagesWrapperHTML = '';
+                        for (const messageId in currentDayMessages) {
+                            let currentMessageData = currentDayMessages[messageId];
+                            dayMessagesWrapperHTML += await this.loadTemplate('concrete_issue_messages', currentMessageData);
+                        }
+                        daysWrapperHTML += await this.loadTemplate('concrete_issue_day_content', {dayContentMonthDay: day, dayContentMessages: dayMessagesWrapperHTML});
+                    }
+                    issuesCommentsContainer.innerHTML = daysWrapperHTML;
                 } else {
                     issuesCommentsContainer.innerHTML = 'No comments';
                 }
