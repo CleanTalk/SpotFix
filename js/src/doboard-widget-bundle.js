@@ -1079,6 +1079,9 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               day = _t6.value;
               currentDayMessages = dayMessagesData[day];
               dayMessagesWrapperHTML = '';
+              currentDayMessages.sort(function (a, b) {
+                return a.commentTime.localeCompare(b.commentTime);
+              });
               _t7 = _regeneratorKeys(currentDayMessages);
             case 21:
               if ((_t8 = _t7()).done) {

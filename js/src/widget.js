@@ -349,6 +349,7 @@ class CleanTalkWidgetDoboard {
                     for (const day in dayMessagesData) {
                         let currentDayMessages = dayMessagesData[day];
                         let dayMessagesWrapperHTML = '';
+                        currentDayMessages.sort((a, b) => a.commentTime.localeCompare(b.commentTime));
                         for (const messageId in currentDayMessages) {
                             let currentMessageData = currentDayMessages[messageId];
                             dayMessagesWrapperHTML += await this.loadTemplate('concrete_issue_messages', currentMessageData);
