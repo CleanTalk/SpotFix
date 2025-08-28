@@ -265,7 +265,8 @@ class CleanTalkWidgetDoboard {
                         if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
                             issuesQuantityOnPage++;
                             //define last message and update time
-                            let lastMessageDetails = getTaskLastMessageDetails(taskId);
+                            let lastMessageDetails = await getTaskLastMessageDetails(this.params, taskId);
+                            console.log(lastMessageDetails);
                             const authorDetails = getTaskAuthorDetails('1'); // todo MOCK!
                             const variables = {
                                 taskTitle: taskTitle || '',
@@ -483,19 +484,7 @@ class CleanTalkWidgetDoboard {
             // @ToDo move this return in register block code
             return {needToLogin: true};
         }
-        return await this.createTask(sessionId, taskDetails);
-    }
-
-    /**
-     * Create a task
-     * @param {*} taskDetails
-     * @param {string} sessionId
-     */
-    createTask(sessionId, taskDetails) {
-        return createTaskDoboard(sessionId, taskDetails)
-            .then(response => {
-                return response;
-            });
+        return await handleCreateTask(sessionId, taskDetails);
     }
 
     registerUser(taskDetails) {

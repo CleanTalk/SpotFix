@@ -1,3 +1,19 @@
+async function handleCreateTask(sessionId, taskDetails) {
+	try {
+		const result = await createTaskDoboard(sessionId, taskDetails);
+		// После создания задачи сразу добавляем комментарий
+		if (result && result.taskId && taskDetails.taskDescription) {
+			await addTaskComment({
+				projectToken: taskDetails.projectToken,
+				accountId: taskDetails.accountId
+			}, result.taskId, taskDetails.taskDescription);
+		}
+		return result;
+	} catch (err) {
+		throw err;
+	}
+}
+
 async function addTaskComment(params, taskId, commentText) {
 	const sessionId = localStorage.getItem('spotfix_session_id');
 	if (!sessionId) throw new Error('No session');
@@ -30,6 +46,7 @@ async function getAllTasks(params) {
 async function getTaskDetails(params, taskId) {
 	const sessionId = localStorage.getItem('spotfix_session_id');
 	const comments = await getTaskCommentsDoboard(taskId, sessionId, params.accountId, params.projectToken);
+	console.log(comments);
 
 	return {
 		issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
@@ -105,46 +122,30 @@ function saveUserData(tasks) {
 	// Save users avatars to local storage
 }
 
-function getTaskLastMessageDetails(taskId) {
-	const mockTasksData =
-		[
-			{
-				'taskId': '1',
-				'lastMessageTimestamp': Math.floor(Date.now() / 1000),  //todo MOCK!,
-				'lastMessageText': 'This is mocked last message', //todo MOCK!,
-			}
-		]
+async function getTaskLastMessageDetails(params, taskId) {
+	try {
+		// Параметры для getTaskDetails
+/* 		const params = {
+			projectToken: localStorage.getItem('spotfix_project_token'),
+			accountId: localStorage.getItem('spotfix_account_id'),
+			projectId: localStorage.getItem('spotfix_project_id')
+		}; */
+		
+		const details = await getTaskDetails(params, taskId);
 
-	const defaultData =
-		{
-			'taskId': null,
-			'lastMessageTimestamp': null,
-			'lastMessageText': 'No messages yet',
-		};
-
-	let result = {
-		'lastMessageText': '',
-		'lastMessageTime': ''
+		if (details.issueComments && details.issueComments.length > 0) {
+			const lastComment = details.issueComments[details.issueComments.length - 1];
+			return {
+				lastMessageText: lastComment.commentBody || '',
+				lastMessageTime: lastComment.commentTime || ''
+			};
+		}
+	} catch (e) {
+		console.error(e);
 	}
 
-	let hours = '00';
-	let minutes = '00';
-
-	let resultData = mockTasksData.find((element) => element.taskId === taskId);
-
-	if (resultData === undefined) {
-		resultData = defaultData;
-	}
-
-	if (resultData.lastMessageTimestamp !== null) {
-		const dateFull = new Date(resultData.lastMessageTimestamp * 1000);
-		hours = dateFull.getHours().toString().padStart(2, '0');
-		minutes = dateFull.getMinutes().toString().padStart(2, '0');
-	}
-
-	result.lastMessageText = resultData.lastMessageText;
-	result.lastMessageTime = `${hours}:${minutes}`
-
-	return result;
+	return {
+		lastMessageText: 'No messages yet',
+		lastMessageTime: ''
+	};
 }
-
