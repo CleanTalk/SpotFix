@@ -902,6 +902,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           sendForm,
           backToAllIssuesController,
           widgetClass,
+          paperclipController,
           _args0 = arguments;
         return _regeneratorRuntime().wrap(function _callee0$(_context0) {
           while (1) switch (_context0.prev = _context0.next) {
@@ -938,7 +939,10 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               variables = {
                 issueTitle: taskDetails.issueTitle,
                 issueComments: taskDetails.issueComments,
-                issuesCounter: getIssuesCounterString()
+                issuesCounter: getIssuesCounterString(),
+                paperclipImgSrc: '/spotfix/img/send-message--paperclip.svg',
+                sendButtonImgSrc: '/spotfix/img/send-message--button.svg',
+                msgFieldBackgroundImgSrc: '/spotfix/img/send-message--input-background.svg'
               };
               return _context0.abrupt("break", 23);
             case 22:
@@ -950,17 +954,17 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               widgetContainer.innerHTML = _context0.sent;
               document.body.appendChild(widgetContainer);
               _context0.t1 = type;
-              _context0.next = _context0.t1 === 'create_issue' ? 30 : _context0.t1 === 'wrap' ? 32 : _context0.t1 === 'all_issues' ? 35 : _context0.t1 === 'concrete_issue' ? 73 : 116;
+              _context0.next = _context0.t1 === 'create_issue' ? 30 : _context0.t1 === 'wrap' ? 32 : _context0.t1 === 'all_issues' ? 35 : _context0.t1 === 'concrete_issue' ? 73 : 117;
               break;
             case 30:
               this.bindCreateTaskEvents();
-              return _context0.abrupt("break", 117);
+              return _context0.abrupt("break", 118);
             case 32:
               this.getTaskCount();
               document.querySelector('.doboard_task_widget-wrap').addEventListener('click', function () {
                 _this2.createWidgetElement('all_issues');
               });
-              return _context0.abrupt("break", 117);
+              return _context0.abrupt("break", 118);
             case 35:
               issuesQuantityOnPage = 0; //let tasks = await getUserTasks(this.params);
               _context0.next = 38;
@@ -1047,7 +1051,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
 
               // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
               this.bindIssuesClick();
-              return _context0.abrupt("break", 117);
+              return _context0.abrupt("break", 118);
             case 73:
               _context0.next = 75;
               return getTaskDetails(this.params, this.currentActiveTaskId);
@@ -1066,7 +1070,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               console.table('initIssuerID', initIssuerID);
               userIsIssuer = false;
               if (!(_taskDetails.issueComments.length > 0)) {
-                _context0.next = 112;
+                _context0.next = 113;
                 break;
               }
               issuesCommentsContainer.innerHTML = '';
@@ -1102,45 +1106,48 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               _context0.t3 = _regeneratorRuntime().keys(dayMessagesData);
             case 89:
               if ((_context0.t4 = _context0.t3()).done) {
-                _context0.next = 109;
+                _context0.next = 110;
                 break;
               }
               day = _context0.t4.value;
               currentDayMessages = dayMessagesData[day];
               dayMessagesWrapperHTML = '';
+              currentDayMessages.sort(function (a, b) {
+                return a.commentTime.localeCompare(b.commentTime);
+              });
               _context0.t5 = _regeneratorRuntime().keys(currentDayMessages);
-            case 94:
+            case 95:
               if ((_context0.t6 = _context0.t5()).done) {
-                _context0.next = 103;
+                _context0.next = 104;
                 break;
               }
               messageId = _context0.t6.value;
               currentMessageData = currentDayMessages[messageId];
               _context0.t7 = dayMessagesWrapperHTML;
-              _context0.next = 100;
+              _context0.next = 101;
               return this.loadTemplate('concrete_issue_messages', currentMessageData);
-            case 100:
+            case 101:
               dayMessagesWrapperHTML = _context0.t7 += _context0.sent;
-              _context0.next = 94;
+              _context0.next = 95;
               break;
-            case 103:
+            case 104:
               _context0.t8 = daysWrapperHTML;
-              _context0.next = 106;
+              _context0.next = 107;
               return this.loadTemplate('concrete_issue_day_content', {
                 dayContentMonthDay: day,
                 dayContentMessages: dayMessagesWrapperHTML
               });
-            case 106:
+            case 107:
               daysWrapperHTML = _context0.t8 += _context0.sent;
               _context0.next = 89;
               break;
-            case 109:
+            case 110:
               issuesCommentsContainer.innerHTML = daysWrapperHTML;
-              _context0.next = 113;
+              _context0.next = 114;
               break;
-            case 112:
-              issuesCommentsContainer.innerHTML = 'No comments';
             case 113:
+              issuesCommentsContainer.innerHTML = 'No comments';
+            case 114:
               sendForm = document.querySelector('.doboard_task_widget-send_message form');
               if (sendForm) {
                 sendForm.addEventListener('submit', /*#__PURE__*/function () {
@@ -1186,10 +1193,10 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                   };
                 }());
               }
-              return _context0.abrupt("break", 117);
-            case 116:
-              return _context0.abrupt("break", 117);
+              return _context0.abrupt("break", 118);
             case 117:
+              return _context0.abrupt("break", 118);
+            case 118:
               backToAllIssuesController = document.querySelector('.doboard_task_widget_return_to_all');
               if (backToAllIssuesController) {
                 widgetClass = this;
@@ -1198,11 +1205,19 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                   self.createWidgetElement('all_issues');
                 });
               }
+              paperclipController = document.querySelector('.doboard_task_widget-send_message_paperclip');
+              if (paperclipController) {
+                paperclipController.addEventListener('click', function (e) {
+                  e.preventDefault();
+                  console.log('click');
+                  alert('This action is not implemented yet..');
+                });
+              }
               ((_document$querySelect = document.querySelector('.doboard_task_widget-close_btn')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('click', function () {
                 _this2.hide();
               })) || '';
               return _context0.abrupt("return", widgetContainer);
-            case 121:
+            case 124:
             case "end":
               return _context0.stop();
           }
