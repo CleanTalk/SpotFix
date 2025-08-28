@@ -41,6 +41,7 @@ async function getTaskDetails(params, taskId) {
  					commentBody: comment.commentBody,
  					commentDate: date,
  					commentTime: time,
+					commentUserId: comment.userId || 'Unknown User',
  				};
 		})
 	};

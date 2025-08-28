@@ -499,7 +499,8 @@ function _getTaskDetails() {
                 commentAuthorName: comment.commentAuthorName || 'Unknown Author',
                 commentBody: comment.commentBody,
                 commentDate: date,
-                commentTime: time
+                commentTime: time,
+                commentUserId: comment.userId || 'Unknown User'
               };
             })
           });
