@@ -470,19 +470,7 @@ class CleanTalkWidgetDoboard {
             // @ToDo move this return in register block code
             return {needToLogin: true};
         }
-        return await this.createTask(sessionId, taskDetails);
-    }
-
-    /**
-     * Create a task
-     * @param {*} taskDetails
-     * @param {string} sessionId
-     */
-    createTask(sessionId, taskDetails) {
-        return createTaskDoboard(sessionId, taskDetails)
-            .then(response => {
-                return response;
-            });
+        return await handleCreateTask(sessionId, taskDetails);
     }
 
     registerUser(taskDetails) {

@@ -401,37 +401,64 @@ var getTaskCommentsDoboard = /*#__PURE__*/function () {
     return _ref6.apply(this, arguments);
   };
 }();
-function addTaskComment(_x21, _x22, _x23) {
-  return _addTaskComment.apply(this, arguments);
+function handleCreateTask(_x21, _x22) {
+  return _handleCreateTask.apply(this, arguments);
 }
-function _addTaskComment() {
-  _addTaskComment = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee13(params, taskId, commentText) {
-    var sessionId;
+function _handleCreateTask() {
+  _handleCreateTask = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee13(sessionId, taskDetails) {
+    var result;
     return _regeneratorRuntime().wrap(function _callee13$(_context13) {
       while (1) switch (_context13.prev = _context13.next) {
         case 0:
+          _context13.prev = 0;
+          _context13.next = 3;
+          return createTaskDoboard(sessionId, taskDetails);
+        case 3:
+          result = _context13.sent;
+          return _context13.abrupt("return", result);
+        case 7:
+          _context13.prev = 7;
+          _context13.t0 = _context13["catch"](0);
+          throw _context13.t0;
+        case 10:
+        case "end":
+          return _context13.stop();
+      }
+    }, _callee13, null, [[0, 7]]);
+  }));
+  return _handleCreateTask.apply(this, arguments);
+}
+function addTaskComment(_x23, _x24, _x25) {
+  return _addTaskComment.apply(this, arguments);
+}
+function _addTaskComment() {
+  _addTaskComment = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee14(params, taskId, commentText) {
+    var sessionId;
+    return _regeneratorRuntime().wrap(function _callee14$(_context14) {
+      while (1) switch (_context14.prev = _context14.next) {
+        case 0:
           sessionId = localStorage.getItem('spotfix_session_id');
           if (sessionId) {
-            _context13.next = 3;
+            _context14.next = 3;
             break;
           }
           throw new Error('No session');
         case 3:
           if (!(!params.projectToken || !params.accountId)) {
-            _context13.next = 5;
+            _context14.next = 5;
             break;
           }
           throw new Error('Missing params');
         case 5:
-          _context13.next = 7;
+          _context14.next = 7;
           return createTaskCommentDoboard(params.accountId, sessionId, taskId, commentText, params.projectToken);
         case 7:
-          return _context13.abrupt("return", _context13.sent);
+          return _context14.abrupt("return", _context14.sent);
         case 8:
         case "end":
-          return _context13.stop();
+          return _context14.stop();
       }
-    }, _callee13);
+    }, _callee14);
   }));
   return _addTaskComment.apply(this, arguments);
 }
@@ -444,51 +471,51 @@ function getUserTasks(params) {
   var userId = localStorage.getItem('spotfix_user_id');
   return getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId, userId);
 }
-function getAllTasks(_x24) {
+function getAllTasks(_x26) {
   return _getAllTasks.apply(this, arguments);
 }
 function _getAllTasks() {
-  _getAllTasks = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee14(params) {
+  _getAllTasks = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee15(params) {
     var projectToken, sessionId, tasksData;
-    return _regeneratorRuntime().wrap(function _callee14$(_context14) {
-      while (1) switch (_context14.prev = _context14.next) {
-        case 0:
-          if (localStorage.getItem('spotfix_session_id')) {
-            _context14.next = 2;
-            break;
-          }
-          return _context14.abrupt("return", {});
-        case 2:
-          projectToken = params.projectToken;
-          sessionId = localStorage.getItem('spotfix_session_id');
-          _context14.next = 6;
-          return getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
-        case 6:
-          tasksData = _context14.sent;
-          return _context14.abrupt("return", getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId));
-        case 8:
-        case "end":
-          return _context14.stop();
-      }
-    }, _callee14);
-  }));
-  return _getAllTasks.apply(this, arguments);
-}
-function getTaskDetails(_x25, _x26) {
-  return _getTaskDetails.apply(this, arguments);
-}
-function _getTaskDetails() {
-  _getTaskDetails = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee15(params, taskId) {
-    var sessionId, comments;
     return _regeneratorRuntime().wrap(function _callee15$(_context15) {
       while (1) switch (_context15.prev = _context15.next) {
         case 0:
+          if (localStorage.getItem('spotfix_session_id')) {
+            _context15.next = 2;
+            break;
+          }
+          return _context15.abrupt("return", {});
+        case 2:
+          projectToken = params.projectToken;
           sessionId = localStorage.getItem('spotfix_session_id');
-          _context15.next = 3;
+          _context15.next = 6;
+          return getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
+        case 6:
+          tasksData = _context15.sent;
+          return _context15.abrupt("return", getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId));
+        case 8:
+        case "end":
+          return _context15.stop();
+      }
+    }, _callee15);
+  }));
+  return _getAllTasks.apply(this, arguments);
+}
+function getTaskDetails(_x27, _x28) {
+  return _getTaskDetails.apply(this, arguments);
+}
+function _getTaskDetails() {
+  _getTaskDetails = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee16(params, taskId) {
+    var sessionId, comments;
+    return _regeneratorRuntime().wrap(function _callee16$(_context16) {
+      while (1) switch (_context16.prev = _context16.next) {
+        case 0:
+          sessionId = localStorage.getItem('spotfix_session_id');
+          _context16.next = 3;
           return getTaskCommentsDoboard(taskId, sessionId, params.accountId, params.projectToken);
         case 3:
-          comments = _context15.sent;
-          return _context15.abrupt("return", {
+          comments = _context16.sent;
+          return _context16.abrupt("return", {
             issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
             issueComments: comments.map(function (comment) {
               var _formatDate2 = formatDate(comment.commentDate),
@@ -506,9 +533,9 @@ function _getTaskDetails() {
           });
         case 5:
         case "end":
-          return _context15.stop();
+          return _context16.stop();
       }
-    }, _callee15);
+    }, _callee16);
   }));
   return _getTaskDetails.apply(this, arguments);
 }
@@ -643,7 +670,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           }
         }, _callee7, this);
       }));
-      function init(_x27) {
+      function init(_x29) {
         return _init.apply(this, arguments);
       }
       return init;
@@ -1154,7 +1181,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                       }
                     }, _callee9, null, [[6, 14]]);
                   }));
-                  return function (_x29) {
+                  return function (_x31) {
                     return _ref8.apply(this, arguments);
                   };
                 }());
@@ -1181,7 +1208,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           }
         }, _callee0, this);
       }));
-      function createWidgetElement(_x28) {
+      function createWidgetElement(_x30) {
         return _createWidgetElement.apply(this, arguments);
       }
       return createWidgetElement;
@@ -1257,7 +1284,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           }
         }, _callee10);
       }));
-      function loadTemplate(_x30) {
+      function loadTemplate(_x32) {
         return _loadTemplate.apply(this, arguments);
       }
       return loadTemplate;
@@ -1339,7 +1366,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               });
             case 9:
               _context12.next = 11;
-              return this.createTask(sessionId, taskDetails);
+              return handleCreateTask(sessionId, taskDetails);
             case 11:
               return _context12.abrupt("return", _context12.sent);
             case 12:
@@ -1348,24 +1375,11 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           }
         }, _callee12, this);
       }));
-      function submitTask(_x31) {
+      function submitTask(_x33) {
         return _submitTask.apply(this, arguments);
       }
       return submitTask;
-    }()
-    /**
-     * Create a task
-     * @param {*} taskDetails
-     * @param {string} sessionId
-     */
-    )
-  }, {
-    key: "createTask",
-    value: function createTask(sessionId, taskDetails) {
-      return createTaskDoboard(sessionId, taskDetails).then(function (response) {
-        return response;
-      });
-    }
+    }())
   }, {
     key: "registerUser",
     value: function registerUser(taskDetails) {
@@ -1470,7 +1484,7 @@ document.addEventListener('selectionchange', function (e) {
     var selection = window.getSelection();
     if (selection.type === 'Range') {
       var _selectedData = getSelectedData(selection);
-      var widgetExist = document.querySelector('.task-widget');
+      var widgetExist = document.querySelector('.doboard_task_widget-container');
       openWidget(_selectedData, widgetExist, 'create_issue');
     }
   }, 1000);

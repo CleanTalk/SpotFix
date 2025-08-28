@@ -1,3 +1,12 @@
+async function handleCreateTask(sessionId, taskDetails) {
+	try {
+		const result = await createTaskDoboard(sessionId, taskDetails);
+		return result;
+	} catch (err) {
+		throw err;
+	}
+}
+
 async function addTaskComment(params, taskId, commentText) {
 	const sessionId = localStorage.getItem('spotfix_session_id');
 	if (!sessionId) throw new Error('No session');

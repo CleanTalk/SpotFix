@@ -16,7 +16,7 @@ document.addEventListener('selectionchange', function(e) {
             selection.type === 'Range'
         ) {
             const selectedData = getSelectedData(selection);
-            let widgetExist = document.querySelector('.task-widget');
+            let widgetExist = document.querySelector('.doboard_task_widget-container');
             openWidget(selectedData, widgetExist, 'create_issue');
         }
     }, 1000);
@@ -29,6 +29,7 @@ document.addEventListener('selectionchange', function(e) {
  * @param {*} type
  */
 function openWidget(selectedData, widgetExist, type) {
+    
     if (selectedData && !widgetExist) {
         new CleanTalkWidgetDoboard(selectedData, type);
     }
