@@ -246,6 +246,9 @@ class CleanTalkWidgetDoboard {
                         // Data from local storage
                         const taskDataString = localStorage.getItem(`spotfix_task_data_${taskId}`);
                         const taskData = taskDataString ? JSON.parse(taskDataString) : null;
+                        if (!taskData) {
+                            continue;
+                        }
                         const currentPageURL = taskData.pageURL;
                         const taskNodePath = taskData.nodePath;
 
@@ -266,18 +269,21 @@ class CleanTalkWidgetDoboard {
                             issuesQuantityOnPage++;
                             //define last message and update time
                             let lastMessageDetails = await getTaskLastMessageDetails(this.params, taskId);
-                            console.log(lastMessageDetails);
-                            const authorDetails = getTaskAuthorDetails('1'); // todo MOCK!
+                            const authorDetails = getTaskAuthorDetails(taskId); // todo MOCK!
+                            const avatarData = getAvatarData(authorDetails);
                             const variables = {
                                 taskTitle: taskTitle || '',
-                                taskAuthorAvatarImgSrc: authorDetails.taskAuthorAvatarImgSrc,
                                 taskAuthorName: authorDetails.taskAuthorName,
                                 taskPublicStatusImgSrc: taskPublicStatusImgSrc,
                                 taskPublicStatusHint: taskPublicStatusHint,
                                 taskLastMessage: lastMessageDetails.lastMessageText,
                                 taskLastUpdate: lastMessageTime,
                                 nodePath: taskNodePath,
-                                taskId: taskId
+                                taskId: taskId,
+                                avatarCSSClass: avatarData.avatarCSSClass,
+                                avatarStyle: avatarData.avatarStyle,
+                                taskAuthorInitials: avatarData.taskAuthorInitials,
+                                initialsClass: avatarData.initialsClass
                             };
                             document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += await this.loadTemplate('list_issues', variables);
 
@@ -324,8 +330,12 @@ class CleanTalkWidgetDoboard {
                     issuesCommentsContainer.innerHTML = '';
                     for (const comment of taskDetails.issueComments) {
                         userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
+                        const avatarData = getAvatarData({
+                            taskAuthorAvatarImgSrc: comment.commentAuthorAvatarSrc,
+                            taskAuthorName: comment.commentAuthorName,
+                            userIsIssuer: userIsIssuer
+                        });
                         const commentData = {
-                            commentAuthorAvatarSrc: comment.commentAuthorAvatarSrc,
                             commentAuthorName: comment.commentAuthorName,
                             commentBody: comment.commentBody,
                             commentDate: comment.commentDate,
@@ -335,9 +345,10 @@ class CleanTalkWidgetDoboard {
                             commentContainerBackgroundSrc: userIsIssuer
                                 ? '/spotfix/img/comment-self-background.png'
                                 : '/spotfix/img/comment-other-background.png',
-                            additionalClasses: userIsIssuer
-                                ? 'doboard_task_widget-hidden_element'
-                                : ''
+                            avatarCSSClass: avatarData.avatarCSSClass,
+                            avatarStyle: avatarData.avatarStyle,
+                            taskAuthorInitials: avatarData.taskAuthorInitials,
+                            initialsClass: avatarData.initialsClass
                         };
                         if (dayMessagesData[comment.commentDate] === undefined) {
                             dayMessagesData[comment.commentDate] = [];

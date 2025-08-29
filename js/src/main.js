@@ -29,7 +29,7 @@ document.addEventListener('selectionchange', function(e) {
  * @param {*} type
  */
 function openWidget(selectedData, widgetExist, type) {
-    
+
     if (selectedData && !widgetExist) {
         new CleanTalkWidgetDoboard(selectedData, type);
     }
@@ -125,4 +125,27 @@ function scrollToNodePath(path) {
         return true;
     }
     return false;
+}
+
+function getAvatarData(authorDetails) {
+    let avatarStyle;
+    let avatarCSSClass;
+    let taskAuthorInitials;
+    let hideAvatar = authorDetails.hasOwnProperty('userIsIssuer') && authorDetails.userIsIssuer === true;
+    let initialsClass = 'doboard_task_widget-avatar-initials';
+    if (authorDetails.taskAuthorAvatarImgSrc === null) {
+        avatarStyle = hideAvatar ? 'opacity:0;' : '';
+        avatarCSSClass = 'doboard_task_widget-avatar_placeholder';
+        taskAuthorInitials = authorDetails.taskAuthorName.substring(0, 2).toUpperCase();
+    } else {
+        avatarStyle = `background-image:url(\'${authorDetails.taskAuthorAvatarImgSrc}\');`;
+        avatarCSSClass = 'doboard_task_widget-avatar_container';
+        initialsClass += ' doboard_task_widget-hidden_element';
+    }
+    return {
+        avatarStyle: avatarStyle,
+        avatarCSSClass: avatarCSSClass,
+        taskAuthorInitials: taskAuthorInitials,
+        initialsClass: initialsClass
+    }
 }

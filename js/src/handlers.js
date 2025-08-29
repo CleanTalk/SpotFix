@@ -53,7 +53,7 @@ async function getTaskDetails(params, taskId) {
 		issueComments: comments.map(comment => {
  				const { date, time } = formatDate(comment.commentDate);
  				return {
- 					commentAuthorAvatarSrc: comment.commentAuthorAvatarSrc || '/spotfix/img/empty_avatar.png',
+ 					commentAuthorAvatarSrc: comment.commentAuthorAvatarSrc || null,
  					commentAuthorName: comment.commentAuthorName || 'Unknown Author',
  					commentBody: comment.commentBody,
  					commentDate: date,
@@ -102,7 +102,7 @@ function getTaskAuthorDetails(taskId) {
 	const defaultData =
 		{
 			'taskId': null,
-			'taskAuthorAvatarImgSrc': '/spotfix/img/empty_avatar.png',
+			'taskAuthorAvatarImgSrc': null,
 			'taskAuthorName': 'Unknown Author'
 		};
 
@@ -130,7 +130,7 @@ async function getTaskLastMessageDetails(params, taskId) {
 			accountId: localStorage.getItem('spotfix_account_id'),
 			projectId: localStorage.getItem('spotfix_project_id')
 		}; */
-		
+
 		const details = await getTaskDetails(params, taskId);
 
 		if (details.issueComments && details.issueComments.length > 0) {
