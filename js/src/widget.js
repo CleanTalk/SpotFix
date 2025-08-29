@@ -168,6 +168,7 @@ class CleanTalkWidgetDoboard {
                 localStorage.setItem(`spotfix_task_data_${submitTaskResult.taskId}`, JSON.stringify(this.selectedData));
                 this.selectedData = {};
                 await this.createWidgetElement('all_issues');
+                hideContainersSpinner(false)
             });
         }
     }
@@ -223,10 +224,11 @@ class CleanTalkWidgetDoboard {
                 this.bindCreateTaskEvents();
                 break;
             case 'wrap':
-                this.getTaskCount();
+                await this.getTaskCount();
                 document.querySelector('.doboard_task_widget-wrap').addEventListener('click', () => {
                     this.createWidgetElement('all_issues');
                 });
+                hideContainersSpinner(false);
                 break;
             case 'all_issues':
                 let issuesQuantityOnPage = 0;
@@ -309,6 +311,7 @@ class CleanTalkWidgetDoboard {
 
                 // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
                 this.bindIssuesClick();
+                hideContainersSpinner(false);
                 break;
 
             case 'concrete_issue':
@@ -385,6 +388,7 @@ class CleanTalkWidgetDoboard {
                             await addTaskComment(this.params, this.currentActiveTaskId, commentText);
                             input.value = '';
                             await this.createWidgetElement('concrete_issue');
+                            hideContainersSpinner(false);
                         } catch (err) {
                             alert('Error when adding a comment: ' + err.message);
                         }
@@ -427,6 +431,7 @@ class CleanTalkWidgetDoboard {
                 scrollToNodePath(nodePath);
                 this.currentActiveTaskId = item.getAttribute('data-task-id');
                 await this.createWidgetElement('concrete_issue');
+                hideContainersSpinner(false);
             });
         });
     }

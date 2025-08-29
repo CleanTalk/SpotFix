@@ -127,6 +127,24 @@ function scrollToNodePath(path) {
     return false;
 }
 
+function hideContainersSpinner() {
+    const spinners = document.getElementsByClassName('doboard_task_widget-spinner_wrapper_for_containers');
+    if (spinners.length > 0) {
+        for (let i = 0; i < spinners.length ; i++) {
+            spinners[i].style.display = 'none';
+        }
+    }
+    const containerClassesToShow = ['doboard_task_widget-all_issues-container', 'doboard_task_widget-concrete_issues-container'];
+    for (let i = 0; i < containerClassesToShow.length ; i++) {
+        const containers = document.getElementsByClassName(containerClassesToShow[i]);
+        if (containers.length > 0) {
+            for (let i = 0; i < containers.length ; i++) {
+                containers[i].style.display = 'block';
+            }
+        }
+    }
+}
+
 function getAvatarData(authorDetails) {
     let avatarStyle;
     let avatarCSSClass;

@@ -322,6 +322,7 @@
 .doboard_task_widget-all_issues-container, .doboard_task_widget-concrete_issues-container {
     overflow: auto;
     max-height: 85vh;
+    display: none;
 }
 .doboard_task_widget-all_issues-container::-webkit-scrollbar,
     .doboard_task_widget-concrete_issues-container::-webkit-scrollbar,
@@ -604,6 +605,26 @@
     transform: scale(0.98);
 }
 
+.doboard_task_widget-spinner_wrapper_for_containers {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60px;
+    width: 100%;
+}
+
+.doboard_task_widget-spinner_for_containers {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: conic-gradient(transparent, #1C7857);
+    mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #fff 0);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(1turn); }
+}
 
 @media (max-width: 480px) {
     .doboard_task_widget {
