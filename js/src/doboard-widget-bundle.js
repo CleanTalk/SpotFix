@@ -523,7 +523,7 @@ function _getTaskDetails() {
                 time = _formatDate2.time;
               return {
                 commentAuthorAvatarSrc: comment.commentAuthorAvatarSrc || null,
-                commentAuthorName: comment.commentAuthorName || 'Unknown Author',
+                commentAuthorName: comment.commentAuthorName || 'Comment Author',
                 commentBody: comment.commentBody,
                 commentDate: date,
                 commentTime: time,
@@ -575,7 +575,7 @@ function getTaskAuthorDetails(taskId) {
   var defaultData = {
     'taskId': null,
     'taskAuthorAvatarImgSrc': null,
-    'taskAuthorName': 'Unknown Author'
+    'taskAuthorName': 'Task Author'
   };
   var data = mockUsersData.find(function (element) {
     return element.taskId === taskId;
@@ -799,7 +799,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                 // Make the submit button disable with spinner
                 submitButton = document.getElementById('doboard_task_widget-submit_button');
                 submitButton.disabled = true;
-                submitButton.style.cursor = 'waiting';
+                submitButton.innerText = 'Creating task...';
                 taskDetails = {
                   taskTitle: taskTitle,
                   taskDescription: taskDescription,

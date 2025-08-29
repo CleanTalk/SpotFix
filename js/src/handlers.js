@@ -54,7 +54,7 @@ async function getTaskDetails(params, taskId) {
  				const { date, time } = formatDate(comment.commentDate);
  				return {
  					commentAuthorAvatarSrc: comment.commentAuthorAvatarSrc || null,
- 					commentAuthorName: comment.commentAuthorName || 'Unknown Author',
+ 					commentAuthorName: comment.commentAuthorName || 'Comment Author',
  					commentBody: comment.commentBody,
  					commentDate: date,
  					commentTime: time,
@@ -103,7 +103,7 @@ function getTaskAuthorDetails(taskId) {
 		{
 			'taskId': null,
 			'taskAuthorAvatarImgSrc': null,
-			'taskAuthorName': 'Unknown Author'
+			'taskAuthorName': 'Task Author'
 		};
 
 	const data = mockUsersData.find((element) => element.taskId === taskId);

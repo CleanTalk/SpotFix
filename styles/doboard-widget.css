@@ -235,6 +235,12 @@
     color: #FFFFFF;
 }
 
+.doboard_task_widget-submit_button:disabled {
+    background: rgba(117, 148, 138, 0.92);
+    color: #FFFFFF;
+    cursor: wait;
+}
+
 .doboard_task_widget-issue-title {
     max-width: 200px;
     white-space: nowrap;
