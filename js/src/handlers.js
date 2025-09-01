@@ -17,24 +17,9 @@ async function getTaskFullDetails(params, taskId) {
 		date = dt.date;
 		time = dt.time;
 	}
-	// Avatar: if avatar is an object, take .m, otherwise string, otherwise default
-	let avatarSrc = '/spotfix/img/empty_avatar.png';
-	if (author && author.avatar) {
-		if (typeof author.avatar === 'object' && author.avatar.m) {
-			avatarSrc = author.avatar.m;
-		} else if (typeof author.avatar === 'string') {
-			avatarSrc = author.avatar;
-		}
-	}
-	// Name: if empty, fallback to email or 'Unknown Author'
-	let authorName = 'Unknown Author';
-	if (author) {
-		if (author.name && author.name.trim().length > 0) {
-			authorName = author.name;
-		} else if (author.email && author.email.trim().length > 0) {
-			authorName = author.email;
-		}
-	}
+ 	// Вычисляем аватар и имя через отдельные функции
+ 	let avatarSrc = getAvatarSrc(author);
+ 	let authorName = getAuthorName(author);
 
 	return {
 		taskId: taskId,
@@ -43,40 +28,21 @@ async function getTaskFullDetails(params, taskId) {
 		lastMessageText: lastComment ? lastComment.commentBody : 'No messages yet',
 		lastMessageTime: time,
 		issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
-		issueComments: comments.map(comment => {
-			const { date, time } = formatDate(comment.commentDate);
-			// Find author
-			let author = null;
-			if (users && users.length > 0) {
-				author = users.find(u => String(u.user_id) === String(comment.userId));
-			}
-			// Avatar: if avatar is an object, take .m, otherwise string, otherwise default
-			let avatarSrc = '/spotfix/img/empty_avatar.png';
-			if (author && author.avatar) {
-				if (typeof author.avatar === 'object' && author.avatar.m) {
-					avatarSrc = author.avatar.m;
-				} else if (typeof author.avatar === 'string') {
-					avatarSrc = author.avatar;
-				}
-			}
-			// Name: if empty, fallback to email or 'Unknown Author'
-			let authorName = 'Unknown Author';
-			if (author) {
-				if (author.name && author.name.trim().length > 0) {
-					authorName = author.name;
-				} else if (author.email && author.email.trim().length > 0) {
-					authorName = author.email;
-				}
-			}
-			return {
-				commentAuthorAvatarSrc: avatarSrc,
-				commentAuthorName: authorName,
-				commentBody: comment.commentBody,
-				commentDate: date,
-				commentTime: time,
-				commentUserId: comment.userId || 'Unknown User',
-			};
-		})
+ 		issueComments: comments.map(comment => {
+ 			const { date, time } = formatDate(comment.commentDate);
+ 			let author = null;
+ 			if (users && users.length > 0) {
+ 				author = users.find(u => String(u.user_id) === String(comment.userId));
+ 			}
+ 			return {
+ 				commentAuthorAvatarSrc: getAvatarSrc(author),
+ 				commentAuthorName: getAuthorName(author),
+ 				commentBody: comment.commentBody,
+ 				commentDate: date,
+ 				commentTime: time,
+ 				commentUserId: comment.userId || 'Unknown User',
+ 			};
+ 		})
 	};
 }
 
@@ -182,4 +148,28 @@ function getIssuesCounterString() {
 
 function saveUserData(tasks) {
 	// Save users avatars to local storage
+	}
+
+// Получить аватар автора
+function getAvatarSrc(author) {
+	if (author && author.avatar) {
+		if (typeof author.avatar === 'object' && author.avatar.m) {
+			return author.avatar.m;
+		} else if (typeof author.avatar === 'string') {
+			return author.avatar;
+		}
+	}
+	return '/spotfix/img/empty_avatar.png';
+}
+
+// Получить имя автора
+function getAuthorName(author) {
+	if (author) {
+		if (author.name && author.name.trim().length > 0) {
+			return author.name;
+		} else if (author.email && author.email.trim().length > 0) {
+			return author.email;
+		}
+	}
+	return 'Unknown Author';
 }
