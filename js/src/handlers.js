@@ -1,7 +1,88 @@
+async function getTaskFullDetails(params, taskId) {
+	const sessionId = localStorage.getItem('spotfix_session_id');
+	const comments = await getTaskCommentsDoboard(taskId, sessionId, params.accountId, params.projectToken);
+	const users = await getUserDoboard(sessionId, params.projectToken, params.accountId);
+
+	// Last comment
+	let lastComment = comments.length > 0 ? comments[0] : null;
+	// Author of the last comment
+	let author = null;
+	if (lastComment && users && users.length > 0) {
+		author = users.find(u => String(u.user_id) === String(lastComment.userId));
+	}
+	// Format date
+	let date = '', time = '';
+	if (lastComment) {
+		const dt = formatDate(lastComment.commentDate);
+		date = dt.date;
+		time = dt.time;
+	}
+	// Avatar: if avatar is an object, take .m, otherwise string, otherwise default
+	let avatarSrc = '/spotfix/img/empty_avatar.png';
+	if (author && author.avatar) {
+		if (typeof author.avatar === 'object' && author.avatar.m) {
+			avatarSrc = author.avatar.m;
+		} else if (typeof author.avatar === 'string') {
+			avatarSrc = author.avatar;
+		}
+	}
+	// Name: if empty, fallback to email or 'Unknown Author'
+	let authorName = 'Unknown Author';
+	if (author) {
+		if (author.name && author.name.trim().length > 0) {
+			authorName = author.name;
+		} else if (author.email && author.email.trim().length > 0) {
+			authorName = author.email;
+		}
+	}
+
+	return {
+		taskId: taskId,
+		taskAuthorAvatarImgSrc: avatarSrc,
+		taskAuthorName: authorName,
+		lastMessageText: lastComment ? lastComment.commentBody : 'No messages yet',
+		lastMessageTime: time,
+		issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
+		issueComments: comments.map(comment => {
+			const { date, time } = formatDate(comment.commentDate);
+			// Find author
+			let author = null;
+			if (users && users.length > 0) {
+				author = users.find(u => String(u.user_id) === String(comment.userId));
+			}
+			// Avatar: if avatar is an object, take .m, otherwise string, otherwise default
+			let avatarSrc = '/spotfix/img/empty_avatar.png';
+			if (author && author.avatar) {
+				if (typeof author.avatar === 'object' && author.avatar.m) {
+					avatarSrc = author.avatar.m;
+				} else if (typeof author.avatar === 'string') {
+					avatarSrc = author.avatar;
+				}
+			}
+			// Name: if empty, fallback to email or 'Unknown Author'
+			let authorName = 'Unknown Author';
+			if (author) {
+				if (author.name && author.name.trim().length > 0) {
+					authorName = author.name;
+				} else if (author.email && author.email.trim().length > 0) {
+					authorName = author.email;
+				}
+			}
+			return {
+				commentAuthorAvatarSrc: avatarSrc,
+				commentAuthorName: authorName,
+				commentBody: comment.commentBody,
+				commentDate: date,
+				commentTime: time,
+				commentUserId: comment.userId || 'Unknown User',
+			};
+		})
+	};
+}
+
 async function handleCreateTask(sessionId, taskDetails) {
 	try {
 		const result = await createTaskDoboard(sessionId, taskDetails);
-		// После создания задачи сразу добавляем комментарий
 		if (result && result.taskId && taskDetails.taskDescription) {
 			await addTaskComment({
 				projectToken: taskDetails.projectToken,
@@ -43,27 +124,6 @@ async function getAllTasks(params) {
 	return getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
 }
 
-async function getTaskDetails(params, taskId) {
-	const sessionId = localStorage.getItem('spotfix_session_id');
-	const comments = await getTaskCommentsDoboard(taskId, sessionId, params.accountId, params.projectToken);
-	console.log(comments);
-
-	return {
-		issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
-		issueComments: comments.map(comment => {
- 				const { date, time } = formatDate(comment.commentDate);
- 				return {
- 					commentAuthorAvatarSrc: comment.commentAuthorAvatarSrc || '/spotfix/img/empty_avatar.png',
- 					commentAuthorName: comment.commentAuthorName || 'Unknown Author',
- 					commentBody: comment.commentBody,
- 					commentDate: date,
- 					commentTime: time,
-					commentUserId: comment.userId || 'Unknown User',
- 				};
-		})
-	};
-}
-
 function formatDate(dateStr) {
 	 const months = [
 	 	"January", "February", "March", "April", "May", "June",
@@ -89,7 +149,9 @@ function formatDate(dateStr) {
 	 return { date, time };
 }
 
-function getTaskAuthorDetails(taskId) {
+function getTaskAuthorDetails(params, taskId) {
+	const sessionId = localStorage.getItem('spotfix_session_id');
+	
 	const mockUsersData =
 		[
 			{
@@ -120,32 +182,4 @@ function getIssuesCounterString() {
 
 function saveUserData(tasks) {
 	// Save users avatars to local storage
-}
-
-async function getTaskLastMessageDetails(params, taskId) {
-	try {
-		// Параметры для getTaskDetails
-/* 		const params = {
-			projectToken: localStorage.getItem('spotfix_project_token'),
-			accountId: localStorage.getItem('spotfix_account_id'),
-			projectId: localStorage.getItem('spotfix_project_id')
-		}; */
-		
-		const details = await getTaskDetails(params, taskId);
-
-		if (details.issueComments && details.issueComments.length > 0) {
-			const lastComment = details.issueComments[details.issueComments.length - 1];
-			return {
-				lastMessageText: lastComment.commentBody || '',
-				lastMessageTime: lastComment.commentTime || ''
-			};
-		}
-	} catch (e) {
-		console.error(e);
-	}
-
-	return {
-		lastMessageText: 'No messages yet',
-		lastMessageTime: ''
-	};
 }

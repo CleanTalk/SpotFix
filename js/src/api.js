@@ -215,3 +215,47 @@ const getTaskCommentsDoboard = async (taskId, sessionId, accountId, projectToken
     }
     throw new Error('Unknown error occurred during getting comments');
 };
+
+const getUserDoboard = async (sessionId, projectToken, accountId) => {
+    const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/user_get' +
+        '?session_id=' + sessionId +
+        '&project_token=' + projectToken, {
+        method: 'GET',
+    });
+
+    if (!response.ok) {
+        throw new Error('Getting user failed');
+    }
+
+    const responseBody = await response.json();
+	console.log(responseBody);
+
+    if (!responseBody) {
+        throw new Error('Invalid response from server');
+    }
+    // Формат 1: users внутри data
+    if (responseBody.data && responseBody.data.operation_status) {
+        if (responseBody.data.operation_status === 'FAILED') {
+            throw new Error(responseBody.data.operation_message);
+        }
+        if (responseBody.data.operation_status === 'SUCCESS') {
+            if (Array.isArray(responseBody.data.users)) {
+                return responseBody.data.users;
+            }
+            return [];
+        }
+    }
+    // Формат 2: users на верхнем уровне
+    if (responseBody.operation_status) {
+        if (responseBody.operation_status === 'FAILED') {
+            throw new Error(responseBody.operation_message);
+        }
+        if (responseBody.operation_status === 'SUCCESS') {
+            if (Array.isArray(responseBody.users)) {
+                return responseBody.users;
+            }
+            return [];
+        }
+    }
+    throw new Error('Unknown error occurred during getting user');
+};

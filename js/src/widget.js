@@ -176,7 +176,7 @@ class CleanTalkWidgetDoboard {
      * Create widget element
      * @return {HTMLElement} widget element
      */
-    async createWidgetElement(type, showOnlyCurrentPage = true) {
+    async createWidgetElement(type, showOnlyCurrentPage = false) {
         const widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
         widgetContainer.className = 'doboard_task_widget';
         widgetContainer.innerHTML = '';
@@ -201,7 +201,7 @@ class CleanTalkWidgetDoboard {
             case 'concrete_issue':
                 templateName = 'concrete_issue';
                 // todo: this is call duplicate!
-                const taskDetails = await getTaskDetails(this.params, this.currentActiveTaskId);
+                const taskDetails = await getTaskFullDetails(this.params, this.currentActiveTaskId);
                 variables = {
                     issueTitle: taskDetails.issueTitle,
                     issueComments: taskDetails.issueComments,
@@ -246,13 +246,13 @@ class CleanTalkWidgetDoboard {
                         // Data from local storage
                         const taskDataString = localStorage.getItem(`spotfix_task_data_${taskId}`);
                         const taskData = taskDataString ? JSON.parse(taskDataString) : null;
-                        const currentPageURL = taskData.pageURL;
-                        const taskNodePath = taskData.nodePath;
+                        const currentPageURL = taskData ? taskData.pageURL : '';
+                        const taskNodePath = taskData ? taskData.nodePath : '';
 
                         // Define publicity details
                         let taskPublicStatusImgSrc = '';
                         let taskPublicStatusHint = 'Task publicity is unknown'
-                        if (taskData.isPublic !== undefined) {
+                        if (taskData && taskData.isPublic !== undefined) {
                             if (taskData.isPublic) {
                                 taskPublicStatusImgSrc = '/spotfix/img/public.svg';
                                 taskPublicStatusHint = 'The task is public';
@@ -265,16 +265,16 @@ class CleanTalkWidgetDoboard {
                         if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
                             issuesQuantityOnPage++;
                             //define last message and update time
-                            let lastMessageDetails = await getTaskLastMessageDetails(this.params, taskId);
-                            console.log(lastMessageDetails);
-                            const authorDetails = getTaskAuthorDetails('1'); // todo MOCK!
+                            /* let lastMessageDetails = await getTaskLastMessageDetails(this.params, taskId);
+                            const authorDetails = getTaskAuthorDetails(this.params, '1'); // todo MOCK! */
+                            const taskFullDetails = await getTaskFullDetails(this.params, taskId);
                             const variables = {
                                 taskTitle: taskTitle || '',
-                                taskAuthorAvatarImgSrc: authorDetails.taskAuthorAvatarImgSrc,
-                                taskAuthorName: authorDetails.taskAuthorName,
+                                taskAuthorAvatarImgSrc: taskFullDetails.taskAuthorAvatarImgSrc,
+                                taskAuthorName: taskFullDetails.taskAuthorName,
                                 taskPublicStatusImgSrc: taskPublicStatusImgSrc,
                                 taskPublicStatusHint: taskPublicStatusHint,
-                                taskLastMessage: lastMessageDetails.lastMessageText,
+                                taskLastMessage: taskFullDetails.lastMessageText,
                                 taskLastUpdate: lastMessageTime,
                                 nodePath: taskNodePath,
                                 taskId: taskId
@@ -306,7 +306,7 @@ class CleanTalkWidgetDoboard {
                 break;
 
             case 'concrete_issue':
-                const taskDetails = await getTaskDetails(this.params, this.currentActiveTaskId);
+                const taskDetails = await getTaskFullDetails(this.params, this.currentActiveTaskId);
 	            console.log(taskDetails);
 
                 variables = {
