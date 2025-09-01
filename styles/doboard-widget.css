@@ -69,7 +69,6 @@
     border-style: none solid solid solid;
     border-color: #BBC7D1;
     box-shadow: 0px 4px 15px 8px #CACACA40;
-    overflow: auto;
 }
 
 .doboard_task_widget-element-container {
@@ -236,6 +235,12 @@
     color: #FFFFFF;
 }
 
+.doboard_task_widget-submit_button:disabled {
+    background: rgba(117, 148, 138, 0.92);
+    color: #FFFFFF;
+    cursor: wait;
+}
+
 .doboard_task_widget-issue-title {
     max-width: 200px;
     white-space: nowrap;
@@ -277,8 +282,29 @@
 }
 
 .doboard_task_widget-avatar_container {
-    width: 44px;
     height: 44px;
+    width: 44px;
+    border-radius: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+}
+
+.doboard_task_widget-avatar_placeholder{
+    min-height: 44px;
+    min-width: 44px;
+    border-radius: 50%;
+    font-size: 24px;
+    line-height: 1.2083333333;
+    padding: 0;
+    background: #1C7857;
+    display: inline-grid;
+    align-content: center;
+    justify-content: center;
+}
+
+.doboard_task_widget-avatar-initials {
+    color: #FFFFFF;
 }
 
 .doboard_task_widget-avatar {
@@ -299,11 +325,16 @@
     border-bottom: none;
 }
 
-.doboard_task_widget-all_issues {
+.doboard_task_widget-all_issues-container, .doboard_task_widget-concrete_issues-container {
     overflow: auto;
+    max-height: 85vh;
+    display: none;
 }
-
-.doboard_task_widget-all_issues::-webkit-scrollbar {
+.doboard_task_widget-all_issues-container::-webkit-scrollbar,
+    .doboard_task_widget-concrete_issues-container::-webkit-scrollbar,
+    .doboard_task_widget-content::-webkit-scrollbar,
+    .doboard_task_widget-all_issues::-webkit-scrollbar
+{
     width: 0;
 }
 
@@ -329,7 +360,10 @@
 }
 
 .doboard_task_widget-task_last_message {
-
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 85%;
 }
 
 .doboard_task_widget_return_to_all {
@@ -509,8 +543,12 @@
 /** SENDING NEW COMMENT **/
 
 .doboard_task_widget-send_message {
-    padding-top: 10px;
+    padding: 10px 0 4px 0;
     border-top: 1px solid #BBC7D1;
+    position: sticky;
+    background: white;
+    bottom: 0;
+    z-index: 4;
 }
 
 .doboard_task_widget-send_message_elements_wrapper {
@@ -573,6 +611,26 @@
     transform: scale(0.98);
 }
 
+.doboard_task_widget-spinner_wrapper_for_containers {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60px;
+    width: 100%;
+}
+
+.doboard_task_widget-spinner_for_containers {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: conic-gradient(transparent, #1C7857);
+    mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #fff 0);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(1turn); }
+}
 
 @media (max-width: 480px) {
     .doboard_task_widget {

@@ -29,7 +29,7 @@ document.addEventListener('selectionchange', function(e) {
  * @param {*} type
  */
 function openWidget(selectedData, widgetExist, type) {
-    
+
     if (selectedData && !widgetExist) {
         new CleanTalkWidgetDoboard(selectedData, type);
     }
@@ -125,4 +125,45 @@ function scrollToNodePath(path) {
         return true;
     }
     return false;
+}
+
+function hideContainersSpinner() {
+    const spinners = document.getElementsByClassName('doboard_task_widget-spinner_wrapper_for_containers');
+    if (spinners.length > 0) {
+        for (let i = 0; i < spinners.length ; i++) {
+            spinners[i].style.display = 'none';
+        }
+    }
+    const containerClassesToShow = ['doboard_task_widget-all_issues-container', 'doboard_task_widget-concrete_issues-container'];
+    for (let i = 0; i < containerClassesToShow.length ; i++) {
+        const containers = document.getElementsByClassName(containerClassesToShow[i]);
+        if (containers.length > 0) {
+            for (let i = 0; i < containers.length ; i++) {
+                containers[i].style.display = 'block';
+            }
+        }
+    }
+}
+
+function getAvatarData(authorDetails) {
+    let avatarStyle;
+    let avatarCSSClass;
+    let taskAuthorInitials;
+    let hideAvatar = authorDetails.hasOwnProperty('userIsIssuer') && authorDetails.userIsIssuer === true;
+    let initialsClass = 'doboard_task_widget-avatar-initials';
+    if (authorDetails.taskAuthorAvatarImgSrc === null) {
+        avatarStyle = hideAvatar ? 'opacity:0;' : '';
+        avatarCSSClass = 'doboard_task_widget-avatar_placeholder';
+        taskAuthorInitials = authorDetails.taskAuthorName.substring(0, 2).toUpperCase();
+    } else {
+        avatarStyle = `background-image:url(\'${authorDetails.taskAuthorAvatarImgSrc}\');`;
+        avatarCSSClass = 'doboard_task_widget-avatar_container';
+        initialsClass += ' doboard_task_widget-hidden_element';
+    }
+    return {
+        avatarStyle: avatarStyle,
+        avatarCSSClass: avatarCSSClass,
+        taskAuthorInitials: taskAuthorInitials,
+        initialsClass: initialsClass
+    }
 }

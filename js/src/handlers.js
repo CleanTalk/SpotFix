@@ -130,8 +130,8 @@ function getTaskAuthorDetails(params, taskId) {
 	const defaultData =
 		{
 			'taskId': null,
-			'taskAuthorAvatarImgSrc': '/spotfix/img/empty_avatar.png',
-			'taskAuthorName': 'Unknown Author'
+			'taskAuthorAvatarImgSrc': null,
+			'taskAuthorName': 'Task Author'
 		};
 
 	const data = mockUsersData.find((element) => element.taskId === taskId);
