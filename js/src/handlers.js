@@ -117,7 +117,7 @@ function formatDate(dateStr) {
 
 function getTaskAuthorDetails(params, taskId) {
 	const sessionId = localStorage.getItem('spotfix_session_id');
-	
+
 	const mockUsersData =
 		[
 			{
@@ -159,7 +159,7 @@ function getAvatarSrc(author) {
 			return author.avatar;
 		}
 	}
-	return '/spotfix/img/empty_avatar.png';
+	return null;
 }
 
 // Получить имя автора
