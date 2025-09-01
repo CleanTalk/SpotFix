@@ -53,8 +53,8 @@ async function getTaskDetails(params, taskId) {
 		issueComments: comments.map(comment => {
  				const { date, time } = formatDate(comment.commentDate);
  				return {
- 					commentAuthorAvatarSrc: comment.commentAuthorAvatarSrc || '/spotfix/img/empty_avatar.png',
- 					commentAuthorName: comment.commentAuthorName || 'Unknown Author',
+ 					commentAuthorAvatarSrc: comment.commentAuthorAvatarSrc || null,
+ 					commentAuthorName: comment.commentAuthorName || 'Comment Author',
  					commentBody: comment.commentBody,
  					commentDate: date,
  					commentTime: time,
@@ -102,8 +102,8 @@ function getTaskAuthorDetails(taskId) {
 	const defaultData =
 		{
 			'taskId': null,
-			'taskAuthorAvatarImgSrc': '/spotfix/img/empty_avatar.png',
-			'taskAuthorName': 'Unknown Author'
+			'taskAuthorAvatarImgSrc': null,
+			'taskAuthorName': 'Task Author'
 		};
 
 	const data = mockUsersData.find((element) => element.taskId === taskId);
@@ -130,7 +130,7 @@ async function getTaskLastMessageDetails(params, taskId) {
 			accountId: localStorage.getItem('spotfix_account_id'),
 			projectId: localStorage.getItem('spotfix_project_id')
 		}; */
-		
+
 		const details = await getTaskDetails(params, taskId);
 
 		if (details.issueComments && details.issueComments.length > 0) {

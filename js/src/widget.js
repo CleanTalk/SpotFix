@@ -130,7 +130,7 @@ class CleanTalkWidgetDoboard {
                 // Make the submit button disable with spinner
                 const submitButton = document.getElementById('doboard_task_widget-submit_button');
                 submitButton.disabled = true;
-                submitButton.style.cursor = 'waiting';
+                submitButton.innerText = 'Creating task...';
 
                 let taskDetails = {
                     taskTitle: taskTitle,
@@ -168,6 +168,7 @@ class CleanTalkWidgetDoboard {
                 localStorage.setItem(`spotfix_task_data_${submitTaskResult.taskId}`, JSON.stringify(this.selectedData));
                 this.selectedData = {};
                 await this.createWidgetElement('all_issues');
+                hideContainersSpinner(false)
             });
         }
     }
@@ -223,10 +224,11 @@ class CleanTalkWidgetDoboard {
                 this.bindCreateTaskEvents();
                 break;
             case 'wrap':
-                this.getTaskCount();
+                await this.getTaskCount();
                 document.querySelector('.doboard_task_widget-wrap').addEventListener('click', () => {
                     this.createWidgetElement('all_issues');
                 });
+                hideContainersSpinner(false);
                 break;
             case 'all_issues':
                 let issuesQuantityOnPage = 0;
@@ -246,6 +248,9 @@ class CleanTalkWidgetDoboard {
                         // Data from local storage
                         const taskDataString = localStorage.getItem(`spotfix_task_data_${taskId}`);
                         const taskData = taskDataString ? JSON.parse(taskDataString) : null;
+                        if (!taskData) {
+                            continue;
+                        }
                         const currentPageURL = taskData.pageURL;
                         const taskNodePath = taskData.nodePath;
 
@@ -266,18 +271,21 @@ class CleanTalkWidgetDoboard {
                             issuesQuantityOnPage++;
                             //define last message and update time
                             let lastMessageDetails = await getTaskLastMessageDetails(this.params, taskId);
-                            console.log(lastMessageDetails);
-                            const authorDetails = getTaskAuthorDetails('1'); // todo MOCK!
+                            const authorDetails = getTaskAuthorDetails(taskId); // todo MOCK!
+                            const avatarData = getAvatarData(authorDetails);
                             const variables = {
                                 taskTitle: taskTitle || '',
-                                taskAuthorAvatarImgSrc: authorDetails.taskAuthorAvatarImgSrc,
                                 taskAuthorName: authorDetails.taskAuthorName,
                                 taskPublicStatusImgSrc: taskPublicStatusImgSrc,
                                 taskPublicStatusHint: taskPublicStatusHint,
                                 taskLastMessage: lastMessageDetails.lastMessageText,
                                 taskLastUpdate: lastMessageTime,
                                 nodePath: taskNodePath,
-                                taskId: taskId
+                                taskId: taskId,
+                                avatarCSSClass: avatarData.avatarCSSClass,
+                                avatarStyle: avatarData.avatarStyle,
+                                taskAuthorInitials: avatarData.taskAuthorInitials,
+                                initialsClass: avatarData.initialsClass
                             };
                             document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += await this.loadTemplate('list_issues', variables);
 
@@ -303,6 +311,7 @@ class CleanTalkWidgetDoboard {
 
                 // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
                 this.bindIssuesClick();
+                hideContainersSpinner(false);
                 break;
 
             case 'concrete_issue':
@@ -324,8 +333,12 @@ class CleanTalkWidgetDoboard {
                     issuesCommentsContainer.innerHTML = '';
                     for (const comment of taskDetails.issueComments) {
                         userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
+                        const avatarData = getAvatarData({
+                            taskAuthorAvatarImgSrc: comment.commentAuthorAvatarSrc,
+                            taskAuthorName: comment.commentAuthorName,
+                            userIsIssuer: userIsIssuer
+                        });
                         const commentData = {
-                            commentAuthorAvatarSrc: comment.commentAuthorAvatarSrc,
                             commentAuthorName: comment.commentAuthorName,
                             commentBody: comment.commentBody,
                             commentDate: comment.commentDate,
@@ -335,9 +348,10 @@ class CleanTalkWidgetDoboard {
                             commentContainerBackgroundSrc: userIsIssuer
                                 ? '/spotfix/img/comment-self-background.png'
                                 : '/spotfix/img/comment-other-background.png',
-                            additionalClasses: userIsIssuer
-                                ? 'doboard_task_widget-hidden_element'
-                                : ''
+                            avatarCSSClass: avatarData.avatarCSSClass,
+                            avatarStyle: avatarData.avatarStyle,
+                            taskAuthorInitials: avatarData.taskAuthorInitials,
+                            initialsClass: avatarData.initialsClass
                         };
                         if (dayMessagesData[comment.commentDate] === undefined) {
                             dayMessagesData[comment.commentDate] = [];
@@ -374,6 +388,7 @@ class CleanTalkWidgetDoboard {
                             await addTaskComment(this.params, this.currentActiveTaskId, commentText);
                             input.value = '';
                             await this.createWidgetElement('concrete_issue');
+                            hideContainersSpinner(false);
                         } catch (err) {
                             alert('Error when adding a comment: ' + err.message);
                         }
@@ -416,6 +431,7 @@ class CleanTalkWidgetDoboard {
                 scrollToNodePath(nodePath);
                 this.currentActiveTaskId = item.getAttribute('data-task-id');
                 await this.createWidgetElement('concrete_issue');
+                hideContainersSpinner(false);
             });
         });
     }
