@@ -109,7 +109,7 @@ function retrieveNodeFromPath(path) {
  * @return {Element|null}
  */
 function taskAnalysis(taskSelectedData) {
-    const nodePath = taskSelectedData.nodePath;
+    const nodePath = taskSelectedData ? taskSelectedData.nodePath : '';
     return retrieveNodeFromPath(nodePath);
 }
 

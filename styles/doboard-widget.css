@@ -282,8 +282,8 @@
 }
 
 .doboard_task_widget-avatar_container {
-    min-height: 44px;
-    min-width: 44px;
+    height: 44px;
+    width: 44px;
     border-radius: 50%;
     background-repeat: no-repeat;
     background-position: center;

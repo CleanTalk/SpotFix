@@ -1,7 +1,54 @@
+async function getTaskFullDetails(params, taskId) {
+	const sessionId = localStorage.getItem('spotfix_session_id');
+	const comments = await getTaskCommentsDoboard(taskId, sessionId, params.accountId, params.projectToken);
+	const users = await getUserDoboard(sessionId, params.projectToken, params.accountId);
+
+	// Last comment
+	let lastComment = comments.length > 0 ? comments[0] : null;
+	// Author of the last comment
+	let author = null;
+	if (lastComment && users && users.length > 0) {
+		author = users.find(u => String(u.user_id) === String(lastComment.userId));
+	}
+	// Format date
+	let date = '', time = '';
+	if (lastComment) {
+		const dt = formatDate(lastComment.commentDate);
+		date = dt.date;
+		time = dt.time;
+	}
+ 	// Вычисляем аватар и имя через отдельные функции
+ 	let avatarSrc = getAvatarSrc(author);
+ 	let authorName = getAuthorName(author);
+
+	return {
+		taskId: taskId,
+		taskAuthorAvatarImgSrc: avatarSrc,
+		taskAuthorName: authorName,
+		lastMessageText: lastComment ? lastComment.commentBody : 'No messages yet',
+		lastMessageTime: time,
+		issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
+ 		issueComments: comments.map(comment => {
+ 			const { date, time } = formatDate(comment.commentDate);
+ 			let author = null;
+ 			if (users && users.length > 0) {
+ 				author = users.find(u => String(u.user_id) === String(comment.userId));
+ 			}
+ 			return {
+ 				commentAuthorAvatarSrc: getAvatarSrc(author),
+ 				commentAuthorName: getAuthorName(author),
+ 				commentBody: comment.commentBody,
+ 				commentDate: date,
+ 				commentTime: time,
+ 				commentUserId: comment.userId || 'Unknown User',
+ 			};
+ 		})
+	};
+}
+
 async function handleCreateTask(sessionId, taskDetails) {
 	try {
 		const result = await createTaskDoboard(sessionId, taskDetails);
-		// После создания задачи сразу добавляем комментарий
 		if (result && result.taskId && taskDetails.taskDescription) {
 			await addTaskComment({
 				projectToken: taskDetails.projectToken,
@@ -43,27 +90,6 @@ async function getAllTasks(params) {
 	return getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
 }
 
-async function getTaskDetails(params, taskId) {
-	const sessionId = localStorage.getItem('spotfix_session_id');
-	const comments = await getTaskCommentsDoboard(taskId, sessionId, params.accountId, params.projectToken);
-	console.log(comments);
-
-	return {
-		issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
-		issueComments: comments.map(comment => {
- 				const { date, time } = formatDate(comment.commentDate);
- 				return {
- 					commentAuthorAvatarSrc: comment.commentAuthorAvatarSrc || null,
- 					commentAuthorName: comment.commentAuthorName || 'Comment Author',
- 					commentBody: comment.commentBody,
- 					commentDate: date,
- 					commentTime: time,
-					commentUserId: comment.userId || 'Unknown User',
- 				};
-		})
-	};
-}
-
 function formatDate(dateStr) {
 	 const months = [
 	 	"January", "February", "March", "April", "May", "June",
@@ -89,7 +115,9 @@ function formatDate(dateStr) {
 	 return { date, time };
 }
 
-function getTaskAuthorDetails(taskId) {
+function getTaskAuthorDetails(params, taskId) {
+	const sessionId = localStorage.getItem('spotfix_session_id');
+	
 	const mockUsersData =
 		[
 			{
@@ -120,32 +148,28 @@ function getIssuesCounterString() {
 
 function saveUserData(tasks) {
 	// Save users avatars to local storage
-}
-
-async function getTaskLastMessageDetails(params, taskId) {
-	try {
-		// Параметры для getTaskDetails
-/* 		const params = {
-			projectToken: localStorage.getItem('spotfix_project_token'),
-			accountId: localStorage.getItem('spotfix_account_id'),
-			projectId: localStorage.getItem('spotfix_project_id')
-		}; */
-
-		const details = await getTaskDetails(params, taskId);
-
-		if (details.issueComments && details.issueComments.length > 0) {
-			const lastComment = details.issueComments[details.issueComments.length - 1];
-			return {
-				lastMessageText: lastComment.commentBody || '',
-				lastMessageTime: lastComment.commentTime || ''
-			};
-		}
-	} catch (e) {
-		console.error(e);
 	}
 
-	return {
-		lastMessageText: 'No messages yet',
-		lastMessageTime: ''
-	};
+// Получить аватар автора
+function getAvatarSrc(author) {
+	if (author && author.avatar) {
+		if (typeof author.avatar === 'object' && author.avatar.m) {
+			return author.avatar.m;
+		} else if (typeof author.avatar === 'string') {
+			return author.avatar;
+		}
+	}
+	return '/spotfix/img/empty_avatar.png';
+}
+
+// Получить имя автора
+function getAuthorName(author) {
+	if (author) {
+		if (author.name && author.name.trim().length > 0) {
+			return author.name;
+		} else if (author.email && author.email.trim().length > 0) {
+			return author.email;
+		}
+	}
+	return 'Unknown Author';
 }
