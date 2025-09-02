@@ -231,6 +231,7 @@ class CleanTalkWidgetDoboard {
                 hideContainersSpinner(false);
                 break;
             case 'all_issues':
+                this.removeTextSelection();
                 let issuesQuantityOnPage = 0;
                 //let tasks = await getUserTasks(this.params);
                 let tasks = await getAllTasks(this.params);
@@ -550,8 +551,11 @@ class CleanTalkWidgetDoboard {
      * Hide the widget
      */
     hide() {
+        this.removeTextSelection();
         this.createWidgetElement('wrap');
+    }
 
+    removeTextSelection() {
         const textSelectionclassName = 'doboard_task_widget-text_selection';
         const spans = document.querySelectorAll('.' + textSelectionclassName);
         spans.forEach(span => {
