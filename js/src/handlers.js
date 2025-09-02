@@ -85,9 +85,13 @@ async function getAllTasks(params) {
 	const projectToken = params.projectToken;
 	const sessionId = localStorage.getItem('spotfix_session_id');
 	const tasksData = await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
-	//console.log(tasksData);
 
-	return getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
+    // Get only tasks with metadata
+	const filteredTaskData =  tasksData.filter(task => {
+        return task.taskMeta;
+    });
+
+    return filteredTaskData;
 }
 
 function formatDate(dateStr) {
@@ -145,10 +149,6 @@ function getIssuesCounterString() {
 	}
 	return `(${mock.tasksOnPage}/${mock.totalTasks})`;
 }
-
-function saveUserData(tasks) {
-	// Save users avatars to local storage
-	}
 
 // Получить аватар автора
 function getAvatarSrc(author) {

@@ -140,6 +140,7 @@ class CleanTalkWidgetDoboard {
                     projectToken: this.params.projectToken,
                     projectId: this.params.projectId,
                     accountId: this.params.accountId,
+                    taskMeta: JSON.stringify(this.selectedData),
                 };
                 if ( userEmail ) {
                     taskDetails.userEmail = userEmail
@@ -165,7 +166,6 @@ class CleanTalkWidgetDoboard {
                     this.selectedData.isPublic = submitTaskResult.isPublic
                 }
 
-                localStorage.setItem(`spotfix_task_data_${submitTaskResult.taskId}`, JSON.stringify(this.selectedData));
                 this.selectedData = {};
                 await this.createWidgetElement('all_issues');
                 hideContainersSpinner(false)
@@ -233,9 +233,7 @@ class CleanTalkWidgetDoboard {
             case 'all_issues':
                 this.removeTextSelection();
                 let issuesQuantityOnPage = 0;
-                //let tasks = await getUserTasks(this.params);
                 let tasks = await getAllTasks(this.params);
-                saveUserData(tasks);
                 if (tasks.length > 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
                     for (let i = 0; i < tasks.length; i++) {
@@ -244,10 +242,8 @@ class CleanTalkWidgetDoboard {
                         // Data from api
                         const taskId = elTask.taskId;
                         const taskTitle = elTask.taskTitle;
+                        const taskDataString = elTask.taskMeta;
                         const { time: lastMessageTime } = formatDate(elTask.taskLastUpdate);
-
-                        // Data from local storage
-                        const taskDataString = localStorage.getItem(`spotfix_task_data_${taskId}`);
                         const taskData = taskDataString ? JSON.parse(taskDataString) : null;
                         const currentPageURL = taskData ? taskData.pageURL : '';
                         const taskNodePath = taskData ? taskData.nodePath : '';
@@ -316,8 +312,6 @@ class CleanTalkWidgetDoboard {
 
             case 'concrete_issue':
                 const taskDetails = await getTaskFullDetails(this.params, this.currentActiveTaskId);
-	            console.log(taskDetails);
-
                 variables = {
                     issueTitle: taskDetails.issueTitle,
                     issueComments: taskDetails.issueComments,
@@ -413,7 +407,6 @@ class CleanTalkWidgetDoboard {
         if ( paperclipController ) {
             paperclipController.addEventListener('click', function(e) {
                 e.preventDefault();
-                console.log('click')
                 alert('This action is not implemented yet..');
             });
         }

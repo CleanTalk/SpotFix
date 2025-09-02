@@ -9,6 +9,7 @@ const createTaskDoboard = async (sessionId, taskDetails) => {
     formData.append('user_id', localStorage.getItem('spotfix_user_id'));
     formData.append('name', taskDetails.taskTitle);
     formData.append('comment', taskDetails.taskDescription);
+    formData.append('meta', taskDetails.taskMeta);
     const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/task_add', {
         method: 'POST',
         body: formData,
@@ -173,6 +174,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
             taskLastUpdate: task.updated,
             taskCreated: task.created,
             taskCreatorTaskUser: task.creator_user_id,
+            taskMeta: task.meta,
         }))
     }
     throw new Error('Unknown error occurred during getting tasks');
@@ -228,7 +230,6 @@ const getUserDoboard = async (sessionId, projectToken, accountId) => {
     }
 
     const responseBody = await response.json();
-	console.log(responseBody);
 
     if (!responseBody) {
         throw new Error('Invalid response from server');
