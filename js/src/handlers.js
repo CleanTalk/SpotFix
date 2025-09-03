@@ -28,7 +28,11 @@ async function getTaskFullDetails(params, taskId) {
 		lastMessageText: lastComment ? lastComment.commentBody : 'No messages yet',
 		lastMessageTime: time,
 		issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
- 		issueComments: comments.map(comment => {
+ 		issueComments: comments
+            .sort((a, b) => {
+                return new Date(a.commentDate) - new Date(b.commentDate);
+            })
+            .map(comment => {
  			const { date, time } = formatDate(comment.commentDate);
  			let author = null;
  			if (users && users.length > 0) {
