@@ -202,10 +202,16 @@ class CleanTalkWidgetDoboard {
             case 'concrete_issue':
                 templateName = 'concrete_issue';
                 // todo: this is call duplicate!
-                const taskDetails = await getTaskFullDetails(this.params, this.currentActiveTaskId);
+                getTaskFullDetails(this.params, this.currentActiveTaskId).then(taskDetails=>{
+                    const issueTitle = taskDetails.issueTitle;
+                    const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
+                    if ( issueTitleElement ) {
+                        issueTitleElement.innerHTML = issueTitle;
+                    }
+                });
+
                 variables = {
-                    issueTitle: taskDetails.issueTitle,
-                    issueComments: taskDetails.issueComments,
+                    issueTitle: '...',
                     issuesCounter: getIssuesCounterString(),
                     paperclipImgSrc: '/spotfix/img/send-message--paperclip.svg',
                     sendButtonImgSrc: '/spotfix/img/send-message--button.svg',
