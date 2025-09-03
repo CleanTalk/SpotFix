@@ -380,6 +380,15 @@ class CleanTalkWidgetDoboard {
                     issuesCommentsContainer.innerHTML = 'No comments';
                 }
 
+                // Scroll to the bottom comments
+                setTimeout(() => {
+                    const contentContainer = document.querySelector('.doboard_task_widget-content');
+                    contentContainer.scrollTo({
+                        top: contentContainer.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }, 0);
+
                 const sendForm = document.querySelector('.doboard_task_widget-send_message form');
                 if (sendForm) {
                     sendForm.addEventListener('submit', async (e) => {

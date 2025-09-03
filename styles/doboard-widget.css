@@ -68,7 +68,10 @@
     border: 1px;
     border-style: none solid solid solid;
     border-color: #BBC7D1;
-    box-shadow: 0px 4px 15px 8px #CACACA40;
+    box-shadow: 0 4px 15px 8px #CACACA40;
+    max-height: 410px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .doboard_task_widget-element-container {
