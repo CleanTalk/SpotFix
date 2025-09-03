@@ -918,7 +918,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                 // Make the submit button disable with spinner
                 submitButton = document.getElementById('doboard_task_widget-submit_button');
                 submitButton.disabled = true;
-                submitButton.innerText = 'Creating task...';
+                submitButton.innerText = 'Creating spot...';
                 taskDetails = {
                   taskTitle: taskTitle,
                   taskDescription: taskDescription,

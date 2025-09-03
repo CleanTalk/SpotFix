@@ -130,7 +130,7 @@ class CleanTalkWidgetDoboard {
                 // Make the submit button disable with spinner
                 const submitButton = document.getElementById('doboard_task_widget-submit_button');
                 submitButton.disabled = true;
-                submitButton.innerText = 'Creating task...';
+                submitButton.innerText = 'Creating spot...';
 
                 let taskDetails = {
                     taskTitle: taskTitle,
@@ -316,7 +316,7 @@ class CleanTalkWidgetDoboard {
                     issueTitle: taskDetails.issueTitle,
                     issueComments: taskDetails.issueComments,
                     issuesCounter: getIssuesCounterString(),
-                    chevronBackTitle: 'Back to all issues',
+                    chevronBackTitle: 'Back to all spots',
                 };
                 const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
                 let dayMessagesData = [];
