@@ -142,12 +142,8 @@ function getTaskAuthorDetails(params, taskId) {
 	return data === undefined ? defaultData : data;
 }
 
-function getIssuesCounterString() {
-	const mock = {
-		'totalTasks': 15,
-		'tasksOnPage': 1
-	}
-	return `(${mock.tasksOnPage}/${mock.totalTasks})`;
+function getIssuesCounterString(onPageSpotsCount, totalSpotsCount) {
+	return `(${onPageSpotsCount}/${totalSpotsCount})`;
 }
 
 // Получить аватар автора

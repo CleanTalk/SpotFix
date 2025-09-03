@@ -7,6 +7,8 @@ class CleanTalkWidgetDoboard {
     widgetElement = null;
     params = {};
     currentActiveTaskId = 0;
+    savedIssuesQuantityOnPage = 0;
+    savedIssuesQuantityAll = 0;
 
     /**
      * Constructor
@@ -177,7 +179,7 @@ class CleanTalkWidgetDoboard {
      * Create widget element
      * @return {HTMLElement} widget element
      */
-    async createWidgetElement(type, showOnlyCurrentPage = false) {
+    async createWidgetElement(type, showOnlyCurrentPage = true) {
         const widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
         widgetContainer.className = 'doboard_task_widget';
         widgetContainer.innerHTML = '';
@@ -212,7 +214,7 @@ class CleanTalkWidgetDoboard {
 
                 variables = {
                     issueTitle: '...',
-                    issuesCounter: getIssuesCounterString(),
+                    issuesCounter: getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll),
                     paperclipImgSrc: '/spotfix/img/send-message--paperclip.svg',
                     sendButtonImgSrc: '/spotfix/img/send-message--button.svg',
                     msgFieldBackgroundImgSrc: '/spotfix/img/send-message--input-background.svg',
@@ -305,7 +307,9 @@ class CleanTalkWidgetDoboard {
                             }
                         }
                     }
-                    document.querySelector('.doboard_task_widget-header span').innerText += ' (' + issuesQuantityOnPage + ')';
+                    this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
+                    this.savedIssuesQuantityAll = tasks.length;
+                    document.querySelector('.doboard_task_widget-header span').innerText += ' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll);
                 }
                 if (tasks.length === 0 || issuesQuantityOnPage === 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
