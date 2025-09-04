@@ -478,9 +478,12 @@ class CleanTalkWidgetDoboard {
         const sessionId = localStorage.getItem('spotfix_session_id');
 
         const tasks = await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
+        const filteredTasks = tasks.filter(task => {
+            return task.taskMeta;
+        });
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
         if ( taskCountElement ) {
-            taskCountElement.innerText = tasks.length;
+            taskCountElement.innerText = filteredTasks.length;
             taskCountElement.classList.remove('hidden');
         }
     }
