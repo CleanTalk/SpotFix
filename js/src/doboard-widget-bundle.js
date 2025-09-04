@@ -1464,7 +1464,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
     key: "getTaskCount",
     value: function () {
       var _getTaskCount = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee14() {
-        var projectToken, sessionId, tasks, taskCountElement;
+        var projectToken, sessionId, tasks, filteredTasks, taskCountElement;
         return _regeneratorRuntime().wrap(function _callee14$(_context14) {
           while (1) switch (_context14.prev = _context14.next) {
             case 0:
@@ -1480,12 +1480,15 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               return getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
             case 6:
               tasks = _context14.sent;
+              filteredTasks = tasks.filter(function (task) {
+                return task.taskMeta;
+              });
               taskCountElement = document.getElementById('doboard_task_widget-task_count');
               if (taskCountElement) {
-                taskCountElement.innerText = tasks.length;
+                taskCountElement.innerText = filteredTasks.length;
                 taskCountElement.classList.remove('hidden');
               }
-            case 9:
+            case 10:
             case "end":
               return _context14.stop();
           }
