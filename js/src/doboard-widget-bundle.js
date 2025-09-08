@@ -984,6 +984,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           variables,
           issuesQuantityOnPage,
           tasks,
+          spotsToBeHighlighted,
           i,
           elTask,
           taskId,
@@ -999,13 +1000,6 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           taskFullDetails,
           avatarData,
           _variables,
-          taskElement,
-          text,
-          start,
-          end,
-          selectedText,
-          beforeText,
-          afterText,
           taskDetails,
           issuesCommentsContainer,
           dayMessagesData,
@@ -1079,7 +1073,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               widgetContainer.innerHTML = _context11.sent;
               document.body.appendChild(widgetContainer);
               _context11.t1 = type;
-              _context11.next = _context11.t1 === 'create_issue' ? 28 : _context11.t1 === 'wrap' ? 30 : _context11.t1 === 'all_issues' ? 35 : _context11.t1 === 'concrete_issue' ? 78 : 122;
+              _context11.next = _context11.t1 === 'create_issue' ? 28 : _context11.t1 === 'wrap' ? 30 : _context11.t1 === 'all_issues' ? 35 : _context11.t1 === 'concrete_issue' ? 79 : 122;
               break;
             case 28:
               this.bindCreateTaskEvents();
@@ -1100,13 +1094,14 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               return getAllTasks(this.params);
             case 39:
               tasks = _context11.sent;
+              spotsToBeHighlighted = [];
               if (!(tasks.length > 0)) {
-                _context11.next = 74;
+                _context11.next = 75;
                 break;
               }
               document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
               i = 0;
-            case 43:
+            case 44:
               if (!(i < tasks.length)) {
                 _context11.next = 71;
                 break;
@@ -1138,9 +1133,9 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               //define last message and update time
               /* let lastMessageDetails = await getTaskLastMessageDetails(this.params, taskId);
               const authorDetails = getTaskAuthorDetails(this.params, '1'); // todo MOCK! */
-              _context11.next = 59;
+              _context11.next = 60;
               return getTaskFullDetails(this.params, taskId);
-            case 59:
+            case 60:
               taskFullDetails = _context11.sent;
               avatarData = getAvatarData(taskFullDetails);
               _variables = {
@@ -1159,31 +1154,21 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                 initialsClass: avatarData.initialsClass
               };
               _context11.t2 = document.querySelector(".doboard_task_widget-all_issues-container").innerHTML;
-              _context11.next = 65;
+              _context11.next = 66;
               return this.loadTemplate('list_issues', _variables);
-            case 65:
+            case 66:
               document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = _context11.t2 += _context11.sent;
-              taskElement = taskAnalysis(taskData);
-              if (taskElement) {
-                if (taskData.startSelectPosition !== undefined && taskData.endSelectPosition !== undefined) {
-                  text = taskElement.innerHTML;
-                  start = taskData.startSelectPosition;
-                  end = taskData.endSelectPosition;
-                  selectedText = text.substring(start, end);
-                  beforeText = text.substring(0, start);
-                  afterText = text.substring(end);
-                  taskElement.innerHTML = beforeText + '<span class="doboard_task_widget-text_selection">' + selectedText + '</span>' + afterText;
-                }
-              }
+              spotsToBeHighlighted.push(taskData);
             case 68:
               i++;
-              _context11.next = 43;
+              _context11.next = 44;
               break;
             case 71:
               this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
               this.savedIssuesQuantityAll = tasks.length;
+              this.highlightElements(spotsToBeHighlighted);
               document.querySelector('.doboard_task_widget-header span').innerText += ' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll);
-            case 74:
+            case 75:
               if (tasks.length === 0 || issuesQuantityOnPage === 0) {
                 document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
               }
@@ -1192,10 +1177,10 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               this.bindIssuesClick();
               hideContainersSpinner(false);
               return _context11.abrupt("break", 123);
-            case 78:
-              _context11.next = 80;
+            case 79:
+              _context11.next = 81;
               return getTaskFullDetails(this.params, this.currentActiveTaskId);
-            case 80:
+            case 81:
               taskDetails = _context11.sent;
               variables = {
                 issueTitle: taskDetails.issueTitle,
@@ -1206,7 +1191,6 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
               dayMessagesData = [];
               initIssuerID = localStorage.getItem('spotfix_user_id');
-              console.table('initIssuerID', initIssuerID);
               userIsIssuer = false;
               if (!(taskDetails.issueComments.length > 0)) {
                 _context11.next = 117;
@@ -1615,6 +1599,55 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
           parent.insertBefore(span.firstChild, span);
         }
         parent.removeChild(span);
+      });
+    }
+  }, {
+    key: "highlightElements",
+    value: function highlightElements(spotsToBeHighlighted) {
+      if (spotsToBeHighlighted.length === 0) {
+        return;
+      }
+      var sortedSpots = new Map();
+      // Aggregate selections by HtmlElement: [Element1 => [selection1, selection2], Element2 => [selection3]]
+      spotsToBeHighlighted.forEach(function (spot) {
+        var element = retrieveNodeFromPath(spot.nodePath);
+        if (!sortedSpots.has(element)) {
+          sortedSpots.set(element, []);
+        }
+        var currentData = sortedSpots.get(element);
+        currentData.push({
+          selectStartPosition: spot.startSelectPosition,
+          selectEndPosition: spot.endSelectPosition
+        });
+      });
+      // Render selections for the HtmlElement
+      var highlightWrapperOpen = '<span class="doboard_task_widget-text_selection">';
+      var highlightWrapperClose = '</span>';
+      sortedSpots.forEach(function (spotSelectionsPositions, element) {
+        var positions = [];
+        spotSelectionsPositions.forEach(function (spotSelectionPositions) {
+          positions.push({
+            pos: spotSelectionPositions.selectStartPosition,
+            type: 'start'
+          }, {
+            pos: spotSelectionPositions.selectEndPosition,
+            type: 'end'
+          });
+        });
+        positions.sort(function (a, b) {
+          return b.pos - a.pos;
+        });
+        var text = element.innerHTML;
+        var prevSlicePosition = null;
+        var slicedStringWithSelections = [];
+        positions.forEach(function (position) {
+          var afterText = text.substring(position.pos, prevSlicePosition ? prevSlicePosition : position.pos);
+          prevSlicePosition = position.pos;
+          var span = position.type === 'start' ? highlightWrapperOpen : highlightWrapperClose;
+          slicedStringWithSelections.unshift(afterText);
+          slicedStringWithSelections.unshift(span);
+        });
+        element.innerHTML = text.substring(0, prevSlicePosition) + slicedStringWithSelections.join('');
       });
     }
   }, {

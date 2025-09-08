@@ -242,6 +242,7 @@ class CleanTalkWidgetDoboard {
                 this.removeTextSelection();
                 let issuesQuantityOnPage = 0;
                 let tasks = await getAllTasks(this.params);
+                let spotsToBeHighlighted = [];
                 if (tasks.length > 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
                     for (let i = 0; i < tasks.length; i++) {
@@ -293,22 +294,12 @@ class CleanTalkWidgetDoboard {
                             };
                             document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += await this.loadTemplate('list_issues', variables);
 
-                            let taskElement = taskAnalysis(taskData);
-                            if (taskElement) {
-                                if ( taskData.startSelectPosition !== undefined && taskData.endSelectPosition !== undefined ) {
-                                    let text = taskElement.innerHTML;
-                                    let start = taskData.startSelectPosition;
-                                    let end = taskData.endSelectPosition;
-                                    let selectedText = text.substring(start, end);
-                                    let beforeText = text.substring(0, start);
-                                    let afterText = text.substring(end);
-                                    taskElement.innerHTML = beforeText + '<span class="doboard_task_widget-text_selection">' + selectedText + '</span>' + afterText;
-                                }
-                            }
+                            spotsToBeHighlighted.push(taskData);
                         }
                     }
                     this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                     this.savedIssuesQuantityAll = tasks.length;
+                    this.highlightElements(spotsToBeHighlighted);
                     document.querySelector('.doboard_task_widget-header span').innerText += ' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll);
                 }
                 if (tasks.length === 0 || issuesQuantityOnPage === 0) {
@@ -331,7 +322,6 @@ class CleanTalkWidgetDoboard {
                 const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
                 let dayMessagesData = [];
                 const initIssuerID = localStorage.getItem('spotfix_user_id');
-                console.table('initIssuerID',initIssuerID)
                 let userIsIssuer = false;
                 if ( taskDetails.issueComments.length > 0 ) {
                     issuesCommentsContainer.innerHTML = '';
@@ -580,6 +570,51 @@ class CleanTalkWidgetDoboard {
             }
             parent.removeChild(span);
         });
+    }
+
+    highlightElements(spotsToBeHighlighted) {
+        if ( spotsToBeHighlighted.length === 0 ) {
+            return;
+        }
+        let sortedSpots = new Map();
+        // Aggregate selections by HtmlElement: [Element1 => [selection1, selection2], Element2 => [selection3]]
+        spotsToBeHighlighted.forEach(spot => {
+            const element = retrieveNodeFromPath(spot.nodePath);
+            if ( ! sortedSpots.has(element) ) {
+                sortedSpots.set(element, []);
+            }
+            const currentData = sortedSpots.get(element);
+            currentData.push({
+                selectStartPosition: spot.startSelectPosition,
+                selectEndPosition: spot.endSelectPosition,
+            });
+        })
+        // Render selections for the HtmlElement
+        const highlightWrapperOpen = '<span class="doboard_task_widget-text_selection">';
+        const highlightWrapperClose = '</span>';
+        sortedSpots.forEach((spotSelectionsPositions, element) => {
+            const positions = [];
+            spotSelectionsPositions.forEach(spotSelectionPositions => {
+                positions.push(
+                    { pos: spotSelectionPositions.selectStartPosition, type: 'start' },
+                    { pos: spotSelectionPositions.selectEndPosition, type: 'end' }
+                );
+            })
+
+            positions.sort((a, b) => b.pos - a.pos);
+
+            let text = element.innerHTML;
+            let prevSlicePosition = null;
+            let slicedStringWithSelections = [];
+            positions.forEach(position => {
+                let afterText = text.substring(position.pos, prevSlicePosition ? prevSlicePosition : position.pos);
+                prevSlicePosition = position.pos;
+                let span = position.type === 'start' ? highlightWrapperOpen : highlightWrapperClose;
+                slicedStringWithSelections.unshift(afterText);
+                slicedStringWithSelections.unshift(span);
+            })
+            element.innerHTML = text.substring(0, prevSlicePosition) + slicedStringWithSelections.join('');
+        })
     }
 
     bindWidgetInputsInteractive() {
