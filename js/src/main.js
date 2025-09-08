@@ -45,12 +45,13 @@ function getSelectedData(selectedData) {
     let selectedText = selectedData.toString();
     const anchorOffset = selectedData.anchorOffset;
     const focusOffset = selectedData.focusOffset;
+    const nodeToCalculate = selectedData.focusNode.nodeName === '#text' ? selectedData.focusNode.parentNode : selectedData.focusNode;
     return {
         startSelectPosition: Math.min(anchorOffset, focusOffset),
         endSelectPosition: Math.max(anchorOffset, focusOffset),
         selectedText: selectedText,
         pageURL: pageURL,
-        nodePath: calculateNodePath(selectedData.focusNode.parentNode),
+        nodePath: calculateNodePath(nodeToCalculate),
     };
 }
 

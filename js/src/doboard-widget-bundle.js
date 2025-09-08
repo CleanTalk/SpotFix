@@ -1734,12 +1734,13 @@ function getSelectedData(selectedData) {
   var selectedText = selectedData.toString();
   var anchorOffset = selectedData.anchorOffset;
   var focusOffset = selectedData.focusOffset;
+  var nodeToCalculate = selectedData.focusNode.nodeName === '#text' ? selectedData.focusNode.parentNode : selectedData.focusNode;
   return {
     startSelectPosition: Math.min(anchorOffset, focusOffset),
     endSelectPosition: Math.max(anchorOffset, focusOffset),
     selectedText: selectedText,
     pageURL: pageURL,
-    nodePath: calculateNodePath(selectedData.focusNode.parentNode)
+    nodePath: calculateNodePath(nodeToCalculate)
   };
 }
 
