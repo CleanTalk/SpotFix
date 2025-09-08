@@ -26,6 +26,9 @@ class CleanTalkWidgetDoboard {
         this.params = this.getParams();
         this.widgetElement = await this.createWidgetElement(type);
         this.bindWidgetInputsInteractive();
+        if (!this.lsGetWidgetStatusIsSet()) {
+            this.lsSetWidgetIsClosed(true);
+        }
     }
 
     getParams() {
@@ -153,7 +156,14 @@ class CleanTalkWidgetDoboard {
                 if ( userPassword ) {
                     taskDetails.userPassword = userPassword
                 }
-                const submitTaskResult = await this.submitTask(taskDetails);
+
+                let submitTaskResult;
+                try {
+                    submitTaskResult = await this.submitTask(taskDetails);
+                } catch (error) {
+                    this.registrationErrorShow(error.message);
+                    return;
+                }
 
                 // Return the submit button normal state
                 submitButton.disabled = false;
@@ -194,8 +204,12 @@ class CleanTalkWidgetDoboard {
                     selectedText: this.selectedText,
                     currentDomain: document.location.hostname || ''
                 };
+                this.lsGetUserIsDefined() && this.lsSetWidgetIsClosed(false);
                 break;
             case 'wrap':
+                if (this.lsGetWidgetIsClosed()) {
+                    return;
+                }
                 templateName = 'wrap';
                 break;
             case 'all_issues':
@@ -233,8 +247,11 @@ class CleanTalkWidgetDoboard {
                 break;
             case 'wrap':
                 await this.getTaskCount();
-                document.querySelector('.doboard_task_widget-wrap').addEventListener('click', () => {
-                    this.createWidgetElement('all_issues');
+                document.querySelector('.doboard_task_widget-wrap').addEventListener('click', (e) => {
+                    const widgetElementClasses = e.currentTarget.classList;
+                    if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
+                        this.createWidgetElement('all_issues');
+                    }
                 });
                 hideContainersSpinner(false);
                 break;
@@ -327,6 +344,9 @@ class CleanTalkWidgetDoboard {
                     issuesCommentsContainer.innerHTML = '';
                     for (const comment of taskDetails.issueComments) {
                         userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
+                        if (!userIsIssuer) {
+                            this.lsSetWidgetIsClosed(false);
+                        }
                         const avatarData = getAvatarData({
                             taskAuthorAvatarImgSrc: comment.commentAuthorAvatarSrc,
                             taskAuthorName: comment.commentAuthorName,
@@ -405,8 +425,8 @@ class CleanTalkWidgetDoboard {
         }
 
         const backToAllIssuesController = document.querySelector('.doboard_task_widget_return_to_all');
+        const widgetClass = this;
         if ( backToAllIssuesController ) {
-            const widgetClass = this;
             backToAllIssuesController.addEventListener('click', function(e, self = widgetClass) {
                 self.createWidgetElement('all_issues');
             });
@@ -423,6 +443,14 @@ class CleanTalkWidgetDoboard {
         document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', () => {
             this.hide();
         }) || '';
+
+        document.querySelector('#doboard_task_widget-task_count')?.addEventListener('click', (e, self = widgetClass) => {
+            console.table('clock',e)
+            const widget = document.querySelector('.doboard_task_widget-wrap');
+            widget.classList.add('hidden');
+            self.lsSetWidgetIsClosed(true);
+        }) || '';
+
         return widgetContainer;
     }
 
@@ -657,5 +685,30 @@ class CleanTalkWidgetDoboard {
                 this.closest('.doboard_task_widget-login').classList.toggle('active');
             });
         }
+    }
+
+    registrationErrorShow(errorText) {
+        const errorDiv = document.getElementById('doboard_task_widget-error_message');
+        const errorWrap = document.querySelector('.doboard_task_widget-error_message-wrapper');
+        if (typeof errorText === 'string' && errorDiv !== null && errorWrap !== null) {
+            errorDiv.innerText = errorText;
+            errorWrap.classList.remove('hidden');
+        }
+    }
+
+    lsGetWidgetIsClosed() {
+        return localStorage.getItem('doboard_widget_is_closed') === '1';
+    }
+
+    lsGetWidgetStatusIsSet() {
+        return localStorage.getItem('doboard_widget_is_closed') !== null;
+    }
+
+    lsSetWidgetIsClosed(visible) {
+        localStorage.setItem('doboard_widget_is_closed', visible ? '1' : '0');
+    }
+
+    lsGetUserIsDefined() {
+        return localStorage.getItem('spotfix_user_id') !== null;
     }
 }
