@@ -1624,6 +1624,16 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
       var highlightWrapperOpen = '<span class="doboard_task_widget-text_selection">';
       var highlightWrapperClose = '</span>';
       sortedSpots.forEach(function (spotSelectionsPositions, element) {
+        // If the element no provided
+        if (!element) {
+          return;
+        }
+        //Is the element is the not simple text one
+        if (element.children.length > 0) {
+          // @ToDo make selection for the difficult elements
+          //console.log('Try to highlight difficult element: ' + element.innerHTML); // The debug statement
+          return;
+        }
         var positions = [];
         spotSelectionsPositions.forEach(function (spotSelectionPositions) {
           positions.push({
