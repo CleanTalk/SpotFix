@@ -2,7 +2,7 @@ async function getTaskFullDetails(params, taskId) {
 	const sessionId = localStorage.getItem('spotfix_session_id');
 	const comments = await getTaskCommentsDoboard(taskId, sessionId, params.accountId, params.projectToken);
 	const users = await getUserDoboard(sessionId, params.projectToken, params.accountId);
-	
+
 	// Last comment
 	let lastComment = comments.length > 0 ? comments[0] : null;
 	// Author of the last comment

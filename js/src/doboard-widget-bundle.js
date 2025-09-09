@@ -834,6 +834,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
     _defineProperty(this, "currentActiveTaskId", 0);
     _defineProperty(this, "savedIssuesQuantityOnPage", 0);
     _defineProperty(this, "savedIssuesQuantityAll", 0);
+    _defineProperty(this, "allTasksData", {});
     this.selectedData = selectedData;
     this.selectedText = selectedData.selectedText;
     this.init(type);
@@ -846,19 +847,32 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
     key: "init",
     value: (function () {
       var _init = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee9(type) {
+        var flagAnyTaskUpdated;
         return _regenerator().w(function (_context9) {
           while (1) switch (_context9.n) {
             case 0:
               this.params = this.getParams();
               _context9.n = 1;
-              return this.createWidgetElement(type);
+              return getAllTasks(this.params);
             case 1:
+              this.allTasksData = _context9.v;
+              // Check if any task has updates
+              flagAnyTaskUpdated = isAnyTaskUpdated(this.allTasksData);
+              storageSaveTasksUpdateData(this.allTasksData);
+              //check to hide on first run
+              if (!storageWidgetCloseIsSet()) {
+                storageSetWidgetIsClosed(true);
+              }
+              //check to show if any task has updates
+              if (flagAnyTaskUpdated) {
+                storageSetWidgetIsClosed(false);
+              }
+              _context9.n = 2;
+              return this.createWidgetElement(type);
+            case 2:
               this.widgetElement = _context9.v;
               this.bindWidgetInputsInteractive();
-              if (!this.lsGetWidgetStatusIsSet()) {
-                this.lsSetWidgetIsClosed(true);
-              }
-            case 2:
+            case 3:
               return _context9.a(2);
           }
         }, _callee9, this);
@@ -1129,10 +1143,10 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                 selectedText: this.selectedText,
                 currentDomain: document.location.hostname || ''
               };
-              this.lsGetUserIsDefined() && this.lsSetWidgetIsClosed(false);
+              storageGetUserIsDefined() && storageSetWidgetIsClosed(false);
               return _context10.a(3, 7);
             case 2:
-              if (!this.lsGetWidgetIsClosed()) {
+              if (!storageGetWidgetIsClosed()) {
                 _context10.n = 3;
                 break;
               }
@@ -1170,11 +1184,11 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               widgetContainer.innerHTML = _context10.v;
               document.body.appendChild(widgetContainer);
               _t4 = type;
-              _context10.n = _t4 === 'create_issue' ? 9 : _t4 === 'wrap' ? 10 : _t4 === 'all_issues' ? 12 : _t4 === 'concrete_issue' ? 20 : 30;
+              _context10.n = _t4 === 'create_issue' ? 9 : _t4 === 'wrap' ? 10 : _t4 === 'all_issues' ? 12 : _t4 === 'concrete_issue' ? 19 : 29;
               break;
             case 9:
               this.bindCreateTaskEvents();
-              return _context10.a(3, 31);
+              return _context10.a(3, 30);
             case 10:
               _context10.n = 11;
               return this.getTaskCount();
@@ -1186,24 +1200,21 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                 }
               });
               hideContainersSpinner(false);
-              return _context10.a(3, 31);
+              return _context10.a(3, 30);
             case 12:
               this.removeTextSelection();
               issuesQuantityOnPage = 0;
-              _context10.n = 13;
-              return getAllTasks(this.params);
-            case 13:
-              tasks = _context10.v;
+              tasks = this.allTasksData;
               spotsToBeHighlighted = [];
               if (!(tasks.length > 0)) {
-                _context10.n = 19;
+                _context10.n = 18;
                 break;
               }
               document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
               i = 0;
-            case 14:
+            case 13:
               if (!(i < tasks.length)) {
-                _context10.n = 18;
+                _context10.n = 17;
                 break;
               }
               elTask = tasks[i]; // Data from api
@@ -1226,16 +1237,16 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                 }
               }
               if (!(!showOnlyCurrentPage || currentPageURL === window.location.href)) {
-                _context10.n = 17;
+                _context10.n = 16;
                 break;
               }
               issuesQuantityOnPage++;
               //define last message and update time
               /* let lastMessageDetails = await getTaskLastMessageDetails(this.params, taskId);
               const authorDetails = getTaskAuthorDetails(this.params, '1'); // todo MOCK! */
-              _context10.n = 15;
+              _context10.n = 14;
               return getTaskFullDetails(this.params, taskId);
-            case 15:
+            case 14:
               taskFullDetails = _context10.v;
               avatarData = getAvatarData(taskFullDetails);
               _variables = {
@@ -1254,21 +1265,21 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                 initialsClass: avatarData.initialsClass
               };
               _t5 = document.querySelector(".doboard_task_widget-all_issues-container").innerHTML;
-              _context10.n = 16;
+              _context10.n = 15;
               return this.loadTemplate('list_issues', _variables);
-            case 16:
+            case 15:
               document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = _t5 += _context10.v;
               spotsToBeHighlighted.push(taskData);
-            case 17:
+            case 16:
               i++;
-              _context10.n = 14;
+              _context10.n = 13;
               break;
-            case 18:
+            case 17:
               this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
               this.savedIssuesQuantityAll = tasks.length;
               this.highlightElements(spotsToBeHighlighted);
               document.querySelector('.doboard_task_widget-header span').innerText += ' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll);
-            case 19:
+            case 18:
               if (tasks.length === 0 || issuesQuantityOnPage === 0) {
                 document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
               }
@@ -1276,11 +1287,11 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
               this.bindIssuesClick();
               hideContainersSpinner(false);
-              return _context10.a(3, 31);
-            case 20:
-              _context10.n = 21;
+              return _context10.a(3, 30);
+            case 19:
+              _context10.n = 20;
               return getTaskFullDetails(this.params, this.currentActiveTaskId);
-            case 21:
+            case 20:
               taskDetails = _context10.v;
               variables = {
                 issueTitle: taskDetails.issueTitle,
@@ -1293,7 +1304,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               initIssuerID = localStorage.getItem('spotfix_user_id');
               userIsIssuer = false;
               if (!(taskDetails.issueComments.length > 0)) {
-                _context10.n = 28;
+                _context10.n = 27;
                 break;
               }
               issuesCommentsContainer.innerHTML = '';
@@ -1303,7 +1314,7 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                   comment = _step.value;
                   userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
                   if (!userIsIssuer) {
-                    this.lsSetWidgetIsClosed(false);
+                    storageSetWidgetIsClosed(false);
                   }
                   _avatarData = getAvatarData({
                     taskAuthorAvatarImgSrc: comment.commentAuthorAvatarSrc,
@@ -1337,9 +1348,9 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               }
               daysWrapperHTML = '';
               _t6 = _regeneratorKeys(dayMessagesData);
-            case 22:
+            case 21:
               if ((_t7 = _t6()).done) {
-                _context10.n = 27;
+                _context10.n = 26;
                 break;
               }
               day = _t7.value;
@@ -1349,38 +1360,38 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                 return a.commentTime.localeCompare(b.commentTime);
               });
               _t8 = _regeneratorKeys(currentDayMessages);
-            case 23:
+            case 22:
               if ((_t9 = _t8()).done) {
-                _context10.n = 25;
+                _context10.n = 24;
                 break;
               }
               messageId = _t9.value;
               currentMessageData = currentDayMessages[messageId];
               _t0 = dayMessagesWrapperHTML;
-              _context10.n = 24;
-              return this.loadTemplate('concrete_issue_messages', currentMessageData);
-            case 24:
-              dayMessagesWrapperHTML = _t0 += _context10.v;
               _context10.n = 23;
+              return this.loadTemplate('concrete_issue_messages', currentMessageData);
+            case 23:
+              dayMessagesWrapperHTML = _t0 += _context10.v;
+              _context10.n = 22;
               break;
-            case 25:
+            case 24:
               _t1 = daysWrapperHTML;
-              _context10.n = 26;
+              _context10.n = 25;
               return this.loadTemplate('concrete_issue_day_content', {
                 dayContentMonthDay: day,
                 dayContentMessages: dayMessagesWrapperHTML
               });
-            case 26:
+            case 25:
               daysWrapperHTML = _t1 += _context10.v;
-              _context10.n = 22;
+              _context10.n = 21;
+              break;
+            case 26:
+              issuesCommentsContainer.innerHTML = daysWrapperHTML;
+              _context10.n = 28;
               break;
             case 27:
-              issuesCommentsContainer.innerHTML = daysWrapperHTML;
-              _context10.n = 29;
-              break;
-            case 28:
               issuesCommentsContainer.innerHTML = 'No comments';
-            case 29:
+            case 28:
               // Scroll to the bottom comments
               setTimeout(function () {
                 var contentContainer = document.querySelector('.doboard_task_widget-content');
@@ -1434,10 +1445,10 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
                   };
                 }());
               }
-              return _context10.a(3, 31);
+              return _context10.a(3, 30);
+            case 29:
+              return _context10.a(3, 30);
             case 30:
-              return _context10.a(3, 31);
-            case 31:
               backToAllIssuesController = document.querySelector('.doboard_task_widget_return_to_all');
               widgetClass = this;
               if (backToAllIssuesController) {
@@ -1456,12 +1467,10 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
               ((_document$querySelect = document.querySelector('.doboard_task_widget-close_btn')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('click', function () {
                 _this2.hide();
               })) || '';
-              ((_document$querySelect2 = document.querySelector('#doboard_task_widget-task_count')) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.addEventListener('click', function (e) {
-                var self = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : widgetClass;
-                console.table('clock', e);
+              ((_document$querySelect2 = document.querySelector('#doboard_task_widget-task_count')) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.addEventListener('click', function () {
                 var widget = document.querySelector('.doboard_task_widget-wrap');
                 widget.classList.add('hidden');
-                self.lsSetWidgetIsClosed(true);
+                storageSetWidgetIsClosed(true);
               })) || '';
               return _context10.a(2, widgetContainer);
           }
@@ -1776,26 +1785,6 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
         errorWrap.classList.remove('hidden');
       }
     }
-  }, {
-    key: "lsGetWidgetIsClosed",
-    value: function lsGetWidgetIsClosed() {
-      return localStorage.getItem('doboard_widget_is_closed') === '1';
-    }
-  }, {
-    key: "lsGetWidgetStatusIsSet",
-    value: function lsGetWidgetStatusIsSet() {
-      return localStorage.getItem('doboard_widget_is_closed') !== null;
-    }
-  }, {
-    key: "lsSetWidgetIsClosed",
-    value: function lsSetWidgetIsClosed(visible) {
-      localStorage.setItem('doboard_widget_is_closed', visible ? '1' : '0');
-    }
-  }, {
-    key: "lsGetUserIsDefined",
-    value: function lsGetUserIsDefined() {
-      return localStorage.getItem('spotfix_user_id') !== null;
-    }
   }]);
 }();
 var selectedData = {};
@@ -1960,4 +1949,57 @@ function getAvatarData(authorDetails) {
     taskAuthorInitials: taskAuthorInitials,
     initialsClass: initialsClass
   };
+}
+function storageGetWidgetIsClosed() {
+  return localStorage.getItem('spotfix_widget_is_closed') === '1';
+}
+function storageWidgetCloseIsSet() {
+  return localStorage.getItem('spotfix_widget_is_closed') !== null;
+}
+function storageSetWidgetIsClosed(visible) {
+  localStorage.setItem('spotfix_widget_is_closed', visible ? '1' : '0');
+}
+function storageGetUserIsDefined() {
+  return localStorage.getItem('spotfix_user_id') !== null;
+}
+function storageSaveTasksUpdateData(tasks) {
+  if (!tasks || !Array.isArray(tasks)) {
+    return;
+  }
+  var storedTasks = JSON.parse(localStorage.getItem('tasks') || '{}');
+  tasks.forEach(function (task) {
+    if (task.taskId && task.taskLastUpdate) {
+      storedTasks[task.taskId] = {
+        taskId: task.taskId,
+        taskLastUpdate: task.taskLastUpdate
+      };
+    }
+  });
+  localStorage.setItem('spotfix_task_updates', JSON.stringify(storedTasks));
+}
+function storageCheckTaskUpdate(taskId, currentLastUpdate) {
+  if (!taskId || !currentLastUpdate) {
+    return null;
+  }
+  var storedTasks = JSON.parse(localStorage.getItem('spotfix_task_updates') || '{}');
+  var storedTask = storedTasks[taskId];
+  if (!storedTask) {
+    return false;
+  }
+  var storedUpdate = new Date(storedTask.taskLastUpdate);
+  var currentUpdate = new Date(currentLastUpdate);
+  return currentUpdate > storedUpdate;
+}
+function isAnyTaskUpdated(allTasksData) {
+  var result = false;
+  for (var i in allTasksData) {
+    var currentStateOfTask = allTasksData[i];
+    if (currentStateOfTask.taskId && currentStateOfTask.taskLastUpdate) {
+      result = storageCheckTaskUpdate(currentStateOfTask.taskId, currentStateOfTask.taskLastUpdate);
+      if (result) {
+        break;
+      }
+    }
+  }
+  return result;
 }

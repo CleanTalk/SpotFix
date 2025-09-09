@@ -9,6 +9,7 @@ class CleanTalkWidgetDoboard {
     currentActiveTaskId = 0;
     savedIssuesQuantityOnPage = 0;
     savedIssuesQuantityAll = 0;
+    allTasksData = {};
 
     /**
      * Constructor
@@ -24,11 +25,20 @@ class CleanTalkWidgetDoboard {
      */
     async init(type) {
         this.params = this.getParams();
+        this.allTasksData = await getAllTasks(this.params);
+        // Check if any task has updates
+        const flagAnyTaskUpdated = isAnyTaskUpdated(this.allTasksData);
+        storageSaveTasksUpdateData(this.allTasksData);
+        //check to hide on first run
+        if (!storageWidgetCloseIsSet()) {
+            storageSetWidgetIsClosed(true);
+        }
+        //check to show if any task has updates
+        if (flagAnyTaskUpdated) {
+            storageSetWidgetIsClosed(false);
+        }
         this.widgetElement = await this.createWidgetElement(type);
         this.bindWidgetInputsInteractive();
-        if (!this.lsGetWidgetStatusIsSet()) {
-            this.lsSetWidgetIsClosed(true);
-        }
     }
 
     getParams() {
@@ -204,10 +214,10 @@ class CleanTalkWidgetDoboard {
                     selectedText: this.selectedText,
                     currentDomain: document.location.hostname || ''
                 };
-                this.lsGetUserIsDefined() && this.lsSetWidgetIsClosed(false);
+                storageGetUserIsDefined() && storageSetWidgetIsClosed(false);
                 break;
             case 'wrap':
-                if (this.lsGetWidgetIsClosed()) {
+                if (storageGetWidgetIsClosed()) {
                     return;
                 }
                 templateName = 'wrap';
@@ -258,7 +268,7 @@ class CleanTalkWidgetDoboard {
             case 'all_issues':
                 this.removeTextSelection();
                 let issuesQuantityOnPage = 0;
-                let tasks = await getAllTasks(this.params);
+                let tasks = this.allTasksData;
                 let spotsToBeHighlighted = [];
                 if (tasks.length > 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
@@ -345,7 +355,7 @@ class CleanTalkWidgetDoboard {
                     for (const comment of taskDetails.issueComments) {
                         userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
                         if (!userIsIssuer) {
-                            this.lsSetWidgetIsClosed(false);
+                            storageSetWidgetIsClosed(false);
                         }
                         const avatarData = getAvatarData({
                             taskAuthorAvatarImgSrc: comment.commentAuthorAvatarSrc,
@@ -444,11 +454,10 @@ class CleanTalkWidgetDoboard {
             this.hide();
         }) || '';
 
-        document.querySelector('#doboard_task_widget-task_count')?.addEventListener('click', (e, self = widgetClass) => {
-            console.table('clock',e)
+        document.querySelector('#doboard_task_widget-task_count')?.addEventListener('click', () => {
             const widget = document.querySelector('.doboard_task_widget-wrap');
             widget.classList.add('hidden');
-            self.lsSetWidgetIsClosed(true);
+            storageSetWidgetIsClosed(true);
         }) || '';
 
         return widgetContainer;
@@ -668,21 +677,5 @@ class CleanTalkWidgetDoboard {
             errorDiv.innerText = errorText;
             errorWrap.classList.remove('hidden');
         }
-    }
-
-    lsGetWidgetIsClosed() {
-        return localStorage.getItem('doboard_widget_is_closed') === '1';
-    }
-
-    lsGetWidgetStatusIsSet() {
-        return localStorage.getItem('doboard_widget_is_closed') !== null;
-    }
-
-    lsSetWidgetIsClosed(visible) {
-        localStorage.setItem('doboard_widget_is_closed', visible ? '1' : '0');
-    }
-
-    lsGetUserIsDefined() {
-        return localStorage.getItem('spotfix_user_id') !== null;
     }
 }
