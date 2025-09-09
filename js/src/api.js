@@ -69,7 +69,7 @@ const createTaskCommentDoboard = async (accountId, sessionId, taskId, comment, p
     throw new Error('Unknown error occurred during creating task comment');
 };
 
-const registerUser = async (projectToken, accountId, email, nickname) => {
+const registerUserDoboard = async (projectToken, accountId, email, nickname) => {
     const formData = new FormData();
     formData.append('project_token', projectToken);
     formData.append('account_id', accountId);
@@ -234,7 +234,7 @@ const getUserDoboard = async (sessionId, projectToken, accountId) => {
     if (!responseBody) {
         throw new Error('Invalid response from server');
     }
-    // Формат 1: users внутри data
+    // Format 1: users inside data
     if (responseBody.data && responseBody.data.operation_status) {
         if (responseBody.data.operation_status === 'FAILED') {
             throw new Error(responseBody.data.operation_message);
@@ -246,7 +246,7 @@ const getUserDoboard = async (sessionId, projectToken, accountId) => {
             return [];
         }
     }
-    // Формат 2: users на верхнем уровне
+    // Format 2: users at the top level
     if (responseBody.operation_status) {
         if (responseBody.operation_status === 'FAILED') {
             throw new Error(responseBody.operation_message);
@@ -260,3 +260,32 @@ const getUserDoboard = async (sessionId, projectToken, accountId) => {
     }
     throw new Error('Unknown error occurred during getting user');
 };
+
+const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, timezone) => {
+    const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/user_update' +
+        '?session_id=' + sessionId +
+        '&project_token=' + projectToken +
+        '&user_id=' + userId +
+        '&timezone=' + timezone, {
+        method: 'GET',
+    });
+
+    if (!response.ok) {
+        throw new Error('User update failed');
+    }
+
+    const responseBody = await response.json();
+
+    if (!responseBody || !responseBody.data) {
+        throw new Error('Invalid response from server');
+    }
+    if (responseBody.data.operation_status === 'FAILED') {
+        throw new Error(responseBody.data.operation_message);
+    }
+    if (responseBody.data.operation_status === 'SUCCESS') {
+        return {
+            success: true
+        };
+    }
+    throw new Error('Unknown error occurred during user update');
+}
