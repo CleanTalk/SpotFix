@@ -489,10 +489,9 @@ class CleanTalkWidgetDoboard {
      * Submit the task
      */
     async submitTask(taskDetails) {
-
         if (!localStorage.getItem('spotfix_session_id')) {
 
-            await this.registerUser(taskDetails);
+            await registerUser(taskDetails);
 
             if ( taskDetails.userPassword ) {
                 await this.loginUser(taskDetails);
@@ -506,31 +505,6 @@ class CleanTalkWidgetDoboard {
             return {needToLogin: true};
         }
         return await handleCreateTask(sessionId, taskDetails);
-    }
-
-    registerUser(taskDetails) {
-        const userEmail = taskDetails.userEmail;
-        const userName = taskDetails.userName;
-        const projectToken = taskDetails.projectToken;
-        const accountId = taskDetails.accountId;
-
-        return registerUser(projectToken, accountId, userEmail, userName)
-            .then(response => {
-                if (response.accountExists) {
-                    document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container").innerText = 'Account already exists. Please, login usin your password.';
-                    document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container.hidden").classList.remove('hidden');
-                    document.getElementById("doboard_task_widget-user_password").focus();
-                } else if (response.sessionId) {
-                    localStorage.setItem('spotfix_session_id', response.sessionId);
-                    localStorage.setItem('spotfix_user_id', response.userId);
-                    localStorage.setItem('spotfix_email', response.email);
-                } else {
-                    throw new Error('Session ID not found in response');
-                }
-            })
-            .catch(error => {
-                throw error;
-            });
     }
 
     loginUser(taskDetails) {

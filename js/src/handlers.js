@@ -2,7 +2,9 @@ async function getTaskFullDetails(params, taskId) {
 	const sessionId = localStorage.getItem('spotfix_session_id');
 	const comments = await getTaskCommentsDoboard(taskId, sessionId, params.accountId, params.projectToken);
 	const users = await getUserDoboard(sessionId, params.projectToken, params.accountId);
-
+	/*console.log(users);
+	console.log(comments);*/
+	
 	// Last comment
 	let lastComment = comments.length > 0 ? comments[0] : null;
 	// Author of the last comment
@@ -17,7 +19,7 @@ async function getTaskFullDetails(params, taskId) {
 		date = dt.date;
 		time = dt.time;
 	}
- 	// Вычисляем аватар и имя через отдельные функции
+ 	// Get the avatar and the name through separate functions
  	let avatarSrc = getAvatarSrc(author);
  	let authorName = getAuthorName(author);
 
@@ -107,25 +109,29 @@ function formatDate(dateStr) {
 	 if (!dateStr) return { date: '', time: '' };
 	 let dateObj;
 	 if (dateStr.includes('T')) {
-	 	dateObj = new Date(dateStr);
+	  dateObj = new Date(dateStr);
 	 } else if (dateStr.includes(' ')) {
-	 	dateObj = new Date(dateStr.replace(' ', 'T'));
+	  dateObj = new Date(dateStr.replace(' ', 'T'));
 	 } else {
-	 	dateObj = new Date(dateStr);
+	  dateObj = new Date(dateStr);
 	 }
 	 if (isNaN(dateObj.getTime())) return { date: '', time: '' };
-	 const month = months[dateObj.getMonth()];
-	 const day = dateObj.getDate();
+
+	 // Adjust to local timezone
+	 const offsetMinutes = dateObj.getTimezoneOffset();
+	 let localDateObj = new Date(dateObj.getTime() - offsetMinutes * 60000);
+
+	 const month = months[localDateObj.getMonth()];
+	 const day = localDateObj.getDate();
 	 const date = `${month} ${day}`;
-	 const hours = dateObj.getHours().toString().padStart(2, '0');
-	 const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+	 const hours = localDateObj.getHours().toString().padStart(2, '0');
+	 const minutes = localDateObj.getMinutes().toString().padStart(2, '0');
 	 const time = `${hours}:${minutes}`;
 	 return { date, time };
 }
 
 function getTaskAuthorDetails(params, taskId) {
 	const sessionId = localStorage.getItem('spotfix_session_id');
-
 	const mockUsersData =
 		[
 			{
@@ -150,7 +156,7 @@ function getIssuesCounterString(onPageSpotsCount, totalSpotsCount) {
 	return `(${onPageSpotsCount}/${totalSpotsCount})`;
 }
 
-// Получить аватар автора
+// Get the author's avatar
 function getAvatarSrc(author) {
 	if (author && author.avatar) {
 		if (typeof author.avatar === 'object' && author.avatar.m) {
@@ -162,7 +168,7 @@ function getAvatarSrc(author) {
 	return null;
 }
 
-// Получить имя автора
+// Get the author's name
 function getAuthorName(author) {
 	if (author) {
 		if (author.name && author.name.trim().length > 0) {
@@ -172,4 +178,40 @@ function getAuthorName(author) {
 		}
 	}
 	return 'Unknown Author';
+}
+
+function registerUser(taskDetails) {
+	const userEmail = taskDetails.userEmail;
+	const userName = taskDetails.userName;
+	const projectToken = taskDetails.projectToken;
+	const accountId = taskDetails.accountId;
+
+	const resultRegisterUser = registerUserDoboard(projectToken, accountId, userEmail, userName)
+		.then(response => {
+			if (response.accountExists) {
+				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container").innerText = 'Account already exists. Please, login usin your password.';
+				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container.hidden").classList.remove('hidden');
+				document.getElementById("doboard_task_widget-user_password").focus();
+			} else if (response.sessionId) {
+				localStorage.setItem('spotfix_session_id', response.sessionId);
+				localStorage.setItem('spotfix_user_id', response.userId);
+				localStorage.setItem('spotfix_email', response.email);
+				userUpdate(projectToken, accountId);
+			} else {
+				throw new Error('Session ID not found in response');
+			}
+		})
+		.catch(error => {
+			throw error;
+		});
+
+		return resultRegisterUser;
+}
+
+function userUpdate(projectToken, accountId) {
+	const sessionId = localStorage.getItem('spotfix_session_id');
+	const userId = localStorage.getItem('spotfix_user_id');
+	const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+	return userUpdateDoboard(projectToken, accountId, sessionId, userId, timezone);
 }
