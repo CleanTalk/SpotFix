@@ -377,10 +377,9 @@ var getTaskCommentsDoboard = /*#__PURE__*/function () {
           throw new Error(responseBody.data.operation_message);
         case 13:
           if (!(responseBody.data.operation_status === 'SUCCESS')) {
-            _context6.next = 16;
+            _context6.next = 15;
             break;
           }
-          console.log(responseBody.data);
           return _context6.abrupt("return", responseBody.data.comments.map(function (comment) {
             return {
               commentId: comment.comment_id,
@@ -392,9 +391,9 @@ var getTaskCommentsDoboard = /*#__PURE__*/function () {
               issueTitle: comment.task_name
             };
           }));
-        case 16:
+        case 15:
           throw new Error('Unknown error occurred during getting comments');
-        case 17:
+        case 16:
         case "end":
           return _context6.stop();
       }
@@ -558,8 +557,6 @@ function _getTaskFullDetails() {
           return getUserDoboard(sessionId, params.projectToken, params.accountId);
         case 6:
           users = _context15.sent;
-          /*console.log(users);
-          console.log(comments);*/
           // Last comment
           lastComment = comments.length > 0 ? comments[0] : null; // Author of the last comment
           author = null;

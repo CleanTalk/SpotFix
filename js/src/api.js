@@ -205,7 +205,6 @@ const getTaskCommentsDoboard = async (taskId, sessionId, accountId, projectToken
         throw new Error(responseBody.data.operation_message);
     }
     if ( responseBody.data.operation_status === 'SUCCESS' ) {
-        console.log(responseBody.data);
         return responseBody.data.comments.map(comment => ({
             commentId: comment.comment_id,
             userId: comment.user_id,
