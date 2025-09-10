@@ -22,7 +22,7 @@ function minify_js() {
         .pipe(sourcemaps.init())
         .pipe(uglify())
         .pipe(rename({suffix: '.min'}))
-        .pipe(sourcemaps.write('.'))
+        .pipe(sourcemaps.write('.', { addComment: true }))
         .pipe(gulp.dest('js/'));
 }
 
