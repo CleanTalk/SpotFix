@@ -188,6 +188,9 @@ class CleanTalkWidgetDoboard {
                     this.selectedData.isPublic = submitTaskResult.isPublic
                 }
 
+                // refersh tasks list after creation
+                this.allTasksData = await getAllTasks(this.params);
+
                 this.selectedData = {};
                 await this.createWidgetElement('all_issues');
                 hideContainersSpinner(false)
