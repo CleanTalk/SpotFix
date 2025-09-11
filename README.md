@@ -15,17 +15,36 @@ Make sure the following code is added to the `functions.php` file of your theme 
 add_action( 'wp_enqueue_scripts', 'connecting_spotfix' );
 function connecting_spotfix(){
     wp_enqueue_style( 'spotfix-style', '/spotfix/styles/doboard-widget.css');
-    wp_enqueue_script(
-        'spotfix-script', 
-        '/spotfix/js/doboard-widget-bundle.min.js',
-        array(),
-        '1.3.0',
-        true
-    );
+	$script_src = add_query_arg(array(
+		'projectToken' => 'YOUR PROJECT TOKEN',
+		'projectId' => 'YOUR PROJECT ID',
+		'accountId' => 'YOUR ACCOUNT ID',
+	), '/spotfix/js/doboard-widget-bundle.min.js');
+	wp_enqueue_script(
+		'spotfix-script',
+		$script_src,
+		array(),
+		'1.3.0',
+		true
+	);
     wp_localize_script('spotfix-script', 'themeData', array(
         'themeUrl' => get_template_directory_uri(),
     ));
 }
+
+add_filter('style_loader_tag', function($html, $handle) {
+	if ($handle === 'spotfix-style') {
+		$html = str_replace("rel='stylesheet'", "rel='preload' as='style' onload=\"this.rel='stylesheet'\"", $html);
+	}
+	return $html;
+}, 10, 2);
+
+add_filter('script_loader_tag', function($tag, $handle) {
+	if ($handle === 'spotfix-script') {
+		$tag = str_replace(' src', ' defer src', $tag);
+	}
+	return $tag;
+}, 10, 2);
 ```
 
 ### 3. Usage
