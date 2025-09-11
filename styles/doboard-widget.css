@@ -88,6 +88,10 @@
     padding: 0;
 }
 
+.doboard_task_widget-wrap.hidden {
+    display: none;
+}
+
 #doboard_task_widget-task_count {
     position: absolute;
     top: 0;
@@ -100,8 +104,15 @@
     color: #FFFFFF;
     text-align: center;
     line-height: 22px;
-    transition: all 0.2s ease-in-out;
 }
+
+#doboard_task_widget-task_count:hover {
+    background: url(../img/close-widget.svg) no-repeat center;
+    cursor: pointer;
+    overflow: hidden;
+    font-size: 0;
+}
+
 #doboard_task_widget-task_count.hidden {
     width: 0;
     height: 0;
@@ -253,6 +264,29 @@
 
 .doboard_task_widget-hidden_element {
     opacity: 0;
+}
+
+.doboard_task_widget-error_message-wrapper {
+    background: #ffdddd;
+    border: 1px solid #cf6868;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 14px;
+    display: grid;
+    justify-items: center;
+}
+
+.doboard_task_widget-error_message-wrapper.hidden {
+    display: none;
+}
+
+#doboard_task_widget-error_message-header {
+    margin: 8px 0;
+    font-weight: 600;
+}
+
+#doboard_task_widget-error_message {
+    text-align: center;
 }
 
 

@@ -293,7 +293,7 @@ async function getTaskFullDetails(params, taskId) {
 	const sessionId = localStorage.getItem('spotfix_session_id');
 	const comments = await getTaskCommentsDoboard(taskId, sessionId, params.accountId, params.projectToken);
 	const users = await getUserDoboard(sessionId, params.projectToken, params.accountId);
-	
+
 	// Last comment
 	let lastComment = comments.length > 0 ? comments[0] : null;
 	// Author of the last comment
@@ -516,6 +516,7 @@ class CleanTalkWidgetDoboard {
     currentActiveTaskId = 0;
     savedIssuesQuantityOnPage = 0;
     savedIssuesQuantityAll = 0;
+    allTasksData = {};
 
     /**
      * Constructor
@@ -531,6 +532,18 @@ class CleanTalkWidgetDoboard {
      */
     async init(type) {
         this.params = this.getParams();
+        this.allTasksData = await getAllTasks(this.params);
+        // Check if any task has updates
+        const flagAnyTaskUpdated = isAnyTaskUpdated(this.allTasksData);
+        storageSaveTasksUpdateData(this.allTasksData);
+        //check to hide on first run
+        if (!storageWidgetCloseIsSet()) {
+            storageSetWidgetIsClosed(true);
+        }
+        //check to show if any task has updates
+        if (flagAnyTaskUpdated) {
+            storageSetWidgetIsClosed(false);
+        }
         this.widgetElement = await this.createWidgetElement(type);
         this.bindWidgetInputsInteractive();
     }
@@ -660,7 +673,14 @@ class CleanTalkWidgetDoboard {
                 if ( userPassword ) {
                     taskDetails.userPassword = userPassword
                 }
-                const submitTaskResult = await this.submitTask(taskDetails);
+
+                let submitTaskResult;
+                try {
+                    submitTaskResult = await this.submitTask(taskDetails);
+                } catch (error) {
+                    this.registrationErrorShow(error.message);
+                    return;
+                }
 
                 // Return the submit button normal state
                 submitButton.disabled = false;
@@ -701,8 +721,12 @@ class CleanTalkWidgetDoboard {
                     selectedText: this.selectedText,
                     currentDomain: document.location.hostname || ''
                 };
+                storageGetUserIsDefined() && storageSetWidgetIsClosed(false);
                 break;
             case 'wrap':
+                if (storageGetWidgetIsClosed()) {
+                    return;
+                }
                 templateName = 'wrap';
                 break;
             case 'all_issues':
@@ -740,15 +764,18 @@ class CleanTalkWidgetDoboard {
                 break;
             case 'wrap':
                 await this.getTaskCount();
-                document.querySelector('.doboard_task_widget-wrap').addEventListener('click', () => {
-                    this.createWidgetElement('all_issues');
+                document.querySelector('.doboard_task_widget-wrap').addEventListener('click', (e) => {
+                    const widgetElementClasses = e.currentTarget.classList;
+                    if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
+                        this.createWidgetElement('all_issues');
+                    }
                 });
                 hideContainersSpinner(false);
                 break;
             case 'all_issues':
                 this.removeTextSelection();
                 let issuesQuantityOnPage = 0;
-                let tasks = await getAllTasks(this.params);
+                let tasks = this.allTasksData;
                 let spotsToBeHighlighted = [];
                 if (tasks.length > 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
@@ -834,6 +861,9 @@ class CleanTalkWidgetDoboard {
                     issuesCommentsContainer.innerHTML = '';
                     for (const comment of taskDetails.issueComments) {
                         userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
+                        if (!userIsIssuer) {
+                            storageSetWidgetIsClosed(false);
+                        }
                         const avatarData = getAvatarData({
                             taskAuthorAvatarImgSrc: comment.commentAuthorAvatarSrc,
                             taskAuthorName: comment.commentAuthorName,
@@ -912,8 +942,8 @@ class CleanTalkWidgetDoboard {
         }
 
         const backToAllIssuesController = document.querySelector('.doboard_task_widget_return_to_all');
+        const widgetClass = this;
         if ( backToAllIssuesController ) {
-            const widgetClass = this;
             backToAllIssuesController.addEventListener('click', function(e, self = widgetClass) {
                 self.createWidgetElement('all_issues');
             });
@@ -930,6 +960,13 @@ class CleanTalkWidgetDoboard {
         document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', () => {
             this.hide();
         }) || '';
+
+        document.querySelector('#doboard_task_widget-task_count')?.addEventListener('click', () => {
+            const widget = document.querySelector('.doboard_task_widget-wrap');
+            widget.classList.add('hidden');
+            storageSetWidgetIsClosed(true);
+        }) || '';
+
         return widgetContainer;
     }
 
@@ -1139,6 +1176,15 @@ class CleanTalkWidgetDoboard {
             });
         }
     }
+
+    registrationErrorShow(errorText) {
+        const errorDiv = document.getElementById('doboard_task_widget-error_message');
+        const errorWrap = document.querySelector('.doboard_task_widget-error_message-wrapper');
+        if (typeof errorText === 'string' && errorDiv !== null && errorWrap !== null) {
+            errorDiv.innerText = errorText;
+            errorWrap.classList.remove('hidden');
+        }
+    }
 }
 
 var selectedData = {};
@@ -1310,4 +1356,72 @@ function getAvatarData(authorDetails) {
         taskAuthorInitials: taskAuthorInitials,
         initialsClass: initialsClass
     }
+}
+
+function storageGetWidgetIsClosed() {
+    return localStorage.getItem('spotfix_widget_is_closed') === '1';
+}
+
+function storageWidgetCloseIsSet() {
+    return localStorage.getItem('spotfix_widget_is_closed') !== null;
+}
+
+function storageSetWidgetIsClosed(visible) {
+    localStorage.setItem('spotfix_widget_is_closed', visible ? '1' : '0');
+}
+
+function storageGetUserIsDefined() {
+    return localStorage.getItem('spotfix_user_id') !== null;
+}
+
+function storageSaveTasksUpdateData(tasks) {
+    if (!tasks || !Array.isArray(tasks)) {
+        return;
+    }
+
+    const storedTasks = JSON.parse(localStorage.getItem('tasks') || '{}');
+
+    tasks.forEach(task => {
+        if (task.taskId && task.taskLastUpdate) {
+            storedTasks[task.taskId] = {
+                taskId: task.taskId,
+                taskLastUpdate: task.taskLastUpdate
+            };
+        }
+    });
+
+    localStorage.setItem('spotfix_task_updates', JSON.stringify(storedTasks));
+}
+
+function storageCheckTaskUpdate(taskId, currentLastUpdate) {
+    if (!taskId || !currentLastUpdate) {
+        return null;
+    }
+
+    const storedTasks = JSON.parse(localStorage.getItem('spotfix_task_updates') || '{}');
+    const storedTask = storedTasks[taskId];
+
+    if (!storedTask) {
+        return false;
+    }
+
+    const storedUpdate = new Date(storedTask.taskLastUpdate);
+    const currentUpdate = new Date(currentLastUpdate);
+
+    return currentUpdate > storedUpdate;
+}
+
+function isAnyTaskUpdated(allTasksData) {
+    let result = false;
+
+    for(const i in allTasksData) {
+        let currentStateOfTask = allTasksData[i];
+        if (currentStateOfTask.taskId && currentStateOfTask.taskLastUpdate) {
+            result = storageCheckTaskUpdate(currentStateOfTask.taskId, currentStateOfTask.taskLastUpdate);
+            if (result) {
+                break;
+            }
+        }
+    }
+    return result;
 }
