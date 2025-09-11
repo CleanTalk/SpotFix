@@ -577,68 +577,96 @@ class CleanTalkWidgetDoboard {
     removeTextSelection() {
         const textSelectionclassName = 'doboard_task_widget-text_selection';
         const spans = document.querySelectorAll('.' + textSelectionclassName);
+        const affectedParents = new Set(); // Track unique parents
+
         spans.forEach(span => {
             const parent = span.parentNode;
+            affectedParents.add(parent); // Mark parent as affected
+
+            // Move all child nodes out of the span and into the parent
             while (span.firstChild) {
                 parent.insertBefore(span.firstChild, span);
             }
             parent.removeChild(span);
         });
+
+        // Normalize all affected parents to merge adjacent text nodes
+        affectedParents.forEach(parent => parent.normalize());
+    }
+
+    wrapElementWithSpotfixHighlight(element) {
+        const newElement = element.cloneNode();
+        const wrapper = document.createElement('span');
+        wrapper.className = 'doboard_task_widget-text_selection image-highlight';
+
+        // Используем insertAdjacentElement для более читаемого кода
+        element.insertAdjacentElement('beforebegin', wrapper);
+        wrapper.appendChild(newElement);
+
+        return wrapper;
     }
 
     highlightElements(spotsToBeHighlighted) {
-        if ( spotsToBeHighlighted.length === 0 ) {
-            return;
-        }
-        let sortedSpots = new Map();
-        // Aggregate selections by HtmlElement: [Element1 => [selection1, selection2], Element2 => [selection3]]
+
+
+        if (spotsToBeHighlighted.length === 0) return;
+
+        const elementsMap = new Map();
+
+        // Gropuing elements
         spotsToBeHighlighted.forEach(spot => {
             const element = retrieveNodeFromPath(spot.nodePath);
-            if ( ! sortedSpots.has(element) ) {
-                sortedSpots.set(element, []);
+            if (!element) return;
+
+            if (!elementsMap.has(element)) {
+                elementsMap.set(element, []);
             }
-            const currentData = sortedSpots.get(element);
-            currentData.push({
-                selectStartPosition: spot.startSelectPosition,
-                selectEndPosition: spot.endSelectPosition,
+            elementsMap.get(element).push(spot);
+        });
+
+        elementsMap.forEach((spots, element) => {
+            const spotfixHighlightOpen = '<span class="doboard_task_widget-text_selection">';
+            const spotfixHighlightClose = '</span>';
+
+            const imgType = spots[0].isTagOfImageType;
+
+            if (imgType !== false) {
+                if (
+                    imgType === 'IMG'
+                ) {
+                    const wrappedElement = this.wrapElementWithSpotfixHighlight(element);
+                    element.replaceWith(wrappedElement);
+                }
+            }
+
+            let text = element.textContent;
+            const markers = [];
+
+            // Mark positions for inserting
+            spots.forEach(spot => {
+                if (spot.isWholeTagSelected) {
+                    markers.push({ position: 0, type: 'start' });
+                    markers.push({ position: text.length, type: 'end' });
+                } else {
+                    markers.push({ position: spot.startSelectPosition, type: 'start' });
+                    markers.push({ position: spot.endSelectPosition, type: 'end' });
+                }
             });
-        })
-        // Render selections for the HtmlElement
-        const highlightWrapperOpen = '<span class="doboard_task_widget-text_selection">';
-        const highlightWrapperClose = '</span>';
-        sortedSpots.forEach((spotSelectionsPositions, element) => {
-            // If the element no provided
-            if ( ! element ) {
-                return;
-            }
-            //Is the element is the not simple text one
-            if ( element.children.length > 0 ) {
-                // @ToDo make selection for the difficult elements
-                //console.log('Try to highlight difficult element: ' + element.innerHTML); // The debug statement
-                return;
-            }
-            const positions = [];
-            spotSelectionsPositions.forEach(spotSelectionPositions => {
-                positions.push(
-                    { pos: spotSelectionPositions.selectStartPosition, type: 'start' },
-                    { pos: spotSelectionPositions.selectEndPosition, type: 'end' }
-                );
-            })
 
-            positions.sort((a, b) => b.pos - a.pos);
+            // Sort markers backward
+            markers.sort((a, b) => b.position - a.position);
 
-            let text = element.innerHTML;
-            let prevSlicePosition = null;
-            let slicedStringWithSelections = [];
-            positions.forEach(position => {
-                let afterText = text.substring(position.pos, prevSlicePosition ? prevSlicePosition : position.pos);
-                prevSlicePosition = position.pos;
-                let span = position.type === 'start' ? highlightWrapperOpen : highlightWrapperClose;
-                slicedStringWithSelections.unshift(afterText);
-                slicedStringWithSelections.unshift(span);
-            })
-            element.innerHTML = text.substring(0, prevSlicePosition) + slicedStringWithSelections.join('');
-        })
+            let result = text;
+            markers.forEach(marker => {
+                const insertText = marker.type === 'start'
+                    ? spotfixHighlightOpen
+                    : spotfixHighlightClose;
+
+                result = result.slice(0, marker.position) + insertText + result.slice(marker.position);
+            });
+
+            element.innerHTML = result;
+        });
     }
 
     bindWidgetInputsInteractive() {

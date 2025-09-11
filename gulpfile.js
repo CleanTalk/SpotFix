@@ -11,7 +11,9 @@ function bundle_src_js() {
             'js/src/api.js',
             'js/src/handlers.js',
             'js/src/widget.js',
-            'js/src/main.js'
+            'js/src/main.js',
+            'js/src/selections.js',
+            'js/src/storage.js',
         ])
         .pipe(concat('doboard-widget-bundle.js'))
         .pipe(gulp.dest('js/src/'));

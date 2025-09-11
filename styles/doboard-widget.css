@@ -310,7 +310,16 @@
 }
 
 .doboard_task_widget-text_selection {
-    background: #d0d57fad;
+    background: rgba(208, 213, 127, 0.68);
+}
+
+.doboard_task_widget-text_selection.image-highlight {
+    display: -moz-inline-box;
+    display: inline-flex;
+    border: 3px solid rgba(208, 213, 127, 0.99);
+    padding: 5px;
+    flex-direction: column;
+    -moz-flex-direction: column;
 }
 
 .doboard_task_widget-issues_list_empty {
