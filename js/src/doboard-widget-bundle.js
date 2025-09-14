@@ -788,9 +788,9 @@ class CleanTalkWidgetDoboard {
                         // Data from api
                         const taskId = elTask.taskId;
                         const taskTitle = elTask.taskTitle;
-                        const taskDataString = elTask.taskMeta;
+                        const taskMetaString = elTask.taskMeta;
                         const { time: lastMessageTime } = formatDate(elTask.taskLastUpdate);
-                        const taskData = taskDataString ? JSON.parse(taskDataString) : null;
+                        const taskData = taskMetaString ? JSON.parse(taskMetaString) : null;
                         const currentPageURL = taskData ? taskData.pageURL : '';
                         const taskNodePath = taskData ? taskData.nodePath : '';
 
@@ -980,6 +980,14 @@ class CleanTalkWidgetDoboard {
                 scrollToNodePath(nodePath);
                 this.currentActiveTaskId = item.getAttribute('data-task-id');
                 await this.createWidgetElement('concrete_issue');
+
+                const taskHighlightData = this.getTaskHighlightData(this.currentActiveTaskId)
+
+                if (taskHighlightData) {
+                    this.removeTextSelection();
+                    this.highlightElements([taskHighlightData])
+                }
+
                 hideContainersSpinner(false);
             });
         });
@@ -1113,6 +1121,26 @@ class CleanTalkWidgetDoboard {
         return wrapper;
     }
 
+    /**
+     * Get task spot data for highlighting.
+     * @param {string|int} taskIdToSearch
+     * @returns {object|null}
+     */
+    getTaskHighlightData(taskIdToSearch) {
+        const currentTaskData = this.allTasksData.find((element) => element.taskId.toString() === taskIdToSearch.toString());
+        if (currentTaskData && currentTaskData.taskMeta !== undefined) {
+            const currentTaskSpotData = JSON.parse(currentTaskData.taskMeta);
+            if (currentTaskSpotData !== null && typeof currentTaskSpotData === 'object') {
+                return currentTaskSpotData;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Highlight elements.
+     * @param {[object]} spotsToBeHighlighted
+     */
     highlightElements(spotsToBeHighlighted) {
 
 
