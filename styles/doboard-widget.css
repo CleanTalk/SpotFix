@@ -40,6 +40,10 @@
     margin-right: 70px;
     z-index: 9999;
     vertical-align: middle;
+
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform;
 }
 
 .doboard_task_widget_cursor-pointer {
@@ -48,7 +52,7 @@
 
 .doboard_task_widget-container {
     width: 360px;
-    max-height: calc(100vh - 40px); /* Ограничиваем максимальную высоту */
+    max-height: calc(100vh - 40px);
     display: flex;
     flex-direction: column;
     -moz-flex-direction: column;
@@ -76,7 +80,7 @@
     border-style: none solid solid solid;
     border-color: #BBC7D1;
     box-shadow: 0 4px 15px 8px #CACACA40;
-    scrollbar-width: none; /* Скрывает полосу прокрутки в Firefox */
+    scrollbar-width: none;
 }
 
 .doboard_task_widget-element-container {
@@ -697,13 +701,22 @@
 
 @media (max-width: 480px) {
     .doboard_task_widget {
-        margin: 0;
-        padding: 20px;
+        position: fixed;
+        right: 0;
+        top: auto;
+        bottom: 0;
+        margin: 0 20px 20px;
+        box-sizing: border-box;
+        transform: translateZ(0);
+        -moz-transform: translateZ(0);
+        will-change: transform;
     }
 
     .doboard_task_widget-container {
-        width: 290px;
-        max-height: calc(100vh - 40px); /* Сохраняем ограничение для мобильных */
+        width: 100%;
+        max-width: 290px;
+        margin: 0 auto;
+        max-height: calc(100vh - 40px);
     }
 
     .doboard_task_widget-content{
@@ -713,6 +726,13 @@
     }
 
     .doboard_task_widget-content::-webkit-scrollbar {
-        display: none; /* Для Chrome на мобильных */
+        display: none;
     }
 }
+
+@supports (-webkit-overflow-scrolling: touch) {
+    .doboard_task_widget {
+        position: fixed;
+    }
+}
+
