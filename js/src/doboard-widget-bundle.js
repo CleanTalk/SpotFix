@@ -757,7 +757,7 @@ class CleanTalkWidgetDoboard {
             default:
                 break;
         }
-        widgetContainer.innerHTML = await this.loadTemplate(templateName, variables);
+        widgetContainer.innerHTML = Templater.loadTemplate(templateName, variables);
         document.body.appendChild(widgetContainer);
 
 
@@ -829,7 +829,7 @@ class CleanTalkWidgetDoboard {
                                 taskAuthorInitials: avatarData.taskAuthorInitials,
                                 initialsClass: avatarData.initialsClass
                             };
-                            document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += await this.loadTemplate('list_issues', variables);
+                            document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += Templater.loadTemplate('list_issues', variables);
 
                             spotsToBeHighlighted.push(taskData);
                         }
@@ -901,9 +901,9 @@ class CleanTalkWidgetDoboard {
                         currentDayMessages.sort((a, b) => a.commentTime.localeCompare(b.commentTime));
                         for (const messageId in currentDayMessages) {
                             let currentMessageData = currentDayMessages[messageId];
-                            dayMessagesWrapperHTML += await this.loadTemplate('concrete_issue_messages', currentMessageData);
+                            dayMessagesWrapperHTML += Templater.loadTemplate('concrete_issue_messages', currentMessageData);
                         }
-                        daysWrapperHTML += await this.loadTemplate('concrete_issue_day_content', {dayContentMonthDay: day, dayContentMessages: dayMessagesWrapperHTML});
+                        daysWrapperHTML += Templater.loadTemplate('concrete_issue_day_content', {dayContentMonthDay: day, dayContentMessages: dayMessagesWrapperHTML});
                     }
                     issuesCommentsContainer.innerHTML = daysWrapperHTML;
                 } else {
@@ -991,27 +991,6 @@ class CleanTalkWidgetDoboard {
                 hideContainersSpinner(false);
             });
         });
-    }
-
-    /**
-     * Load the template
-     *
-     * @param templateName
-     * @param variables
-     * @return {Promise<string>}
-     * @ToDo have to refactor templates loaded method: need to be templates included into the bundle
-     *
-     */
-    async loadTemplate(templateName, variables = {}) {
-        const response = await fetch(`/spotfix/templates/${templateName}.html`);
-        let template = await response.text();
-
-        for (const [key, value] of Object.entries(variables)) {
-            const placeholder = `{{${key}}}`;
-            template = template.replaceAll(placeholder, value);
-        }
-
-        return template;
     }
 
     async getTaskCount() {
@@ -1249,6 +1228,7 @@ class CleanTalkWidgetDoboard {
 var widgetTimeout = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    new SourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
 });
 
@@ -1673,3 +1653,244 @@ function storageCheckTaskUpdate(taskId, currentLastUpdate) {
 
     return currentUpdate > storedUpdate;
 }
+
+class Templater {
+
+    static loadTemplate(templateName, variables) {
+        const templateMethod = this[templateName];
+
+        if (typeof templateMethod !== 'function') {
+            throw new Error(`Template method '${templateName}' not found`);
+        }
+
+        let template = templateMethod.call(this);
+
+        for (const [key, value] of Object.entries(variables)) {
+            const placeholder = `{{${key}}}`;
+            template = template.replaceAll(placeholder, value);
+        }
+
+        return template;
+    }
+
+    static all_issues() {
+        return `<div class="doboard_task_widget-container">
+    <div class="doboard_task_widget-header">
+        <div style="display: flex;align-items: center;gap: 8px;">
+            <img src="/spotfix/img/white-logo-doboard.svg"  alt="">
+            <span>All spots</span>
+        </div>
+        <img src="/spotfix/img/close.svg"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+    </div>
+    <div class="doboard_task_widget-content doboard_task_widget-all_issues">
+        <div class="doboard_task_widget-spinner_wrapper_for_containers">
+            <div class="doboard_task_widget-spinner_for_containers"></div>
+        </div>
+        <div class="doboard_task_widget-all_issues-container">
+        </div>
+    </div>
+</div>`;
+    }
+
+    static concrete_issue() {
+        return `<div class="doboard_task_widget-container">
+    <div class="doboard_task_widget-header">
+        <div class="doboard_task_widget_return_to_all doboard_task_widget_cursor-pointer">
+            <img src="/spotfix/img/chevron-back.svg" alt="" title="{{chevronBackTitle}}">
+            <span title="Return to all spots list"> All {{issuesCounter}}</span>
+        </div>
+        <div class="doboard_task_widget-issue-title">{{issueTitle}}</div>
+        <img src="/spotfix/img/close.svg"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+    </div>
+    <div class="doboard_task_widget-content doboard_task_widget-all_issues">
+        <div class="doboard_task_widget-spinner_wrapper_for_containers">
+            <div class="doboard_task_widget-spinner_for_containers"></div>
+        </div>
+        <div class="doboard_task_widget-concrete_issues-container">
+        </div>
+        <div class="doboard_task_widget-send_message">
+            <form>
+                <div class="doboard_task_widget-send_message_elements_wrapper">
+                <button type="button" class="doboard_task_widget-send_message_paperclip">
+                    <img src="{{paperclipImgSrc}}" alt="Attach a file" title="Attach a file">
+                </button>
+
+                <div class="doboard_task_widget-send_message_input_wrapper">
+                    <img class="doboard_task_widget-send_message_input-icon" src="{{msgFieldBackgroundImgSrc}}" alt="" title="">
+                    <input type="text" class="doboard_task_widget-send_message_input" placeholder="Write a message...">
+                </div>
+
+                <button type="submit" class="doboard_task_widget-send_message_button">
+                    <img src="{{sendButtonImgSrc}}" alt="Send message" title="Send message">
+                </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+`;
+    }
+
+    static concrete_issue_day_content() {
+        return `<div class="doboard_task_widget-concrete_issue-day_content">
+    <div class="doboard_task_widget-concrete_issue_day_content-month_day">{{dayContentMonthDay}}</div>
+    <div class="doboard_task_widget-concrete_issue_day_content-messages_wrapper">{{dayContentMessages}}</div>
+</div>
+`;
+    }
+
+    static concrete_issue_messages() {
+        return `<div class="doboard_task_widget-comment_data_wrapper">
+    <div class="{{avatarCSSClass}}" style="{{avatarStyle}}">
+        <span class="doboard_task_widget-avatar-initials {{initialsClass}}">{{taskAuthorInitials}}</span>
+    </div>
+    <div class="doboard_task_widget-comment_text_container">
+        <img src="{{commentContainerBackgroundSrc}}" alt="">
+        <div class="doboard_task_widget-comment_body">{{commentBody}}</div>
+        <div class="doboard_task_widget-comment_time">{{commentTime}}</div>
+    </div>
+</div>
+
+`;
+    }
+
+    static create_issue() {
+        return `<div class="doboard_task_widget-container">
+    <div class="doboard_task_widget-header">
+        <div style="display: flex;align-items: center;gap: 8px;">
+            <img src="/spotfix/img/white-logo-doboard.svg"  alt="">
+            <span>Report an issue</span>
+        </div>
+        <img src="/spotfix/img/close.svg"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+    </div>
+    <div class="doboard_task_widget-content">
+
+        <div class="doboard_task_widget-element-container">
+            <span>
+                If you found issue with <span style="color: #000000;">{{currentDomain}}</span> page, you are in right place. Please use this form to tell us about the issue you’re experiencing.
+                <a href="https://doboard.com" target="_blank">doboard.com</a>
+            </span>
+        </div>
+
+        <div class="doboard_task_widget-input-container">
+            <input id="doboard_task_widget-title" class="doboard_task_widget-field" name="title" value="{{selectedText}}" required>
+            <label for="doboard_task_widget-title">Report about</label>
+        </div>
+
+        <div class="doboard_task_widget-input-container">
+            <textarea id="doboard_task_widget-description" class="doboard_task_widget-field" name="description" required></textarea>
+            <label for="doboard_task_widget-description">Description</label>
+        </div>
+
+        <div class="doboard_task_widget-login">
+
+            <span>If you want to receive notifications by email write here you email contacts.</span>
+
+            <div class="doboard_task_widget-accordion">
+
+                <div class="doboard_task_widget-input-container">
+                    <input id="doboard_task_widget-user_name" class="doboard_task_widget-field" type="text" name="user_name">
+                    <label for="doboard_task_widget-user_name">Nickname</label>
+                </div>
+
+                <div class="doboard_task_widget-input-container">
+                    <input id="doboard_task_widget-user_email" class="doboard_task_widget-field" type="email" name="user_email">
+                    <label for="doboard_task_widget-user_email">Email</label>
+                </div>
+
+                <div class="doboard_task_widget-input-container hidden">
+                    <input id="doboard_task_widget-user_password" class="doboard_task_widget-field" type="password" name="user_password">
+                    <label for="doboard_task_widget-user_password">Password</label>
+                </div>
+
+                <i>Note about DoBoard register and accepting email notifications about tasks have to be here.</i>
+
+            </div>
+
+        </div>
+
+        <div class="doboard_task_widget-field">
+            <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button">Submit</button>
+        </div>
+
+        <div class="doboard_task_widget-error_message-wrapper hidden">
+            <span id="doboard_task_widget-error_message-header">Registration error</span>
+            <div id="doboard_task_widget-error_message"></div>
+        </div>
+    </div>
+</div>
+`;
+    }
+
+    static list_issues() {
+        return `<div class="doboard_task_widget-task_row issue-item" data-node-path='[{{nodePath}}]' data-task-id='{{taskId}}'>
+    <div class="{{avatarCSSClass}}" style="{{avatarStyle}}">
+        <span class="doboard_task_widget-avatar-initials {{initialsClass}}">{{taskAuthorInitials}}</span>
+    </div>
+    <div class="doboard_task_widget-description_container">
+        <div class="doboard_task_widget-task_title">
+            <div class="doboard_task_widget-task_title-details">
+                <span class="doboard_task_widget-task_title-text">{{taskTitle}}</span>
+                <div class="doboard_task_widget-task_title_public_status_img">
+                    <img src="{{taskPublicStatusImgSrc}}" alt="" title="{{taskPublicStatusHint}}">
+                </div>
+            </div>
+            <div class="doboard_task_widget-task_title-last_update_time">{{taskLastUpdate}}</div>
+        </div>
+        <div class="doboard_task_widget-task_last_message">
+            <span>{{taskLastMessage}}</span>
+        </div>
+    </div>
+</div>
+`;
+    }
+
+    static wrap() {
+        return `<div class="doboard_task_widget-wrap">
+    <img src="/spotfix/img/doboard-widget-logo.svg" alt="Doboard logo">
+    <div id="doboard_task_widget-task_count" class="hidden"></div>
+</div>
+`;
+    }
+}
+
+class SourcesLoader {
+
+    constructor() {
+        this.loadAll();
+    }
+
+    loadAll() {
+        this.loadFonts();
+        this.loadCSS();
+    };
+
+    loadFonts() {
+        const preconnect_first = document.createElement('link');
+        preconnect_first.rel = 'preconnect';
+        preconnect_first.href = 'https://fonts.googleapis.com';
+        document.head.appendChild(preconnect_first);
+
+        const preconnect_second = document.createElement('link');
+        preconnect_second.rel = 'preconnect';
+        preconnect_second.href = 'https://fonts.gstatic.com';
+        preconnect_second.crossOrigin = 'crossorigin';
+        document.head.appendChild(preconnect_second);
+
+        const fontLink = document.createElement('link');
+        fontLink.rel = 'stylesheet';
+        fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap';
+        document.head.appendChild(fontLink);
+    }
+
+    loadCSS() {
+        const style = document.createElement('style');
+        style.setAttribute('id', 'spotfix_css');
+        style.textContent = spotfixCSS;
+        document.head.appendChild(style);
+    }
+}
+
+const spotfixCSS = `
+.doboard_task_widget *{font-family:Inter,sans-serif;font-weight:400;font-size:14px;line-height:130%;color:#40484f}.doboard_task_widget-header *{color:#fff}.doboard_task_widget a{text-decoration:underline;color:#2f68b7}.doboard_task_widget a:hover{text-decoration:none}.doboard_task_widget{position:fixed;right:0;bottom:0;margin-bottom:20px;margin-right:70px;z-index:9999;vertical-align:middle;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}.doboard_task_widget_cursor-pointer{cursor:pointer}.doboard_task_widget-container{width:360px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-header{display:flex;height:41px;min-height:41px;padding:8px 16px;background:#1c7857;border-radius:8px 8px 0 0;justify-content:space-between;align-items:center;color:#fff}.doboard_task_widget-content{flex:1;overflow-y:auto;padding:10px 16px 5px;background:#fff;border-radius:0 0 8px 8px;border:1px #bbc7d1;border-style:none solid solid;box-shadow:0 4px 15px 8px #cacACA40;scrollbar-width:none}.doboard_task_widget-element-container{margin-bottom:30px}.doboard_task_widget-wrap{width:auto;background:0 0;border:none;box-shadow:none;padding:0}.doboard_task_widget-wrap.hidden{display:none}#doboard_task_widget-task_count{position:absolute;top:0;right:0;width:22px;height:22px;opacity:1;background:#ef8b43;border-radius:50%;color:#fff;text-align:center;line-height:22px}#doboard_task_widget-task_count:hover{background:url(../spotfix/img/close-widget.svg) center no-repeat;cursor:pointer;overflow:hidden;font-size:0}#doboard_task_widget-task_count.hidden{width:0;height:0;opacity:0}.doboard_task_widget-input-container{position:relative;margin-bottom:24px}.doboard_task_widget-input-container.hidden{display:none}.doboard_task_widget-input-container .doboard_task_widget-field{padding:0 8px;border-radius:4px;border:1px solid #bbc7d1;outline:0!important;appearance:none;width:100%;height:40px;background:#fff;color:#000;max-width:-webkit-fill-available;max-width:-moz-available}.doboard_task_widget-field:focus{border-color:#2f68b7}.doboard_task_widget-input-container textarea.doboard_task_widget-field{height:94px;padding-top:11px;padding-bottom:11px}.doboard_task_widget-field+label{color:#252a2f;background:#fff;position:absolute;top:20px;left:8px;transform:translateY(-50%);transition:.2s ease-in-out}.doboard_task_widget-field.has-value+label,.doboard_task_widget-field:focus+label{font-size:10px;top:0;left:12px;padding:0 4px;z-index:5}.doboard_task_widget-field:focus+label{color:#2f68b7}.doboard_task_widget-login{background:#f9fbfd;border:1px solid #bbc7d1;border-radius:4px;padding:11px 8px 8px;margin-bottom:40px}.doboard_task_widget-login .doboard_task_widget-accordion{height:0;overflow:hidden;opacity:0;transition:.2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-accordion{height:auto;overflow:visible;opacity:1}.doboard_task_widget-login .doboard_task_widget-input-container:last-child{margin-bottom:0}.doboard_task_widget-login span{display:block;position:relative;padding-right:24px;cursor:pointer}.doboard_task_widget-login.active span{margin-bottom:24px}.doboard_task_widget-login span::after{position:absolute;top:0;right:4px;content:"";display:block;width:10px;height:10px;transform:rotate(45deg);border:2px solid #40484f;border-radius:1px;border-top:none;border-left:none;transition:.2s ease-in-out}.doboard_task_widget-login.active span::after{transform:rotate(-135deg);top:7px}.doboard_task_widget-login .doboard_task_widget-field+label,.doboard_task_widget-login .doboard_task_widget-input-container .doboard_task_widget-field{background:#f9fbfd}.doboard_task_widget-submit_button{height:48px;width:100%;margin-bottom:16px;color:#fff;background:#22a475;border:none;border-radius:6px;font-family:Inter,sans-serif;font-weight:700;font-size:16px;line-height:150%;cursor:pointer;transition:.2s ease-in-out}.doboard_task_widget-submit_button:hover{background:#1c7857;color:#fff}.doboard_task_widget-submit_button:disabled{background:rgba(117,148,138,.92);color:#fff;cursor:wait}.doboard_task_widget-issue-title{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-hidden_element{opacity:0}.doboard_task_widget-error_message-wrapper{background:#fdd;border:1px solid #cf6868;border-radius:4px;padding:8px;margin-bottom:14px;display:grid;justify-items:center}.doboard_task_widget-error_message-wrapper.hidden{display:none}#doboard_task_widget-error_message-header{margin:8px 0;font-weight:600}#doboard_task_widget-error_message{text-align:center}.doboard_task_widget-task_row{display:flex;max-height:55px;padding-bottom:4px;margin-bottom:20px;cursor:pointer;align-items:center;justify-content:space-between}.doboard_task_widget-task_row:last-child{margin-bottom:0}.doboard_task_widget-task-text_bold{font-weight:700}.doboard_task_widget-text_selection{background:rgba(208,213,127,.68)}.doboard_task_widget-text_selection.image-highlight{display:-moz-inline-box;display:inline-flex;border:3px solid rgba(208,213,127,.99);padding:5px;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-issues_list_empty{text-align:center;margin:20px 0}.doboard_task_widget-avatar_container{height:44px;width:44px;border-radius:50%;background-repeat:no-repeat;background-position:center;background-size:100%}.doboard_task_widget-avatar_placeholder{min-height:44px;min-width:44px;border-radius:50%;font-size:24px;line-height:1.2083333333;padding:0;background:#1c7857;display:inline-grid;align-content:center;justify-content:center}.doboard_task_widget-avatar-initials{color:#fff}.doboard_task_widget-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover}.doboard_task_widget-description_container{height:55px;width:calc(100% - 44px - 8px);border-bottom:1px solid #ebf0f4;display:block;margin-left:8px}.doboard_task_widget-task_row:last-child .doboard_task_widget-description_container{border-bottom:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{overflow:auto;max-height:85vh;display:none}.doboard_task_widget-all_issues-container{scrollbar-width:none}.doboard_task_widget-all_issues-container::-webkit-scrollbar,.doboard_task_widget-all_issues::-webkit-scrollbar,.doboard_task_widget-concrete_issues-container::-webkit-scrollbar,.doboard_task_widget-content::-webkit-scrollbar{width:0}.doboard_task_widget-task_title{font-weight:700;display:flex;justify-content:space-between;align-items:center}.doboard_task_widget-task_title span{font-weight:700;display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-task_title-details{display:flex;max-width:calc(100% - 40px);align-items:center}.doboard_task_widget-task_last_message{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:85%}.doboard_task_widget_return_to_all{display:flex;gap:8px;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:wrap}.doboard_task_widget-task_title-last_update_time{font-family:Inter,serif;font-weight:400;font-style:normal;font-size:11px;leading-trim:NONE;line-height:100%}.doboard_task_widget-task_title_public_status_img{opacity:50%;margin-left:5px;scale:90%}.doboard_task_widget-description-textarea{resize:none}.doboard_task_widget-switch_row{display:flex;align-items:center;gap:12px;margin:16px 0;justify-content:space-between}.doboard_task_widget-switch-label{font-weight:600;font-size:16px;height:24px;align-content:center}.doboard_task_widget-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}.doboard_task_widget-switch input{opacity:0;width:0;height:0}.doboard_task_widget-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;border-radius:24px;transition:.2s}.doboard_task_widget-slider:before{position:absolute;content:"";height:20px;width:20px;left:2px;bottom:2px;background-color:#fff;border-radius:50%;transition:.2s}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider{background-color:#65d4ac}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider:before{transform:translateX(20px)}.doboard_task_widget-switch-img{width:24px;height:24px;flex-shrink:0}.doboard_task_widget-switch-center{display:flex;gap:2px;flex-direction:column;-moz-flex-direction:column;flex:1 1 auto;min-width:0}.doboard_task_widget-switch-desc{display:block;font-size:12px;color:#707a83;margin:0;line-height:1.2;max-width:180px;word-break:break-word}.doboard_task_widget-concrete_issue-day_content{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-concrete_issue_day_content-month_day{text-align:center;font-weight:400;font-size:12px;line-height:100%;padding:8px;opacity:.75}.doboard_task_widget-concrete_issue_day_content-messages_wrapper{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-comment_data_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;margin-bottom:15px;align-items:flex-end}.doboard_task_widget-comment_text_container{position:relative;width:100%;height:auto;overflow:hidden;margin-left:5px;padding:5px}.doboard_task_widget-comment_text_container img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:fill}.doboard_task_widget-comment_body,.doboard_task_widget-comment_time{position:relative;z-index:1}.doboard_task_widget-comment_body{padding:10px}.doboard_task_widget-comment_time{font-weight:400;font-size:11px;line-height:100%;text-align:right;padding:0 8px 4px 0;opacity:.8}.doboard_task_widget-send_message{padding:10px 0 4px;border-top:1px solid #bbc7d1;position:sticky;background:#fff;bottom:0;z-index:4}.doboard_task_widget-send_message_elements_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:wrap;justify-content:space-evenly}.doboard_task_widget-send_message_input_wrapper{position:relative;display:inline-grid;align-items:center;justify-items:center}.doboard_task_widget-send_message_input-icon{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:0}.doboard_task_widget-send_message_input_wrapper input{width:90%;position:relative;border:none;background:0 0;z-index:1;overflow-wrap:break-word}.doboard_task_widget-send_message_input_wrapper input:focus{border-color:#007bff;outline:0}.doboard_task_widget-send_message_input_wrapper input:focus+.input-icon{color:#007bff}.doboard_task_widget-send_message_button,.doboard_task_widget-send_message_paperclip{display:inline-grid;border:none;background:0 0;cursor:pointer;padding:0;align-items:center}.doboard_task_widget-send_message_button:hover,.doboard_task_widget-send_message_paperclip:hover rect{fill:#45a049}.doboard_task_widget-send_message_button:active,.doboard_task_widget-send_message_paperclip:active{transform:scale(.98)}.doboard_task_widget-spinner_wrapper_for_containers{display:flex;justify-content:center;align-items:center;min-height:60px;width:100%}.doboard_task_widget-spinner_for_containers{width:40px;height:40px;border-radius:50%;background:conic-gradient(transparent,#1c7857);mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#fff 0);animation:1s linear infinite spin}@keyframes spin{to{transform:rotate(1turn)}}@media (max-width:480px){.doboard_task_widget{position:fixed;right:0;top:auto;bottom:0;margin:0 20px 20px;box-sizing:border-box;transform:translateZ(0);-moz-transform:translateZ(0);will-change:transform}.doboard_task_widget-container{width:100%;max-width:290px;margin:0 auto;max-height:calc(100vh - 40px)}.doboard_task_widget-content{height:auto;max-height:none;scrollbar-width:none}.doboard_task_widget-content::-webkit-scrollbar{display:none}}@supports (-webkit-overflow-scrolling:touch){.doboard_task_widget{position:fixed}}
+`;

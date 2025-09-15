@@ -250,7 +250,7 @@ class CleanTalkWidgetDoboard {
             default:
                 break;
         }
-        widgetContainer.innerHTML = await this.loadTemplate(templateName, variables);
+        widgetContainer.innerHTML = Templater.loadTemplate(templateName, variables);
         document.body.appendChild(widgetContainer);
 
 
@@ -322,7 +322,7 @@ class CleanTalkWidgetDoboard {
                                 taskAuthorInitials: avatarData.taskAuthorInitials,
                                 initialsClass: avatarData.initialsClass
                             };
-                            document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += await this.loadTemplate('list_issues', variables);
+                            document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += Templater.loadTemplate('list_issues', variables);
 
                             spotsToBeHighlighted.push(taskData);
                         }
@@ -394,9 +394,9 @@ class CleanTalkWidgetDoboard {
                         currentDayMessages.sort((a, b) => a.commentTime.localeCompare(b.commentTime));
                         for (const messageId in currentDayMessages) {
                             let currentMessageData = currentDayMessages[messageId];
-                            dayMessagesWrapperHTML += await this.loadTemplate('concrete_issue_messages', currentMessageData);
+                            dayMessagesWrapperHTML += Templater.loadTemplate('concrete_issue_messages', currentMessageData);
                         }
-                        daysWrapperHTML += await this.loadTemplate('concrete_issue_day_content', {dayContentMonthDay: day, dayContentMessages: dayMessagesWrapperHTML});
+                        daysWrapperHTML += Templater.loadTemplate('concrete_issue_day_content', {dayContentMonthDay: day, dayContentMessages: dayMessagesWrapperHTML});
                     }
                     issuesCommentsContainer.innerHTML = daysWrapperHTML;
                 } else {
@@ -484,27 +484,6 @@ class CleanTalkWidgetDoboard {
                 hideContainersSpinner(false);
             });
         });
-    }
-
-    /**
-     * Load the template
-     *
-     * @param templateName
-     * @param variables
-     * @return {Promise<string>}
-     * @ToDo have to refactor templates loaded method: need to be templates included into the bundle
-     *
-     */
-    async loadTemplate(templateName, variables = {}) {
-        const response = await fetch(`/spotfix/templates/${templateName}.html`);
-        let template = await response.text();
-
-        for (const [key, value] of Object.entries(variables)) {
-            const placeholder = `{{${key}}}`;
-            template = template.replaceAll(placeholder, value);
-        }
-
-        return template;
     }
 
     async getTaskCount() {
