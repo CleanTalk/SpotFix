@@ -1113,7 +1113,6 @@ class CleanTalkWidgetDoboard {
         const wrapper = document.createElement('span');
         wrapper.className = 'doboard_task_widget-text_selection image-highlight';
 
-        // Используем insertAdjacentElement для более читаемого кода
         element.insertAdjacentElement('beforebegin', wrapper);
         wrapper.appendChild(newElement);
 
