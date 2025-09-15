@@ -347,7 +347,6 @@ class CleanTalkWidgetDoboard {
                     issueTitle: taskDetails.issueTitle,
                     issueComments: taskDetails.issueComments,
                     issuesCounter: getIssuesCounterString(),
-                    chevronBackTitle: 'Back to all spots',
                 };
                 const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
                 let dayMessagesData = [];
