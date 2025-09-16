@@ -95,21 +95,21 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname) => 
         throw new Error(responseBody.data.operation_message);
     }
     if ( responseBody.data.operation_status === 'SUCCESS' ) {
-        if (responseBody.data.user_email_confirmed === 1) {
-            return {
-                accountExists: true
-            }
-        }
-        return {
+        const result = {
             sessionId: responseBody.data.session_id,
             userId: responseBody.data.user_id,
-            email: responseBody.data.email
-        }
+            email: responseBody.data.email,
+            accountExists: responseBody.data.user_email_confirmed === 1 ? true : false,
+            operationMessage: responseBody.data.operation_message,
+            operationStatus: responseBody.data.operation_status,
+            userEmailConfirmed: responseBody.data.user_email_confirmed,
+        };
+        return result;
     }
     throw new Error('Unknown error occurred during registration');
 };
 
-const loginUser = async (email, password) => {
+const loginUserDoboard = async (email, password) => {
     const formData = new FormData();
     formData.append('email', email);
     formData.append('password', password);
@@ -135,7 +135,11 @@ const loginUser = async (email, password) => {
         return {
             sessionId: responseBody.data.session_id,
             userId: responseBody.data.user_id,
-            email: email
+            email: responseBody.data.email,
+            accountExists: responseBody.data.user_email_confirmed === 1 ? true : false,
+            operationMessage: responseBody.data.operation_message,
+            operationStatus: responseBody.data.operation_status,
+            userEmailConfirmed: responseBody.data.user_email_confirmed,
         }
     }
     throw new Error('Unknown error occurred during registration');

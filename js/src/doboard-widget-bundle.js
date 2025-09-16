@@ -95,21 +95,21 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname) => 
         throw new Error(responseBody.data.operation_message);
     }
     if ( responseBody.data.operation_status === 'SUCCESS' ) {
-        if (responseBody.data.user_email_confirmed === 1) {
-            return {
-                accountExists: true
-            }
-        }
-        return {
+        const result = {
             sessionId: responseBody.data.session_id,
             userId: responseBody.data.user_id,
-            email: responseBody.data.email
-        }
+            email: responseBody.data.email,
+            accountExists: responseBody.data.user_email_confirmed === 1 ? true : false,
+            operationMessage: responseBody.data.operation_message,
+            operationStatus: responseBody.data.operation_status,
+            userEmailConfirmed: responseBody.data.user_email_confirmed,
+        };
+        return result;
     }
     throw new Error('Unknown error occurred during registration');
 };
 
-const loginUser = async (email, password) => {
+const loginUserDoboard = async (email, password) => {
     const formData = new FormData();
     formData.append('email', email);
     formData.append('password', password);
@@ -135,7 +135,11 @@ const loginUser = async (email, password) => {
         return {
             sessionId: responseBody.data.session_id,
             userId: responseBody.data.user_id,
-            email: email
+            email: responseBody.data.email,
+            accountExists: responseBody.data.user_email_confirmed === 1 ? true : false,
+            operationMessage: responseBody.data.operation_message,
+            operationStatus: responseBody.data.operation_status,
+            userEmailConfirmed: responseBody.data.user_email_confirmed,
         }
     }
     throw new Error('Unknown error occurred during registration');
@@ -475,8 +479,9 @@ function registerUser(taskDetails) {
 	const projectToken = taskDetails.projectToken;
 	const accountId = taskDetails.accountId;
 
-	const resultRegisterUser = registerUserDoboard(projectToken, accountId, userEmail, userName)
+	const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName)
 		.then(response => {
+			console.log('registerUser response:', response);
 			if (response.accountExists) {
 				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container").innerText = 'Account already exists. Please, login usin your password.';
 				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container.hidden").classList.remove('hidden');
@@ -486,6 +491,10 @@ function registerUser(taskDetails) {
 				localStorage.setItem('spotfix_user_id', response.userId);
 				localStorage.setItem('spotfix_email', response.email);
 				userUpdate(projectToken, accountId);
+			} else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
+				if (typeof showMessageCallback === 'function') {
+					showMessageCallback(response.operationMessage, 'notice');
+				}
 			} else {
 				throw new Error('Session ID not found in response');
 			}
@@ -495,6 +504,31 @@ function registerUser(taskDetails) {
 		});
 
 		return resultRegisterUser;
+}
+
+function loginUser(taskDetails) {
+	const userEmail = taskDetails.userEmail;
+	const userPassword = taskDetails.userPassword;
+
+	return (showMessageCallback) => loginUserDoboard(userEmail, userPassword)
+		.then(response => {
+			console.log('loginUser response:', response);
+        
+			if (response.sessionId) {
+				localStorage.setItem('spotfix_session_id', response.sessionId);
+				localStorage.setItem('spotfix_user_id', response.userId);
+				localStorage.setItem('spotfix_email', response.email);
+			}  else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
+				if (typeof showMessageCallback === 'function') {
+					showMessageCallback(response.operationMessage, 'notice');
+				}
+			} else {
+				throw new Error('Session ID not found in response');
+			}
+		})
+		.catch(error => {
+			throw error;
+		});
 }
 
 function userUpdate(projectToken, accountId) {
@@ -678,7 +712,7 @@ class CleanTalkWidgetDoboard {
                 try {
                     submitTaskResult = await this.submitTask(taskDetails);
                 } catch (error) {
-                    this.registrationErrorShow(error.message);
+                    this.registrationShowMessage(error.message);
                     return;
                 }
 
@@ -1051,11 +1085,9 @@ class CleanTalkWidgetDoboard {
      */
     async submitTask(taskDetails) {
         if (!localStorage.getItem('spotfix_session_id')) {
-
-            await registerUser(taskDetails);
-
+            await registerUser(taskDetails)(this.registrationShowMessage);
             if ( taskDetails.userPassword ) {
-                await this.loginUser(taskDetails);
+                await loginUser(taskDetails)(this.registrationShowMessage);
             }
         }
 
@@ -1066,25 +1098,6 @@ class CleanTalkWidgetDoboard {
             return {needToLogin: true};
         }
         return await handleCreateTask(sessionId, taskDetails);
-    }
-
-    loginUser(taskDetails) {
-        const userEmail = taskDetails.userEmail;
-        const userPassword = taskDetails.userPassword;
-
-        return loginUser(userEmail, userPassword)
-            .then(response => {
-                if (response.sessionId) {
-                    localStorage.setItem('spotfix_session_id', response.sessionId);
-                    localStorage.setItem('spotfix_user_id', response.userId);
-                    localStorage.setItem('spotfix_email', response.email);
-                } else {
-                    throw new Error('Session ID not found in response');
-                }
-            })
-            .catch(error => {
-                throw error;
-            });
     }
 
     /**
@@ -1241,12 +1254,24 @@ class CleanTalkWidgetDoboard {
         }
     }
 
-    registrationErrorShow(errorText) {
-        const errorDiv = document.getElementById('doboard_task_widget-error_message');
-        const errorWrap = document.querySelector('.doboard_task_widget-error_message-wrapper');
-        if (typeof errorText === 'string' && errorDiv !== null && errorWrap !== null) {
-            errorDiv.innerText = errorText;
-            errorWrap.classList.remove('hidden');
+    registrationShowMessage(messageText, type = 'error') {
+        const titleSpan = document.getElementById('doboard_task_widget-error_message-header');
+        const messageDiv = document.getElementById('doboard_task_widget-error_message');
+        const messageWrap = document.querySelector('.doboard_task_widget-message-wrapper');
+
+        if (typeof messageText === 'string' && messageDiv !== null && messageWrap !== null) {
+            messageDiv.innerText = messageText;
+            messageWrap.classList.remove('hidden');
+            messageDiv.classList.remove('doboard_task_widget-notice_message', 'doboard_task_widget-error_message');
+            if (type === 'notice') {
+                titleSpan.innerText = 'Notice';
+                messageWrap.classList.add('doboard_task_widget-notice_message');
+                messageDiv.style.color = '#2a5db0';
+            } else {
+                titleSpan.innerText = 'Registration error';
+                messageWrap.classList.add('doboard_task_widget-error_message');
+                messageDiv.style.color = 'red';
+            }
         }
     }
 }

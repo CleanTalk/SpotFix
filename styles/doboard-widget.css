@@ -276,14 +276,23 @@
     opacity: 0;
 }
 
-.doboard_task_widget-error_message-wrapper {
-    background: #ffdddd;
-    border: 1px solid #cf6868;
+.doboard_task_widget-message-wrapper {
     border-radius: 4px;
     padding: 8px;
     margin-bottom: 14px;
     display: grid;
     justify-items: center;
+}
+
+.doboard_task_widget-error_message {
+    background: #ffdddd;
+    border: 1px solid #cf6868;
+
+}
+
+.doboard_task_widget-notice_message {
+    background: #dde9ff;
+    border: 1px solid #68a6cf;
 }
 
 .doboard_task_widget-error_message-wrapper.hidden {

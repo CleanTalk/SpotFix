@@ -171,7 +171,7 @@ class CleanTalkWidgetDoboard {
                 try {
                     submitTaskResult = await this.submitTask(taskDetails);
                 } catch (error) {
-                    this.registrationErrorShow(error.message);
+                    this.registrationShowMessage(error.message);
                     return;
                 }
 
@@ -544,11 +544,9 @@ class CleanTalkWidgetDoboard {
      */
     async submitTask(taskDetails) {
         if (!localStorage.getItem('spotfix_session_id')) {
-
-            await registerUser(taskDetails);
-
+            await registerUser(taskDetails)(this.registrationShowMessage);
             if ( taskDetails.userPassword ) {
-                await this.loginUser(taskDetails);
+                await loginUser(taskDetails)(this.registrationShowMessage);
             }
         }
 
@@ -559,25 +557,6 @@ class CleanTalkWidgetDoboard {
             return {needToLogin: true};
         }
         return await handleCreateTask(sessionId, taskDetails);
-    }
-
-    loginUser(taskDetails) {
-        const userEmail = taskDetails.userEmail;
-        const userPassword = taskDetails.userPassword;
-
-        return loginUser(userEmail, userPassword)
-            .then(response => {
-                if (response.sessionId) {
-                    localStorage.setItem('spotfix_session_id', response.sessionId);
-                    localStorage.setItem('spotfix_user_id', response.userId);
-                    localStorage.setItem('spotfix_email', response.email);
-                } else {
-                    throw new Error('Session ID not found in response');
-                }
-            })
-            .catch(error => {
-                throw error;
-            });
     }
 
     /**
@@ -734,12 +713,24 @@ class CleanTalkWidgetDoboard {
         }
     }
 
-    registrationErrorShow(errorText) {
-        const errorDiv = document.getElementById('doboard_task_widget-error_message');
-        const errorWrap = document.querySelector('.doboard_task_widget-error_message-wrapper');
-        if (typeof errorText === 'string' && errorDiv !== null && errorWrap !== null) {
-            errorDiv.innerText = errorText;
-            errorWrap.classList.remove('hidden');
+    registrationShowMessage(messageText, type = 'error') {
+        const titleSpan = document.getElementById('doboard_task_widget-error_message-header');
+        const messageDiv = document.getElementById('doboard_task_widget-error_message');
+        const messageWrap = document.querySelector('.doboard_task_widget-message-wrapper');
+
+        if (typeof messageText === 'string' && messageDiv !== null && messageWrap !== null) {
+            messageDiv.innerText = messageText;
+            messageWrap.classList.remove('hidden');
+            messageDiv.classList.remove('doboard_task_widget-notice_message', 'doboard_task_widget-error_message');
+            if (type === 'notice') {
+                titleSpan.innerText = 'Notice';
+                messageWrap.classList.add('doboard_task_widget-notice_message');
+                messageDiv.style.color = '#2a5db0';
+            } else {
+                titleSpan.innerText = 'Registration error';
+                messageWrap.classList.add('doboard_task_widget-error_message');
+                messageDiv.style.color = 'red';
+            }
         }
     }
 }
