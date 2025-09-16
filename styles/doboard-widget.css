@@ -81,6 +81,7 @@
     border-color: #BBC7D1;
     box-shadow: 0 4px 15px 8px #CACACA40;
     scrollbar-width: none;
+    max-height: 60vh;
 }
 
 .doboard_task_widget-element-container {

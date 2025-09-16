@@ -1,5 +1,29 @@
 const DOBOARD_API_URL = 'https://api-next.doboard.com';
 
+const userConfirmEmailDoboard = async (emailConfirmationToken) => {
+    const response = await fetch(
+        `${DOBOARD_API_URL}/user_confirm_email?email_confirmation_token=${encodeURIComponent(emailConfirmationToken)}`,
+        { method: 'GET' }
+    );
+    if (!response.ok) {
+        throw new Error('Email confirmation failed');
+    }
+    const responseBody = await response.json();
+    if (!responseBody || !responseBody.data) {
+        throw new Error('Invalid response from server');
+    }
+    if (responseBody.data.operation_status !== 'CONFIRMED') {
+        throw new Error('Email not confirmed');
+    }
+    return {
+        sessionId: responseBody.data.session_id,
+        userId: responseBody.data.user_id,
+        email: responseBody.data.email,
+        accounts: responseBody.data.accounts,
+        operationStatus: responseBody.data.operation_status
+    };
+};
+
 const createTaskDoboard = async (sessionId, taskDetails) => {
     const accountId = taskDetails.accountId;
     const formData = new FormData();
@@ -293,6 +317,38 @@ const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, tim
     }
     throw new Error('Unknown error occurred during user update');
 }
+async function confirmUserEmail(emailConfirmationToken, params) {
+	const result = await userConfirmEmailDoboard(emailConfirmationToken);
+	// Save session data to LS
+	localStorage.setItem('spotfix_email', result.email);
+	localStorage.setItem('spotfix_session_id', result.sessionId);
+	localStorage.setItem('spotfix_user_id', result.userId);
+
+	// Get pending task from LS
+	const pendingTaskRaw = localStorage.getItem('spotfix_pending_task');
+	if (!pendingTaskRaw) throw new Error('No pending task data');
+	const pendingTask = JSON.parse(pendingTaskRaw);
+
+	// Form taskDetails for task creation
+	const taskDetails = {
+		taskTitle: pendingTask.selectedText || 'New Task',
+		taskDescription: pendingTask.description || '',
+		selectedData: pendingTask,
+		projectToken: params.projectToken,
+		projectId: params.projectId,
+		accountId: params.accountId,
+		taskMeta: JSON.stringify(pendingTask)
+	};
+
+	// Create task
+	const createdTask = await handleCreateTask(result.sessionId, taskDetails);
+	// Clear pending task
+	localStorage.removeItem('spotfix_pending_task');
+
+	// Return created task
+	return createdTask;
+}
+
 async function getTaskFullDetails(params, taskId) {
 	const sessionId = localStorage.getItem('spotfix_session_id');
 	const comments = await getTaskCommentsDoboard(taskId, sessionId, params.accountId, params.projectToken);
@@ -481,7 +537,6 @@ function registerUser(taskDetails) {
 
 	const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName)
 		.then(response => {
-			console.log('registerUser response:', response);
 			if (response.accountExists) {
 				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container").innerText = 'Account already exists. Please, login usin your password.';
 				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container.hidden").classList.remove('hidden');
@@ -512,8 +567,6 @@ function loginUser(taskDetails) {
 
 	return (showMessageCallback) => loginUserDoboard(userEmail, userPassword)
 		.then(response => {
-			console.log('loginUser response:', response);
-        
 			if (response.sessionId) {
 				localStorage.setItem('spotfix_session_id', response.sessionId);
 				localStorage.setItem('spotfix_user_id', response.userId);
@@ -566,7 +619,30 @@ class CleanTalkWidgetDoboard {
      */
     async init(type) {
         this.params = this.getParams();
-        this.allTasksData = await getAllTasks(this.params);
+
+        // Check if email_confirmation_token is in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const emailToken = urlParams.get('email_confirmation_token');
+        if (emailToken) {
+            try {
+                // Confirm email and create task
+                const createdTask = await confirmUserEmail(emailToken, this.params);
+                this.allTasksData = await getAllTasks(this.params);
+                // Open task interface
+                this.currentActiveTaskId = createdTask.taskId;
+                type = 'concrete_issue';
+                // Clear email_confirmation_token from URL
+                urlParams.delete('email_confirmation_token');
+                const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+                window.history.replaceState({}, document.title, newUrl);
+            } catch (err) {
+                this.registrationShowMessage('Error confirming email: ' + err.message, 'error');
+            }
+        } else {
+            // Load all tasks
+            this.allTasksData = await getAllTasks(this.params);
+        }
+
         // Check if any task has updates
         const flagAnyTaskUpdated = isAnyTaskUpdated(this.allTasksData);
         storageSaveTasksUpdateData(this.allTasksData);
@@ -708,6 +784,12 @@ class CleanTalkWidgetDoboard {
                     taskDetails.userPassword = userPassword
                 }
 
+                // Save pending task in LS
+                localStorage.setItem('spotfix_pending_task', JSON.stringify({
+                    ...this.selectedData,
+                    description: taskDescription
+                }));
+
                 let submitTaskResult;
                 try {
                     submitTaskResult = await this.submitTask(taskDetails);
@@ -771,15 +853,17 @@ class CleanTalkWidgetDoboard {
                 break;
             case 'concrete_issue':
                 templateName = 'concrete_issue';
-                // todo: this is call duplicate!
-                getTaskFullDetails(this.params, this.currentActiveTaskId).then(taskDetails=>{
-                    const issueTitle = taskDetails.issueTitle;
-                    const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
-                    if ( issueTitleElement ) {
-                        issueTitleElement.innerHTML = issueTitle;
-                    }
-                });
-
+                // Update the number of tasks
+                this.savedIssuesQuantityAll = Array.isArray(this.allTasksData) ? this.allTasksData.length : 0;
+                // Calculate the number of issues on the current page
+                this.savedIssuesQuantityOnPage = Array.isArray(this.allTasksData)
+                    ? this.allTasksData.filter(task => {
+                        try {
+                            const meta = task.taskMeta ? JSON.parse(task.taskMeta) : {};
+                            return meta.pageURL === window.location.href;
+                        } catch (e) { return false; }
+                    }).length
+                    : 0;
                 variables = {
                     issueTitle: '...',
                     issuesCounter: getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll),
@@ -890,12 +974,47 @@ class CleanTalkWidgetDoboard {
                 break;
 
             case 'concrete_issue':
+
                 const taskDetails = await getTaskFullDetails(this.params, this.currentActiveTaskId);
+
+                // Update issue title in the interface
+                const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
+                if (issueTitleElement) {
+                    issueTitleElement.innerText = taskDetails.issueTitle;
+                }
+
                 variables = {
                     issueTitle: taskDetails.issueTitle,
                     issueComments: taskDetails.issueComments,
-                    issuesCounter: getIssuesCounterString(),
+                    issuesCounter: getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll),
+                    paperclipImgSrc: '/spotfix/img/send-message--paperclip.svg',
+                    sendButtonImgSrc: '/spotfix/img/send-message--button.svg',
+                    msgFieldBackgroundImgSrc: '/spotfix/img/send-message--input-background.svg',
                 };
+
+                widgetContainer.innerHTML = await this.loadTemplate('concrete_issue', variables);
+                document.body.appendChild(widgetContainer);
+
+                // Highlight the task's selected text
+                let nodePath = null;
+                    const currentTaskData = this.allTasksData.find((element) => String(element.taskId) === String(taskDetails.taskId));
+                    let meta = null;
+                    if (currentTaskData && currentTaskData.taskMeta) {
+                        try {
+                            meta = JSON.parse(currentTaskData.taskMeta);
+                            nodePath = meta.nodePath || null;
+                        } catch (e) { nodePath = null; meta = null; }
+                    }
+                    // remove old highlights before adding new ones
+                    this.removeHighlights();
+                    if (meta && nodePath) {
+                        // Pass the task meta object as an array
+                        this.highlightElements([meta]);
+                        if (typeof scrollToNodePath === 'function') {
+                            scrollToNodePath(nodePath);
+                        }
+                    }
+
                 const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
                 let dayMessagesData = [];
                 const initIssuerID = localStorage.getItem('spotfix_user_id');
@@ -918,7 +1037,6 @@ class CleanTalkWidgetDoboard {
                             commentDate: comment.commentDate,
                             commentTime: comment.commentTime,
                             issueTitle: variables.issueTitle,
-                            issuesCounter: variables.issuesCounter,
                             commentContainerBackgroundSrc: userIsIssuer
                                 ? '/spotfix/img/comment-self-background.png'
                                 : '/spotfix/img/comment-other-background.png',
@@ -949,6 +1067,9 @@ class CleanTalkWidgetDoboard {
                 } else {
                     issuesCommentsContainer.innerHTML = 'No comments';
                 }
+
+                // Hide spinner preloader
+                hideContainersSpinner();
 
                 // Scroll to the bottom comments
                 setTimeout(() => {
