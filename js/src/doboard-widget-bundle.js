@@ -534,14 +534,17 @@ class CleanTalkWidgetDoboard {
         this.params = this.getParams();
         this.allTasksData = await getAllTasks(this.params);
         // Check if any task has updates
-        const flagAnyTaskUpdated = isAnyTaskUpdated(this.allTasksData);
+        let taskHasSiteOwnerUpdate = await checkIfTasksHasSiteOwnerUpdates(
+            this.allTasksData,
+            this.params
+        );
         storageSaveTasksUpdateData(this.allTasksData);
         //check to hide on first run
         if (!storageWidgetCloseIsSet()) {
             storageSetWidgetIsClosed(true);
         }
-        //check to show if any task has updates
-        if (flagAnyTaskUpdated) {
+        //check to show if any task has site owner updates
+        if (taskHasSiteOwnerUpdate) {
             storageSetWidgetIsClosed(false);
         }
         this.widgetElement = await this.createWidgetElement(type);
@@ -700,7 +703,7 @@ class CleanTalkWidgetDoboard {
 
                 this.selectedData = {};
                 await this.createWidgetElement('all_issues');
-                hideContainersSpinner(false)
+                hideContainersSpinner(false);
             });
         }
     }
@@ -760,9 +763,20 @@ class CleanTalkWidgetDoboard {
         widgetContainer.innerHTML = await this.loadTemplate(templateName, variables);
         document.body.appendChild(widgetContainer);
 
+        // remove highlights before any screen called
+        this.removeHighlights();
 
         switch (type) {
             case 'create_issue':
+                // highlight selected item during task creation
+                const selection = window.getSelection();
+                if (
+                    selection.type === 'Range'
+                ) {
+                    const selectedData = getSelectedData(selection);
+                    this.highlightElements([selectedData]);
+                }
+                // bind creation events
                 this.bindCreateTaskEvents();
                 break;
             case 'wrap':
@@ -776,7 +790,7 @@ class CleanTalkWidgetDoboard {
                 hideContainersSpinner(false);
                 break;
             case 'all_issues':
-                this.removeTextSelection();
+                this.removeHighlights();
                 let issuesQuantityOnPage = 0;
                 let tasks = this.allTasksData;
                 let spotsToBeHighlighted = [];
@@ -809,9 +823,6 @@ class CleanTalkWidgetDoboard {
 
                         if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
                             issuesQuantityOnPage++;
-                            //define last message and update time
-                            /* let lastMessageDetails = await getTaskLastMessageDetails(this.params, taskId);
-                            const authorDetails = getTaskAuthorDetails(this.params, '1'); // todo MOCK! */
                             const taskFullDetails = await getTaskFullDetails(this.params, taskId);
                             const avatarData = getAvatarData(taskFullDetails);
                             const variables = {
@@ -983,7 +994,7 @@ class CleanTalkWidgetDoboard {
                 const taskHighlightData = this.getTaskHighlightData(this.currentActiveTaskId)
 
                 if (taskHighlightData) {
-                    this.removeTextSelection();
+                    this.removeHighlights();
                     this.highlightElements([taskHighlightData])
                 }
 
@@ -1084,11 +1095,11 @@ class CleanTalkWidgetDoboard {
      * Hide the widget
      */
     hide() {
-        this.removeTextSelection();
+        this.removeHighlights();
         this.createWidgetElement('wrap');
     }
 
-    removeTextSelection() {
+    removeHighlights() {
         const textSelectionclassName = 'doboard_task_widget-text_selection';
         const spans = document.querySelectorAll('.' + textSelectionclassName);
         const affectedParents = new Set(); // Track unique parents
@@ -1346,19 +1357,46 @@ function getAvatarData(authorDetails) {
     }
 }
 
+/**
+ * Return first found updated task ID or false if no tasks were updated
+ * @param allTasksData
+ * @returns {string|false}
+ */
 function isAnyTaskUpdated(allTasksData) {
     let result = false;
 
-    for(const i in allTasksData) {
+    for (let i = 0; i < allTasksData.length; i++) {
         let currentStateOfTask = allTasksData[i];
         if (currentStateOfTask.taskId && currentStateOfTask.taskLastUpdate) {
             result = storageCheckTaskUpdate(currentStateOfTask.taskId, currentStateOfTask.taskLastUpdate);
             if (result) {
-                break;
+                return currentStateOfTask.taskId.toString();
             }
         }
     }
     return result;
+}
+
+/**
+ * Check if any of the tasks has updates from site owner (not from the current user and not anonymous)
+ * @returns {Promise<boolean>}
+ */
+async function checkIfTasksHasSiteOwnerUpdates(allTasksData, params) {
+    const updatedTaskId = isAnyTaskUpdated(allTasksData);
+    if (typeof updatedTaskId === 'string') {
+        const updatedTaskData =  await getTaskFullDetails(params, updatedTaskId);
+        if (updatedTaskData.issueComments) {
+            const lastIndex = updatedTaskData.issueComments.length - 1;
+            const lastMessage = updatedTaskData.issueComments[lastIndex];
+            if (
+                lastMessage.commentUserId !== localStorage.getItem('spotfix_user_id') &&
+                lastMessage.commentAuthorName !== 'Anonymous'
+            ) {
+                return true
+            }
+        }
+    }
+    return false;
 }
 
 /**
