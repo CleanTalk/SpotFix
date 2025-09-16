@@ -789,7 +789,6 @@ class CleanTalkWidgetDoboard {
                         const taskId = elTask.taskId;
                         const taskTitle = elTask.taskTitle;
                         const taskMetaString = elTask.taskMeta;
-                        const { time: lastMessageTime } = formatDate(elTask.taskLastUpdate);
                         const taskData = taskMetaString ? JSON.parse(taskMetaString) : null;
                         const currentPageURL = taskData ? taskData.pageURL : '';
                         const taskNodePath = taskData ? taskData.nodePath : '';
@@ -821,7 +820,7 @@ class CleanTalkWidgetDoboard {
                                 taskPublicStatusImgSrc: taskPublicStatusImgSrc,
                                 taskPublicStatusHint: taskPublicStatusHint,
                                 taskLastMessage: taskFullDetails.lastMessageText,
-                                taskLastUpdate: lastMessageTime,
+                                taskLastUpdate: taskFullDetails.lastMessageTime,
                                 nodePath: taskNodePath,
                                 taskId: taskId,
                                 avatarCSSClass: avatarData.avatarCSSClass,
