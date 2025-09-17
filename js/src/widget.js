@@ -50,14 +50,17 @@ class CleanTalkWidgetDoboard {
         }
 
         // Check if any task has updates
-        const flagAnyTaskUpdated = isAnyTaskUpdated(this.allTasksData);
+        let taskHasSiteOwnerUpdate = await checkIfTasksHasSiteOwnerUpdates(
+            this.allTasksData,
+            this.params
+        );
         storageSaveTasksUpdateData(this.allTasksData);
         //check to hide on first run
         if (!storageWidgetCloseIsSet()) {
             storageSetWidgetIsClosed(true);
         }
-        //check to show if any task has updates
-        if (flagAnyTaskUpdated) {
+        //check to show if any task has site owner updates
+        if (taskHasSiteOwnerUpdate) {
             storageSetWidgetIsClosed(false);
         }
         this.widgetElement = await this.createWidgetElement(type);
