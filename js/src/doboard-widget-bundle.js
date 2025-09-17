@@ -1531,7 +1531,12 @@ function isAnyTaskUpdated(allTasksData) {
 
     for (let i = 0; i < allTasksData.length; i++) {
         let currentStateOfTask = allTasksData[i];
-        if (currentStateOfTask.taskId && currentStateOfTask.taskLastUpdate) {
+        const issuerId = localStorage.getItem('spotfix_user_id');
+        if (
+            currentStateOfTask.taskId &&
+            currentStateOfTask.taskLastUpdate &&
+            currentStateOfTask.taskCreatorTaskUser === issuerId
+        ) {
             result = storageCheckTaskUpdate(currentStateOfTask.taskId, currentStateOfTask.taskLastUpdate);
             if (result) {
                 updatedtasksIDS.push(currentStateOfTask.taskId.toString());
