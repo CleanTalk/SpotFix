@@ -93,14 +93,16 @@ const createTaskCommentDoboard = async (accountId, sessionId, taskId, comment, p
     throw new Error('Unknown error occurred during creating task comment');
 };
 
-const registerUserDoboard = async (projectToken, accountId, email, nickname) => {
+const registerUserDoboard = async (projectToken, accountId, email, nickname, pageURL) => {
     const formData = new FormData();
     formData.append('project_token', projectToken);
     formData.append('account_id', accountId);
+    formData.append('confirmation_url', pageURL);
     if (email && nickname) {
         formData.append('email', email);
         formData.append('nickname', nickname);
     }
+
     const response = await fetch(DOBOARD_API_URL + '/user_registration', {
         method: 'POST',
         body: formData,
