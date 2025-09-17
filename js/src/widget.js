@@ -25,7 +25,30 @@ class CleanTalkWidgetDoboard {
      */
     async init(type) {
         this.params = this.getParams();
-        this.allTasksData = await getAllTasks(this.params);
+
+        // Check if email_confirmation_token is in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const emailToken = urlParams.get('email_confirmation_token');
+        if (emailToken) {
+            try {
+                // Confirm email and create task
+                const createdTask = await confirmUserEmail(emailToken, this.params);
+                this.allTasksData = await getAllTasks(this.params);
+                // Open task interface
+                this.currentActiveTaskId = createdTask.taskId;
+                type = 'concrete_issue';
+                // Clear email_confirmation_token from URL
+                urlParams.delete('email_confirmation_token');
+                const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+                window.history.replaceState({}, document.title, newUrl);
+            } catch (err) {
+                this.registrationShowMessage('Error confirming email: ' + err.message, 'error');
+            }
+        } else {
+            // Load all tasks
+            this.allTasksData = await getAllTasks(this.params);
+        }
+
         // Check if any task has updates
         let taskHasSiteOwnerUpdate = await checkIfTasksHasSiteOwnerUpdates(
             this.allTasksData,
@@ -170,11 +193,17 @@ class CleanTalkWidgetDoboard {
                     taskDetails.userPassword = userPassword
                 }
 
+                // Save pending task in LS
+                localStorage.setItem('spotfix_pending_task', JSON.stringify({
+                    ...this.selectedData,
+                    description: taskDescription
+                }));
+
                 let submitTaskResult;
                 try {
                     submitTaskResult = await this.submitTask(taskDetails);
                 } catch (error) {
-                    this.registrationErrorShow(error.message);
+                    this.registrationShowMessage(error.message);
                     return;
                 }
 
@@ -233,15 +262,17 @@ class CleanTalkWidgetDoboard {
                 break;
             case 'concrete_issue':
                 templateName = 'concrete_issue';
-                // todo: this is call duplicate!
-                getTaskFullDetails(this.params, this.currentActiveTaskId).then(taskDetails=>{
-                    const issueTitle = taskDetails.issueTitle;
-                    const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
-                    if ( issueTitleElement ) {
-                        issueTitleElement.innerHTML = issueTitle;
-                    }
-                });
-
+                // Update the number of tasks
+                this.savedIssuesQuantityAll = Array.isArray(this.allTasksData) ? this.allTasksData.length : 0;
+                // Calculate the number of issues on the current page
+                this.savedIssuesQuantityOnPage = Array.isArray(this.allTasksData)
+                    ? this.allTasksData.filter(task => {
+                        try {
+                            const meta = task.taskMeta ? JSON.parse(task.taskMeta) : {};
+                            return meta.pageURL === window.location.href;
+                        } catch (e) { return false; }
+                    }).length
+                    : 0;
                 variables = {
                     issueTitle: '...',
                     issuesCounter: getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll),
@@ -296,7 +327,6 @@ class CleanTalkWidgetDoboard {
                         const taskId = elTask.taskId;
                         const taskTitle = elTask.taskTitle;
                         const taskMetaString = elTask.taskMeta;
-                        const { time: lastMessageTime } = formatDate(elTask.taskLastUpdate);
                         const taskData = taskMetaString ? JSON.parse(taskMetaString) : null;
                         const currentPageURL = taskData ? taskData.pageURL : '';
                         const taskNodePath = taskData ? taskData.nodePath : '';
@@ -325,7 +355,7 @@ class CleanTalkWidgetDoboard {
                                 taskPublicStatusImgSrc: taskPublicStatusImgSrc,
                                 taskPublicStatusHint: taskPublicStatusHint,
                                 taskLastMessage: taskFullDetails.lastMessageText,
-                                taskLastUpdate: lastMessageTime,
+                                taskLastUpdate: taskFullDetails.lastMessageTime,
                                 nodePath: taskNodePath,
                                 taskId: taskId,
                                 avatarCSSClass: avatarData.avatarCSSClass,
@@ -353,12 +383,47 @@ class CleanTalkWidgetDoboard {
                 break;
 
             case 'concrete_issue':
+
                 const taskDetails = await getTaskFullDetails(this.params, this.currentActiveTaskId);
+
+                // Update issue title in the interface
+                const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
+                if (issueTitleElement) {
+                    issueTitleElement.innerText = taskDetails.issueTitle;
+                }
+
                 variables = {
                     issueTitle: taskDetails.issueTitle,
                     issueComments: taskDetails.issueComments,
-                    issuesCounter: getIssuesCounterString(),
+                    issuesCounter: getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll),
+                    paperclipImgSrc: '/spotfix/img/send-message--paperclip.svg',
+                    sendButtonImgSrc: '/spotfix/img/send-message--button.svg',
+                    msgFieldBackgroundImgSrc: '/spotfix/img/send-message--input-background.svg',
                 };
+
+                widgetContainer.innerHTML = await this.loadTemplate('concrete_issue', variables);
+                document.body.appendChild(widgetContainer);
+
+                // Highlight the task's selected text
+                let nodePath = null;
+                    const currentTaskData = this.allTasksData.find((element) => String(element.taskId) === String(taskDetails.taskId));
+                    let meta = null;
+                    if (currentTaskData && currentTaskData.taskMeta) {
+                        try {
+                            meta = JSON.parse(currentTaskData.taskMeta);
+                            nodePath = meta.nodePath || null;
+                        } catch (e) { nodePath = null; meta = null; }
+                    }
+                    // remove old highlights before adding new ones
+                    this.removeHighlights();
+                    if (meta && nodePath) {
+                        // Pass the task meta object as an array
+                        this.highlightElements([meta]);
+                        if (typeof scrollToNodePath === 'function') {
+                            scrollToNodePath(nodePath);
+                        }
+                    }
+
                 const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
                 let dayMessagesData = [];
                 const initIssuerID = localStorage.getItem('spotfix_user_id');
@@ -381,7 +446,6 @@ class CleanTalkWidgetDoboard {
                             commentDate: comment.commentDate,
                             commentTime: comment.commentTime,
                             issueTitle: variables.issueTitle,
-                            issuesCounter: variables.issuesCounter,
                             commentContainerBackgroundSrc: userIsIssuer
                                 ? '/spotfix/img/comment-self-background.png'
                                 : '/spotfix/img/comment-other-background.png',
@@ -412,6 +476,9 @@ class CleanTalkWidgetDoboard {
                 } else {
                     issuesCommentsContainer.innerHTML = 'No comments';
                 }
+
+                // Hide spinner preloader
+                hideContainersSpinner();
 
                 // Scroll to the bottom comments
                 setTimeout(() => {
@@ -548,11 +615,9 @@ class CleanTalkWidgetDoboard {
      */
     async submitTask(taskDetails) {
         if (!localStorage.getItem('spotfix_session_id')) {
-
-            await registerUser(taskDetails);
-
+            await registerUser(taskDetails)(this.registrationShowMessage);
             if ( taskDetails.userPassword ) {
-                await this.loginUser(taskDetails);
+                await loginUser(taskDetails)(this.registrationShowMessage);
             }
         }
 
@@ -563,25 +628,6 @@ class CleanTalkWidgetDoboard {
             return {needToLogin: true};
         }
         return await handleCreateTask(sessionId, taskDetails);
-    }
-
-    loginUser(taskDetails) {
-        const userEmail = taskDetails.userEmail;
-        const userPassword = taskDetails.userPassword;
-
-        return loginUser(userEmail, userPassword)
-            .then(response => {
-                if (response.sessionId) {
-                    localStorage.setItem('spotfix_session_id', response.sessionId);
-                    localStorage.setItem('spotfix_user_id', response.userId);
-                    localStorage.setItem('spotfix_email', response.email);
-                } else {
-                    throw new Error('Session ID not found in response');
-                }
-            })
-            .catch(error => {
-                throw error;
-            });
     }
 
     /**
@@ -738,12 +784,24 @@ class CleanTalkWidgetDoboard {
         }
     }
 
-    registrationErrorShow(errorText) {
-        const errorDiv = document.getElementById('doboard_task_widget-error_message');
-        const errorWrap = document.querySelector('.doboard_task_widget-error_message-wrapper');
-        if (typeof errorText === 'string' && errorDiv !== null && errorWrap !== null) {
-            errorDiv.innerText = errorText;
-            errorWrap.classList.remove('hidden');
+    registrationShowMessage(messageText, type = 'error') {
+        const titleSpan = document.getElementById('doboard_task_widget-error_message-header');
+        const messageDiv = document.getElementById('doboard_task_widget-error_message');
+        const messageWrap = document.querySelector('.doboard_task_widget-message-wrapper');
+
+        if (typeof messageText === 'string' && messageDiv !== null && messageWrap !== null) {
+            messageDiv.innerText = messageText;
+            messageWrap.classList.remove('hidden');
+            messageDiv.classList.remove('doboard_task_widget-notice_message', 'doboard_task_widget-error_message');
+            if (type === 'notice') {
+                titleSpan.innerText = 'Notice';
+                messageWrap.classList.add('doboard_task_widget-notice_message');
+                messageDiv.style.color = '#2a5db0';
+            } else {
+                titleSpan.innerText = 'Registration error';
+                messageWrap.classList.add('doboard_task_widget-error_message');
+                messageDiv.style.color = 'red';
+            }
         }
     }
 }

@@ -1,5 +1,29 @@
 const DOBOARD_API_URL = 'https://api-next.doboard.com';
 
+const userConfirmEmailDoboard = async (emailConfirmationToken) => {
+    const response = await fetch(
+        `${DOBOARD_API_URL}/user_confirm_email?email_confirmation_token=${encodeURIComponent(emailConfirmationToken)}`,
+        { method: 'GET' }
+    );
+    if (!response.ok) {
+        throw new Error('Email confirmation failed');
+    }
+    const responseBody = await response.json();
+    if (!responseBody || !responseBody.data) {
+        throw new Error('Invalid response from server');
+    }
+    if (responseBody.data.operation_status !== 'CONFIRMED') {
+        throw new Error('Email not confirmed');
+    }
+    return {
+        sessionId: responseBody.data.session_id,
+        userId: responseBody.data.user_id,
+        email: responseBody.data.email,
+        accounts: responseBody.data.accounts,
+        operationStatus: responseBody.data.operation_status
+    };
+};
+
 const createTaskDoboard = async (sessionId, taskDetails) => {
     const accountId = taskDetails.accountId;
     const formData = new FormData();
@@ -95,21 +119,21 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname) => 
         throw new Error(responseBody.data.operation_message);
     }
     if ( responseBody.data.operation_status === 'SUCCESS' ) {
-        if (responseBody.data.user_email_confirmed === 1) {
-            return {
-                accountExists: true
-            }
-        }
-        return {
+        const result = {
             sessionId: responseBody.data.session_id,
             userId: responseBody.data.user_id,
-            email: responseBody.data.email
-        }
+            email: responseBody.data.email,
+            accountExists: responseBody.data.user_email_confirmed === 1 ? true : false,
+            operationMessage: responseBody.data.operation_message,
+            operationStatus: responseBody.data.operation_status,
+            userEmailConfirmed: responseBody.data.user_email_confirmed,
+        };
+        return result;
     }
     throw new Error('Unknown error occurred during registration');
 };
 
-const loginUser = async (email, password) => {
+const loginUserDoboard = async (email, password) => {
     const formData = new FormData();
     formData.append('email', email);
     formData.append('password', password);
@@ -135,7 +159,11 @@ const loginUser = async (email, password) => {
         return {
             sessionId: responseBody.data.session_id,
             userId: responseBody.data.user_id,
-            email: email
+            email: responseBody.data.email,
+            accountExists: responseBody.data.user_email_confirmed === 1 ? true : false,
+            operationMessage: responseBody.data.operation_message,
+            operationStatus: responseBody.data.operation_status,
+            userEmailConfirmed: responseBody.data.user_email_confirmed,
         }
     }
     throw new Error('Unknown error occurred during registration');
