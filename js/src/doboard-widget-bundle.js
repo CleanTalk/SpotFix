@@ -647,10 +647,18 @@ class CleanTalkWidgetDoboard {
         }
 
         // Check if any task has updates
-        let taskHasSiteOwnerUpdate = await checkIfTasksHasSiteOwnerUpdates(
-            this.allTasksData,
-            this.params
-        );
+        let taskHasSiteOwnerUpdate;
+
+        if (storageTasksHasUnreadUpdates()) {
+            taskHasSiteOwnerUpdate = true;
+        } else {
+            if (type === 'wrap') {
+                taskHasSiteOwnerUpdate = await checkIfTasksHasSiteOwnerUpdates(
+                    this.allTasksData,
+                    this.params
+                );
+            }
+        }
         storageSaveTasksUpdateData(this.allTasksData);
         //check to hide on first run
         if (!storageWidgetCloseIsSet()) {
@@ -819,9 +827,12 @@ class CleanTalkWidgetDoboard {
 
                 // refersh tasks list after creation
                 this.allTasksData = await getAllTasks(this.params);
+                // save updates
+                storageSaveTasksUpdateData(this.allTasksData);
 
                 this.selectedData = {};
                 await this.createWidgetElement('all_issues');
+                storageSetWidgetIsClosed(false);
                 hideContainersSpinner(false);
             });
         }
@@ -958,8 +969,13 @@ class CleanTalkWidgetDoboard {
                                 avatarCSSClass: avatarData.avatarCSSClass,
                                 avatarStyle: avatarData.avatarStyle,
                                 taskAuthorInitials: avatarData.taskAuthorInitials,
-                                initialsClass: avatarData.initialsClass
+                                initialsClass: avatarData.initialsClass,
+                                classUnread: ''
                             };
+                            const taskOwnerReplyIsUnread = storageProvidedTaskHasUnreadUpdates(taskFullDetails.taskId);
+                            if (taskOwnerReplyIsUnread) {
+                                variables.classUnread = 'unread';
+                            }
                             document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += await this.loadTemplate('list_issues', variables);
 
                             spotsToBeHighlighted.push(taskData);
@@ -1026,12 +1042,10 @@ class CleanTalkWidgetDoboard {
                 const initIssuerID = localStorage.getItem('spotfix_user_id');
                 let userIsIssuer = false;
                 if ( taskDetails.issueComments.length > 0 ) {
+                    storageRemoveUnreadUpdateForTaskID(taskDetails.taskId);
                     issuesCommentsContainer.innerHTML = '';
                     for (const comment of taskDetails.issueComments) {
                         userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
-                        if (!userIsIssuer) {
-                            storageSetWidgetIsClosed(false);
-                        }
                         const avatarData = getAvatarData({
                             taskAuthorAvatarImgSrc: comment.commentAuthorAvatarSrc,
                             taskAuthorName: comment.commentAuthorName,
@@ -1508,21 +1522,29 @@ function getAvatarData(authorDetails) {
 /**
  * Return first found updated task ID or false if no tasks were updated
  * @param allTasksData
- * @returns {string|false}
+ * @returns {string[]|false}
  */
 function isAnyTaskUpdated(allTasksData) {
     let result = false;
 
+    const updatedtasksIDS = [];
+
     for (let i = 0; i < allTasksData.length; i++) {
         let currentStateOfTask = allTasksData[i];
-        if (currentStateOfTask.taskId && currentStateOfTask.taskLastUpdate) {
+        const issuerId = localStorage.getItem('spotfix_user_id');
+        if (
+            currentStateOfTask.taskId &&
+            currentStateOfTask.taskLastUpdate &&
+            currentStateOfTask.taskCreatorTaskUser === issuerId
+        ) {
             result = storageCheckTaskUpdate(currentStateOfTask.taskId, currentStateOfTask.taskLastUpdate);
             if (result) {
-                return currentStateOfTask.taskId.toString();
+                updatedtasksIDS.push(currentStateOfTask.taskId.toString());
             }
         }
     }
-    return result;
+
+    return updatedtasksIDS.length === 0 ? false : updatedtasksIDS;
 }
 
 /**
@@ -1530,21 +1552,29 @@ function isAnyTaskUpdated(allTasksData) {
  * @returns {Promise<boolean>}
  */
 async function checkIfTasksHasSiteOwnerUpdates(allTasksData, params) {
-    const updatedTaskId = isAnyTaskUpdated(allTasksData);
-    if (typeof updatedTaskId === 'string') {
-        const updatedTaskData =  await getTaskFullDetails(params, updatedTaskId);
-        if (updatedTaskData.issueComments) {
-            const lastIndex = updatedTaskData.issueComments.length - 1;
-            const lastMessage = updatedTaskData.issueComments[lastIndex];
-            if (
-                lastMessage.commentUserId !== localStorage.getItem('spotfix_user_id') &&
-                lastMessage.commentAuthorName !== 'Anonymous'
-            ) {
-                return true
+    const updatedTaskIDs = isAnyTaskUpdated(allTasksData);
+    let result = false;
+    if (!updatedTaskIDs) {
+        return false;
+    }
+    for (let i = 0; i < updatedTaskIDs.length; i++) {
+        const updatedTaskId = updatedTaskIDs[i];
+        if (typeof updatedTaskId === 'string') {
+            const updatedTaskData =  await getTaskFullDetails(params, updatedTaskId);
+            if (updatedTaskData.issueComments) {
+                const lastIndex = updatedTaskData.issueComments.length - 1;
+                const lastMessage = updatedTaskData.issueComments[lastIndex];
+                if (
+                    lastMessage.commentUserId !== localStorage.getItem('spotfix_user_id') &&
+                    lastMessage.commentAuthorName !== 'Anonymous'
+                ) {
+                    storageAddUnreadUpdateForTaskID(updatedTaskId);
+                    result = true;
+                }
             }
         }
     }
-    return false;
+    return result;
 }
 
 /**
@@ -1804,29 +1834,48 @@ function createEmptySelectionData(pageURL) {
     };
 }
 
-
+/**
+ * Return bool if widget is closed in local storage
+ * @returns {boolean}
+ */
 function storageGetWidgetIsClosed() {
     return localStorage.getItem('spotfix_widget_is_closed') === '1';
 }
 
+/**
+ * Return bool if widget closed state is defined in local storage
+ * @returns {boolean}
+ */
 function storageWidgetCloseIsSet() {
     return localStorage.getItem('spotfix_widget_is_closed') !== null;
 }
 
+/**
+ * Save widget closed state
+ * @param visible
+ */
 function storageSetWidgetIsClosed(visible) {
     localStorage.setItem('spotfix_widget_is_closed', visible ? '1' : '0');
 }
 
+/**
+ * Return bool if user is defined in local storage
+ * @returns {boolean}
+ */
 function storageGetUserIsDefined() {
     return localStorage.getItem('spotfix_user_id') !== null;
 }
 
+/**
+ * Save data for updates check
+ * @param tasks
+ */
 function storageSaveTasksUpdateData(tasks) {
     if (!tasks || !Array.isArray(tasks)) {
         return;
     }
 
-    const storedTasks = JSON.parse(localStorage.getItem('tasks') || '{}');
+    const storedTasks = JSON.parse(localStorage.getItem('spotfix_task_updates') || '{}');
 
     tasks.forEach(task => {
         if (task.taskId && task.taskLastUpdate) {
@@ -1840,6 +1889,12 @@ function storageSaveTasksUpdateData(tasks) {
     localStorage.setItem('spotfix_task_updates', JSON.stringify(storedTasks));
 }
 
+/**
+ * Check if a specific task has been updated since last check
+ * @param taskId
+ * @param currentLastUpdate
+ * @returns {boolean|null}
+ */
 function storageCheckTaskUpdate(taskId, currentLastUpdate) {
     if (!taskId || !currentLastUpdate) {
         return null;
@@ -1854,6 +1909,64 @@ function storageCheckTaskUpdate(taskId, currentLastUpdate) {
 
     const storedUpdate = new Date(storedTask.taskLastUpdate);
     const currentUpdate = new Date(currentLastUpdate);
-
     return currentUpdate > storedUpdate;
+}
+
+/**
+ * Add unread update for a specific task
+ * @param taskId
+ */
+function storageAddUnreadUpdateForTaskID(taskId) {
+    if (!taskId) {
+        return;
+    }
+
+    const storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+
+    if (!storedUnread.includes(taskId)) {
+        storedUnread.push(taskId);
+    }
+
+    localStorage.setItem('spotfix_unread_updates', JSON.stringify(storedUnread));
+}
+
+/**
+ * Remove unread update for a specific task
+ * @param taskId
+ */
+function storageRemoveUnreadUpdateForTaskID(taskId) {
+    if (!taskId) {
+        return;
+    }
+
+    let storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+
+    storedUnread = storedUnread.filter(id => id !== taskId);
+
+    localStorage.setItem('spotfix_unread_updates', JSON.stringify(storedUnread));
+}
+
+/**
+ * Check if there are any unread updates
+ * @returns {boolean}
+ */
+function storageTasksHasUnreadUpdates() {
+    const storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+
+    return storedUnread.length > 0;
+}
+
+/**
+ *  Check if a specific task has unread updates
+ * @param taskId
+ * @returns {boolean}
+ */
+function storageProvidedTaskHasUnreadUpdates(taskId) {
+    if (!taskId) {
+        return false;
+    }
+
+    const storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+
+    return storedUnread.includes(taskId.toString());
 }

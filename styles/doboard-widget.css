@@ -430,6 +430,22 @@
     align-items: center;
 }
 
+.doboard_task_widget-task_title-unread_block {
+    opacity: 0;
+    height: 8px;
+    width: 8px;
+    background: #f08c43;
+    border-radius: 50%;
+    display: inline-block;
+    font-size: 8px;
+    font-weight: 600;
+    position: relative;
+}
+
+.doboard_task_widget-task_title-unread_block.unread {
+    opacity: 1;
+}
+
 .doboard_task_widget-task_last_message {
     white-space: nowrap;
     overflow: hidden;
