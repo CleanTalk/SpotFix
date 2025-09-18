@@ -100,7 +100,7 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname, pag
     formData.append('confirmation_url', pageURL);
     if (email && nickname) {
         formData.append('email', email);
-        formData.append('nickname', nickname);
+        formData.append('name', nickname);
     }
 
     const response = await fetch(DOBOARD_API_URL + '/user_registration', {
