@@ -37,6 +37,7 @@ class CleanTalkWidgetDoboard {
                 // Open task interface
                 this.currentActiveTaskId = createdTask.taskId;
                 type = 'concrete_issue';
+                storageSetWidgetIsClosed(false);
                 // Clear email_confirmation_token from URL
                 urlParams.delete('email_confirmation_token');
                 const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
