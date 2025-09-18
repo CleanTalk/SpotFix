@@ -22,6 +22,7 @@
 }
 .doboard_task_widget-header * {
     color: #FFFFFF;
+    margin: 0;
 }
 
 .doboard_task_widget a {
