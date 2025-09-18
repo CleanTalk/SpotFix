@@ -348,6 +348,7 @@
 }
 
 .doboard_task_widget-avatar_container {
+    display: flex;
     height: 44px;
     width: 44px;
     border-radius: 50%;
@@ -371,6 +372,8 @@
 
 .doboard_task_widget-avatar-initials {
     color: #FFFFFF;
+    width: inherit;
+    text-align: center;
 }
 
 .doboard_task_widget-avatar {

@@ -359,6 +359,7 @@ class CleanTalkWidgetDoboard {
                         if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
                             issuesQuantityOnPage++;
                             const taskFullDetails = await getTaskFullDetails(this.params, taskId);
+                            
                             const avatarData = getAvatarData(taskFullDetails);
                             const variables = {
                                 taskTitle: taskTitle || '',
