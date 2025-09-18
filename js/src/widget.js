@@ -50,10 +50,18 @@ class CleanTalkWidgetDoboard {
         }
 
         // Check if any task has updates
-        let taskHasSiteOwnerUpdate = await checkIfTasksHasSiteOwnerUpdates(
-            this.allTasksData,
-            this.params
-        );
+        let taskHasSiteOwnerUpdate;
+
+        if (storageTasksHasUnreadUpdates()) {
+            taskHasSiteOwnerUpdate = true;
+        } else {
+            if (type === 'wrap') {
+                taskHasSiteOwnerUpdate = await checkIfTasksHasSiteOwnerUpdates(
+                    this.allTasksData,
+                    this.params
+                );
+            }
+        }
         storageSaveTasksUpdateData(this.allTasksData);
         //check to hide on first run
         if (!storageWidgetCloseIsSet()) {
@@ -222,9 +230,12 @@ class CleanTalkWidgetDoboard {
 
                 // refersh tasks list after creation
                 this.allTasksData = await getAllTasks(this.params);
+                // save updates
+                storageSaveTasksUpdateData(this.allTasksData);
 
                 this.selectedData = {};
                 await this.createWidgetElement('all_issues');
+                storageSetWidgetIsClosed(false);
                 hideContainersSpinner(false);
             });
         }
@@ -361,8 +372,13 @@ class CleanTalkWidgetDoboard {
                                 avatarCSSClass: avatarData.avatarCSSClass,
                                 avatarStyle: avatarData.avatarStyle,
                                 taskAuthorInitials: avatarData.taskAuthorInitials,
-                                initialsClass: avatarData.initialsClass
+                                initialsClass: avatarData.initialsClass,
+                                classUnread: ''
                             };
+                            const taskOwnerReplyIsUnread = storageProvidedTaskHasUnreadUpdates(taskFullDetails.taskId);
+                            if (taskOwnerReplyIsUnread) {
+                                variables.classUnread = 'unread';
+                            }
                             document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += await this.loadTemplate('list_issues', variables);
 
                             spotsToBeHighlighted.push(taskData);
@@ -429,12 +445,10 @@ class CleanTalkWidgetDoboard {
                 const initIssuerID = localStorage.getItem('spotfix_user_id');
                 let userIsIssuer = false;
                 if ( taskDetails.issueComments.length > 0 ) {
+                    storageRemoveUnreadUpdateForTaskID(taskDetails.taskId);
                     issuesCommentsContainer.innerHTML = '';
                     for (const comment of taskDetails.issueComments) {
                         userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
-                        if (!userIsIssuer) {
-                            storageSetWidgetIsClosed(false);
-                        }
                         const avatarData = getAvatarData({
                             taskAuthorAvatarImgSrc: comment.commentAuthorAvatarSrc,
                             taskAuthorName: comment.commentAuthorName,

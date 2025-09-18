@@ -103,21 +103,29 @@ function getAvatarData(authorDetails) {
 /**
  * Return first found updated task ID or false if no tasks were updated
  * @param allTasksData
- * @returns {string|false}
+ * @returns {string[]|false}
  */
 function isAnyTaskUpdated(allTasksData) {
     let result = false;
 
+    const updatedtasksIDS = [];
+
     for (let i = 0; i < allTasksData.length; i++) {
         let currentStateOfTask = allTasksData[i];
-        if (currentStateOfTask.taskId && currentStateOfTask.taskLastUpdate) {
+        const issuerId = localStorage.getItem('spotfix_user_id');
+        if (
+            currentStateOfTask.taskId &&
+            currentStateOfTask.taskLastUpdate &&
+            currentStateOfTask.taskCreatorTaskUser === issuerId
+        ) {
             result = storageCheckTaskUpdate(currentStateOfTask.taskId, currentStateOfTask.taskLastUpdate);
             if (result) {
-                return currentStateOfTask.taskId.toString();
+                updatedtasksIDS.push(currentStateOfTask.taskId.toString());
             }
         }
     }
-    return result;
+
+    return updatedtasksIDS.length === 0 ? false : updatedtasksIDS;
 }
 
 /**
@@ -125,19 +133,27 @@ function isAnyTaskUpdated(allTasksData) {
  * @returns {Promise<boolean>}
  */
 async function checkIfTasksHasSiteOwnerUpdates(allTasksData, params) {
-    const updatedTaskId = isAnyTaskUpdated(allTasksData);
-    if (typeof updatedTaskId === 'string') {
-        const updatedTaskData =  await getTaskFullDetails(params, updatedTaskId);
-        if (updatedTaskData.issueComments) {
-            const lastIndex = updatedTaskData.issueComments.length - 1;
-            const lastMessage = updatedTaskData.issueComments[lastIndex];
-            if (
-                lastMessage.commentUserId !== localStorage.getItem('spotfix_user_id') &&
-                lastMessage.commentAuthorName !== 'Anonymous'
-            ) {
-                return true
+    const updatedTaskIDs = isAnyTaskUpdated(allTasksData);
+    let result = false;
+    if (!updatedTaskIDs) {
+        return false;
+    }
+    for (let i = 0; i < updatedTaskIDs.length; i++) {
+        const updatedTaskId = updatedTaskIDs[i];
+        if (typeof updatedTaskId === 'string') {
+            const updatedTaskData =  await getTaskFullDetails(params, updatedTaskId);
+            if (updatedTaskData.issueComments) {
+                const lastIndex = updatedTaskData.issueComments.length - 1;
+                const lastMessage = updatedTaskData.issueComments[lastIndex];
+                if (
+                    lastMessage.commentUserId !== localStorage.getItem('spotfix_user_id') &&
+                    lastMessage.commentAuthorName !== 'Anonymous'
+                ) {
+                    storageAddUnreadUpdateForTaskID(updatedTaskId);
+                    result = true;
+                }
             }
         }
     }
-    return false;
+    return result;
 }
