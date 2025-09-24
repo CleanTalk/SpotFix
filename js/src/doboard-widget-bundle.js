@@ -1499,8 +1499,6 @@ function hideContainersSpinner() {
 }
 
 function getAvatarData(authorDetails) {
-    console.log(authorDetails);
-    
     let avatarStyle;
     let avatarCSSClass;
     let taskAuthorInitials = authorDetails.taskAuthorName && authorDetails.taskAuthorName != 'Anonymous' ? authorDetails.taskAuthorName.trim().charAt(0).toUpperCase() : null;
@@ -1518,10 +1516,8 @@ function getAvatarData(authorDetails) {
     if (authorDetails.taskAuthorAvatarImgSrc !== null) {
         avatarStyle = `background-image:url(\'${authorDetails.taskAuthorAvatarImgSrc}\');`;
         avatarCSSClass = 'doboard_task_widget-avatar_container';
-        initialsClass = ' doboard_task_widget-hidden_element';
+        initialsClass = 'doboard_task_widget-hidden_element';
     }
-    console.log(avatarStyle, avatarCSSClass, taskAuthorInitials, initialsClass, hideAvatar);
-    
     return {
         avatarStyle: avatarStyle,
         avatarCSSClass: avatarCSSClass,
@@ -1726,13 +1722,16 @@ function getSelectedData(selection) {
     const selectedImage = getSelectedImage(selection);
     const pageURL = window.location.href;
 
-    if (!selectedText) {
+    if ( ! selectedText ) {
         if (selectedImage === null) {
             return createEmptySelectionData(pageURL);
         } else {
             selectedText = `${selectedImage.tagName.toUpperCase()} ${selection.anchorNode.offsetHeight.toString()} * ${selection.anchorNode.offsetWidth.toString()}`
-            isTagOfImageType = selectedImage.tagName;
         }
+    }
+
+    if ( selectedImage ) {
+        isTagOfImageType = selectedImage.tagName;
     }
 
     const isWholeTagSelected = anchorOffset === 0 &&
