@@ -78,8 +78,6 @@ function hideContainersSpinner() {
 }
 
 function getAvatarData(authorDetails) {
-    console.log(authorDetails);
-    
     let avatarStyle;
     let avatarCSSClass;
     let taskAuthorInitials = authorDetails.taskAuthorName && authorDetails.taskAuthorName != 'Anonymous' ? authorDetails.taskAuthorName.trim().charAt(0).toUpperCase() : null;
@@ -99,8 +97,6 @@ function getAvatarData(authorDetails) {
         avatarCSSClass = 'doboard_task_widget-avatar_container';
         initialsClass = 'doboard_task_widget-hidden_element';
     }
-    console.log(avatarStyle, avatarCSSClass, taskAuthorInitials, initialsClass, hideAvatar);
-    
     return {
         avatarStyle: avatarStyle,
         avatarCSSClass: avatarCSSClass,
