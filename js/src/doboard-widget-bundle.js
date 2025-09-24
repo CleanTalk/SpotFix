@@ -1,714 +1,1179 @@
-"use strict";
+const DOBOARD_API_URL = 'https://api-next.doboard.com';
 
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
-function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
-function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
-function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
-function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator.return && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, catch: function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
-function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
-function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
-var DOBOARD_API_URL = 'https://api-next.doboard.com';
-var createTaskDoboard = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(sessionId, taskDetails) {
-    var accountId, formData, response, responseBody;
-    return _regeneratorRuntime().wrap(function _callee$(_context) {
-      while (1) switch (_context.prev = _context.next) {
-        case 0:
-          accountId = taskDetails.accountId;
-          formData = new FormData();
-          formData.append('session_id', sessionId);
-          formData.append('project_token', taskDetails.projectToken);
-          formData.append('project_id', taskDetails.projectId);
-          formData.append('user_id', localStorage.getItem('spotfix_user_id'));
-          formData.append('name', taskDetails.taskTitle);
-          formData.append('comment', taskDetails.taskDescription);
-          _context.next = 10;
-          return fetch(DOBOARD_API_URL + '/' + accountId + '/task_add', {
-            method: 'POST',
-            body: formData
-          });
-        case 10:
-          response = _context.sent;
-          if (response.ok) {
-            _context.next = 13;
-            break;
-          }
-          throw new Error('Failed to create task');
-        case 13:
-          _context.next = 15;
-          return response.json();
-        case 15:
-          responseBody = _context.sent;
-          if (!(!responseBody || !responseBody.data)) {
-            _context.next = 18;
-            break;
-          }
-          throw new Error('Invalid response from server');
-        case 18:
-          if (!(responseBody.data.operation_status === 'FAILED')) {
-            _context.next = 20;
-            break;
-          }
-          throw new Error(responseBody.data.operation_message);
-        case 20:
-          if (!(responseBody.data.operation_status === 'SUCCESS')) {
-            _context.next = 22;
-            break;
-          }
-          return _context.abrupt("return", {
-            taskId: responseBody.data.task_id
-          });
-        case 22:
-          throw new Error('Unknown error occurred during creating task');
-        case 23:
-        case "end":
-          return _context.stop();
-      }
-    }, _callee);
-  }));
-  return function createTaskDoboard(_x, _x2) {
-    return _ref.apply(this, arguments);
-  };
-}();
-var _registerUser = /*#__PURE__*/function () {
-  var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(projectToken, accountId, email, nickname) {
-    var formData, response, responseBody;
-    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-      while (1) switch (_context2.prev = _context2.next) {
-        case 0:
-          formData = new FormData();
-          formData.append('project_token', projectToken);
-          formData.append('account_id', accountId);
-          if (email && nickname) {
-            formData.append('email', email);
-            formData.append('nickname', nickname);
-          }
-          _context2.next = 6;
-          return fetch(DOBOARD_API_URL + '/user_registration', {
-            method: 'POST',
-            body: formData
-          });
-        case 6:
-          response = _context2.sent;
-          if (response.ok) {
-            _context2.next = 9;
-            break;
-          }
-          throw new Error('Registration failed');
-        case 9:
-          _context2.next = 11;
-          return response.json();
-        case 11:
-          responseBody = _context2.sent;
-          if (!(!responseBody || !responseBody.data)) {
-            _context2.next = 14;
-            break;
-          }
-          throw new Error('Invalid response from server');
-        case 14:
-          if (!(responseBody.data.operation_status === 'FAILED')) {
-            _context2.next = 16;
-            break;
-          }
-          throw new Error(responseBody.data.operation_message);
-        case 16:
-          if (!(responseBody.data.operation_status === 'SUCCESS')) {
-            _context2.next = 20;
-            break;
-          }
-          if (!(responseBody.data.user_email_confirmed === 1)) {
-            _context2.next = 19;
-            break;
-          }
-          return _context2.abrupt("return", {
-            accountExists: true
-          });
-        case 19:
-          return _context2.abrupt("return", {
+const userConfirmEmailDoboard = async (emailConfirmationToken) => {
+    const response = await fetch(
+        `${DOBOARD_API_URL}/user_confirm_email?email_confirmation_token=${encodeURIComponent(emailConfirmationToken)}`,
+        { method: 'GET' }
+    );
+    if (!response.ok) {
+        throw new Error('Email confirmation failed');
+    }
+    const responseBody = await response.json();
+    if (!responseBody || !responseBody.data) {
+        throw new Error('Invalid response from server');
+    }
+    if (responseBody.data.operation_status !== 'CONFIRMED') {
+        throw new Error('Email not confirmed');
+    }
+    return {
+        sessionId: responseBody.data.session_id,
+        userId: responseBody.data.user_id,
+        email: responseBody.data.email,
+        accounts: responseBody.data.accounts,
+        operationStatus: responseBody.data.operation_status
+    };
+};
+
+const createTaskDoboard = async (sessionId, taskDetails) => {
+    const accountId = taskDetails.accountId;
+    const formData = new FormData();
+    formData.append('session_id', sessionId);
+    formData.append('project_token', taskDetails.projectToken);
+    formData.append('project_id', taskDetails.projectId);
+    formData.append('user_id', localStorage.getItem('spotfix_user_id'));
+    formData.append('name', taskDetails.taskTitle);
+    formData.append('comment', taskDetails.taskDescription);
+    formData.append('meta', taskDetails.taskMeta);
+    const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/task_add', {
+        method: 'POST',
+        body: formData,
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to create task');
+    }
+
+    const responseBody = await response.json();
+
+    if ( ! responseBody || ! responseBody.data ) {
+        throw new Error('Invalid response from server');
+    }
+    if ( responseBody.data.operation_status === 'FAILED') {
+        throw new Error(responseBody.data.operation_message);
+    }
+    if ( responseBody.data.operation_status === 'SUCCESS' ) {
+        return {
+            taskId: responseBody.data.task_id,
+            isPublic: 1, //todo MOCK!
+        }
+    }
+    throw new Error('Unknown error occurred during creating task');
+};
+
+const createTaskCommentDoboard = async (accountId, sessionId, taskId, comment, projectToken, status = 'ACTIVE') => {
+    const response = await fetch(
+        DOBOARD_API_URL + '/' + accountId + '/comment_add' +
+        '?session_id=' + sessionId +
+        '&task_id=' + taskId +
+        '&comment=' + comment +
+        '&project_token=' + projectToken +
+        '&status=' + status,
+    {
+        method: 'GET',
+    });
+
+
+    if (!response.ok) {
+        throw new Error('Failed to create task comment');
+    }
+
+    const responseBody = await response.json();
+
+    if (!responseBody || !responseBody.data) {
+        throw new Error('Invalid response from server');
+    }
+    if (responseBody.data.operation_status === 'FAILED') {
+        throw new Error(responseBody.data.operation_message);
+    }
+    if (responseBody.data.operation_status === 'SUCCESS') {
+        return {
+            commentId: responseBody.data.comment_id,
+        };
+    }
+    throw new Error('Unknown error occurred during creating task comment');
+};
+
+const registerUserDoboard = async (projectToken, accountId, email, nickname, pageURL) => {
+    const formData = new FormData();
+    formData.append('project_token', projectToken);
+    formData.append('account_id', accountId);
+    formData.append('confirmation_url', pageURL);
+    if (email && nickname) {
+        formData.append('email', email);
+        formData.append('name', nickname);
+    }
+
+    const response = await fetch(DOBOARD_API_URL + '/user_registration', {
+        method: 'POST',
+        body: formData,
+    });
+
+    if ( ! response.ok ) {
+        throw new Error('Registration failed');
+    }
+
+    const responseBody = await response.json();
+
+    if ( ! responseBody || ! responseBody.data ) {
+        throw new Error('Invalid response from server');
+    }
+    if ( responseBody.data.operation_status === 'FAILED') {
+        throw new Error(responseBody.data.operation_message);
+    }
+    if ( responseBody.data.operation_status === 'SUCCESS' ) {
+        const result = {
             sessionId: responseBody.data.session_id,
             userId: responseBody.data.user_id,
-            email: responseBody.data.email
-          });
-        case 20:
-          throw new Error('Unknown error occurred during registration');
-        case 21:
-        case "end":
-          return _context2.stop();
-      }
-    }, _callee2);
-  }));
-  return function registerUser(_x3, _x4, _x5, _x6) {
-    return _ref2.apply(this, arguments);
-  };
-}();
-var _loginUser = /*#__PURE__*/function () {
-  var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(email, password) {
-    var formData, response, responseBody;
-    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-      while (1) switch (_context3.prev = _context3.next) {
-        case 0:
-          formData = new FormData();
-          formData.append('email', email);
-          formData.append('password', password);
-          _context3.next = 5;
-          return fetch(DOBOARD_API_URL + '/user_authorize', {
-            method: 'POST',
-            body: formData
-          });
-        case 5:
-          response = _context3.sent;
-          if (response.ok) {
-            _context3.next = 8;
-            break;
-          }
-          throw new Error('Authorization failed');
-        case 8:
-          _context3.next = 10;
-          return response.json();
-        case 10:
-          responseBody = _context3.sent;
-          if (!(!responseBody || !responseBody.data)) {
-            _context3.next = 13;
-            break;
-          }
-          throw new Error('Invalid response from server');
-        case 13:
-          if (!(responseBody.data.operation_status === 'FAILED')) {
-            _context3.next = 15;
-            break;
-          }
-          throw new Error(responseBody.data.operation_message);
-        case 15:
-          if (!(responseBody.data.operation_status === 'SUCCESS')) {
-            _context3.next = 17;
-            break;
-          }
-          return _context3.abrupt("return", {
+            email: responseBody.data.email,
+            accountExists: responseBody.data.user_email_confirmed === 1 ? true : false,
+            operationMessage: responseBody.data.operation_message,
+            operationStatus: responseBody.data.operation_status,
+            userEmailConfirmed: responseBody.data.user_email_confirmed,
+        };
+        return result;
+    }
+    throw new Error('Unknown error occurred during registration');
+};
+
+const loginUserDoboard = async (email, password) => {
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('password', password);
+
+    const response = await fetch(DOBOARD_API_URL + '/user_authorize', {
+        method: 'POST',
+        body: formData,
+    });
+
+    if ( ! response.ok ) {
+        throw new Error('Authorization failed');
+    }
+
+    const responseBody = await response.json();
+
+    if ( ! responseBody || ! responseBody.data ) {
+        throw new Error('Invalid response from server');
+    }
+    if ( responseBody.data.operation_status === 'FAILED') {
+        throw new Error(responseBody.data.operation_message);
+    }
+    if ( responseBody.data.operation_status === 'SUCCESS' ) {
+        return {
             sessionId: responseBody.data.session_id,
             userId: responseBody.data.user_id,
-            email: email
-          });
-        case 17:
-          throw new Error('Unknown error occurred during registration');
-        case 18:
-        case "end":
-          return _context3.stop();
-      }
-    }, _callee3);
-  }));
-  return function loginUser(_x7, _x8) {
-    return _ref3.apply(this, arguments);
-  };
-}();
-var getTasksDoboard = /*#__PURE__*/function () {
-  var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(projectToken, sessionId, accountId, projectId, userId) {
-    var formData, response, responseBody;
-    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-      while (1) switch (_context4.prev = _context4.next) {
-        case 0:
-          formData = new FormData();
-          formData.append('project_token', projectToken);
-          formData.append('session_id', sessionId);
-          formData.append('project_id', projectId);
-          formData.append('status', 'ACTIVE');
-          if (userId) {
-            formData.append('user_id', userId);
-          }
-          _context4.next = 8;
-          return fetch(DOBOARD_API_URL + '/' + accountId + '/task_get', {
-            method: 'POST',
-            body: formData
-          });
-        case 8:
-          response = _context4.sent;
-          if (response.ok) {
-            _context4.next = 11;
-            break;
-          }
-          throw new Error('Getting tasks failed');
-        case 11:
-          _context4.next = 13;
-          return response.json();
-        case 13:
-          responseBody = _context4.sent;
-          if (!(!responseBody || !responseBody.data)) {
-            _context4.next = 16;
-            break;
-          }
-          throw new Error('Invalid response from server');
-        case 16:
-          if (!(responseBody.data.operation_status === 'FAILED')) {
-            _context4.next = 18;
-            break;
-          }
-          throw new Error(responseBody.data.operation_message);
-        case 18:
-          if (!(responseBody.data.operation_status === 'SUCCESS')) {
-            _context4.next = 20;
-            break;
-          }
-          return _context4.abrupt("return", responseBody.data.tasks.map(function (task) {
-            return {
-              taskId: task.task_id,
-              taskTitle: task.name
-            };
-          }));
-        case 20:
-          throw new Error('Unknown error occurred during getting tasks');
-        case 21:
-        case "end":
-          return _context4.stop();
-      }
-    }, _callee4);
-  }));
-  return function getTasksDoboard(_x9, _x10, _x11, _x12, _x13) {
-    return _ref4.apply(this, arguments);
-  };
-}();
+            email: responseBody.data.email,
+            accountExists: responseBody.data.user_email_confirmed === 1 ? true : false,
+            operationMessage: responseBody.data.operation_message,
+            operationStatus: responseBody.data.operation_status,
+            userEmailConfirmed: responseBody.data.user_email_confirmed,
+        }
+    }
+    throw new Error('Unknown error occurred during registration');
+}
+
+const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, userId) => {
+    const formData = new FormData();
+    formData.append('project_token', projectToken);
+    formData.append('session_id', sessionId);
+    formData.append('project_id', projectId);
+    formData.append('status', 'ACTIVE');
+    if ( userId ) {
+        formData.append('user_id', userId);
+    }
+    const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/task_get', {
+        method: 'POST',
+        body: formData,
+    });
+
+    if ( ! response.ok ) {
+        throw new Error('Getting tasks failed');
+    }
+
+    const responseBody = await response.json();
+
+    if ( ! responseBody || ! responseBody.data ) {
+        throw new Error('Invalid response from server');
+    }
+    if ( responseBody.data.operation_status === 'FAILED') {
+        throw new Error(responseBody.data.operation_message);
+    }
+    if ( responseBody.data.operation_status === 'SUCCESS' ) {
+        return responseBody.data.tasks.map(task => ({
+            taskId: task.task_id,
+            taskTitle: task.name,
+            taskLastUpdate: task.updated,
+            taskCreated: task.created,
+            taskCreatorTaskUser: task.creator_user_id,
+            taskMeta: task.meta,
+        }))
+    }
+    throw new Error('Unknown error occurred during getting tasks');
+}
+
+
+const getTaskCommentsDoboard = async (taskId, sessionId, accountId, projectToken, status = 'ACTIVE') => {
+    const response = await fetch(
+        DOBOARD_API_URL + '/' + accountId + '/comment_get' +
+        '?session_id=' + sessionId +
+        '&status=' + status +
+        '&task_id=' + taskId +
+        '&project_token=' + projectToken,
+    {
+        method: 'GET',
+    });
+
+    if ( ! response.ok ) {
+        throw new Error('Getting logs failed');
+    }
+
+    const responseBody = await response.json();
+
+    if ( ! responseBody || ! responseBody.data ) {
+        throw new Error('Invalid response from server');
+    }
+    if ( responseBody.data.operation_status === 'FAILED') {
+        throw new Error(responseBody.data.operation_message);
+    }
+    if ( responseBody.data.operation_status === 'SUCCESS' ) {
+        return responseBody.data.comments.map(comment => ({
+            commentId: comment.comment_id,
+            userId: comment.user_id,
+            comment: comment.comment,
+            commentBody: comment.comment_text,
+            commentDate: comment.updated,
+            status: comment.status,
+            issueTitle: comment.task_name,
+        }));
+    }
+    throw new Error('Unknown error occurred during getting comments');
+};
+
+const getUserDoboard = async (sessionId, projectToken, accountId) => {
+    const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/user_get' +
+        '?session_id=' + sessionId +
+        '&project_token=' + projectToken, {
+        method: 'GET',
+    });
+
+    if (!response.ok) {
+        throw new Error('Getting user failed');
+    }
+
+    const responseBody = await response.json();
+
+    if (!responseBody) {
+        throw new Error('Invalid response from server');
+    }
+    // Format 1: users inside data
+    if (responseBody.data && responseBody.data.operation_status) {
+        if (responseBody.data.operation_status === 'FAILED') {
+            throw new Error(responseBody.data.operation_message);
+        }
+        if (responseBody.data.operation_status === 'SUCCESS') {
+            if (Array.isArray(responseBody.data.users)) {
+                return responseBody.data.users;
+            }
+            return [];
+        }
+    }
+    // Format 2: users at the top level
+    if (responseBody.operation_status) {
+        if (responseBody.operation_status === 'FAILED') {
+            throw new Error(responseBody.operation_message);
+        }
+        if (responseBody.operation_status === 'SUCCESS') {
+            if (Array.isArray(responseBody.users)) {
+                return responseBody.users;
+            }
+            return [];
+        }
+    }
+    throw new Error('Unknown error occurred during getting user');
+};
+
+const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, timezone) => {
+    const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/user_update' +
+        '?session_id=' + sessionId +
+        '&project_token=' + projectToken +
+        '&user_id=' + userId +
+        '&timezone=' + timezone, {
+        method: 'GET',
+    });
+
+    if (!response.ok) {
+        throw new Error('User update failed');
+    }
+
+    const responseBody = await response.json();
+
+    if (!responseBody || !responseBody.data) {
+        throw new Error('Invalid response from server');
+    }
+    if (responseBody.data.operation_status === 'FAILED') {
+        throw new Error(responseBody.data.operation_message);
+    }
+    if (responseBody.data.operation_status === 'SUCCESS') {
+        return {
+            success: true
+        };
+    }
+    throw new Error('Unknown error occurred during user update');
+}
+async function confirmUserEmail(emailConfirmationToken, params) {
+	const result = await userConfirmEmailDoboard(emailConfirmationToken);
+	// Save session data to LS
+	localStorage.setItem('spotfix_email', result.email);
+	localStorage.setItem('spotfix_session_id', result.sessionId);
+	localStorage.setItem('spotfix_user_id', result.userId);
+
+	// Get pending task from LS
+	const pendingTaskRaw = localStorage.getItem('spotfix_pending_task');
+	if (!pendingTaskRaw) throw new Error('No pending task data');
+	const pendingTask = JSON.parse(pendingTaskRaw);
+
+	// Form taskDetails for task creation
+	const taskDetails = {
+		taskTitle: pendingTask.selectedText || 'New Task',
+		taskDescription: pendingTask.description || '',
+		selectedData: pendingTask,
+		projectToken: params.projectToken,
+		projectId: params.projectId,
+		accountId: params.accountId,
+		taskMeta: JSON.stringify(pendingTask)
+	};
+
+	// Create task
+	const createdTask = await handleCreateTask(result.sessionId, taskDetails);
+	// Clear pending task
+	localStorage.removeItem('spotfix_pending_task');
+
+	// Return created task
+	return createdTask;
+}
+
+async function getTaskFullDetails(params, taskId) {
+	const sessionId = localStorage.getItem('spotfix_session_id');
+	const comments = await getTaskCommentsDoboard(taskId, sessionId, params.accountId, params.projectToken);
+	const users = await getUserDoboard(sessionId, params.projectToken, params.accountId);
+
+	// Last comment
+	let lastComment = comments.length > 0 ? comments[0] : null;
+	// Author of the last comment
+	let author = null;
+	if (lastComment && users && users.length > 0) {
+		author = users.find(u => String(u.user_id) === String(lastComment.userId));
+	}
+	// Format date
+	let date = '', time = '';
+	if (lastComment) {
+		const dt = formatDate(lastComment.commentDate);
+		date = dt.date;
+		time = dt.time;
+	}
+ 	// Get the avatar and the name through separate functions
+ 	let avatarSrc = getAvatarSrc(author);
+ 	let authorName = getAuthorName(author);
+
+	return {
+		taskId: taskId,
+		taskAuthorAvatarImgSrc: avatarSrc,
+		taskAuthorName: authorName,
+		lastMessageText: lastComment ? lastComment.commentBody : 'No messages yet',
+		lastMessageTime: time,
+		issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
+ 		issueComments: comments
+            .sort((a, b) => {
+                return new Date(a.commentDate) - new Date(b.commentDate);
+            })
+            .map(comment => {
+ 			const { date, time } = formatDate(comment.commentDate);
+ 			let author = null;
+ 			if (users && users.length > 0) {
+ 				author = users.find(u => String(u.user_id) === String(comment.userId));
+ 			}
+ 			return {
+ 				commentAuthorAvatarSrc: getAvatarSrc(author),
+ 				commentAuthorName: getAuthorName(author),
+ 				commentBody: comment.commentBody,
+ 				commentDate: date,
+ 				commentTime: time,
+ 				commentUserId: comment.userId || 'Unknown User',
+ 			};
+ 		})
+	};
+}
+
+async function handleCreateTask(sessionId, taskDetails) {
+	try {
+		const result = await createTaskDoboard(sessionId, taskDetails);
+		if (result && result.taskId && taskDetails.taskDescription) {
+			await addTaskComment({
+				projectToken: taskDetails.projectToken,
+				accountId: taskDetails.accountId
+			}, result.taskId, taskDetails.taskDescription);
+		}
+		return result;
+	} catch (err) {
+		throw err;
+	}
+}
+
+async function addTaskComment(params, taskId, commentText) {
+	const sessionId = localStorage.getItem('spotfix_session_id');
+	if (!sessionId) throw new Error('No session');
+	if (!params.projectToken || !params.accountId) throw new Error('Missing params');
+	return await createTaskCommentDoboard(params.accountId, sessionId, taskId, commentText, params.projectToken);
+}
+
+function getUserTasks(params) {
+	if (!localStorage.getItem('spotfix_session_id')) {
+		return {};
+	}
+	const projectToken = params.projectToken;
+	const sessionId = localStorage.getItem('spotfix_session_id');
+	const userId = localStorage.getItem('spotfix_user_id');
+	return getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId, userId);
+}
+
+async function getAllTasks(params) {
+	if (!localStorage.getItem('spotfix_session_id')) {
+		return {};
+	}
+	const projectToken = params.projectToken;
+	const sessionId = localStorage.getItem('spotfix_session_id');
+	const tasksData = await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
+
+    // Get only tasks with metadata
+	const filteredTaskData =  tasksData.filter(task => {
+        return task.taskMeta;
+    });
+
+    return filteredTaskData;
+}
+
+function formatDate(dateStr) {
+	 const months = [
+	 	"January", "February", "March", "April", "May", "June",
+	 	"July", "August", "September", "October", "November", "December"
+	 ];
+	 // dateStr expected format: 'YYYY-MM-DD HH:mm:ss' or 'YYYY-MM-DDTHH:mm:ssZ'
+	 if (!dateStr) return { date: '', time: '' };
+	 let dateObj;
+	 if (dateStr.includes('T')) {
+	  dateObj = new Date(dateStr);
+	 } else if (dateStr.includes(' ')) {
+	  dateObj = new Date(dateStr.replace(' ', 'T'));
+	 } else {
+	  dateObj = new Date(dateStr);
+	 }
+	 if (isNaN(dateObj.getTime())) return { date: '', time: '' };
+
+	 // Adjust to local timezone
+	 const offsetMinutes = dateObj.getTimezoneOffset();
+	 let localDateObj = new Date(dateObj.getTime() - offsetMinutes * 60000);
+
+	 const month = months[localDateObj.getMonth()];
+	 const day = localDateObj.getDate();
+	 const date = `${month} ${day}`;
+	 const hours = localDateObj.getHours().toString().padStart(2, '0');
+	 const minutes = localDateObj.getMinutes().toString().padStart(2, '0');
+	 const time = `${hours}:${minutes}`;
+	 return { date, time };
+}
+
+function getTaskAuthorDetails(params, taskId) {
+	const sessionId = localStorage.getItem('spotfix_session_id');
+	const mockUsersData =
+		[
+			{
+				'taskId': '1',
+				'taskAuthorAvatarImgSrc': 'https://s3.eu-central-1.amazonaws.com/cleantalk-ctask-atts/accounts/1/avatars/081a1b65d20fe318/m.jpg',
+				'taskAuthorName': 'Test All Issues Single Author Name'
+			}
+		]
+
+	const defaultData =
+		{
+			'taskId': null,
+			'taskAuthorAvatarImgSrc': null,
+			'taskAuthorName': 'Task Author'
+		};
+
+	const data = mockUsersData.find((element) => element.taskId === taskId);
+	return data === undefined ? defaultData : data;
+}
+
+function getIssuesCounterString(onPageSpotsCount, totalSpotsCount) {
+	return `(${onPageSpotsCount}/${totalSpotsCount})`;
+}
+
+// Get the author's avatar
+function getAvatarSrc(author) {
+	if (author && author.avatar) {
+		if (typeof author.avatar === 'object' && author.avatar.m) {
+			return author.avatar.m;
+		} else if (typeof author.avatar === 'string') {
+			return author.avatar;
+		}
+	}
+	return null;
+}
+
+// Get the author's name
+function getAuthorName(author) {
+	if (author) {
+		if (author.name && author.name.trim().length > 0) {
+			return author.name;
+		} else if (author.email && author.email.trim().length > 0) {
+			return author.email;
+		}
+	}
+	return 'Unknown Author';
+}
+
+function registerUser(taskDetails) {
+	const userEmail = taskDetails.userEmail;
+	const userName = taskDetails.userName;
+	const projectToken = taskDetails.projectToken;
+	const accountId = taskDetails.accountId;
+	const pageURL = taskDetails.selectedData.pageURL ? taskDetails.selectedData.pageURL : window.location.href;
+
+	const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName, pageURL)
+		.then(response => {
+			if (response.accountExists) {
+				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container").innerText = 'Account already exists. Please, login usin your password.';
+				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container.hidden").classList.remove('hidden');
+				document.getElementById("doboard_task_widget-user_password").focus();
+			} else if (response.sessionId) {
+				localStorage.setItem('spotfix_session_id', response.sessionId);
+				localStorage.setItem('spotfix_user_id', response.userId);
+				localStorage.setItem('spotfix_email', response.email);
+				userUpdate(projectToken, accountId);
+			} else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
+				if (typeof showMessageCallback === 'function') {
+					showMessageCallback(response.operationMessage, 'notice');
+				}
+			} else {
+				throw new Error('Session ID not found in response');
+			}
+		})
+		.catch(error => {
+			throw error;
+		});
+
+		return resultRegisterUser;
+}
+
+function loginUser(taskDetails) {
+	const userEmail = taskDetails.userEmail;
+	const userPassword = taskDetails.userPassword;
+
+	return (showMessageCallback) => loginUserDoboard(userEmail, userPassword)
+		.then(response => {
+			if (response.sessionId) {
+				localStorage.setItem('spotfix_session_id', response.sessionId);
+				localStorage.setItem('spotfix_user_id', response.userId);
+				localStorage.setItem('spotfix_email', response.email);
+			}  else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
+				if (typeof showMessageCallback === 'function') {
+					showMessageCallback(response.operationMessage, 'notice');
+				}
+			} else {
+				throw new Error('Session ID not found in response');
+			}
+		})
+		.catch(error => {
+			throw error;
+		});
+}
+
+function userUpdate(projectToken, accountId) {
+	const sessionId = localStorage.getItem('spotfix_session_id');
+	const userId = localStorage.getItem('spotfix_user_id');
+	const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+	return userUpdateDoboard(projectToken, accountId, sessionId, userId, timezone);
+}
 
 /**
  * Widget class to create a task widget
  */
-var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
-  /**
-   * Constructor
-   */
-  function CleanTalkWidgetDoboard(selectedData, type) {
-    _classCallCheck(this, CleanTalkWidgetDoboard);
-    _defineProperty(this, "selectedText", '');
-    _defineProperty(this, "selectedData", {});
-    _defineProperty(this, "widgetElement", null);
-    _defineProperty(this, "params", {});
-    _defineProperty(this, "currentActiveTaskId", 0);
-    this.selectedData = selectedData;
-    this.selectedText = selectedData.selectedText;
-    this.init(type);
-  }
+class CleanTalkWidgetDoboard {
+    selectedText = '';
+    selectedData = {};
+    widgetElement = null;
+    params = {};
+    currentActiveTaskId = 0;
+    savedIssuesQuantityOnPage = 0;
+    savedIssuesQuantityAll = 0;
+    allTasksData = {};
 
-  /**
-   * Initialize the widget
-   */
-  return _createClass(CleanTalkWidgetDoboard, [{
-    key: "init",
-    value: (function () {
-      var _init = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(type) {
-        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
-            case 0:
-              this.params = this.getParams();
-              _context5.next = 3;
-              return this.createWidgetElement(type);
-            case 3:
-              this.widgetElement = _context5.sent;
-              this.bindWidgetInputsInteractive();
-            case 5:
-            case "end":
-              return _context5.stop();
-          }
-        }, _callee5, this);
-      }));
-      function init(_x14) {
-        return _init.apply(this, arguments);
-      }
-      return init;
-    }())
-  }, {
-    key: "getParams",
-    value: function getParams() {
-      var script = document.querySelector("script[src*=\"doboard-widget-bundle.min.js\"]");
-      if (!script || !script.src) {
-        throw new Error('Script not provided');
-      }
-      var url = new URL(script.src);
-      var params = Object.fromEntries(url.searchParams.entries());
-      if (!params) {
-        throw new Error('Script params not provided');
-      }
-      if (!params.projectToken || !params.accountId || !params.projectId) {
-        throw new Error('Necessary script params not provided');
-      }
-      return params;
+    /**
+     * Constructor
+     */
+    constructor(selectedData, type) {
+        this.selectedData = selectedData;
+        this.selectedText = selectedData.selectedText;
+        this.init(type);
+    }
+
+    /**
+     * Initialize the widget
+     */
+    async init(type) {
+        this.params = this.getParams();
+
+        // Check if email_confirmation_token is in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const emailToken = urlParams.get('email_confirmation_token');
+        if (emailToken) {
+            try {
+                // Confirm email and create task
+                const createdTask = await confirmUserEmail(emailToken, this.params);
+                this.allTasksData = await getAllTasks(this.params);
+                // Open task interface
+                this.currentActiveTaskId = createdTask.taskId;
+                type = 'concrete_issue';
+                storageSetWidgetIsClosed(false);
+                // Clear email_confirmation_token from URL
+                urlParams.delete('email_confirmation_token');
+                const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+                window.history.replaceState({}, document.title, newUrl);
+            } catch (err) {
+                this.registrationShowMessage('Error confirming email: ' + err.message, 'error');
+            }
+        } else {
+            // Load all tasks
+            this.allTasksData = await getAllTasks(this.params);
+        }
+
+        // Check if any task has updates
+        let taskHasSiteOwnerUpdate;
+
+        if (storageTasksHasUnreadUpdates()) {
+            taskHasSiteOwnerUpdate = true;
+        } else {
+            if (type === 'wrap') {
+                taskHasSiteOwnerUpdate = await checkIfTasksHasSiteOwnerUpdates(
+                    this.allTasksData,
+                    this.params
+                );
+            }
+        }
+        storageSaveTasksUpdateData(this.allTasksData);
+        //check to hide on first run
+        if (!storageWidgetCloseIsSet()) {
+            storageSetWidgetIsClosed(true);
+        }
+        //check to show if any task has site owner updates
+        if (taskHasSiteOwnerUpdate) {
+            storageSetWidgetIsClosed(false);
+        }
+        this.widgetElement = await this.createWidgetElement(type);
+        this.bindWidgetInputsInteractive();
+    }
+
+    getParams() {
+        const script = document.querySelector(`script[src*="doboard-widget-bundle.min.js"]`);
+        if ( ! script || ! script.src ) {
+            throw new Error('Script not provided');
+        }
+
+        const url = new URL(script.src);
+        let params = Object.fromEntries(url.searchParams.entries());
+        if ( ! params ) {
+            throw new Error('Script params not provided');
+        }
+        if ( ! params.projectToken || ! params.accountId || ! params.projectId ) {
+            throw new Error('Necessary script params not provided');
+
+        }
+        return params;
     }
 
     /**
      * Binding events to create a task
      */
-  }, {
-    key: "bindCreateTaskEvents",
-    value: function bindCreateTaskEvents() {
-      var _this = this;
-      var submitButton = document.getElementById('doboard_task_widget-submit_button');
-      if (submitButton) {
-        submitButton.addEventListener('click', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
-          var taskTitleElement, taskTitle, taskDescriptionElement, taskDescription, userName, userEmail, userPassword, loginSectionElement, _userEmailElement, userNameElement, userPasswordElement, userEmailElement, submitButton, taskDetails, submitTaskResult;
-          return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-            while (1) switch (_context6.prev = _context6.next) {
-              case 0:
+    bindCreateTaskEvents() {
+        const submitButton = document.getElementById('doboard_task_widget-submit_button');
+
+        if (submitButton) {
+            submitButton.addEventListener('click', async () => {
                 // Check required fields: Report about and Description
-                taskTitleElement = document.getElementById('doboard_task_widget-title');
-                taskTitle = taskTitleElement.value;
-                if (taskTitle) {
-                  _context6.next = 7;
-                  break;
+                const taskTitleElement = document.getElementById('doboard_task_widget-title');
+                const taskTitle = taskTitleElement.value;
+                if ( ! taskTitle ) {
+                    taskTitleElement.style.borderColor = 'red';
+                    taskTitleElement.focus();
+                    taskTitleElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
                 }
-                taskTitleElement.style.borderColor = 'red';
-                taskTitleElement.focus();
-                taskTitleElement.addEventListener('input', function () {
-                  this.style.borderColor = '';
-                });
-                return _context6.abrupt("return");
-              case 7:
-                taskDescriptionElement = document.getElementById('doboard_task_widget-description');
-                taskDescription = taskDescriptionElement.value;
-                if (taskDescription) {
-                  _context6.next = 14;
-                  break;
+                const taskDescriptionElement = document.getElementById('doboard_task_widget-description')
+                const taskDescription = taskDescriptionElement.value;
+                if ( ! taskDescription ) {
+                    taskDescriptionElement.style.borderColor = 'red';
+                    taskDescriptionElement.focus();
+                    taskDescriptionElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
                 }
-                taskDescriptionElement.style.borderColor = 'red';
-                taskDescriptionElement.focus();
-                taskDescriptionElement.addEventListener('input', function () {
-                  this.style.borderColor = '';
-                });
-                return _context6.abrupt("return");
-              case 14:
+
                 // If login section is open, check required fields: Nickname, Email
-                userName = '';
-                userEmail = '';
-                userPassword = '';
-                loginSectionElement = document.querySelector('.doboard_task_widget-login');
-                if (!(loginSectionElement && loginSectionElement.classList.contains('active'))) {
-                  _context6.next = 42;
-                  break;
+                let userName = '';
+                let userEmail = '';
+                let userPassword = '';
+                const loginSectionElement = document.querySelector('.doboard_task_widget-login');
+
+                if ( loginSectionElement && loginSectionElement.classList.contains('active') ) {
+                    const userEmailElement = document.getElementById('doboard_task_widget-user_email');
+                    const userNameElement = document.getElementById('doboard_task_widget-user_name');
+                    const userPasswordElement = document.getElementById('doboard_task_widget-user_password');
+
+                    userEmail = userEmailElement.value;
+                    if ( ! userEmail ) {
+                        userEmailElement.style.borderColor = 'red';
+                        userEmailElement.focus();
+                        userEmailElement.addEventListener('input', function() {
+                            this.style.borderColor = '';
+                        });
+                        return;
+                    }
+
+                    // This is the registration request
+                    if ( userEmailElement && userNameElement ) {
+                        userName = userNameElement.value;
+                        if ( ! userName ) {
+                            userNameElement.style.borderColor = 'red';
+                            userNameElement.focus();
+                            userNameElement.addEventListener('input', function() {
+                                this.style.borderColor = '';
+                            });
+                            return;
+                        }
+                    }
+
+                    // This is the login request
+                    if ( userEmailElement && userPasswordElement && ! userNameElement ) {
+                        userPassword = userPasswordElement.value;
+                        if ( ! userPassword ) {
+                            userPasswordElement.style.borderColor = 'red';
+                            userPasswordElement.focus();
+                            userPasswordElement.addEventListener('input', function() {
+                                this.style.borderColor = '';
+                            });
+                            return;
+                        }
+                    }
+
                 }
-                _userEmailElement = document.getElementById('doboard_task_widget-user_email');
-                userNameElement = document.getElementById('doboard_task_widget-user_name');
-                userPasswordElement = document.getElementById('doboard_task_widget-user_password');
-                userEmail = _userEmailElement.value;
-                if (userEmail) {
-                  _context6.next = 28;
-                  break;
-                }
-                _userEmailElement.style.borderColor = 'red';
-                _userEmailElement.focus();
-                _userEmailElement.addEventListener('input', function () {
-                  this.style.borderColor = '';
-                });
-                return _context6.abrupt("return");
-              case 28:
-                if (!(_userEmailElement && userNameElement)) {
-                  _context6.next = 35;
-                  break;
-                }
-                userName = userNameElement.value;
-                if (userName) {
-                  _context6.next = 35;
-                  break;
-                }
-                userNameElement.style.borderColor = 'red';
-                userNameElement.focus();
-                userNameElement.addEventListener('input', function () {
-                  this.style.borderColor = '';
-                });
-                return _context6.abrupt("return");
-              case 35:
-                if (!(_userEmailElement && userPasswordElement && !userNameElement)) {
-                  _context6.next = 42;
-                  break;
-                }
-                userPassword = userPasswordElement.value;
-                if (userPassword) {
-                  _context6.next = 42;
-                  break;
-                }
-                userPasswordElement.style.borderColor = 'red';
-                userPasswordElement.focus();
-                userPasswordElement.addEventListener('input', function () {
-                  this.style.borderColor = '';
-                });
-                return _context6.abrupt("return");
-              case 42:
+
                 // If it is the login request
-                userEmailElement = document.getElementById('doboard_task_widget-user_email');
+                const userEmailElement = document.getElementById('doboard_task_widget-user_email');
                 userEmail = userEmailElement.value;
 
                 // Make the submit button disable with spinner
-                submitButton = document.getElementById('doboard_task_widget-submit_button');
+                const submitButton = document.getElementById('doboard_task_widget-submit_button');
                 submitButton.disabled = true;
-                submitButton.style.cursor = 'waiting';
-                taskDetails = {
-                  taskTitle: taskTitle,
-                  taskDescription: taskDescription,
-                  //typeSend: typeSend,
-                  selectedData: _this.selectedData,
-                  projectToken: _this.params.projectToken,
-                  projectId: _this.params.projectId,
-                  accountId: _this.params.accountId
+                submitButton.innerText = 'Creating spot...';
+
+                let taskDetails = {
+                    taskTitle: taskTitle,
+                    taskDescription: taskDescription,
+                    //typeSend: typeSend,
+                    selectedData: this.selectedData,
+                    projectToken: this.params.projectToken,
+                    projectId: this.params.projectId,
+                    accountId: this.params.accountId,
+                    taskMeta: JSON.stringify(this.selectedData),
                 };
-                if (userEmail) {
-                  taskDetails.userEmail = userEmail;
+                if ( userEmail ) {
+                    taskDetails.userEmail = userEmail
                 }
-                if (userName) {
-                  taskDetails.userName = userName;
+                if ( userName ) {
+                    taskDetails.userName = userName
                 }
-                if (userPassword) {
-                  taskDetails.userPassword = userPassword;
+                if ( userPassword ) {
+                    taskDetails.userPassword = userPassword
                 }
-                _context6.next = 53;
-                return _this.submitTask(taskDetails);
-              case 53:
-                submitTaskResult = _context6.sent;
+
+                // Save pending task in LS
+                localStorage.setItem('spotfix_pending_task', JSON.stringify({
+                    ...this.selectedData,
+                    description: taskDescription
+                }));
+
+                let submitTaskResult;
+                try {
+                    submitTaskResult = await this.submitTask(taskDetails);
+                } catch (error) {
+                    this.registrationShowMessage(error.message);
+                    return;
+                }
+
                 // Return the submit button normal state
                 submitButton.disabled = false;
                 submitButton.style.cursor = 'pointer';
-                if (!submitTaskResult.needToLogin) {
-                  _context6.next = 58;
-                  break;
+
+                if ( submitTaskResult.needToLogin ) {
+                    // @ToDo Do not know what to de here: throw an error or pass log message?
+                    return;
                 }
-                return _context6.abrupt("return");
-              case 58:
-                localStorage.setItem("spotfix_task_data_".concat(submitTaskResult.taskId), JSON.stringify(_this.selectedData));
-                _this.selectedData = {};
-                _context6.next = 62;
-                return _this.createWidgetElement('all_issues');
-              case 62:
-              case "end":
-                return _context6.stop();
-            }
-          }, _callee6);
-        })));
-      }
+
+                if ( submitTaskResult.isPublic !== undefined ) {
+                    this.selectedData.isPublic = submitTaskResult.isPublic
+                }
+
+                // refersh tasks list after creation
+                this.allTasksData = await getAllTasks(this.params);
+                // save updates
+                storageSaveTasksUpdateData(this.allTasksData);
+
+                this.selectedData = {};
+                await this.createWidgetElement('all_issues');
+                storageSetWidgetIsClosed(false);
+                hideContainersSpinner(false);
+            });
+        }
     }
 
     /**
      * Create widget element
      * @return {HTMLElement} widget element
      */
-  }, {
-    key: "createWidgetElement",
-    value: (function () {
-      var _createWidgetElement = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee7(type) {
-        var _this2 = this,
-          _document$querySelect;
-        var widgetContainer, templateName, variables, issuesQuantityOnPage, tasks, i, elTask, taskId, taskTitle, taskDataString, taskData, currentPageURL, taskNodePath, _variables, taskElement, text, start, end, selectedText, beforeText, afterText, taskDetails, _iterator, _step, comment, commentData;
-        return _regeneratorRuntime().wrap(function _callee7$(_context7) {
-          while (1) switch (_context7.prev = _context7.next) {
-            case 0:
-              widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
-              widgetContainer.className = 'doboard_task_widget';
-              widgetContainer.innerHTML = '';
-              templateName = '';
-              variables = {};
-              _context7.t0 = type;
-              _context7.next = _context7.t0 === 'create_issue' ? 8 : _context7.t0 === 'wrap' ? 11 : _context7.t0 === 'all_issues' ? 13 : _context7.t0 === 'concrete_issue' ? 15 : 17;
-              break;
-            case 8:
-              templateName = 'create_issue';
-              variables = {
-                selectedText: this.selectedText,
-                currentDomain: document.location.hostname || ''
-              };
-              return _context7.abrupt("break", 18);
-            case 11:
-              templateName = 'wrap';
-              return _context7.abrupt("break", 18);
-            case 13:
-              templateName = 'all_issues';
-              return _context7.abrupt("break", 18);
-            case 15:
-              templateName = 'concrete_issue';
-              return _context7.abrupt("break", 18);
-            case 17:
-              return _context7.abrupt("break", 18);
-            case 18:
-              _context7.next = 20;
-              return this.loadTemplate(templateName, variables);
-            case 20:
-              widgetContainer.innerHTML = _context7.sent;
-              document.body.appendChild(widgetContainer);
-              _context7.t1 = type;
-              _context7.next = _context7.t1 === 'create_issue' ? 25 : _context7.t1 === 'wrap' ? 27 : _context7.t1 === 'all_issues' ? 30 : _context7.t1 === 'concrete_issue' ? 62 : 92;
-              break;
-            case 25:
-              this.bindCreateTaskEvents();
-              return _context7.abrupt("break", 93);
-            case 27:
-              this.getTaskCount();
-              document.querySelector('.doboard_task_widget-wrap').addEventListener('click', function () {
-                _this2.createWidgetElement('all_issues');
-              });
-              return _context7.abrupt("break", 93);
-            case 30:
-              issuesQuantityOnPage = 0;
-              _context7.next = 33;
-              return this.getTasks();
-            case 33:
-              tasks = _context7.sent;
-              this.saveUserData(tasks);
-              if (!(tasks.length > 0)) {
-                _context7.next = 59;
-                break;
-              }
-              document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
-              i = 0;
-            case 38:
-              if (!(i < tasks.length)) {
-                _context7.next = 58;
-                break;
-              }
-              elTask = tasks[i]; // Data from api
-              taskId = elTask.taskId;
-              taskTitle = elTask.taskTitle; // Data from local storage
-              taskDataString = localStorage.getItem("spotfix_task_data_".concat(taskId));
-              taskData = taskDataString ? JSON.parse(taskDataString) : null;
-              currentPageURL = taskData.pageURL;
-              taskNodePath = taskData.nodePath;
-              if (!(currentPageURL === window.location.href)) {
-                _context7.next = 55;
-                break;
-              }
-              issuesQuantityOnPage++;
-              _variables = {
-                taskTitle: taskTitle || '',
-                avatarImg: '/spotfix/img/empty_avatar.png',
-                nodePath: taskNodePath,
-                taskId: taskId
-              };
-              _context7.t2 = document.querySelector(".doboard_task_widget-all_issues-container").innerHTML;
-              _context7.next = 52;
-              return this.loadTemplate('list_issues', _variables);
-            case 52:
-              document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = _context7.t2 += _context7.sent;
-              taskElement = taskAnalysis(taskData);
-              if (taskElement) {
-                if (taskData.startSelectPosition !== undefined && taskData.endSelectPosition !== undefined) {
-                  text = taskElement.innerHTML;
-                  start = taskData.startSelectPosition;
-                  end = taskData.endSelectPosition;
-                  selectedText = text.substring(start, end);
-                  beforeText = text.substring(0, start);
-                  afterText = text.substring(end);
-                  taskElement.innerHTML = beforeText + '<span class="doboard_task_widget-text_selection">' + selectedText + '</span>' + afterText;
-                }
-              }
-            case 55:
-              i++;
-              _context7.next = 38;
-              break;
-            case 58:
-              document.querySelector('.doboard_task_widget-header span').innerText += ' (' + issuesQuantityOnPage + ')';
-            case 59:
-              if (tasks.length === 0 || issuesQuantityOnPage === 0) {
-                document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
-              }
+    async createWidgetElement(type, showOnlyCurrentPage = true) {
+        const widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
+        widgetContainer.className = 'doboard_task_widget';
+        widgetContainer.innerHTML = '';
 
-              // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
-              this.bindIssuesClick();
-              return _context7.abrupt("break", 93);
-            case 62:
-              _context7.next = 64;
-              return this.getTaskDetails();
-            case 64:
-              taskDetails = _context7.sent;
-              variables = {
-                issueTitle: taskDetails.issueTitle,
-                issueComments: taskDetails.issueComments
-              };
-              if (!(taskDetails.issueComments.length > 0)) {
-                _context7.next = 90;
+        let templateName = '';
+        let variables = {};
+
+        switch (type) {
+            case 'create_issue':
+                templateName = 'create_issue';
+                variables = {
+                    selectedText: this.selectedText,
+                    currentDomain: document.location.hostname || ''
+                };
+                storageGetUserIsDefined() && storageSetWidgetIsClosed(false);
                 break;
-              }
-              document.querySelector('.doboard_task_widget-concrete_issues-container').innerHTML = '';
-              _iterator = _createForOfIteratorHelper(taskDetails.issueComments);
-              _context7.prev = 69;
-              _iterator.s();
-            case 71:
-              if ((_step = _iterator.n()).done) {
-                _context7.next = 80;
+            case 'wrap':
+                if (storageGetWidgetIsClosed()) {
+                    return;
+                }
+                templateName = 'wrap';
                 break;
-              }
-              comment = _step.value;
-              commentData = {
-                author: comment.commentAuthor,
-                commentBody: comment.commentBody,
-                date: comment.commentDate,
-                time: comment.commentTime
-              };
-              _context7.t3 = document.querySelector('.doboard_task_widget-concrete_issues-container').innerHTML;
-              _context7.next = 77;
-              return this.loadTemplate('concrete_issue_messages', commentData);
-            case 77:
-              document.querySelector('.doboard_task_widget-concrete_issues-container').innerHTML = _context7.t3 += _context7.sent;
-            case 78:
-              _context7.next = 71;
-              break;
-            case 80:
-              _context7.next = 85;
-              break;
-            case 82:
-              _context7.prev = 82;
-              _context7.t4 = _context7["catch"](69);
-              _iterator.e(_context7.t4);
-            case 85:
-              _context7.prev = 85;
-              _iterator.f();
-              return _context7.finish(85);
-            case 88:
-              _context7.next = 91;
-              break;
-            case 90:
-              document.querySelector('.doboard_task_widget-concrete_issues-container').innerHTML = 'No comments';
-            case 91:
-              return _context7.abrupt("break", 93);
-            case 92:
-              return _context7.abrupt("break", 93);
-            case 93:
-              ((_document$querySelect = document.querySelector('.doboard_task_widget-close_btn')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('click', function () {
-                _this2.hide();
-              })) || '';
-              return _context7.abrupt("return", widgetContainer);
-            case 95:
-            case "end":
-              return _context7.stop();
-          }
-        }, _callee7, this, [[69, 82, 85, 88]]);
-      }));
-      function createWidgetElement(_x15) {
-        return _createWidgetElement.apply(this, arguments);
-      }
-      return createWidgetElement;
-    }())
-  }, {
-    key: "bindIssuesClick",
-    value: function bindIssuesClick() {
-      var _this3 = this;
-      document.querySelectorAll('.issue-item').forEach(function (item) {
-        item.addEventListener('click', /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee8() {
-          var nodePath;
-          return _regeneratorRuntime().wrap(function _callee8$(_context8) {
-            while (1) switch (_context8.prev = _context8.next) {
-              case 0:
-                nodePath = JSON.parse(item.getAttribute('data-node-path'));
+            case 'all_issues':
+                templateName = 'all_issues';
+                break;
+            case 'concrete_issue':
+                templateName = 'concrete_issue';
+                // Update the number of tasks
+                this.savedIssuesQuantityAll = Array.isArray(this.allTasksData) ? this.allTasksData.length : 0;
+                // Calculate the number of issues on the current page
+                this.savedIssuesQuantityOnPage = Array.isArray(this.allTasksData)
+                    ? this.allTasksData.filter(task => {
+                        try {
+                            const meta = task.taskMeta ? JSON.parse(task.taskMeta) : {};
+                            return meta.pageURL === window.location.href;
+                        } catch (e) { return false; }
+                    }).length
+                    : 0;
+                variables = {
+                    issueTitle: '...',
+                    issuesCounter: getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll),
+                    paperclipImgSrc: '/spotfix/img/send-message--paperclip.svg',
+                    sendButtonImgSrc: '/spotfix/img/send-message--button.svg',
+                    msgFieldBackgroundImgSrc: '/spotfix/img/send-message--input-background.svg',
+                };
+                break;
+            default:
+                break;
+        }
+        widgetContainer.innerHTML = await this.loadTemplate(templateName, variables);
+        document.body.appendChild(widgetContainer);
+
+        // remove highlights before any screen called
+        this.removeHighlights();
+
+        switch (type) {
+            case 'create_issue':
+                // highlight selected item during task creation
+                const selection = window.getSelection();
+                if (
+                    selection.type === 'Range'
+                ) {
+                    const selectedData = getSelectedData(selection);
+                    this.highlightElements([selectedData]);
+                }
+                // bind creation events
+                this.bindCreateTaskEvents();
+                break;
+            case 'wrap':
+                await this.getTaskCount();
+                document.querySelector('.doboard_task_widget-wrap').addEventListener('click', (e) => {
+                    const widgetElementClasses = e.currentTarget.classList;
+                    if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
+                        this.createWidgetElement('all_issues');
+                    }
+                });
+                hideContainersSpinner(false);
+                break;
+            case 'all_issues':
+                this.removeHighlights();
+                let issuesQuantityOnPage = 0;
+                let tasks = this.allTasksData;
+                let spotsToBeHighlighted = [];
+                if (tasks.length > 0) {
+                    document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
+                    for (let i = 0; i < tasks.length; i++) {
+                        const elTask = tasks[i];
+
+                        // Data from api
+                        const taskId = elTask.taskId;
+                        const taskTitle = elTask.taskTitle;
+                        const taskMetaString = elTask.taskMeta;
+                        const taskData = taskMetaString ? JSON.parse(taskMetaString) : null;
+                        const currentPageURL = taskData ? taskData.pageURL : '';
+                        const taskNodePath = taskData ? taskData.nodePath : '';
+
+                        // Define publicity details
+                        let taskPublicStatusImgSrc = '';
+                        let taskPublicStatusHint = 'Task publicity is unknown'
+                        if (taskData && taskData.isPublic !== undefined) {
+                            if (taskData.isPublic) {
+                                taskPublicStatusImgSrc = '/spotfix/img/public.svg';
+                                taskPublicStatusHint = 'The task is public';
+                            } else {
+                                taskPublicStatusImgSrc = '/spotfix/img/private.svg';
+                                taskPublicStatusHint = 'The task is private and visible only for registered DoBoard users';
+                            }
+                        }
+
+                        if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
+                            issuesQuantityOnPage++;
+                            const taskFullDetails = await getTaskFullDetails(this.params, taskId);
+                            
+                            const avatarData = getAvatarData(taskFullDetails);
+                            const variables = {
+                                taskTitle: taskTitle || '',
+                                taskAuthorAvatarImgSrc: taskFullDetails.taskAuthorAvatarImgSrc,
+                                taskAuthorName: taskFullDetails.taskAuthorName,
+                                taskPublicStatusImgSrc: taskPublicStatusImgSrc,
+                                taskPublicStatusHint: taskPublicStatusHint,
+                                taskLastMessage: taskFullDetails.lastMessageText,
+                                taskLastUpdate: taskFullDetails.lastMessageTime,
+                                nodePath: taskNodePath,
+                                taskId: taskId,
+                                avatarCSSClass: avatarData.avatarCSSClass,
+                                avatarStyle: avatarData.avatarStyle,
+                                taskAuthorInitials: avatarData.taskAuthorInitials,
+                                initialsClass: avatarData.initialsClass,
+                                classUnread: ''
+                            };
+                            const taskOwnerReplyIsUnread = storageProvidedTaskHasUnreadUpdates(taskFullDetails.taskId);
+                            if (taskOwnerReplyIsUnread) {
+                                variables.classUnread = 'unread';
+                            }
+                            document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += await this.loadTemplate('list_issues', variables);
+
+                            spotsToBeHighlighted.push(taskData);
+                        }
+                    }
+                    this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
+                    this.savedIssuesQuantityAll = tasks.length;
+                    this.highlightElements(spotsToBeHighlighted);
+                    document.querySelector('.doboard_task_widget-header span').innerText += ' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll);
+                }
+                if (tasks.length === 0 || issuesQuantityOnPage === 0) {
+                    document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
+                }
+
+                // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
+                this.bindIssuesClick();
+                hideContainersSpinner(false);
+                break;
+
+            case 'concrete_issue':
+
+                const taskDetails = await getTaskFullDetails(this.params, this.currentActiveTaskId);
+
+                // Update issue title in the interface
+                const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
+                if (issueTitleElement) {
+                    issueTitleElement.innerText = taskDetails.issueTitle;
+                }
+
+                variables = {
+                    issueTitle: taskDetails.issueTitle,
+                    issueComments: taskDetails.issueComments,
+                    issuesCounter: getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll),
+                    paperclipImgSrc: '/spotfix/img/send-message--paperclip.svg',
+                    sendButtonImgSrc: '/spotfix/img/send-message--button.svg',
+                    msgFieldBackgroundImgSrc: '/spotfix/img/send-message--input-background.svg',
+                };
+
+                widgetContainer.innerHTML = await this.loadTemplate('concrete_issue', variables);
+                document.body.appendChild(widgetContainer);
+
+                // Highlight the task's selected text
+                let nodePath = null;
+                    const currentTaskData = this.allTasksData.find((element) => String(element.taskId) === String(taskDetails.taskId));
+                    let meta = null;
+                    if (currentTaskData && currentTaskData.taskMeta) {
+                        try {
+                            meta = JSON.parse(currentTaskData.taskMeta);
+                            nodePath = meta.nodePath || null;
+                        } catch (e) { nodePath = null; meta = null; }
+                    }
+                    // remove old highlights before adding new ones
+                    this.removeHighlights();
+                    if (meta && nodePath) {
+                        // Pass the task meta object as an array
+                        this.highlightElements([meta]);
+                        if (typeof scrollToNodePath === 'function') {
+                            scrollToNodePath(nodePath);
+                        }
+                    }
+
+                const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
+                let dayMessagesData = [];
+                const initIssuerID = localStorage.getItem('spotfix_user_id');
+                let userIsIssuer = false;
+                if ( taskDetails.issueComments.length > 0 ) {
+                    storageRemoveUnreadUpdateForTaskID(taskDetails.taskId);
+                    issuesCommentsContainer.innerHTML = '';
+                    for (const comment of taskDetails.issueComments) {
+                        userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
+                        const avatarData = getAvatarData({
+                            taskAuthorAvatarImgSrc: comment.commentAuthorAvatarSrc,
+                            taskAuthorName: comment.commentAuthorName,
+                            userIsIssuer: userIsIssuer
+                        });
+                        const commentData = {
+                            commentAuthorName: comment.commentAuthorName,
+                            commentBody: comment.commentBody,
+                            commentDate: comment.commentDate,
+                            commentTime: comment.commentTime,
+                            issueTitle: variables.issueTitle,
+                            commentContainerBackgroundSrc: userIsIssuer
+                                ? '/spotfix/img/comment-self-background.png'
+                                : '/spotfix/img/comment-other-background.png',
+                            avatarCSSClass: avatarData.avatarCSSClass,
+                            avatarStyle: avatarData.avatarStyle,
+                            taskAuthorInitials: avatarData.taskAuthorInitials,
+                            initialsClass: avatarData.initialsClass
+                        };
+                        if (dayMessagesData[comment.commentDate] === undefined) {
+                            dayMessagesData[comment.commentDate] = [];
+                            dayMessagesData[comment.commentDate].push(commentData);
+                        } else {
+                            dayMessagesData[comment.commentDate].push(commentData);
+                        }
+                    }
+                    let daysWrapperHTML = '';
+                    for (const day in dayMessagesData) {
+                        let currentDayMessages = dayMessagesData[day];
+                        let dayMessagesWrapperHTML = '';
+                        currentDayMessages.sort((a, b) => a.commentTime.localeCompare(b.commentTime));
+                        for (const messageId in currentDayMessages) {
+                            let currentMessageData = currentDayMessages[messageId];
+                            dayMessagesWrapperHTML += await this.loadTemplate('concrete_issue_messages', currentMessageData);
+                        }
+                        daysWrapperHTML += await this.loadTemplate('concrete_issue_day_content', {dayContentMonthDay: day, dayContentMessages: dayMessagesWrapperHTML});
+                    }
+                    issuesCommentsContainer.innerHTML = daysWrapperHTML;
+                } else {
+                    issuesCommentsContainer.innerHTML = 'No comments';
+                }
+
+                // Hide spinner preloader
+                hideContainersSpinner();
+
+                // Scroll to the bottom comments
+                setTimeout(() => {
+                    const contentContainer = document.querySelector('.doboard_task_widget-content');
+                    contentContainer.scrollTo({
+                        top: contentContainer.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }, 0);
+
+                const sendForm = document.querySelector('.doboard_task_widget-send_message form');
+                if (sendForm) {
+                    sendForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const input = sendForm.querySelector('.doboard_task_widget-send_message_input');
+                        const commentText = input.value.trim();
+                        if (!commentText) return;
+                        input.disabled = true;
+                        try {
+                            await addTaskComment(this.params, this.currentActiveTaskId, commentText);
+                            input.value = '';
+                            await this.createWidgetElement('concrete_issue');
+                            hideContainersSpinner(false);
+                        } catch (err) {
+                            alert('Error when adding a comment: ' + err.message);
+                        }
+                        input.disabled = false;
+                    });
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        const backToAllIssuesController = document.querySelector('.doboard_task_widget_return_to_all');
+        const widgetClass = this;
+        if ( backToAllIssuesController ) {
+            backToAllIssuesController.addEventListener('click', function(e, self = widgetClass) {
+                self.createWidgetElement('all_issues');
+            });
+        }
+
+        const paperclipController = document.querySelector('.doboard_task_widget-send_message_paperclip');
+        if ( paperclipController ) {
+            paperclipController.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('This action is not implemented yet..');
+            });
+        }
+
+        document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', () => {
+            this.hide();
+        }) || '';
+
+        document.querySelector('#doboard_task_widget-task_count')?.addEventListener('click', () => {
+            const widget = document.querySelector('.doboard_task_widget-wrap');
+            widget.classList.add('hidden');
+            storageSetWidgetIsClosed(true);
+        }) || '';
+
+        return widgetContainer;
+    }
+
+    bindIssuesClick() {
+        document.querySelectorAll('.issue-item').forEach(item => {
+            item.addEventListener('click', async () => {
+                const nodePath = JSON.parse(item.getAttribute('data-node-path'));
                 scrollToNodePath(nodePath);
-                _this3.currentActiveTaskId = item.getAttribute('data-task-id');
-                _context8.next = 5;
-                return _this3.createWidgetElement('concrete_issue');
-              case 5:
-              case "end":
-                return _context8.stop();
-            }
-          }, _callee8);
-        })));
-      });
+                this.currentActiveTaskId = item.getAttribute('data-task-id');
+                await this.createWidgetElement('concrete_issue');
+
+                const taskHighlightData = this.getTaskHighlightData(this.currentActiveTaskId)
+
+                if (taskHighlightData) {
+                    this.removeHighlights();
+                    this.highlightElements([taskHighlightData])
+                }
+
+                hideContainersSpinner(false);
+            });
+        });
     }
 
     /**
@@ -720,302 +1185,263 @@ var CleanTalkWidgetDoboard = /*#__PURE__*/function () {
      * @ToDo have to refactor templates loaded method: need to be templates included into the bundle
      *
      */
-  }, {
-    key: "loadTemplate",
-    value: (function () {
-      var _loadTemplate = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee9(templateName) {
-        var variables,
-          response,
-          template,
-          _i,
-          _Object$entries,
-          _Object$entries$_i,
-          key,
-          value,
-          placeholder,
-          _args9 = arguments;
-        return _regeneratorRuntime().wrap(function _callee9$(_context9) {
-          while (1) switch (_context9.prev = _context9.next) {
-            case 0:
-              variables = _args9.length > 1 && _args9[1] !== undefined ? _args9[1] : {};
-              _context9.next = 3;
-              return fetch("/spotfix/templates/".concat(templateName, ".html"));
-            case 3:
-              response = _context9.sent;
-              _context9.next = 6;
-              return response.text();
-            case 6:
-              template = _context9.sent;
-              for (_i = 0, _Object$entries = Object.entries(variables); _i < _Object$entries.length; _i++) {
-                _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2), key = _Object$entries$_i[0], value = _Object$entries$_i[1];
-                placeholder = "{{".concat(key, "}}");
-                template = template.replaceAll(placeholder, value);
-              }
-              return _context9.abrupt("return", template);
-            case 9:
-            case "end":
-              return _context9.stop();
-          }
-        }, _callee9);
-      }));
-      function loadTemplate(_x16) {
-        return _loadTemplate.apply(this, arguments);
-      }
-      return loadTemplate;
-    }())
-  }, {
-    key: "getTaskCount",
-    value: function () {
-      var _getTaskCount = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee10() {
-        var projectToken, sessionId, tasks, taskCountElement;
-        return _regeneratorRuntime().wrap(function _callee10$(_context10) {
-          while (1) switch (_context10.prev = _context10.next) {
-            case 0:
-              if (localStorage.getItem('spotfix_session_id')) {
-                _context10.next = 2;
-                break;
-              }
-              return _context10.abrupt("return", {});
-            case 2:
-              projectToken = this.params.projectToken;
-              sessionId = localStorage.getItem('spotfix_session_id');
-              _context10.next = 6;
-              return getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
-            case 6:
-              tasks = _context10.sent;
-              taskCountElement = document.getElementById('doboard_task_widget-task_count');
-              if (taskCountElement) {
-                taskCountElement.innerText = tasks.length;
-                taskCountElement.classList.remove('hidden');
-              }
-            case 9:
-            case "end":
-              return _context10.stop();
-          }
-        }, _callee10, this);
-      }));
-      function getTaskCount() {
-        return _getTaskCount.apply(this, arguments);
-      }
-      return getTaskCount;
-    }()
+    async loadTemplate(templateName, variables = {}) {
+        const response = await fetch(`/spotfix/templates/${templateName}.html`);
+        let template = await response.text();
+
+        for (const [key, value] of Object.entries(variables)) {
+            const placeholder = `{{${key}}}`;
+            template = template.replaceAll(placeholder, value);
+        }
+
+        return template;
+    }
+
+    async getTaskCount() {
+        if (!localStorage.getItem('spotfix_session_id')) {
+            return {};
+        }
+
+        const projectToken = this.params.projectToken;
+        const sessionId = localStorage.getItem('spotfix_session_id');
+
+        const tasks = await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
+        const filteredTasks = tasks.filter(task => {
+            return task.taskMeta;
+        });
+        const taskCountElement = document.getElementById('doboard_task_widget-task_count');
+        if ( taskCountElement ) {
+            taskCountElement.innerText = filteredTasks.length;
+            taskCountElement.classList.remove('hidden');
+        }
+    }
+
     /**
      * Bind events to the widget
      */
     /*bindEvents() {
         this.submitButton.addEventListener('click', () => this.submitTask());
     }*/
+
     /**
      * Submit the task
      */
-  }, {
-    key: "submitTask",
-    value: (function () {
-      var _submitTask = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee11(taskDetails) {
-        var sessionId;
-        return _regeneratorRuntime().wrap(function _callee11$(_context11) {
-          while (1) switch (_context11.prev = _context11.next) {
-            case 0:
-              if (localStorage.getItem('spotfix_session_id')) {
-                _context11.next = 6;
-                break;
-              }
-              _context11.next = 3;
-              return this.registerUser(taskDetails);
-            case 3:
-              if (!taskDetails.userPassword) {
-                _context11.next = 6;
-                break;
-              }
-              _context11.next = 6;
-              return this.loginUser(taskDetails);
-            case 6:
-              sessionId = localStorage.getItem('spotfix_session_id');
-              if (sessionId) {
-                _context11.next = 9;
-                break;
-              }
-              return _context11.abrupt("return", {
-                needToLogin: true
-              });
-            case 9:
-              _context11.next = 11;
-              return this.createTask(sessionId, taskDetails);
-            case 11:
-              return _context11.abrupt("return", _context11.sent);
-            case 12:
-            case "end":
-              return _context11.stop();
-          }
-        }, _callee11, this);
-      }));
-      function submitTask(_x17) {
-        return _submitTask.apply(this, arguments);
-      }
-      return submitTask;
-    }()
-    /**
-     * Create a task
-     * @param {*} taskDetails
-     * @param {string} sessionId
-     */
-    )
-  }, {
-    key: "createTask",
-    value: function createTask(sessionId, taskDetails) {
-      return createTaskDoboard(sessionId, taskDetails).then(function (response) {
-        return response;
-      });
-    }
-  }, {
-    key: "registerUser",
-    value: function registerUser(taskDetails) {
-      var userEmail = taskDetails.userEmail;
-      var userName = taskDetails.userName;
-      var projectToken = taskDetails.projectToken;
-      var accountId = taskDetails.accountId;
-      return _registerUser(projectToken, accountId, userEmail, userName).then(function (response) {
-        if (response.accountExists) {
-          document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container").innerText = 'Account already exists. Please, login usin your password.';
-          document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container.hidden").classList.remove('hidden');
-          document.getElementById("doboard_task_widget-user_password").focus();
-        } else if (response.sessionId) {
-          localStorage.setItem('spotfix_session_id', response.sessionId);
-          localStorage.setItem('spotfix_user_id', response.userId);
-          localStorage.setItem('spotfix_email', response.email);
-        } else {
-          throw new Error('Session ID not found in response');
+    async submitTask(taskDetails) {
+        if (!localStorage.getItem('spotfix_session_id')) {
+            await registerUser(taskDetails)(this.registrationShowMessage);
+            if ( taskDetails.userPassword ) {
+                await loginUser(taskDetails)(this.registrationShowMessage);
+            }
         }
-      }).catch(function (error) {
-        throw error;
-      });
-    }
-  }, {
-    key: "loginUser",
-    value: function loginUser(taskDetails) {
-      var userEmail = taskDetails.userEmail;
-      var userPassword = taskDetails.userPassword;
-      return _loginUser(userEmail, userPassword).then(function (response) {
-        if (response.sessionId) {
-          localStorage.setItem('spotfix_session_id', response.sessionId);
-          localStorage.setItem('spotfix_user_id', response.userId);
-          localStorage.setItem('spotfix_email', response.email);
-        } else {
-          throw new Error('Session ID not found in response');
-        }
-      }).catch(function (error) {
-        throw error;
-      });
-    }
 
-    /**
-     * Get the task
-     *
-     * @return {any|Promise<*|undefined>|{}}
-     */
-  }, {
-    key: "getTasks",
-    value: function getTasks() {
-      if (!localStorage.getItem('spotfix_session_id')) {
-        return {};
-      }
-      var projectToken = this.params.projectToken;
-      var sessionId = localStorage.getItem('spotfix_session_id');
-      var userId = localStorage.getItem('spotfix_user_id');
-      return getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId, userId);
-    }
-  }, {
-    key: "getTaskDetails",
-    value: function getTaskDetails(taskId) {
-      return {
-        issueTitle: 'Test Title',
-        issueComments: [{
-          commentAuthor: '/spotfix/img/empty_avatar.png',
-          commentBody: 'Test Body 1',
-          commentDate: 'August 31',
-          commentTime: '14:15'
-        }, {
-          commentAuthor: '/spotfix/img/empty_avatar.png',
-          commentBody: 'Test Body 2',
-          commentDate: 'August 31',
-          commentTime: '14:16'
-        }]
-      };
-    }
-  }, {
-    key: "saveUserData",
-    value: function saveUserData(tasks) {
-      // Save users avatars to local storage
+        const sessionId = localStorage.getItem('spotfix_session_id');
+
+        if ( ! sessionId ) {
+            // @ToDo move this return in register block code
+            return {needToLogin: true};
+        }
+        return await handleCreateTask(sessionId, taskDetails);
     }
 
     /**
      * Hide the widget
      */
-  }, {
-    key: "hide",
-    value: function hide() {
-      this.createWidgetElement('wrap');
-      var textSelectionclassName = 'doboard_task_widget-text_selection';
-      var spans = document.querySelectorAll('.' + textSelectionclassName);
-      spans.forEach(function (span) {
-        var parent = span.parentNode;
-        while (span.firstChild) {
-          parent.insertBefore(span.firstChild, span);
-        }
-        parent.removeChild(span);
-      });
+    hide() {
+        this.removeHighlights();
+        this.createWidgetElement('wrap');
     }
-  }, {
-    key: "bindWidgetInputsInteractive",
-    value: function bindWidgetInputsInteractive() {
-      // Customising placeholders
-      var inputs = document.querySelectorAll('.doboard_task_widget-field');
-      inputs.forEach(function (input) {
-        if (input.value) {
-          input.classList.add('has-value');
-        }
-        input.addEventListener('input', function () {
-          if (input.value) {
-            input.classList.add('has-value');
-          } else {
-            input.classList.remove('has-value');
-          }
-        });
-        input.addEventListener('blur', function () {
-          if (!input.value) {
-            input.classList.remove('has-value');
-          }
-        });
-      });
 
-      // Customising accordion dropdown
-      var accordionController = document.querySelector('.doboard_task_widget-login span');
-      if (accordionController) {
-        accordionController.addEventListener('click', function () {
-          this.closest('.doboard_task_widget-login').classList.toggle('active');
+    removeHighlights() {
+        const textSelectionclassName = 'doboard_task_widget-text_selection';
+        const spans = document.querySelectorAll('.' + textSelectionclassName);
+        const affectedParents = new Set(); // Track unique parents
+
+        spans.forEach(span => {
+            const parent = span.parentNode;
+            affectedParents.add(parent); // Mark parent as affected
+
+            // Move all child nodes out of the span and into the parent
+            while (span.firstChild) {
+                parent.insertBefore(span.firstChild, span);
+            }
+            parent.removeChild(span);
         });
-      }
+
+        // Normalize all affected parents to merge adjacent text nodes
+        affectedParents.forEach(parent => parent.normalize());
     }
-  }]);
-}();
-var selectedData = {};
+
+    wrapElementWithSpotfixHighlight(element) {
+        const newElement = element.cloneNode();
+        const wrapper = document.createElement('span');
+        wrapper.className = 'doboard_task_widget-text_selection image-highlight';
+
+        element.insertAdjacentElement('beforebegin', wrapper);
+        wrapper.appendChild(newElement);
+
+        return wrapper;
+    }
+
+    /**
+     * Get task spot data for highlighting.
+     * @param {string|int} taskIdToSearch
+     * @returns {object|null}
+     */
+    getTaskHighlightData(taskIdToSearch) {
+        const currentTaskData = this.allTasksData.find((element) => element.taskId.toString() === taskIdToSearch.toString());
+        if (currentTaskData && currentTaskData.taskMeta !== undefined) {
+            const currentTaskSpotData = JSON.parse(currentTaskData.taskMeta);
+            if (currentTaskSpotData !== null && typeof currentTaskSpotData === 'object') {
+                return currentTaskSpotData;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Highlight elements.
+     * @param {[object]} spotsToBeHighlighted
+     */
+    highlightElements(spotsToBeHighlighted) {
+
+
+        if (spotsToBeHighlighted.length === 0) return;
+
+        const elementsMap = new Map();
+
+        // Gropuing elements
+        spotsToBeHighlighted.forEach(spot => {
+            const element = retrieveNodeFromPath(spot.nodePath);
+            if (!element) return;
+
+            if (!elementsMap.has(element)) {
+                elementsMap.set(element, []);
+            }
+            elementsMap.get(element).push(spot);
+        });
+
+        elementsMap.forEach((spots, element) => {
+            const spotfixHighlightOpen = '<span class="doboard_task_widget-text_selection">';
+            const spotfixHighlightClose = '</span>';
+
+            const imgType = spots[0].isTagOfImageType;
+
+            if (imgType !== false) {
+                if (
+                    imgType === 'IMG'
+                ) {
+                    const wrappedElement = this.wrapElementWithSpotfixHighlight(element);
+                    element.replaceWith(wrappedElement);
+                }
+            }
+
+            let text = element.textContent;
+            const markers = [];
+
+            // Mark positions for inserting
+            spots.forEach(spot => {
+                if (spot.isWholeTagSelected) {
+                    markers.push({ position: 0, type: 'start' });
+                    markers.push({ position: text.length, type: 'end' });
+                } else {
+                    markers.push({ position: spot.startSelectPosition, type: 'start' });
+                    markers.push({ position: spot.endSelectPosition, type: 'end' });
+                }
+            });
+
+            // Sort markers backward
+            markers.sort((a, b) => b.position - a.position);
+
+            let result = text;
+            markers.forEach(marker => {
+                const insertText = marker.type === 'start'
+                    ? spotfixHighlightOpen
+                    : spotfixHighlightClose;
+
+                result = result.slice(0, marker.position) + insertText + result.slice(marker.position);
+            });
+
+            element.innerHTML = result;
+        });
+    }
+
+    bindWidgetInputsInteractive() {
+        // Customising placeholders
+        const inputs = document.querySelectorAll('.doboard_task_widget-field');
+        inputs.forEach(input => {
+            if (input.value) {
+                input.classList.add('has-value');
+            }
+
+            input.addEventListener('input', () => {
+                if (input.value) {
+                    input.classList.add('has-value');
+                } else {
+                    input.classList.remove('has-value');
+                }
+            });
+
+            input.addEventListener('blur', () => {
+                if (!input.value) {
+                    input.classList.remove('has-value');
+                }
+            });
+        });
+
+        // Customising accordion dropdown
+        const accordionController = document.querySelector('.doboard_task_widget-login span');
+        if ( accordionController ) {
+            accordionController.addEventListener('click', function() {
+                this.closest('.doboard_task_widget-login').classList.toggle('active');
+            });
+        }
+    }
+
+    registrationShowMessage(messageText, type = 'error') {
+        const titleSpan = document.getElementById('doboard_task_widget-error_message-header');
+        const messageDiv = document.getElementById('doboard_task_widget-error_message');
+        const messageWrap = document.querySelector('.doboard_task_widget-message-wrapper');
+
+        if (typeof messageText === 'string' && messageDiv !== null && messageWrap !== null) {
+            messageDiv.innerText = messageText;
+            messageWrap.classList.remove('hidden');
+            messageDiv.classList.remove('doboard_task_widget-notice_message', 'doboard_task_widget-error_message');
+            if (type === 'notice') {
+                titleSpan.innerText = 'Notice';
+                messageWrap.classList.add('doboard_task_widget-notice_message');
+                messageDiv.style.color = '#2a5db0';
+            } else {
+                titleSpan.innerText = 'Registration error';
+                messageWrap.classList.add('doboard_task_widget-error_message');
+                messageDiv.style.color = 'red';
+            }
+        }
+    }
+}
+
 var widgetTimeout = null;
-document.addEventListener('DOMContentLoaded', function () {
-  new CleanTalkWidgetDoboard({}, 'wrap');
+
+document.addEventListener('DOMContentLoaded', () => {
+    new CleanTalkWidgetDoboard({}, 'wrap');
 });
-document.addEventListener('selectionchange', function (e) {
-  if (widgetTimeout) {
-    clearTimeout(widgetTimeout);
-  }
-  widgetTimeout = setTimeout(function () {
-    var selection = window.getSelection();
-    if (selection.type === 'Range') {
-      var _selectedData = getSelectedData(selection);
-      var widgetExist = document.querySelector('.task-widget');
-      openWidget(_selectedData, widgetExist, 'create_issue');
+
+document.addEventListener('selectionchange', function(e) {
+    if (widgetTimeout) {
+        clearTimeout(widgetTimeout);
     }
-  }, 1000);
+
+    widgetTimeout = setTimeout(() => {
+        const selection = window.getSelection();
+        if (
+            selection.type === 'Range'
+        ) {
+            const selectedData = getSelectedData(selection);
+            let widgetExist = document.querySelector('.doboard_task_widget-container');
+            openWidget(selectedData, widgetExist, 'create_issue');
+        }
+    }, 1000);
 });
+
 
 /**
  * Open the widget to create a task.
@@ -1024,28 +1450,333 @@ document.addEventListener('selectionchange', function (e) {
  * @param {*} type
  */
 function openWidget(selectedData, widgetExist, type) {
-  if (selectedData && !widgetExist) {
-    new CleanTalkWidgetDoboard(selectedData, type);
-  }
+
+    if (selectedData && !widgetExist) {
+        new CleanTalkWidgetDoboard(selectedData, type);
+    }
 }
 
 /**
- * Get the selected data from the DOM
- * @param {Selection} selectedData
- * @returns {Object}
+ * Analyze the task selected data
+ * @param {Object} taskSelectedData
+ * @return {Element|null}
  */
-function getSelectedData(selectedData) {
-  var pageURL = window.location.href;
-  var selectedText = selectedData.toString();
-  var anchorOffset = selectedData.anchorOffset;
-  var focusOffset = selectedData.focusOffset;
-  return {
-    startSelectPosition: Math.min(anchorOffset, focusOffset),
-    endSelectPosition: Math.max(anchorOffset, focusOffset),
-    selectedText: selectedText,
-    pageURL: pageURL,
-    nodePath: calculateNodePath(selectedData.focusNode.parentNode)
-  };
+function taskAnalysis(taskSelectedData) {
+    const nodePath = taskSelectedData ? taskSelectedData.nodePath : '';
+    return retrieveNodeFromPath(nodePath);
+}
+
+/**
+ * Scroll to an element by tag, class, and text content
+ * @param {string} path - The path to the element
+ * @return {boolean} - True if the element was found and scrolled to, false otherwise
+ */
+function scrollToNodePath(path) {
+    const node = retrieveNodeFromPath(path);
+    if (node && node.scrollIntoView) {
+        node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return true;
+    }
+    return false;
+}
+
+function hideContainersSpinner() {
+    const spinners = document.getElementsByClassName('doboard_task_widget-spinner_wrapper_for_containers');
+    if (spinners.length > 0) {
+        for (let i = 0; i < spinners.length ; i++) {
+            spinners[i].style.display = 'none';
+        }
+    }
+    const containerClassesToShow = ['doboard_task_widget-all_issues-container', 'doboard_task_widget-concrete_issues-container'];
+    for (let i = 0; i < containerClassesToShow.length ; i++) {
+        const containers = document.getElementsByClassName(containerClassesToShow[i]);
+        if (containers.length > 0) {
+            for (let i = 0; i < containers.length ; i++) {
+                containers[i].style.display = 'block';
+            }
+        }
+    }
+}
+
+function getAvatarData(authorDetails) {
+    console.log(authorDetails);
+    
+    let avatarStyle;
+    let avatarCSSClass;
+    let taskAuthorInitials = authorDetails.taskAuthorName && authorDetails.taskAuthorName != 'Anonymous' ? authorDetails.taskAuthorName.trim().charAt(0).toUpperCase() : null;
+    let hideAvatar = authorDetails.hasOwnProperty('userIsIssuer') && authorDetails.userIsIssuer === true;
+    let initialsClass = 'doboard_task_widget-avatar-initials';
+    if (authorDetails.taskAuthorAvatarImgSrc === null && taskAuthorInitials !== null) {
+        avatarStyle = 'display: flex;background-color: #f8de7e;justify-content: center;align-items: center;';
+        avatarCSSClass = 'doboard_task_widget-avatar_container';
+    }
+    if (authorDetails.taskAuthorAvatarImgSrc === null && taskAuthorInitials === null) {
+        avatarStyle = `background-image:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAMAAACahl6sAAAE9GlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgOS4wLWMwMDAgNzkuMTcxYzI3ZmFiLCAyMDIyLzA4LzE2LTIyOjM1OjQxICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjQuMCAoTWFjaW50b3NoKSIgeG1wOkNyZWF0ZURhdGU9IjIwMjQtMDQtMTBUMTk6MDg6MDkrMDU6MDAiIHhtcDpNb2RpZnlEYXRlPSIyMDI0LTA0LTEwVDE5OjIxOjA4KzA1OjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDI0LTA0LTEwVDE5OjIxOjA4KzA1OjAwIiBkYzpmb3JtYXQ9ImltYWdlL3BuZyIgcGhvdG9zaG9wOkNvbG9yTW9kZT0iMyIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDoxNWRjOWI0Yy04ZWVmLTRkNTEtYmE0MS1kOTkzZTZmNjNmMTIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MTVkYzliNGMtOGVlZi00ZDUxLWJhNDEtZDk5M2U2ZjYzZjEyIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6MTVkYzliNGMtOGVlZi00ZDUxLWJhNDEtZDk5M2U2ZjYzZjEyIj4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2VxPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDoxNWRjOWI0Yy04ZWVmLTRkNTEtYmE0MS1kOTkzZTZmNjNmMTIiIHN0RXZ0OndoZW49IjIwMjQtMDQtMTBUMTk6MDg6MDkrMDU6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyNC4wIChNYWNpbnRvc2gpIi8+IDwvcmRmOlNlcT4gPC94bXBNTTpIaXN0b3J5PiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PuPRTtsAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAL0UExURUdwTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAICAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKGw/wAAAAAAAAAAAAAAAAAAAAAAAAAAAKOy/6Sw/gAAAAAAAAAAAAAAAIKPz6Kw/6Cw/6Kx/6Gw/6Gw/6Gw/6Gv/qCw/6Gw/6i0/6Oy/67D/6Gw/6Gx/6ez/6u9/6Gw/6Kx/6i5/624/6Cy/wAAAJ6r/6Oy/6W1/qCv/4aR1LPE/4eU0o+d3qGw/6Sy/6Ku/6Cv/KGw/6Cu/4WT1KKr/5up9Q8RGhodK7jI/4mY1K27/6Cv/8PW/7LE/6Gw/7nL/1RchUVLbbnN/0pXfBQVHjY5U2Vwm2ZwnyMmNrDB/6e2/629/7XG/6Kw/6Kw/67A/629/3N+vKe3/77Q/52r7HmEtrPE/6Oz8RgaKbTF/7TG/xgaKnaCtsLV/6Sv/7TI/wCv/6Gw/wAAAKCv/6e2/73O/6a1/6Oz/6u7/7zN/6q5/7fJ/629/7PD/wAAAQwNE5+u/7DA/6S0/7bH/7XG/6Gx/6i4/yUoOQQFBwICA7HC/7nL/zM4UouY3RcaJK+//y4ySL7Q/ygsPx8iME9WfTA1TXJ8sp2s9VxkjoSQ0RESGl9ok5up9XR/t213rRQWHkRKbJKf53mEwUxSeKGv+qy8/5Ce4jk+WQkKDjxBYCouQpSh6lZfiEFHZVpijJ6t/GFqmWdxoT5DY4eU1mp0qXiDvHyHxZak5n2KxlFZg8LU/32Kv4mV2ZSj7FBYgJGe50VLbS7TJ5EAAACrdFJOUwAPCsvhFe/y+w0C/fc8LUGd9SWvHnW1BPOTw/7NCbtcyNpxsr+4WVKbIETkCOiij0d96tQGEhCmijeFGGxw0Gp6qZhKxmbeYCtNG9NMgKzX5iduYwXl2GVVAZNEVKrs9opx5j/ZFcMIER77LlsYnDAbbDlLDH3+/v2wIlDxy8E95PP9un2PvJ1Pv2VX9kmOqeG89a2m+efFg2aYq9fPqexM0cHR6vWeMdh9ztTtu0oAAA1/SURBVHja7FxnWBPZGs5SQoAAocMiJEjv0qQEpMhCgAVRUFFEaYq9d7f3vb333u99ZpIAafTQ24Jg13XtfV3b7t1d7/65cyaTBiFMkknbZ94f6DOZnG/eOd/56jmhUEiQIEGCBAkSJEiQIEGCBAkSJEiQIEGCBAkS1o6cUAeH0FVWT8OeBaNg2Vs3D6dlMIZlTlZNJAtwoNHB3xyrJmKLMAgqYYch/9haM49YBximp1AoKcicOMRaOxFfCsXX2omgqhVWUmL1qoUtdpr1L3YV87vOyh1igYxHgZU7RATZiGLRvL8NwRZiuRy+DTwcARFHckYsB6l+MOyXasUEUjwichM8C1bEBcBwQMWKAs+E3AiPQGsLTVwSy1fDcxGQ5FPmYjWhSmA4IwnWgjhGuI0V0HDxj1N/bhrdz49OV79GzXexcBrMF1XefFCCd7ULpyTV0TG1hONS7Z0QqjJTLzItmEZRsvwxVzOyXDWshVjXLEaF/J7kIgulESEPEO0S3FK0WLPoBDvsxkURFkhjTxj2dOURvgvd6xvhid0ctsfSeCRi9jXSFd/9rvkBsm+UWdZ0YGs80mO+O6qaDx5srlK9spKBrXpXC1rkaAoIh2Ro+GxXTX1d7ZbSho2vvLKxoXRLbV19zWY5fR+ZfbaYRe+PPk9M9VwSO9eXboLmYFPp+l9vQ2+ojkG/6m8RNGxkqzxvdgq4rf49DSTk2P5ePeCSmod+OcgCXD0b9R0BL826vKF2uxTSju3HPgBq6Yz6lBJz8/BCfUKhuhVdV1m6EAsUnaXfQRZ9MOp7oszLIwpV8lD1dKOyCcILbhNCBdXNCi+z1kjQWD1P7dqBV6UQfnC5/9lPyUeNhRnrLIGoVkSqXtpbK9WFB9Av4fsUbzDOCvMlKqFzeGzYCOkMLvSvf+aitsus/kNVr9bt5kKQPkz47/yDZj5/wkQDDJULx1/ViwdYKIK//BXEXmbJUaKAA4hR8WSNGyG90Tn8xzeBOzKHEUazj5Uqy0MKGYBOwWEwJcvMFLerhHuVkIH46FMwYq7JFQvNoQjkweUJRsCYplYukIBQlQtkA2QwOiWnboIowbQ8XgYvT5lxv94NEcDko8dg1OUmJVKo9u72bpISQITLE02CANSkKSF4dcq0tknKhYiYEtFXsImdiZ1aaLKbEBoIpPxbIKI3HY9q4LvYioVOFA+I2/u/dmToapMRWaQ6IVs3QYRByv8M1O1MxSNDzd4fI44HMiWjYGxTVe0iEVk+igirm0AiUGvPBDJ4vml4pDggstASlq9XdM4bbUQS4Q7PAE+bYppiNSJqTaDr2kyfGBp8Y4jQGYGE0rPI8MUmIVIOeh9YY639soRLKBGp4Js5VQCjqJVbYohq6+kzvpRQHhBX9AlafU10M2LNbmV2vHpbjVZ4hOAJQXSL24FMNOJOqHnZK41AwtctfYUqB3pheSaz5E8ionlArb03ZETQwkr6El9CabglxKhNRcjL9uim0T9AhBPhCkCC1aEQFZPgRphGJarMRTCDivzFwpNdnYTzgKChM4iAt34arJS5ItGDABrL8xQD+vnkZjiBfZZJ2B7eesgIED5ApuPmCYqrt4+7YqOBp6FZCpMlHyspMnwpuFKsUknbYgwivLbbiIjXwPhLwyMVDW2WIdF9uLxP6x4fLq9n5ioLabuMwQNqFX2MiPgCa2vFRsTL5yU5XE8a0fLmf0GOvXp5cbHsvzuNQgTi30dEfLNTWSnPKZBvMtBn3b+A9SrhNPVvhygTht3GISICqfvIb9SsZhr2MIwXdOWxBGvqMzizPgBvB9tIUmocIhLg2/t/ry6Wg71XuyW68cjFZmNOZrBuDXJZRm7zUeMQ6XqEiBg7unmWZA5mPnUq4aGdF9g2WoOHr0AiE9mSqTEOD0h8ZxCGzz5onLtobeE5fQztiEe/kKnpIyc7Ral5n9QoPDpFj5AAZYy7T4P0TPTB4nXqe1DnUcYg5LMEVMnqjEGEyx3/L8jbp4fqNC5dqg59+XC0Tztf5Jmj2Of+207iaUjH+eIvgISHw7UaxXsU4i59LQW9o9XseTMS1NeyXvKlvC0mmAXE6xl+dv8tMP4lYd+H8/T1wX4v2lIcRICdc9aSCbhhdjDzd72CcQLz3JYhft+X9wZkox8WdZbOF8OCBhNjYR5sMI7W03YR8g2K/aevdwm6eESE8i3j/K4jd6ewgTu+FHChhqp55K+ClfG3FoBO8ZoF4nq5n4UHJ06PXuP3ClsN4MJt7Rvii6+fvo0lU/DAvWfDyMtpmvecBojwFz41ALYhZC+YopQVyrm09598ckrCl7S16EWCJx4WdR++OzkoH2/s7rPhISTPkVbOK32xal1Na8MAx1YwJ2Y5TZGodNy4//l5sUAkFrbgN8lSnnBIIOq7/PDjMcVAgzdmugVdUi5ihX81v2xXXM0HPyQfx3e2wGtxgUr22zHxfOb6VbFgWCIW8lq1B+o8oVgiGG47debTb6YGlENMnr7eK+pDtIrb8O4OLYId6XiODeAnAlTMO5TWrnySwUvTVx4+vXy1TyIQiCRd4jZhH4/Ha2np7m5B/u0TCsVdkh6BQCK8evnJuSu3O1Tew2D/3VGxYBxdbFsqm7VKxUcEp2opUJLzwzcH1SoTA2cnb508/fjJmTunHiAvv+2aeHwc4cRr5Z668+jpxXMnb01eGlD7xs2Rc0euCbpagC9pqtuxkEh8qoVrsavj4Hd/8KNLg3M3wQ90XJrqn5yYmB4ZmZ643T811jGg4ab+KxfODwnGeUDpGtbXrKMseKoM32IH5jdYNyJOFErV/nd+/L3+DlgntJ8deT7zdZugpw31q6V1jVW45OEzvws7xPmweWfdaz+5MjLV0b4wh5tTt54/Hr06zu+5xgOGrmH3vuN45aAOEcfmLjRE4eiZ52/9/qFjb4xeOHfy3nQ/oknq+tY+0DHWP33v5LkLX53nSfiicWGLbM/pvh3N+EVwcIYosqAxzoDNklXbPjj0/i9/8XPo/NejZz7/5MLMxYsXZy48eXpm9M55qEXcyx/u7WrrQ7Rpe8OH6+trtoKUQAfjEoc3aJSF8XaGFpCb9zZWHnr3Z2//+W9/7+3p6e2VSIaA7eprObppY9OW2vX/rmzc26z7sCvRWgLOwpDWxEp3RluP79jfWHPgxIYTBw7U7N9xfGuz/oMtRxOrBAJSXfNCx1RXUXxYYlk0sOKDTq1SrByUZ0HHO/QqB6kU6CzkUIQrVqArjCaqZGoWKEum+hz6dZMXsVlZZj2Mbp/FMqSIPautwDTTwYjYiHi6oW0FzY0eU2Ipk0FMo0fWeguQj+Xuk5uRYioSKXtUW2/lRGwQ9EhMVgZ+MYzsDKNvxg/k5DBUziwHl3kQZjXU2tNJIWXF9r5GIsEuLgtRPbNsl0Cs1ZyzYcDOM5PJIdQC2HCYZWlr1I4nE75hAIs8s+Pj1I9BU1nxmVnRXgYunBS2y9rMeBZVbWh6knG2cMjhqSHdo8WxPP0T1y7fw7bR4Ue0nGzYe5avTfT3ZM16OzJ4GtkggteWXuTPcteUwNKphbZhaf5l3llF4cVuGa4eHlElbHtwDNyeXRLl4eGa4VYcXpTlXeafFmZbSNX0/LAfy78oHUy2cY096OnGoBGMy6rMEDua9sw8wNmZRqO7Ozi4u9NoNOcA7XfTKoLSs1zQti0wLSHG5JGhvpMcbAXMTLOl0mCD4Ey1TcvMUV1qYJMenGFEIos0bma1YWdELE5PC1oW567L87vHLQtKS88Nd4uywSmIMCz0omJTOS7FzKzE9Pz4cp9Q2+TgQruKJCr4ORFqUoVdYXCybahPeXx+emIWs9iFkxqLe+qJhs6q6+SbEsgGP/DCDkzxddJrMRoDoFQJ636AU6+f3PGCcZUT9fO87nqdsNPzR5BAKYdunN9OQoe2MRURR3djHUxEJ3sxxVREKNn/b+dsdhIGojBqoZRCY4QIgokSLUyCJSSQEONGFiILExZKoj4GT8Y7ynRouVBiMr93c09YsOrH7XSmZ4Z2rLxx1SnV+opv1ynvr8Wnp/1ayZw1PsXDsh9UFRtEvZB0bKkGfnkYm2iYj14EbJctXBWyYMCGI6b7tPxzwXavPReFGMg9XonJnr4FZ+exYr+QCnjqN1DMLSjPdjtob7hYh1Ox38ad/UJELptyG33ZtAcquZBluirGn2D0xaB+ma7ZLW0Xkufe7l+CU8mFlDO36uzuTmH6Y26kt1dVKCTPrUVim12VXLgqw3++6GOT8eck/eLtWrt7b7cQmDsaq+bCA3bzA17M9rMeJ4UYyT1t4pN/5p1dWtq5hU73Dva9E53u10ln1809O/xetTyvleyHQckToz786uWevzGFzWa2wvAjeWOq80Lq7nOP8YqqIGsbMz7VnbnPPWXFwGJPyFaSq6xxY84XH+aN+Mtl7nmNf+UaH/gPb7I6vWDwnMqas3ruvxMr+QmOCYNVyTVN3mGj9KNvsFiIIbS3TnYeHiTrnq7BYnEwZ75LuQGDxSI3WP76e6BvsFhAg/0eJQbED6sQ4waLeWkZNVjUzm7UYHGHX4MGi35DNGawWFgwWCwsGCwWVgyWIAiCIAiCIAiCIAiCIAiCIAgU/gAyRDCHjvicJQAAAABJRU5ErkJggg==');`;
+        avatarCSSClass = 'doboard_task_widget-avatar_container';
+        initialsClass += ' doboard_task_widget-hidden_element';
+    }
+    if (authorDetails.taskAuthorAvatarImgSrc !== null) {
+        avatarStyle = `background-image:url(\'${authorDetails.taskAuthorAvatarImgSrc}\');`;
+        avatarCSSClass = 'doboard_task_widget-avatar_container';
+        initialsClass = ' doboard_task_widget-hidden_element';
+    }
+    console.log(avatarStyle, avatarCSSClass, taskAuthorInitials, initialsClass, hideAvatar);
+    
+    return {
+        avatarStyle: avatarStyle,
+        avatarCSSClass: avatarCSSClass,
+        taskAuthorInitials: taskAuthorInitials,
+        initialsClass: initialsClass
+    }
+}
+
+/**
+ * Return first found updated task ID or false if no tasks were updated
+ * @param allTasksData
+ * @returns {string[]|false}
+ */
+function isAnyTaskUpdated(allTasksData) {
+    let result = false;
+
+    const updatedtasksIDS = [];
+
+    for (let i = 0; i < allTasksData.length; i++) {
+        let currentStateOfTask = allTasksData[i];
+        const issuerId = localStorage.getItem('spotfix_user_id');
+        if (
+            currentStateOfTask.taskId &&
+            currentStateOfTask.taskLastUpdate &&
+            currentStateOfTask.taskCreatorTaskUser === issuerId
+        ) {
+            result = storageCheckTaskUpdate(currentStateOfTask.taskId, currentStateOfTask.taskLastUpdate);
+            if (result) {
+                updatedtasksIDS.push(currentStateOfTask.taskId.toString());
+            }
+        }
+    }
+
+    return updatedtasksIDS.length === 0 ? false : updatedtasksIDS;
+}
+
+/**
+ * Check if any of the tasks has updates from site owner (not from the current user and not anonymous)
+ * @returns {Promise<boolean>}
+ */
+async function checkIfTasksHasSiteOwnerUpdates(allTasksData, params) {
+    const updatedTaskIDs = isAnyTaskUpdated(allTasksData);
+    let result = false;
+    if (!updatedTaskIDs) {
+        return false;
+    }
+    for (let i = 0; i < updatedTaskIDs.length; i++) {
+        const updatedTaskId = updatedTaskIDs[i];
+        if (typeof updatedTaskId === 'string') {
+            const updatedTaskData =  await getTaskFullDetails(params, updatedTaskId);
+            if (updatedTaskData.issueComments) {
+                const lastIndex = updatedTaskData.issueComments.length - 1;
+                const lastMessage = updatedTaskData.issueComments[lastIndex];
+                if (
+                    lastMessage.commentUserId !== localStorage.getItem('spotfix_user_id') &&
+                    lastMessage.commentAuthorName !== 'Anonymous'
+                ) {
+                    storageAddUnreadUpdateForTaskID(updatedTaskId);
+                    result = true;
+                }
+            }
+        }
+    }
+    return result;
+}
+
+/**
+ * Try to find selected image in selection.
+ * @param selection
+ * @returns {Node|*|null}
+ */
+function getSelectedImage(selection) {
+
+    if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+        return null;
+    }
+
+    const range = selection.getRangeAt(0);
+
+    // Is current end container IMG
+    if (range.startContainer === range.endContainer &&
+        range.startContainer.nodeType === Node.ELEMENT_NODE &&
+        range.startContainer.tagName === 'IMG') {
+        return range.startContainer;
+    }
+
+    // Get img in the range
+    const walker = document.createTreeWalker(
+        range.commonAncestorContainer,
+        NodeFilter.SHOW_ELEMENT,
+        {
+            acceptNode: function(node) {
+                return node.tagName === 'IMG' &&
+                isElementInRange(node, range) ?
+                    NodeFilter.FILTER_ACCEPT :
+                    NodeFilter.FILTER_REJECT;
+            }
+        }
+    );
+
+    let imgNode = walker.nextNode();
+    if (imgNode) {
+        return imgNode;
+    }
+
+    // start/end containers
+    const startElement = getElementFromNode(range.startContainer);
+    const endElement = getElementFromNode(range.endContainer);
+
+    // If selection starts on image
+    if (startElement && startElement.tagName === 'IMG' &&
+        isElementPartiallySelected(startElement, range)) {
+        return startElement;
+    }
+
+    if (endElement && endElement.tagName === 'IMG' &&
+        isElementPartiallySelected(endElement, range)) {
+        return endElement;
+    }
+
+    // 4. Get closest IMG
+    const nearbyElements = findNearbyElements(range);
+    for (const element of nearbyElements) {
+        if (element.tagName === 'IMG') {
+            return element;
+        }
+    }
+
+    return null;
+}
+
+
+function isElementInRange(element, range) {
+    const elementRange = document.createRange();
+    elementRange.selectNode(element);
+    return range.compareBoundaryPoints(Range.START_TO_START, elementRange) <= 0 &&
+        range.compareBoundaryPoints(Range.END_TO_END, elementRange) >= 0;
+}
+
+function isElementPartiallySelected(element, range) {
+    const elementRect = element.getBoundingClientRect();
+    const rangeRect = range.getBoundingClientRect();
+
+    //  bounding rectangles is crossed
+    return !(elementRect.right < rangeRect.left ||
+        elementRect.left > rangeRect.right ||
+        elementRect.bottom < rangeRect.top ||
+        elementRect.top > rangeRect.bottom);
+}
+
+function getElementFromNode(node) {
+    return node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+}
+
+/**
+ * Find nearby elements in the range.
+ * @param range
+ * @returns {*[]}
+ */
+function findNearbyElements(range) {
+    const elements = [];
+    const container = range.commonAncestorContainer;
+
+    // search elements
+    const previousElement = container.previousElementSibling;
+    const nextElement = container.nextElementSibling;
+
+    if (previousElement) {
+        elements.push(previousElement);
+    }
+    if (nextElement) {
+        elements.push(nextElement);
+    }
+
+    // Also check child container
+    if (container.nodeType === Node.ELEMENT_NODE) {
+        const children = container.children;
+        for (let i = 0; i < children.length; i++) {
+            if (isElementPartiallySelected(children[i], range)) {
+                elements.push(children[i]);
+            }
+        }
+    }
+
+    return elements;
+}
+
+
+/**
+ * Extracts selection data from DOM Selection object
+ * @param {Selection} selection - The DOM Selection object
+ * @returns {Object} Selection data with text, positions, URL and node path
+ */
+function getSelectedData(selection) {
+    const {
+        anchorOffset,
+        focusOffset,
+    } = selection;
+
+    let selectedText = selection.toString();
+    let isTagOfImageType = false;
+    const selectedImage = getSelectedImage(selection);
+    const pageURL = window.location.href;
+
+    if (!selectedText) {
+        if (selectedImage === null) {
+            return createEmptySelectionData(pageURL);
+        } else {
+            selectedText = `${selectedImage.tagName.toUpperCase()} ${selection.anchorNode.offsetHeight.toString()} * ${selection.anchorNode.offsetWidth.toString()}`
+            isTagOfImageType = selectedImage.tagName;
+        }
+    }
+
+    const isWholeTagSelected = anchorOffset === 0 &&
+        focusOffset === 0 &&
+        selectedText.length > 0;
+
+    const targetNode = determineTargetNode(
+        selection,
+        isWholeTagSelected,
+        isTagOfImageType,
+        selectedImage
+    );
+
+    return {
+        startSelectPosition: Math.min(anchorOffset, focusOffset),
+        endSelectPosition: Math.max(anchorOffset, focusOffset),
+        selectedText: selectedText,
+        pageURL: pageURL,
+        nodePath: calculateNodePath(targetNode),
+        isTagOfImageType: isTagOfImageType,
+        isWholeTagSelected: isWholeTagSelected
+    };
+}
+
+/**
+ * Determines the target node for path calculation
+ * @param {Selection} selection - DOM Selection object
+ * @param {boolean} isWholeTagSelected - is entire tag selected
+ * @param {boolean} isTagOfImageType - is tag of image type
+ * @param {Node|null} selectedImage - if predefined image node exists
+ * @returns {Node} Target DOM node
+ */
+function determineTargetNode(selection, isWholeTagSelected = false,  isTagOfImageType = false, selectedImage = null) {
+    const { focusNode, anchorNode } = selection;
+
+    if (isWholeTagSelected) {
+        return anchorNode.parentElement;
+    }
+
+    if (isTagOfImageType && selectedImage) {
+        return selectedImage;
+    }
+
+    return focusNode.nodeName !== '#text' ? focusNode : focusNode.parentNode;
 }
 
 /**
@@ -1055,23 +1786,24 @@ function getSelectedData(selectedData) {
  * @return {int[]}
  */
 function calculateNodePath(node) {
-  var path = [];
-  while (node) {
-    var index = 0;
-    var sibling = node.previousSibling;
-    while (sibling) {
-      if (sibling.nodeType === 1) {
-        index++;
-      }
-      sibling = sibling.previousSibling;
+    let path = [];
+    while (node) {
+        let index = 0;
+        let sibling = node.previousSibling;
+        while (sibling) {
+            if (sibling.nodeType === 1) {
+                index++;
+            }
+            sibling = sibling.previousSibling;
+        }
+        path.unshift(index);
+        node = node.parentNode;
     }
-    path.unshift(index);
-    node = node.parentNode;
-  }
 
-  // Hard fix - need to remove first element to work correctly
-  path.shift();
-  return path;
+    // Hard fix - need to remove first element to work correctly
+    path.shift();
+
+    return path;
 }
 
 /**
@@ -1081,43 +1813,171 @@ function calculateNodePath(node) {
  * @return {*|null}
  */
 function retrieveNodeFromPath(path) {
-  // @ToDo check if the path is correct
-  if (!path) {
-    return null;
-  }
-  var node = document;
-  for (var i = 0; i < path.length; i++) {
-    node = node.children[path[i]];
-    if (!node) {
-      return null;
+    // @ToDo check if the path is correct
+    if ( ! path ) {
+        return null;
     }
-  }
-  return node;
+
+    let node = document;
+    for (let i = 0; i < path.length; i++) {
+        node = node.children[path[i]];
+        if ( ! node ) {
+            return null;
+        }
+    }
+    return node;
 }
 
 /**
- * Analyze the task selected data
- * @param {Object} taskSelectedData
- * @return {Element|null}
+ * Creates empty selection data object
+ * @param {string} pageURL - Current page URL
+ * @returns {Object} Empty selection data
  */
-function taskAnalysis(taskSelectedData) {
-  var nodePath = taskSelectedData.nodePath;
-  return retrieveNodeFromPath(nodePath);
+function createEmptySelectionData(pageURL) {
+    return {
+        startSelectPosition: 0,
+        endSelectPosition: 0,
+        selectedText: '',
+        pageURL: pageURL,
+        nodePath: '',
+        isWholeTagSelected: false,
+        isTagOfImageType: false,
+    };
 }
 
 /**
- * Scroll to an element by tag, class, and text content
- * @param {string} path - The path to the element
- * @return {boolean} - True if the element was found and scrolled to, false otherwise
+ * Return bool if widget is closed in local storage
+ * @returns {boolean}
  */
-function scrollToNodePath(path) {
-  var node = retrieveNodeFromPath(path);
-  if (node && node.scrollIntoView) {
-    node.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center'
+function storageGetWidgetIsClosed() {
+    return localStorage.getItem('spotfix_widget_is_closed') === '1';
+}
+
+/**
+ * Return bool if widget closed state is defined in local storage
+ * @returns {boolean}
+ */
+function storageWidgetCloseIsSet() {
+    return localStorage.getItem('spotfix_widget_is_closed') !== null;
+}
+
+/**
+ * Save widget closed state
+ * @param visible
+ */
+function storageSetWidgetIsClosed(visible) {
+    localStorage.setItem('spotfix_widget_is_closed', visible ? '1' : '0');
+}
+
+/**
+ * Return bool if user is defined in local storage
+ * @returns {boolean}
+ */
+function storageGetUserIsDefined() {
+    return localStorage.getItem('spotfix_user_id') !== null;
+}
+
+/**
+ * Save data for updates check
+ * @param tasks
+ */
+function storageSaveTasksUpdateData(tasks) {
+    if (!tasks || !Array.isArray(tasks)) {
+        return;
+    }
+
+    const storedTasks = JSON.parse(localStorage.getItem('spotfix_task_updates') || '{}');
+
+    tasks.forEach(task => {
+        if (task.taskId && task.taskLastUpdate) {
+            storedTasks[task.taskId] = {
+                taskId: task.taskId,
+                taskLastUpdate: task.taskLastUpdate
+            };
+        }
     });
-    return true;
-  }
-  return false;
+
+    localStorage.setItem('spotfix_task_updates', JSON.stringify(storedTasks));
+}
+
+/**
+ * Check if a specific task has been updated since last check
+ * @param taskId
+ * @param currentLastUpdate
+ * @returns {boolean|null}
+ */
+function storageCheckTaskUpdate(taskId, currentLastUpdate) {
+    if (!taskId || !currentLastUpdate) {
+        return null;
+    }
+
+    const storedTasks = JSON.parse(localStorage.getItem('spotfix_task_updates') || '{}');
+    const storedTask = storedTasks[taskId];
+
+    if (!storedTask) {
+        return false;
+    }
+
+    const storedUpdate = new Date(storedTask.taskLastUpdate);
+    const currentUpdate = new Date(currentLastUpdate);
+    return currentUpdate > storedUpdate;
+}
+
+/**
+ * Add unread update for a specific task
+ * @param taskId
+ */
+function storageAddUnreadUpdateForTaskID(taskId) {
+    if (!taskId) {
+        return;
+    }
+
+    const storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+
+    if (!storedUnread.includes(taskId)) {
+        storedUnread.push(taskId);
+    }
+
+    localStorage.setItem('spotfix_unread_updates', JSON.stringify(storedUnread));
+}
+
+/**
+ * Remove unread update for a specific task
+ * @param taskId
+ */
+function storageRemoveUnreadUpdateForTaskID(taskId) {
+    if (!taskId) {
+        return;
+    }
+
+    let storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+
+    storedUnread = storedUnread.filter(id => id !== taskId);
+
+    localStorage.setItem('spotfix_unread_updates', JSON.stringify(storedUnread));
+}
+
+/**
+ * Check if there are any unread updates
+ * @returns {boolean}
+ */
+function storageTasksHasUnreadUpdates() {
+    const storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+
+    return storedUnread.length > 0;
+}
+
+/**
+ *  Check if a specific task has unread updates
+ * @param taskId
+ * @returns {boolean}
+ */
+function storageProvidedTaskHasUnreadUpdates(taskId) {
+    if (!taskId) {
+        return false;
+    }
+
+    const storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+
+    return storedUnread.includes(taskId.toString());
 }
