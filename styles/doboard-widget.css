@@ -243,7 +243,7 @@
 .doboard_task_widget-submit_button {
     height: 48px;
     width: 100%;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     color: #FFFFFF;
     background: #22A475;
     border: none;
@@ -284,6 +284,10 @@
     margin-bottom: 14px;
     display: grid;
     justify-items: center;
+}
+
+.doboard_task_widget-message-wrapper.hidden {
+    display: none;
 }
 
 .doboard_task_widget-error_message {
