@@ -136,13 +136,16 @@ function getSelectedData(selection) {
     const selectedImage = getSelectedImage(selection);
     const pageURL = window.location.href;
 
-    if (!selectedText) {
+    if ( ! selectedText ) {
         if (selectedImage === null) {
             return createEmptySelectionData(pageURL);
         } else {
             selectedText = `${selectedImage.tagName.toUpperCase()} ${selection.anchorNode.offsetHeight.toString()} * ${selection.anchorNode.offsetWidth.toString()}`
-            isTagOfImageType = selectedImage.tagName;
         }
+    }
+
+    if ( selectedImage ) {
+        isTagOfImageType = selectedImage.tagName;
     }
 
     const isWholeTagSelected = anchorOffset === 0 &&
