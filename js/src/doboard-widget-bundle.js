@@ -34,6 +34,7 @@ const createTaskDoboard = async (sessionId, taskDetails) => {
     formData.append('name', taskDetails.taskTitle);
     formData.append('comment', taskDetails.taskDescription);
     formData.append('meta', taskDetails.taskMeta);
+    formData.append('task_type', 'PUBLIC');
     const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/task_add', {
         method: 'POST',
         body: formData,
@@ -177,6 +178,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
     formData.append('session_id', sessionId);
     formData.append('project_id', projectId);
     formData.append('status', 'ACTIVE');
+    formData.append('task_type', 'PUBLIC');
     if ( userId ) {
         formData.append('user_id', userId);
     }
@@ -1518,7 +1520,7 @@ function getAvatarData(authorDetails) {
     if (authorDetails.taskAuthorAvatarImgSrc !== null) {
         avatarStyle = `background-image:url(\'${authorDetails.taskAuthorAvatarImgSrc}\');`;
         avatarCSSClass = 'doboard_task_widget-avatar_container';
-        initialsClass = ' doboard_task_widget-hidden_element';
+        initialsClass = 'doboard_task_widget-hidden_element';
     }
     console.log(avatarStyle, avatarCSSClass, taskAuthorInitials, initialsClass, hideAvatar);
     
