@@ -542,6 +542,8 @@ function registerUser(taskDetails) {
 
 	const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName, pageURL)
 		.then(response => {
+			console.log(response);
+			
 			if (response.accountExists) {
 				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container").innerText = 'Account already exists. Please, login usin your password.';
 				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container.hidden").classList.remove('hidden');
@@ -552,6 +554,9 @@ function registerUser(taskDetails) {
 				localStorage.setItem('spotfix_email', response.email);
 				userUpdate(projectToken, accountId);
 			} else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
+				if (response.operationMessage == 'Waiting for email confirmation') {
+					response.operationMessage = 'Waiting for an email confirmation. Please check your Inbox.';
+				}
 				if (typeof showMessageCallback === 'function') {
 					showMessageCallback(response.operationMessage, 'notice');
 				}
