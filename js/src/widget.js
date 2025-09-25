@@ -311,6 +311,7 @@ class CleanTalkWidgetDoboard {
                 ) {
                     const selectedData = getSelectedData(selection);
                     this.highlightElements([selectedData]);
+                    scrollToNodePath(selectedData.nodePath);
                 }
                 // bind creation events
                 this.bindCreateTaskEvents();
@@ -715,7 +716,6 @@ class CleanTalkWidgetDoboard {
      * @param {[object]} spotsToBeHighlighted
      */
     highlightElements(spotsToBeHighlighted) {
-
 
         if (spotsToBeHighlighted.length === 0) return;
 
