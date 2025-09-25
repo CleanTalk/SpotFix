@@ -34,6 +34,7 @@ const createTaskDoboard = async (sessionId, taskDetails) => {
     formData.append('name', taskDetails.taskTitle);
     formData.append('comment', taskDetails.taskDescription);
     formData.append('meta', taskDetails.taskMeta);
+    formData.append('task_type', 'PUBLIC');
     const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/task_add', {
         method: 'POST',
         body: formData,
@@ -177,6 +178,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
     formData.append('session_id', sessionId);
     formData.append('project_id', projectId);
     formData.append('status', 'ACTIVE');
+    formData.append('task_type', 'PUBLIC');
     if ( userId ) {
         formData.append('user_id', userId);
     }
@@ -540,6 +542,8 @@ function registerUser(taskDetails) {
 
 	const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName, pageURL)
 		.then(response => {
+			console.log(response);
+			
 			if (response.accountExists) {
 				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container").innerText = 'Account already exists. Please, login usin your password.';
 				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container.hidden").classList.remove('hidden');
@@ -550,6 +554,9 @@ function registerUser(taskDetails) {
 				localStorage.setItem('spotfix_email', response.email);
 				userUpdate(projectToken, accountId);
 			} else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
+				if (response.operationMessage == 'Waiting for email confirmation') {
+					response.operationMessage = 'Waiting for an email confirmation. Please check your Inbox.';
+				}
 				if (typeof showMessageCallback === 'function') {
 					showMessageCallback(response.operationMessage, 'notice');
 				}
