@@ -359,7 +359,7 @@ class CleanTalkWidgetDoboard {
                         if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
                             issuesQuantityOnPage++;
                             const taskFullDetails = await getTaskFullDetails(this.params, taskId);
-                            
+
                             const avatarData = getAvatarData(taskFullDetails);
                             const variables = {
                                 taskTitle: taskTitle || '',
@@ -592,9 +592,18 @@ class CleanTalkWidgetDoboard {
         const response = await fetch(`/spotfix/templates/${templateName}.html`);
         let template = await response.text();
 
+        const escapeHtml = (unsafe) => {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        };
+
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
-            template = template.replaceAll(placeholder, value);
+            template = template.replaceAll(placeholder, escapeHtml(String(value)));
         }
 
         return template;
