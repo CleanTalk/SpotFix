@@ -35,13 +35,10 @@
 
 .doboard_task_widget {
     position: fixed;
-    right: 0;
-    bottom: 0;
-    margin-bottom: 20px;
-    margin-right: 70px;
+    right: 50px;
     z-index: 9999;
     vertical-align: middle;
-
+    transition: top 0.1s;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
     will-change: transform;
