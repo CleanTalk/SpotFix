@@ -602,10 +602,13 @@ class CleanTalkWidgetDoboard {
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         };
-
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
-            template = template.replaceAll(placeholder, escapeHtml(String(value)));
+            let replacement = escapeHtml(String(value));
+            if ( templateName === 'concrete_issue_messages' || templateName === 'concrete_issue_day_content' ) {
+                replacement = value;
+            }
+            template = template.replaceAll(placeholder, replacement);
         }
 
         return template;
