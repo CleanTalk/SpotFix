@@ -213,16 +213,12 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
 }
 
 
-const getTaskCommentsDoboard = async (taskId, sessionId, accountId, projectToken, status = 'ACTIVE') => {
-    const response = await fetch(
-        DOBOARD_API_URL + '/' + accountId + '/comment_get' +
+const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, status = 'ACTIVE') => {
+    let url = DOBOARD_API_URL + '/' + accountId + '/comment_get' +
         '?session_id=' + sessionId +
         '&status=' + status +
-        '&task_id=' + taskId +
-        '&project_token=' + projectToken,
-    {
-        method: 'GET',
-    });
+        '&project_token=' + projectToken;
+    const response = await fetch(url, {method: 'GET',});
 
     if ( ! response.ok ) {
         throw new Error('Getting logs failed');
@@ -238,6 +234,7 @@ const getTaskCommentsDoboard = async (taskId, sessionId, accountId, projectToken
     }
     if ( responseBody.data.operation_status === 'SUCCESS' ) {
         return responseBody.data.comments.map(comment => ({
+            taskId: comment.task_id,
             commentId: comment.comment_id,
             userId: comment.user_id,
             comment: comment.comment,
@@ -321,6 +318,7 @@ const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, tim
     }
     throw new Error('Unknown error occurred during user update');
 }
+
 async function confirmUserEmail(emailConfirmationToken, params) {
 	const result = await userConfirmEmailDoboard(emailConfirmationToken);
 	// Save session data to LS
@@ -353,56 +351,63 @@ async function confirmUserEmail(emailConfirmationToken, params) {
 	return createdTask;
 }
 
-async function getTaskFullDetails(params, taskId) {
-	const sessionId = localStorage.getItem('spotfix_session_id');
-	const comments = await getTaskCommentsDoboard(taskId, sessionId, params.accountId, params.projectToken);
-	const users = await getUserDoboard(sessionId, params.projectToken, params.accountId);
+async function getTasksFullDetails(params, tasks) {
+    if (tasks.length > 0) {
+        const sessionId = localStorage.getItem('spotfix_session_id');
+        const comments = await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken);
+        const users = await getUserDoboard(sessionId, params.projectToken, params.accountId);
 
-	// Last comment
-	let lastComment = comments.length > 0 ? comments[0] : null;
-	// Author of the last comment
-	let author = null;
-	if (lastComment && users && users.length > 0) {
-		author = users.find(u => String(u.user_id) === String(lastComment.userId));
-	}
-	// Format date
-	let date = '', time = '';
-	if (lastComment) {
-		const dt = formatDate(lastComment.commentDate);
-		date = dt.date;
-		time = dt.time;
-	}
- 	// Get the avatar and the name through separate functions
- 	let avatarSrc = getAvatarSrc(author);
- 	let authorName = getAuthorName(author);
+        return {
+            comments: comments,
+            users: users,
+        }
 
-	return {
-		taskId: taskId,
-		taskAuthorAvatarImgSrc: avatarSrc,
-		taskAuthorName: authorName,
-		lastMessageText: lastComment ? lastComment.commentBody : 'No messages yet',
-		lastMessageTime: time,
-		issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
- 		issueComments: comments
-            .sort((a, b) => {
-                return new Date(a.commentDate) - new Date(b.commentDate);
-            })
-            .map(comment => {
- 			const { date, time } = formatDate(comment.commentDate);
- 			let author = null;
- 			if (users && users.length > 0) {
- 				author = users.find(u => String(u.user_id) === String(comment.userId));
- 			}
- 			return {
- 				commentAuthorAvatarSrc: getAvatarSrc(author),
- 				commentAuthorName: getAuthorName(author),
- 				commentBody: comment.commentBody,
- 				commentDate: date,
- 				commentTime: time,
- 				commentUserId: comment.userId || 'Unknown User',
- 			};
- 		})
-	};
+        // Last comment
+        let lastComment = comments.length > 0 ? comments[0] : null;
+        // Author of the last comment
+        let author = null;
+        if (lastComment && users && users.length > 0) {
+            author = users.find(u => String(u.user_id) === String(lastComment.userId));
+        }
+        // Format date
+        let date = '', time = '';
+        if (lastComment) {
+            const dt = formatDate(lastComment.commentDate);
+            date = dt.date;
+            time = dt.time;
+        }
+        // Get the avatar and the name through separate functions
+        let avatarSrc = getAvatarSrc(author);
+        let authorName = getAuthorName(author);
+
+        return {
+            taskId: taskId,
+            taskAuthorAvatarImgSrc: avatarSrc,
+            taskAuthorName: authorName,
+            lastMessageText: lastComment ? lastComment.commentBody : 'No messages yet',
+            lastMessageTime: time,
+            issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
+            issueComments: comments
+                .sort((a, b) => {
+                    return new Date(a.commentDate) - new Date(b.commentDate);
+                })
+                .map(comment => {
+                    const {date, time} = formatDate(comment.commentDate);
+                    let author = null;
+                    if (users && users.length > 0) {
+                        author = users.find(u => String(u.user_id) === String(comment.userId));
+                    }
+                    return {
+                        commentAuthorAvatarSrc: getAvatarSrc(author),
+                        commentAuthorName: getAuthorName(author),
+                        commentBody: comment.commentBody,
+                        commentDate: date,
+                        commentTime: time,
+                        commentUserId: comment.userId || 'Unknown User',
+                    };
+                })
+        };
+    }
 }
 
 async function handleCreateTask(sessionId, taskDetails) {
@@ -543,7 +548,7 @@ function registerUser(taskDetails) {
 	const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName, pageURL)
 		.then(response => {
 			console.log(response);
-			
+
 			if (response.accountExists) {
 				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container").innerText = 'Account already exists. Please, login usin your password.';
 				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container.hidden").classList.remove('hidden');
@@ -858,6 +863,7 @@ class CleanTalkWidgetDoboard {
 
         let templateName = '';
         let variables = {};
+        let tasksFullDetails;
 
         switch (type) {
             case 'create_issue':
@@ -935,6 +941,7 @@ class CleanTalkWidgetDoboard {
                 this.removeHighlights();
                 let issuesQuantityOnPage = 0;
                 let tasks = this.allTasksData;
+                tasksFullDetails = await getTasksFullDetails(this.params, tasks);
                 let spotsToBeHighlighted = [];
                 if (tasks.length > 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
@@ -964,7 +971,8 @@ class CleanTalkWidgetDoboard {
 
                         if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
                             issuesQuantityOnPage++;
-                            const taskFullDetails = await getTaskFullDetails(this.params, taskId);
+
+                            const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId)
 
                             const avatarData = getAvatarData(taskFullDetails);
                             const variables = {
@@ -1008,7 +1016,8 @@ class CleanTalkWidgetDoboard {
 
             case 'concrete_issue':
 
-                const taskDetails = await getTaskFullDetails(this.params, this.currentActiveTaskId);
+                tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData);
+                const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId);
 
                 // Update issue title in the interface
                 const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
@@ -1573,6 +1582,61 @@ function hideContainersSpinner() {
             }
         }
     }
+}
+
+function getTaskFullDetails(tasksDetails, taskId) {
+    console.log(tasksDetails);
+    const comments = tasksDetails.comments.filter(comment => {
+        return comment.taskId === taskId
+    });
+    console.log(taskId);
+    console.log(comments);
+    const users = tasksDetails.users;
+    // Last comment
+    let lastComment = comments.length > 0 ? comments[0] : null;
+    // Author of the last comment
+    let author = null;
+    if (lastComment && users && users.length > 0) {
+        author = users.find(u => String(u.user_id) === String(lastComment.userId));
+    }
+    // Format date
+    let date = '', time = '';
+    if (lastComment) {
+        const dt = formatDate(lastComment.commentDate);
+        date = dt.date;
+        time = dt.time;
+    }
+    // Get the avatar and the name through separate functions
+    let avatarSrc = getAvatarSrc(author);
+    let authorName = getAuthorName(author);
+
+    return {
+        taskId: taskId,
+        taskAuthorAvatarImgSrc: avatarSrc,
+        taskAuthorName: authorName,
+        lastMessageText: lastComment ? lastComment.commentBody : 'No messages yet',
+        lastMessageTime: time,
+        issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
+        issueComments: comments
+            .sort((a, b) => {
+                return new Date(a.commentDate) - new Date(b.commentDate);
+            })
+            .map(comment => {
+                const {date, time} = formatDate(comment.commentDate);
+                let author = null;
+                if (users && users.length > 0) {
+                    author = users.find(u => String(u.user_id) === String(comment.userId));
+                }
+                return {
+                    commentAuthorAvatarSrc: getAvatarSrc(author),
+                    commentAuthorName: getAuthorName(author),
+                    commentBody: comment.commentBody,
+                    commentDate: date,
+                    commentTime: time,
+                    commentUserId: comment.userId || 'Unknown User',
+                };
+            })
+    };
 }
 
 function getAvatarData(authorDetails) {
