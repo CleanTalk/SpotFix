@@ -827,7 +827,7 @@ class CleanTalkWidgetDoboard {
             messageWrap.classList.remove('hidden');
             messageDiv.classList.remove('doboard_task_widget-notice_message', 'doboard_task_widget-error_message');
             if (type === 'notice') {
-                titleSpan.innerText = 'Notice';
+                titleSpan.innerText = '';
                 messageWrap.classList.add('doboard_task_widget-notice_message');
                 messageDiv.style.color = '#2a5db0';
             } else {
