@@ -854,6 +854,7 @@ class CleanTalkWidgetDoboard {
         const widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
         widgetContainer.className = 'doboard_task_widget';
         widgetContainer.innerHTML = '';
+        widgetContainer.removeAttribute('style');
 
         let templateName = '';
         let variables = {};
@@ -915,6 +916,7 @@ class CleanTalkWidgetDoboard {
                 ) {
                     const selectedData = getSelectedData(selection);
                     this.highlightElements([selectedData]);
+                    scrollToNodePath(selectedData.nodePath);
                 }
                 // bind creation events
                 this.bindCreateTaskEvents();
@@ -963,7 +965,7 @@ class CleanTalkWidgetDoboard {
                         if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
                             issuesQuantityOnPage++;
                             const taskFullDetails = await getTaskFullDetails(this.params, taskId);
-                            
+
                             const avatarData = getAvatarData(taskFullDetails);
                             const variables = {
                                 taskTitle: taskTitle || '',
@@ -1176,6 +1178,7 @@ class CleanTalkWidgetDoboard {
                 if (taskHighlightData) {
                     this.removeHighlights();
                     this.highlightElements([taskHighlightData])
+                    this.positionWidgetContainer();
                 }
 
                 hideContainersSpinner(false);
@@ -1196,9 +1199,21 @@ class CleanTalkWidgetDoboard {
         const response = await fetch(`/spotfix/templates/${templateName}.html`);
         let template = await response.text();
 
+        const escapeHtml = (unsafe) => {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        };
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
-            template = template.replaceAll(placeholder, value);
+            let replacement = escapeHtml(String(value));
+            if ( templateName === 'concrete_issue_messages' || templateName === 'concrete_issue_day_content' ) {
+                replacement = value;
+            }
+            template = template.replaceAll(placeholder, replacement);
         }
 
         return template;
@@ -1311,7 +1326,6 @@ class CleanTalkWidgetDoboard {
      */
     highlightElements(spotsToBeHighlighted) {
 
-
         if (spotsToBeHighlighted.length === 0) return;
 
         const elementsMap = new Map();
@@ -1402,6 +1416,9 @@ class CleanTalkWidgetDoboard {
                 this.closest('.doboard_task_widget-login').classList.toggle('active');
             });
         }
+
+        window.addEventListener('scroll', this.handleScroll.bind(this));
+        window.addEventListener('resize', this.handleResize.bind(this));
     }
 
     registrationShowMessage(messageText, type = 'error') {
@@ -1423,6 +1440,59 @@ class CleanTalkWidgetDoboard {
                 messageDiv.style.color = 'red';
             }
         }
+    }
+
+    positionWidgetContainer() {
+        const selection = document.querySelector('.doboard_task_widget-text_selection');
+        const widget = document.querySelector('.doboard_task_widget')
+        const widgetCreateIssue = document.querySelector('.doboard_task_widget-content.doboard_task_widget-create_issue')
+        const widgetConcreteIssue = document.querySelector('.doboard_task_widget-concrete_issues-container')
+        if ( ! ( ( widgetCreateIssue || widgetConcreteIssue ) && selection ) ) {
+            // Skip if the widget is closed or highlight not exist
+            return;
+        }
+
+        const scrollY = window.scrollY;
+        const viewportHeight = window.innerHeight;
+
+        const selectionAbsoluteTop = selection.offsetTop;
+
+        const widgetHeight = widget.offsetHeight;
+
+        let top;
+
+        // Check selection position
+        if (selectionAbsoluteTop - scrollY < 0) {
+            // 1) The selection is above the viewport - stuck the widget on the top
+            top = 10;
+        } else if (selectionAbsoluteTop - scrollY > viewportHeight) {
+            // 2) The selection is below the viewport - stuck the widget on the bottom
+            top = viewportHeight - widgetHeight - 10;
+        } else {
+            // 3) The selection is on viewport - the widget aligned against the selection
+            top = selectionAbsoluteTop - scrollY
+            if ( selectionAbsoluteTop - scrollY > viewportHeight - widgetHeight ) {
+                // 3.1) The selection is on viewport but is below than widget height - stuck the widget on the bottom
+                top = viewportHeight - widgetHeight - 10;
+            }
+        }
+
+        widget.style.top = `${top}px`;
+        widget.style.bottom = 'auto';
+    }
+
+    handleScroll() {
+        clearTimeout(this.scrollTimeout);
+        this.scrollTimeout = setTimeout(() => {
+            this.positionWidgetContainer();
+        }, 10);
+    }
+
+    handleResize() {
+        clearTimeout(this.resizeTimeout);
+        this.resizeTimeout = setTimeout(() => {
+            this.positionWidgetContainer();
+        }, 100);
     }
 }
 
