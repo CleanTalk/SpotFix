@@ -254,6 +254,7 @@ class CleanTalkWidgetDoboard {
 
         let templateName = '';
         let variables = {};
+        let tasksFullDetails;
 
         switch (type) {
             case 'create_issue':
@@ -331,6 +332,7 @@ class CleanTalkWidgetDoboard {
                 this.removeHighlights();
                 let issuesQuantityOnPage = 0;
                 let tasks = this.allTasksData;
+                tasksFullDetails = await getTasksFullDetails(this.params, tasks);
                 let spotsToBeHighlighted = [];
                 if (tasks.length > 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
@@ -360,7 +362,8 @@ class CleanTalkWidgetDoboard {
 
                         if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
                             issuesQuantityOnPage++;
-                            const taskFullDetails = await getTaskFullDetails(this.params, taskId);
+
+                            const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId)
 
                             const avatarData = getAvatarData(taskFullDetails);
                             const variables = {
@@ -404,7 +407,8 @@ class CleanTalkWidgetDoboard {
 
             case 'concrete_issue':
 
-                const taskDetails = await getTaskFullDetails(this.params, this.currentActiveTaskId);
+                tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData);
+                const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId);
 
                 // Update issue title in the interface
                 const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');

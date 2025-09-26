@@ -213,16 +213,12 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
 }
 
 
-const getTaskCommentsDoboard = async (taskId, sessionId, accountId, projectToken, status = 'ACTIVE') => {
-    const response = await fetch(
-        DOBOARD_API_URL + '/' + accountId + '/comment_get' +
+const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, status = 'ACTIVE') => {
+    let url = DOBOARD_API_URL + '/' + accountId + '/comment_get' +
         '?session_id=' + sessionId +
         '&status=' + status +
-        '&task_id=' + taskId +
-        '&project_token=' + projectToken,
-    {
-        method: 'GET',
-    });
+        '&project_token=' + projectToken;
+    const response = await fetch(url, {method: 'GET',});
 
     if ( ! response.ok ) {
         throw new Error('Getting logs failed');
@@ -238,6 +234,7 @@ const getTaskCommentsDoboard = async (taskId, sessionId, accountId, projectToken
     }
     if ( responseBody.data.operation_status === 'SUCCESS' ) {
         return responseBody.data.comments.map(comment => ({
+            taskId: comment.task_id,
             commentId: comment.comment_id,
             userId: comment.user_id,
             comment: comment.comment,
