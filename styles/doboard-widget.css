@@ -36,6 +36,7 @@
 .doboard_task_widget {
     position: fixed;
     right: 50px;
+    bottom: 20px;
     z-index: 9999;
     vertical-align: middle;
     transition: top 0.1s;

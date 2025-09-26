@@ -250,6 +250,7 @@ class CleanTalkWidgetDoboard {
         const widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
         widgetContainer.className = 'doboard_task_widget';
         widgetContainer.innerHTML = '';
+        widgetContainer.removeAttribute('style');
 
         let templateName = '';
         let variables = {};
@@ -840,8 +841,9 @@ class CleanTalkWidgetDoboard {
     positionWidgetContainer() {
         const selection = document.querySelector('.doboard_task_widget-text_selection');
         const widget = document.querySelector('.doboard_task_widget')
-        const widgetInner = document.querySelector('.doboard_task_widget-container')
-        if ( ! selection || ! widgetInner ) {
+        const widgetCreateIssue = document.querySelector('.doboard_task_widget-content.doboard_task_widget-create_issue')
+        const widgetConcreteIssue = document.querySelector('.doboard_task_widget-concrete_issues-container')
+        if ( ! ( ( widgetCreateIssue || widgetConcreteIssue ) && selection ) ) {
             // Skip if the widget is closed or highlight not exist
             return;
         }
@@ -872,6 +874,7 @@ class CleanTalkWidgetDoboard {
         }
 
         widget.style.top = `${top}px`;
+        widget.style.bottom = 'auto';
     }
 
     handleScroll() {
