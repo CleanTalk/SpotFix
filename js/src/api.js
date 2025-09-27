@@ -1,5 +1,29 @@
 const DOBOARD_API_URL = 'https://api-next.doboard.com';
 
+const userConfirmEmailDoboard = async (emailConfirmationToken) => {
+    const response = await fetch(
+        `${DOBOARD_API_URL}/user_confirm_email?email_confirmation_token=${encodeURIComponent(emailConfirmationToken)}`,
+        { method: 'GET' }
+    );
+    if (!response.ok) {
+        throw new Error('Email confirmation failed');
+    }
+    const responseBody = await response.json();
+    if (!responseBody || !responseBody.data) {
+        throw new Error('Invalid response from server');
+    }
+    if (responseBody.data.operation_status !== 'CONFIRMED') {
+        throw new Error('Email not confirmed');
+    }
+    return {
+        sessionId: responseBody.data.session_id,
+        userId: responseBody.data.user_id,
+        email: responseBody.data.email,
+        accounts: responseBody.data.accounts,
+        operationStatus: responseBody.data.operation_status
+    };
+};
+
 const createTaskDoboard = async (sessionId, taskDetails) => {
     const accountId = taskDetails.accountId;
     const formData = new FormData();
@@ -10,6 +34,7 @@ const createTaskDoboard = async (sessionId, taskDetails) => {
     formData.append('name', taskDetails.taskTitle);
     formData.append('comment', taskDetails.taskDescription);
     formData.append('meta', taskDetails.taskMeta);
+    formData.append('task_type', 'PUBLIC');
     const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/task_add', {
         method: 'POST',
         body: formData,
@@ -69,14 +94,16 @@ const createTaskCommentDoboard = async (accountId, sessionId, taskId, comment, p
     throw new Error('Unknown error occurred during creating task comment');
 };
 
-const registerUserDoboard = async (projectToken, accountId, email, nickname) => {
+const registerUserDoboard = async (projectToken, accountId, email, nickname, pageURL) => {
     const formData = new FormData();
     formData.append('project_token', projectToken);
     formData.append('account_id', accountId);
+    formData.append('confirmation_url', pageURL);
     if (email && nickname) {
         formData.append('email', email);
-        formData.append('nickname', nickname);
+        formData.append('name', nickname);
     }
+
     const response = await fetch(DOBOARD_API_URL + '/user_registration', {
         method: 'POST',
         body: formData,
@@ -95,21 +122,21 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname) => 
         throw new Error(responseBody.data.operation_message);
     }
     if ( responseBody.data.operation_status === 'SUCCESS' ) {
-        if (responseBody.data.user_email_confirmed === 1) {
-            return {
-                accountExists: true
-            }
-        }
-        return {
+        const result = {
             sessionId: responseBody.data.session_id,
             userId: responseBody.data.user_id,
-            email: responseBody.data.email
-        }
+            email: responseBody.data.email,
+            accountExists: responseBody.data.user_email_confirmed === 1 ? true : false,
+            operationMessage: responseBody.data.operation_message,
+            operationStatus: responseBody.data.operation_status,
+            userEmailConfirmed: responseBody.data.user_email_confirmed,
+        };
+        return result;
     }
     throw new Error('Unknown error occurred during registration');
 };
 
-const loginUser = async (email, password) => {
+const loginUserDoboard = async (email, password) => {
     const formData = new FormData();
     formData.append('email', email);
     formData.append('password', password);
@@ -135,7 +162,11 @@ const loginUser = async (email, password) => {
         return {
             sessionId: responseBody.data.session_id,
             userId: responseBody.data.user_id,
-            email: email
+            email: responseBody.data.email,
+            accountExists: responseBody.data.user_email_confirmed === 1 ? true : false,
+            operationMessage: responseBody.data.operation_message,
+            operationStatus: responseBody.data.operation_status,
+            userEmailConfirmed: responseBody.data.user_email_confirmed,
         }
     }
     throw new Error('Unknown error occurred during registration');
@@ -147,6 +178,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
     formData.append('session_id', sessionId);
     formData.append('project_id', projectId);
     formData.append('status', 'ACTIVE');
+    formData.append('task_type', 'PUBLIC');
     if ( userId ) {
         formData.append('user_id', userId);
     }
@@ -181,16 +213,12 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
 }
 
 
-const getTaskCommentsDoboard = async (taskId, sessionId, accountId, projectToken, status = 'ACTIVE') => {
-    const response = await fetch(
-        DOBOARD_API_URL + '/' + accountId + '/comment_get' +
+const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, status = 'ACTIVE') => {
+    let url = DOBOARD_API_URL + '/' + accountId + '/comment_get' +
         '?session_id=' + sessionId +
         '&status=' + status +
-        '&task_id=' + taskId +
-        '&project_token=' + projectToken,
-    {
-        method: 'GET',
-    });
+        '&project_token=' + projectToken;
+    const response = await fetch(url, {method: 'GET',});
 
     if ( ! response.ok ) {
         throw new Error('Getting logs failed');
@@ -206,6 +234,7 @@ const getTaskCommentsDoboard = async (taskId, sessionId, accountId, projectToken
     }
     if ( responseBody.data.operation_status === 'SUCCESS' ) {
         return responseBody.data.comments.map(comment => ({
+            taskId: comment.task_id,
             commentId: comment.comment_id,
             userId: comment.user_id,
             comment: comment.comment,

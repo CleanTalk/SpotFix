@@ -1,53 +1,92 @@
-async function getTaskFullDetails(params, taskId) {
-	const sessionId = localStorage.getItem('spotfix_session_id');
-	const comments = await getTaskCommentsDoboard(taskId, sessionId, params.accountId, params.projectToken);
-	const users = await getUserDoboard(sessionId, params.projectToken, params.accountId);
+async function confirmUserEmail(emailConfirmationToken, params) {
+	const result = await userConfirmEmailDoboard(emailConfirmationToken);
+	// Save session data to LS
+	localStorage.setItem('spotfix_email', result.email);
+	localStorage.setItem('spotfix_session_id', result.sessionId);
+	localStorage.setItem('spotfix_user_id', result.userId);
 
-	// Last comment
-	let lastComment = comments.length > 0 ? comments[0] : null;
-	// Author of the last comment
-	let author = null;
-	if (lastComment && users && users.length > 0) {
-		author = users.find(u => String(u.user_id) === String(lastComment.userId));
-	}
-	// Format date
-	let date = '', time = '';
-	if (lastComment) {
-		const dt = formatDate(lastComment.commentDate);
-		date = dt.date;
-		time = dt.time;
-	}
- 	// Get the avatar and the name through separate functions
- 	let avatarSrc = getAvatarSrc(author);
- 	let authorName = getAuthorName(author);
+	// Get pending task from LS
+	const pendingTaskRaw = localStorage.getItem('spotfix_pending_task');
+	if (!pendingTaskRaw) throw new Error('No pending task data');
+	const pendingTask = JSON.parse(pendingTaskRaw);
 
-	return {
-		taskId: taskId,
-		taskAuthorAvatarImgSrc: avatarSrc,
-		taskAuthorName: authorName,
-		lastMessageText: lastComment ? lastComment.commentBody : 'No messages yet',
-		lastMessageTime: time,
-		issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
- 		issueComments: comments
-            .sort((a, b) => {
-                return new Date(a.commentDate) - new Date(b.commentDate);
-            })
-            .map(comment => {
- 			const { date, time } = formatDate(comment.commentDate);
- 			let author = null;
- 			if (users && users.length > 0) {
- 				author = users.find(u => String(u.user_id) === String(comment.userId));
- 			}
- 			return {
- 				commentAuthorAvatarSrc: getAvatarSrc(author),
- 				commentAuthorName: getAuthorName(author),
- 				commentBody: comment.commentBody,
- 				commentDate: date,
- 				commentTime: time,
- 				commentUserId: comment.userId || 'Unknown User',
- 			};
- 		})
+	// Form taskDetails for task creation
+	const taskDetails = {
+		taskTitle: pendingTask.selectedText || 'New Task',
+		taskDescription: pendingTask.description || '',
+		selectedData: pendingTask,
+		projectToken: params.projectToken,
+		projectId: params.projectId,
+		accountId: params.accountId,
+		taskMeta: JSON.stringify(pendingTask)
 	};
+
+	// Create task
+	const createdTask = await handleCreateTask(result.sessionId, taskDetails);
+	// Clear pending task
+	localStorage.removeItem('spotfix_pending_task');
+
+	// Return created task
+	return createdTask;
+}
+
+async function getTasksFullDetails(params, tasks) {
+    if (tasks.length > 0) {
+        const sessionId = localStorage.getItem('spotfix_session_id');
+        const comments = await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken);
+        const users = await getUserDoboard(sessionId, params.projectToken, params.accountId);
+
+        return {
+            comments: comments,
+            users: users,
+        }
+
+        // Last comment
+        let lastComment = comments.length > 0 ? comments[0] : null;
+        // Author of the last comment
+        let author = null;
+        if (lastComment && users && users.length > 0) {
+            author = users.find(u => String(u.user_id) === String(lastComment.userId));
+        }
+        // Format date
+        let date = '', time = '';
+        if (lastComment) {
+            const dt = formatDate(lastComment.commentDate);
+            date = dt.date;
+            time = dt.time;
+        }
+        // Get the avatar and the name through separate functions
+        let avatarSrc = getAvatarSrc(author);
+        let authorName = getAuthorName(author);
+
+        return {
+            taskId: taskId,
+            taskAuthorAvatarImgSrc: avatarSrc,
+            taskAuthorName: authorName,
+            lastMessageText: lastComment ? lastComment.commentBody : 'No messages yet',
+            lastMessageTime: time,
+            issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
+            issueComments: comments
+                .sort((a, b) => {
+                    return new Date(a.commentDate) - new Date(b.commentDate);
+                })
+                .map(comment => {
+                    const {date, time} = formatDate(comment.commentDate);
+                    let author = null;
+                    if (users && users.length > 0) {
+                        author = users.find(u => String(u.user_id) === String(comment.userId));
+                    }
+                    return {
+                        commentAuthorAvatarSrc: getAvatarSrc(author),
+                        commentAuthorName: getAuthorName(author),
+                        commentBody: comment.commentBody,
+                        commentDate: date,
+                        commentTime: time,
+                        commentUserId: comment.userId || 'Unknown User',
+                    };
+                })
+        };
+    }
 }
 
 async function handleCreateTask(sessionId, taskDetails) {
@@ -183,9 +222,12 @@ function registerUser(taskDetails) {
 	const userName = taskDetails.userName;
 	const projectToken = taskDetails.projectToken;
 	const accountId = taskDetails.accountId;
+	const pageURL = taskDetails.selectedData.pageURL ? taskDetails.selectedData.pageURL : window.location.href;
 
-	const resultRegisterUser = registerUserDoboard(projectToken, accountId, userEmail, userName)
+	const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName, pageURL)
 		.then(response => {
+			console.log(response);
+
 			if (response.accountExists) {
 				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container").innerText = 'Account already exists. Please, login usin your password.';
 				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container.hidden").classList.remove('hidden');
@@ -195,6 +237,13 @@ function registerUser(taskDetails) {
 				localStorage.setItem('spotfix_user_id', response.userId);
 				localStorage.setItem('spotfix_email', response.email);
 				userUpdate(projectToken, accountId);
+			} else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
+				if (response.operationMessage == 'Waiting for email confirmation') {
+					response.operationMessage = 'Waiting for an email confirmation. Please check your Inbox.';
+				}
+				if (typeof showMessageCallback === 'function') {
+					showMessageCallback(response.operationMessage, 'notice');
+				}
 			} else {
 				throw new Error('Session ID not found in response');
 			}
@@ -204,6 +253,29 @@ function registerUser(taskDetails) {
 		});
 
 		return resultRegisterUser;
+}
+
+function loginUser(taskDetails) {
+	const userEmail = taskDetails.userEmail;
+	const userPassword = taskDetails.userPassword;
+
+	return (showMessageCallback) => loginUserDoboard(userEmail, userPassword)
+		.then(response => {
+			if (response.sessionId) {
+				localStorage.setItem('spotfix_session_id', response.sessionId);
+				localStorage.setItem('spotfix_user_id', response.userId);
+				localStorage.setItem('spotfix_email', response.email);
+			}  else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
+				if (typeof showMessageCallback === 'function') {
+					showMessageCallback(response.operationMessage, 'notice');
+				}
+			} else {
+				throw new Error('Session ID not found in response');
+			}
+		})
+		.catch(error => {
+			throw error;
+		});
 }
 
 function userUpdate(projectToken, accountId) {
