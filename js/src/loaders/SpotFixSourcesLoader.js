@@ -1,7 +1,12 @@
-class SourcesLoader {
+class SpotFixSourcesLoader {
 
     constructor() {
         this.loadAll();
+    }
+
+    getCSSCode() {
+        // global gulp wrapper var
+        return spotFixCSS;
     }
 
     loadAll() {
@@ -30,7 +35,7 @@ class SourcesLoader {
     loadCSS() {
         const style = document.createElement('style');
         style.setAttribute('id', 'spotfix_css');
-        style.textContent = spotfixCSS;
+        style.textContent = this.getCSSCode();
         document.head.appendChild(style);
     }
 }

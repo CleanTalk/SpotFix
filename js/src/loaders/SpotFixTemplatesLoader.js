@@ -1,30 +1,26 @@
-class Templater {
+class SpotFixTemplatesLoader {
 
-    static loadTemplate(templateName, variables) {
+    static getTemplateCode(templateName) {
         const templateMethod = this[templateName];
 
         if (typeof templateMethod !== 'function') {
             throw new Error(`Template method '${templateName}' not found`);
         }
 
-        let template = templateMethod.call(this);
-
-        for (const [key, value] of Object.entries(variables)) {
-            const placeholder = `{{${key}}}`;
-            template = template.replaceAll(placeholder, value);
-        }
+        let template = templateMethod.call(this).trim();
 
         return template;
     }
 
     static all_issues() {
-        return `<div class="doboard_task_widget-container">
+        return `
+<div class="doboard_task_widget-container">
     <div class="doboard_task_widget-header">
         <div style="display: flex;align-items: center;gap: 8px;">
-            <img src="/spotfix/img/white-logo-doboard.svg"  alt="">
+            <img src="{{logoDoBoardWhite}}"  alt="">
             <span>All spots</span>
         </div>
-        <img src="/spotfix/img/close.svg"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-all_issues">
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
@@ -37,14 +33,15 @@ class Templater {
     }
 
     static concrete_issue() {
-        return `<div class="doboard_task_widget-container">
+        return `
+<div class="doboard_task_widget-container">
     <div class="doboard_task_widget-header">
         <div class="doboard_task_widget_return_to_all doboard_task_widget_cursor-pointer">
-            <img src="/spotfix/img/chevron-back.svg" alt="" title="{{chevronBackTitle}}">
+            <img src="{{chevronBack}}" alt="" title="Return to all spots list">
             <span title="Return to all spots list"> All {{issuesCounter}}</span>
         </div>
         <div class="doboard_task_widget-issue-title">{{issueTitle}}</div>
-        <img src="/spotfix/img/close.svg"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-all_issues">
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
@@ -56,16 +53,16 @@ class Templater {
             <form>
                 <div class="doboard_task_widget-send_message_elements_wrapper">
                 <button type="button" class="doboard_task_widget-send_message_paperclip">
-                    <img src="{{paperclipImgSrc}}" alt="Attach a file" title="Attach a file">
+                    <img src="{{buttonPaperClip}}" alt="Attach a file" title="Attach a file">
                 </button>
 
                 <div class="doboard_task_widget-send_message_input_wrapper">
-                    <img class="doboard_task_widget-send_message_input-icon" src="{{msgFieldBackgroundImgSrc}}" alt="" title="">
+                    <img class="doboard_task_widget-send_message_input-icon" src="{{backgroundInputMessage}}" alt="" title="">
                     <input type="text" class="doboard_task_widget-send_message_input" placeholder="Write a message...">
                 </div>
 
                 <button type="submit" class="doboard_task_widget-send_message_button">
-                    <img src="{{sendButtonImgSrc}}" alt="Send message" title="Send message">
+                    <img src="{{buttonSendMessage}}" alt="Send message" title="Send message">
                 </button>
                 </div>
             </form>
@@ -76,7 +73,8 @@ class Templater {
     }
 
     static concrete_issue_day_content() {
-        return `<div class="doboard_task_widget-concrete_issue-day_content">
+        return `
+<div class="doboard_task_widget-concrete_issue-day_content">
     <div class="doboard_task_widget-concrete_issue_day_content-month_day">{{dayContentMonthDay}}</div>
     <div class="doboard_task_widget-concrete_issue_day_content-messages_wrapper">{{dayContentMessages}}</div>
 </div>
@@ -84,7 +82,8 @@ class Templater {
     }
 
     static concrete_issue_messages() {
-        return `<div class="doboard_task_widget-comment_data_wrapper">
+        return `
+<div class="doboard_task_widget-comment_data_wrapper">
     <div class="{{avatarCSSClass}}" style="{{avatarStyle}}">
         <span class="doboard_task_widget-avatar-initials {{initialsClass}}">{{taskAuthorInitials}}</span>
     </div>
@@ -94,20 +93,20 @@ class Templater {
         <div class="doboard_task_widget-comment_time">{{commentTime}}</div>
     </div>
 </div>
-
 `;
     }
 
     static create_issue() {
-        return `<div class="doboard_task_widget-container">
+        return `
+<div class="doboard_task_widget-container">
     <div class="doboard_task_widget-header">
         <div style="display: flex;align-items: center;gap: 8px;">
-            <img src="/spotfix/img/white-logo-doboard.svg"  alt="">
+            <img src="{{logoDoBoardWhite}}"  alt="">
             <span>Report an issue</span>
         </div>
-        <img src="/spotfix/img/close.svg"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
     </div>
-    <div class="doboard_task_widget-content">
+    <div class="doboard_task_widget-content doboard_task_widget-create_issue">
 
         <div class="doboard_task_widget-element-container">
             <span>
@@ -157,8 +156,8 @@ class Templater {
             <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button">Submit</button>
         </div>
 
-        <div class="doboard_task_widget-error_message-wrapper hidden">
-            <span id="doboard_task_widget-error_message-header">Registration error</span>
+        <div class="doboard_task_widget-message-wrapper hidden">
+            <span id="doboard_task_widget-error_message-header"></span>
             <div id="doboard_task_widget-error_message"></div>
         </div>
     </div>
@@ -167,7 +166,8 @@ class Templater {
     }
 
     static list_issues() {
-        return `<div class="doboard_task_widget-task_row issue-item" data-node-path='[{{nodePath}}]' data-task-id='{{taskId}}'>
+        return `
+<div class="doboard_task_widget-task_row issue-item" data-node-path='[{{nodePath}}]' data-task-id='{{taskId}}'>
     <div class="{{avatarCSSClass}}" style="{{avatarStyle}}">
         <span class="doboard_task_widget-avatar-initials {{initialsClass}}">{{taskAuthorInitials}}</span>
     </div>
@@ -178,6 +178,7 @@ class Templater {
                 <div class="doboard_task_widget-task_title_public_status_img">
                     <img src="{{taskPublicStatusImgSrc}}" alt="" title="{{taskPublicStatusHint}}">
                 </div>
+                <span class="doboard_task_widget-task_title-unread_block {{classUnread}}"></span>
             </div>
             <div class="doboard_task_widget-task_title-last_update_time">{{taskLastUpdate}}</div>
         </div>
@@ -190,8 +191,9 @@ class Templater {
     }
 
     static wrap() {
-        return `<div class="doboard_task_widget-wrap">
-    <img src="/spotfix/img/doboard-widget-logo.svg" alt="Doboard logo">
+        return `
+<div class="doboard_task_widget-wrap">
+    <img src="{{logoDoBoardWrap}}" alt="Doboard logo">
     <div id="doboard_task_widget-task_count" class="hidden"></div>
 </div>
 `;
