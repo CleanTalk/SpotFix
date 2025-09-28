@@ -169,12 +169,12 @@ function isAnyTaskUpdated(allTasksData) {
     const updatedtasksIDS = [];
 
     for (let i = 0; i < allTasksData.length; i++) {
-        let currentStateOfTask = allTasksData[i];
+        const currentStateOfTask = allTasksData[i];
         const issuerId = localStorage.getItem('spotfix_user_id');
         if (
             currentStateOfTask.taskId &&
             currentStateOfTask.taskLastUpdate &&
-            currentStateOfTask.taskCreatorTaskUser === issuerId
+            currentStateOfTask.taskCreatorTaskUser.toString() === issuerId.toString()
         ) {
             result = storageCheckTaskUpdate(currentStateOfTask.taskId, currentStateOfTask.taskLastUpdate);
             if (result) {
@@ -199,11 +199,11 @@ async function checkIfTasksHasSiteOwnerUpdates(allTasksData, params) {
     for (let i = 0; i < updatedTaskIDs.length; i++) {
         const updatedTaskId = updatedTaskIDs[i];
         if (typeof updatedTaskId === 'string') {
-            const updatedTaskData =  await getTaskFullDetails(params, updatedTaskId);
-            if (updatedTaskData.issueComments) {
-                const lastIndex = updatedTaskData.issueComments.length - 1;
-                const lastMessage = updatedTaskData.issueComments[lastIndex];
+            const updatedTaskData =  await getTasksFullDetails(params, [updatedTaskId]);
+            if (updatedTaskData.comments) {
+                const lastMessage = updatedTaskData.comments[0];
                 if (
+                    lastMessage.commentUserId !== undefined &&
                     lastMessage.commentUserId !== localStorage.getItem('spotfix_user_id') &&
                     lastMessage.commentAuthorName !== 'Anonymous'
                 ) {
