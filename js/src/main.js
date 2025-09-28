@@ -79,12 +79,9 @@ function hideContainersSpinner() {
 }
 
 function getTaskFullDetails(tasksDetails, taskId) {
-    console.log(tasksDetails);
     const comments = tasksDetails.comments.filter(comment => {
-        return comment.taskId === taskId
+        return comment.taskId.toString() === taskId.toString()
     });
-    console.log(taskId);
-    console.log(comments);
     const users = tasksDetails.users;
     // Last comment
     let lastComment = comments.length > 0 ? comments[0] : null;

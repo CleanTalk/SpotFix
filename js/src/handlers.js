@@ -39,52 +39,6 @@ async function getTasksFullDetails(params, tasks) {
         return {
             comments: comments,
             users: users,
-        }
-
-        // Last comment
-        let lastComment = comments.length > 0 ? comments[0] : null;
-        // Author of the last comment
-        let author = null;
-        if (lastComment && users && users.length > 0) {
-            author = users.find(u => String(u.user_id) === String(lastComment.userId));
-        }
-        // Format date
-        let date = '', time = '';
-        if (lastComment) {
-            const dt = formatDate(lastComment.commentDate);
-            date = dt.date;
-            time = dt.time;
-        }
-        // Get the avatar and the name through separate functions
-        let avatarSrc = getAvatarSrc(author);
-        let authorName = getAuthorName(author);
-
-        return {
-            taskId: taskId,
-            taskAuthorAvatarImgSrc: avatarSrc,
-            taskAuthorName: authorName,
-            lastMessageText: lastComment ? lastComment.commentBody : 'No messages yet',
-            lastMessageTime: time,
-            issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
-            issueComments: comments
-                .sort((a, b) => {
-                    return new Date(a.commentDate) - new Date(b.commentDate);
-                })
-                .map(comment => {
-                    const {date, time} = formatDate(comment.commentDate);
-                    let author = null;
-                    if (users && users.length > 0) {
-                        author = users.find(u => String(u.user_id) === String(comment.userId));
-                    }
-                    return {
-                        commentAuthorAvatarSrc: getAvatarSrc(author),
-                        commentAuthorName: getAuthorName(author),
-                        commentBody: comment.commentBody,
-                        commentDate: date,
-                        commentTime: time,
-                        commentUserId: comment.userId || 'Unknown User',
-                    };
-                })
         };
     }
 }
@@ -226,8 +180,6 @@ function registerUser(taskDetails) {
 
 	const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName, pageURL)
 		.then(response => {
-			console.log(response);
-
 			if (response.accountExists) {
 				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container").innerText = 'Account already exists. Please, login usin your password.';
 				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container.hidden").classList.remove('hidden');
