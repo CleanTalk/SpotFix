@@ -21,6 +21,7 @@ function bundle_src_js() {
         'js/src/loaders/SpotFixTemplatesLoader.js',
         'js/src/loaders/SpotFixSVGLoader.js',
         'js/src/loaders/SpotFixSourcesLoader.js',
+        'js/src/loaders/SpotFixLoaderEvent.js',
     ]);
 
     return mergeStream(cssStream, jsStream)

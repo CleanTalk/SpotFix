@@ -1,9 +1,15 @@
 var widgetTimeout = null;
 
-document.addEventListener('DOMContentLoaded', () => {
+if( document.readyState !== 'loading' ) {
+    document.addEventListener('spotFixLoaded', spotFixInit);
+} else {
+    document.addEventListener('DOMContentLoaded', spotFixInit);
+}
+
+function spotFixInit() {
     new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
-});
+}
 
 document.addEventListener('selectionchange', function(e) {
     if (widgetTimeout) {
