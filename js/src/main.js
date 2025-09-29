@@ -1,6 +1,7 @@
 var widgetTimeout = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
 });
 
