@@ -91,7 +91,7 @@ class CleanTalkWidgetDoboard {
     }
 
     getParams() {
-        const script = document.querySelector(`script[src*="doboard-widget-bundle.min.js"]`);
+        const script = document.querySelector(`script[src*="doboard-widget-bundle."]`);
         if ( ! script || ! script.src ) {
             throw new Error('Script not provided');
         }
