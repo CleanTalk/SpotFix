@@ -26,21 +26,16 @@ function bundle_src_js() {
 
     return mergeStream(cssStream, jsStream)
         .pipe(concat('doboard-widget-bundle.js'))
-        .pipe(gulp.dest('js/src/'));
+        .pipe(gulp.dest('dist/'));
 }
 
 function minify_js() {
-    return gulp.src('js/src/doboard-widget-bundle.js')
+    return gulp.src('dist/doboard-widget-bundle.js')
         .pipe(sourcemaps.init())
         .pipe(uglify())
         .pipe(rename({suffix: '.min'}))
         .pipe(sourcemaps.write('.', { addComment: true }))
-        .pipe(gulp.dest('dist/'))
-        .on('end', async () => {
-            const { deleteAsync } = await import('del');
-            await deleteAsync('js/src/doboard-widget-bundle.js');
-        })
-        ;
+        .pipe(gulp.dest('dist/'));
 }
 
 function processCSS() {
