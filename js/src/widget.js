@@ -84,6 +84,7 @@ class CleanTalkWidgetDoboard {
         }
         //check to show if any task has site owner updates
         if (taskHasSiteOwnerUpdate) {
+
             storageSetWidgetIsClosed(false);
         }
         this.widgetElement = await this.createWidgetElement(type);
