@@ -870,7 +870,7 @@ class CleanTalkWidgetDoboard {
         const scrollY = window.scrollY;
         const viewportHeight = window.innerHeight;
 
-        const selectionAbsoluteTop = selection.offsetTop;
+        const selectionAbsoluteTop = selection.getBoundingClientRect().top + scrollY;
 
         const widgetHeight = widget.offsetHeight;
 
