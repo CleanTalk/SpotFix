@@ -1,16 +1,3 @@
-@font-face {
-    font-family: 'Inter';
-    src: url('../fonts/Inter_18pt-Regular.ttf');
-    font-weight: 400;
-    font-style: normal;
-}
-@font-face {
-    font-family: 'Inter';
-    src: url('../fonts/Inter_18pt-Bold.ttf');
-    font-weight: 700;
-    font-style: normal;
-}
-
 /** COMMON CLASSES **/
 
 .doboard_task_widget * {
@@ -35,13 +22,11 @@
 
 .doboard_task_widget {
     position: fixed;
-    right: 0;
-    bottom: 0;
-    margin-bottom: 20px;
-    margin-right: 70px;
+    right: 50px;
+    bottom: 20px;
     z-index: 9999;
     vertical-align: middle;
-
+    transition: top 0.1s;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
     will-change: transform;
@@ -117,8 +102,9 @@
     line-height: 22px;
 }
 
+/*** We still find no way to keep inlined SVG. ***/
 #doboard_task_widget-task_count:hover {
-    background: url(../img/close-widget.svg) no-repeat center;
+    background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIiIGhlaWdodD0iMjIiIHZpZXdCb3g9IjAgMCAyMiAyMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxmb3JlaWduT2JqZWN0IHg9Ii00IiB5PSItNCIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIj48ZGl2IHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hodG1sIiBzdHlsZT0iYmFja2Ryb3AtZmlsdGVyOmJsdXIoMnB4KTtjbGlwLXBhdGg6dXJsKCNiZ2JsdXJfMF8xODk4OV8yODI2X2NsaXBfcGF0aCk7aGVpZ2h0OjEwMCU7d2lkdGg6MTAwJSI+PC9kaXY+PC9mb3JlaWduT2JqZWN0PjxwYXRoIGRhdGEtZmlnbWEtYmctYmx1ci1yYWRpdXM9IjQiIGQ9Ik0xMSAyMkMxNy4wNzUxIDIyIDIyIDE3LjA3NTEgMjIgMTFDMjIgNC45MjQ4NyAxNy4wNzUxIDAgMTEgMEM0LjkyNDg3IDAgMCA0LjkyNDg3IDAgMTFDMCAxNy4wNzUxIDQuOTI0ODcgMjIgMTEgMjJaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjciLz4KICAgIDxwYXRoIGQ9Ik0xNiA2TDYgMTYiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICAgIDxwYXRoIGQ9Ik02IDZMMTYgMTYiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICAgIDxkZWZzPgogICAgICAgIDxjbGlwUGF0aCBpZD0iYmdibHVyXzBfMTg5ODlfMjgyNl9jbGlwX3BhdGgiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQgNCkiPjxwYXRoIGQ9Ik0xMSAyMkMxNy4wNzUxIDIyIDIyIDE3LjA3NTEgMjIgMTFDMjIgNC45MjQ4NyAxNy4wNzUxIDAgMTEgMEM0LjkyNDg3IDAgMCA0LjkyNDg3IDAgMTFDMCAxNy4wNzUxIDQuOTI0ODcgMjIgMTEgMjJaIi8+CiAgICAgICAgPC9jbGlwUGF0aD48L2RlZnM+Cjwvc3ZnPg==) no-repeat center;
     cursor: pointer;
     overflow: hidden;
     font-size: 0;
@@ -243,7 +229,7 @@
 .doboard_task_widget-submit_button {
     height: 48px;
     width: 100%;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     color: #FFFFFF;
     background: #22A475;
     border: none;
@@ -286,6 +272,10 @@
     justify-items: center;
 }
 
+.doboard_task_widget-message-wrapper.hidden {
+    display: none;
+}
+
 .doboard_task_widget-error_message {
     background: #ffdddd;
     border: 1px solid #cf6868;
@@ -302,7 +292,6 @@
 }
 
 #doboard_task_widget-error_message-header {
-    margin: 8px 0;
     font-weight: 600;
 }
 
@@ -330,17 +319,9 @@
     font-weight: bold;
 }
 
-.doboard_task_widget-text_selection {
+.doboard_task_widget-text_selection,
+.doboard_task_widget-text_selection.image-highlight > img{
     background: rgba(208, 213, 127, 0.68);
-}
-
-.doboard_task_widget-text_selection.image-highlight {
-    display: -moz-inline-box;
-    display: inline-flex;
-    border: 3px solid rgba(208, 213, 127, 0.99);
-    padding: 5px;
-    flex-direction: column;
-    -moz-flex-direction: column;
 }
 
 .doboard_task_widget-issues_list_empty {

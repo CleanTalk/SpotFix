@@ -30,56 +30,17 @@ async function confirmUserEmail(emailConfirmationToken, params) {
 	return createdTask;
 }
 
-async function getTaskFullDetails(params, taskId) {
-	const sessionId = localStorage.getItem('spotfix_session_id');
-	const comments = await getTaskCommentsDoboard(taskId, sessionId, params.accountId, params.projectToken);
-	const users = await getUserDoboard(sessionId, params.projectToken, params.accountId);
+async function getTasksFullDetails(params, tasks) {
+    if (tasks.length > 0) {
+        const sessionId = localStorage.getItem('spotfix_session_id');
+        const comments = await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken);
+        const users = await getUserDoboard(sessionId, params.projectToken, params.accountId);
 
-	// Last comment
-	let lastComment = comments.length > 0 ? comments[0] : null;
-	// Author of the last comment
-	let author = null;
-	if (lastComment && users && users.length > 0) {
-		author = users.find(u => String(u.user_id) === String(lastComment.userId));
-	}
-	// Format date
-	let date = '', time = '';
-	if (lastComment) {
-		const dt = formatDate(lastComment.commentDate);
-		date = dt.date;
-		time = dt.time;
-	}
- 	// Get the avatar and the name through separate functions
- 	let avatarSrc = getAvatarSrc(author);
- 	let authorName = getAuthorName(author);
-
-	return {
-		taskId: taskId,
-		taskAuthorAvatarImgSrc: avatarSrc,
-		taskAuthorName: authorName,
-		lastMessageText: lastComment ? lastComment.commentBody : 'No messages yet',
-		lastMessageTime: time,
-		issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
- 		issueComments: comments
-            .sort((a, b) => {
-                return new Date(a.commentDate) - new Date(b.commentDate);
-            })
-            .map(comment => {
- 			const { date, time } = formatDate(comment.commentDate);
- 			let author = null;
- 			if (users && users.length > 0) {
- 				author = users.find(u => String(u.user_id) === String(comment.userId));
- 			}
- 			return {
- 				commentAuthorAvatarSrc: getAvatarSrc(author),
- 				commentAuthorName: getAuthorName(author),
- 				commentBody: comment.commentBody,
- 				commentDate: date,
- 				commentTime: time,
- 				commentUserId: comment.userId || 'Unknown User',
- 			};
- 		})
-	};
+        return {
+            comments: comments,
+            users: users,
+        };
+    }
 }
 
 async function handleCreateTask(sessionId, taskDetails) {
@@ -229,6 +190,9 @@ function registerUser(taskDetails) {
 				localStorage.setItem('spotfix_email', response.email);
 				userUpdate(projectToken, accountId);
 			} else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
+				if (response.operationMessage == 'Waiting for email confirmation') {
+					response.operationMessage = 'Waiting for an email confirmation. Please check your Inbox.';
+				}
 				if (typeof showMessageCallback === 'function') {
 					showMessageCallback(response.operationMessage, 'notice');
 				}

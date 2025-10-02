@@ -1,8 +1,15 @@
 var widgetTimeout = null;
 
-document.addEventListener('DOMContentLoaded', () => {
+if( document.readyState !== 'loading' ) {
+    document.addEventListener('spotFixLoaded', spotFixInit);
+} else {
+    document.addEventListener('DOMContentLoaded', spotFixInit);
+}
+
+function spotFixInit() {
+    new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
-});
+}
 
 document.addEventListener('selectionchange', function(e) {
     if (widgetTimeout) {
@@ -77,9 +84,59 @@ function hideContainersSpinner() {
     }
 }
 
+function getTaskFullDetails(tasksDetails, taskId) {
+    const comments = tasksDetails.comments.filter(comment => {
+        return comment.taskId.toString() === taskId.toString()
+    });
+    const users = tasksDetails.users;
+    // Last comment
+    let lastComment = comments.length > 0 ? comments[0] : null;
+    // Author of the last comment
+    let author = null;
+    if (lastComment && users && users.length > 0) {
+        author = users.find(u => String(u.user_id) === String(lastComment.userId));
+    }
+    // Format date
+    let date = '', time = '';
+    if (lastComment) {
+        const dt = formatDate(lastComment.commentDate);
+        date = dt.date;
+        time = dt.time;
+    }
+    // Get the avatar and the name through separate functions
+    let avatarSrc = getAvatarSrc(author);
+    let authorName = getAuthorName(author);
+
+    return {
+        taskId: taskId,
+        taskAuthorAvatarImgSrc: avatarSrc,
+        taskAuthorName: authorName,
+        lastMessageText: lastComment ? lastComment.commentBody : 'No messages yet',
+        lastMessageTime: time,
+        issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
+        issueComments: comments
+            .sort((a, b) => {
+                return new Date(a.commentDate) - new Date(b.commentDate);
+            })
+            .map(comment => {
+                const {date, time} = formatDate(comment.commentDate);
+                let author = null;
+                if (users && users.length > 0) {
+                    author = users.find(u => String(u.user_id) === String(comment.userId));
+                }
+                return {
+                    commentAuthorAvatarSrc: getAvatarSrc(author),
+                    commentAuthorName: getAuthorName(author),
+                    commentBody: comment.commentBody,
+                    commentDate: date,
+                    commentTime: time,
+                    commentUserId: comment.userId || 'Unknown User',
+                };
+            })
+    };
+}
+
 function getAvatarData(authorDetails) {
-    console.log(authorDetails);
-    
     let avatarStyle;
     let avatarCSSClass;
     let taskAuthorInitials = authorDetails.taskAuthorName && authorDetails.taskAuthorName != 'Anonymous' ? authorDetails.taskAuthorName.trim().charAt(0).toUpperCase() : null;
@@ -99,8 +156,6 @@ function getAvatarData(authorDetails) {
         avatarCSSClass = 'doboard_task_widget-avatar_container';
         initialsClass = 'doboard_task_widget-hidden_element';
     }
-    console.log(avatarStyle, avatarCSSClass, taskAuthorInitials, initialsClass, hideAvatar);
-    
     return {
         avatarStyle: avatarStyle,
         avatarCSSClass: avatarCSSClass,
@@ -120,12 +175,12 @@ function isAnyTaskUpdated(allTasksData) {
     const updatedtasksIDS = [];
 
     for (let i = 0; i < allTasksData.length; i++) {
-        let currentStateOfTask = allTasksData[i];
+        const currentStateOfTask = allTasksData[i];
         const issuerId = localStorage.getItem('spotfix_user_id');
         if (
             currentStateOfTask.taskId &&
             currentStateOfTask.taskLastUpdate &&
-            currentStateOfTask.taskCreatorTaskUser === issuerId
+            currentStateOfTask.taskCreatorTaskUser.toString() === issuerId.toString()
         ) {
             result = storageCheckTaskUpdate(currentStateOfTask.taskId, currentStateOfTask.taskLastUpdate);
             if (result) {
@@ -150,11 +205,11 @@ async function checkIfTasksHasSiteOwnerUpdates(allTasksData, params) {
     for (let i = 0; i < updatedTaskIDs.length; i++) {
         const updatedTaskId = updatedTaskIDs[i];
         if (typeof updatedTaskId === 'string') {
-            const updatedTaskData =  await getTaskFullDetails(params, updatedTaskId);
-            if (updatedTaskData.issueComments) {
-                const lastIndex = updatedTaskData.issueComments.length - 1;
-                const lastMessage = updatedTaskData.issueComments[lastIndex];
+            const updatedTaskData =  await getTasksFullDetails(params, [updatedTaskId]);
+            if (updatedTaskData.comments) {
+                const lastMessage = updatedTaskData.comments[0];
                 if (
+                    lastMessage.commentUserId !== undefined &&
                     lastMessage.commentUserId !== localStorage.getItem('spotfix_user_id') &&
                     lastMessage.commentAuthorName !== 'Anonymous'
                 ) {
