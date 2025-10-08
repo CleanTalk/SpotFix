@@ -1037,7 +1037,7 @@ class CleanTalkWidgetDoboard {
                         });
                         const commentData = {
                             commentAuthorName: comment.commentAuthorName,
-                            commentBody: comment.commentBody,
+                            commentBody: this.escapeHtml(comment.commentBody),
                             commentDate: comment.commentDate,
                             commentTime: comment.commentTime,
                             issueTitle: templateVariables.issueTitle,
@@ -1176,17 +1176,9 @@ class CleanTalkWidgetDoboard {
     loadTemplate(templateName, variables = {}) {
         let template = SpotFixTemplatesLoader.getTemplateCode(templateName);
 
-        const escapeHtml = (unsafe) => {
-            return unsafe
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        };
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
-            let replacement = escapeHtml(String(value));
+            let replacement = this.escapeHtml(String(value));
             if ( templateName === 'concrete_issue_messages' || templateName === 'concrete_issue_day_content' ) {
                 replacement = value;
             }
@@ -1195,6 +1187,15 @@ class CleanTalkWidgetDoboard {
 
         return template;
     }
+
+    escapeHtml = (unsafe) => {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    };
 
     async getTaskCount() {
         if (!localStorage.getItem('spotfix_session_id')) {
