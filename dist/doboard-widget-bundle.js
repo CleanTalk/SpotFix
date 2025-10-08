@@ -1473,7 +1473,6 @@ class CleanTalkWidgetDoboard {
         }, 100);
     }
 }
-
 var widgetTimeout = null;
 
 if( document.readyState !== 'loading' ) {
@@ -1497,13 +1496,34 @@ document.addEventListener('selectionchange', function(e) {
         if (
             selection.type === 'Range'
         ) {
+            // Check if selection is inside the widget
+            let anchorNode = selection.anchorNode;
+            let focusNode = selection.focusNode;
+            if (isInsideWidget(anchorNode) || isInsideWidget(focusNode)) {
+                return;
+            }
             const selectedData = getSelectedData(selection);
-            let widgetExist = document.querySelector('.doboard_task_widget-container');
-            openWidget(selectedData, widgetExist, 'create_issue');
+            openWidget(selectedData, 'create_issue');
         }
     }, 1000);
 });
 
+/**
+ * Check if a node is inside the task widget.
+ * @param {*} node
+ * @returns {boolean}
+ */
+function isInsideWidget(node) {
+    if (!node) return false;
+    let el = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+    while (el) {
+        if (el.classList && el.classList.contains('doboard_task_widget')) {
+            return true;
+        }
+        el = el.parentElement;
+    }
+    return false;
+}
 
 /**
  * Open the widget to create a task.
@@ -1511,9 +1531,8 @@ document.addEventListener('selectionchange', function(e) {
  * @param {*} widgetExist
  * @param {*} type
  */
-function openWidget(selectedData, widgetExist, type) {
-
-    if (selectedData && !widgetExist) {
+function openWidget(selectedData, type) {
+    if (selectedData) {
         new CleanTalkWidgetDoboard(selectedData, type);
     }
 }
