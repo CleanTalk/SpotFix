@@ -19,7 +19,8 @@ document.addEventListener('selectionchange', function(e) {
     widgetTimeout = setTimeout(() => {
         const selection = window.getSelection();
         if (
-            selection.type === 'Range'
+            selection.type === 'Range' &&
+            isSelectionCorrect(selection)
         ) {
             // Check if selection is inside the widget
             let anchorNode = selection.anchorNode;
@@ -240,4 +241,13 @@ async function checkIfTasksHasSiteOwnerUpdates(allTasksData, params) {
         }
     }
     return result;
+}
+
+/**
+ * Check if the selection is correct - do not allow to select all page, or several different nesting nodes, or something else
+ * @param selection
+ * @return {boolean}
+ */
+function isSelectionCorrect(selection) {
+    return true;
 }

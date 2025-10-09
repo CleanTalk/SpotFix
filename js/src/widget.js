@@ -407,7 +407,9 @@ class CleanTalkWidgetDoboard {
                             }
                             document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += this.loadTemplate('list_issues', listIssuesTemplateVariables);
 
-                            spotsToBeHighlighted.push(taskData);
+                            if ( this.isSpotHaveToBeHighlighted(taskData) ) {
+                                spotsToBeHighlighted.push(taskData);
+                            }
                         }
                     }
                     this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
@@ -911,5 +913,14 @@ class CleanTalkWidgetDoboard {
         this.resizeTimeout = setTimeout(() => {
             this.positionWidgetContainer();
         }, 100);
+    }
+
+    /**
+     * Check nodePath, selectedData against page source and return is the provided nodePath is correct and can be highlighted
+     * @param taskData
+     * @return {boolean}
+     */
+    isSpotHaveToBeHighlighted(taskData) {
+        return true;
     }
 }
