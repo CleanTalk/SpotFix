@@ -56,10 +56,10 @@ class SpotFixTemplatesLoader {
                 </button>
     
                 <div class="doboard_task_widget-send_message_input_wrapper">
-                    <textarea type="text" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
+                    <textarea name="doboard_task_widget_message" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
                 </div>
     
-                <button type="submit" class="doboard_task_widget-send_message_button">
+                <button type="button" class="doboard_task_widget-send_message_button">
                     <img src="{{buttonSendMessage}}" alt="Send message" title="Send message">
                 </button>
             </div>
