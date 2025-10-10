@@ -338,6 +338,9 @@
     background-position: center;
     background-size: 100%;
 }
+.doboard_task_widget-comment_data_owner .doboard_task_widget-avatar_container {
+    opacity: 0;
+}
 
 .doboard_task_widget-avatar_placeholder{
     min-height: 44px;
@@ -591,18 +594,27 @@
     position: relative;
     width: 100%;
     height: auto;
-    overflow: hidden;
     margin-left: 5px;
-    padding: 5px;
+    background: #F3F6F9;
+    border-radius: 16px;
 }
-
-.doboard_task_widget-comment_text_container img {
+.doboard_task_widget-comment_text_container:after {
+    content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: fill;
+    bottom: 0;
+    left: -5px;
+    width: 13px;
+    height: 19px;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAxMyAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAuMTEyNTggMTkuMDMzNEM1LjI5NDg2IDE5LjgyMDEgMTAuNjEwNSAxNy45NzQxIDEyLjI3MTUgMTYuMTcxM0MxMi4yNzE1IDE2LjE3MTMgMTAuOTYyMyAtMi43ODEyNCA1LjA5NTU0IDAuMzQ5MDc5QzUuMDc0NCAxLjYxNDU0IDUuMDk1NTQgNS45OTQ5IDUuMDk1NTQgNi43NDA2OUM1LjA5NTU0IDE3LjA2NjIgLTAuODg0MDEyIDE4LjQ0MDEgMC4xMTI1OCAxOS4wMzM0WiIgZmlsbD0iI0YzRjZGOSIvPgo8L3N2Zz4K");
+}
+.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container {
+    background: #EBFAF4;
+}
+.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container:after {
+    left: auto;
+    right: -5px;
+    height: 13px;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMyAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjc3NzEgMTIuMzA2NkM3LjMzMTM1IDEzLjA5MzcgMS43NDU0NCAxMS4yNDY5IDAgOS40NDMxOUw3LjM5MTYgMEM3LjM5MTYgMTAuMzMwMyAxMy44MjQ0IDExLjcxMzEgMTIuNzc3MSAxMi4zMDY2WiIgZmlsbD0iI0VCRkFGNCIvPgo8L3N2Zz4K");
 }
 
 .doboard_task_widget-comment_body,
@@ -612,16 +624,17 @@
 }
 
 .doboard_task_widget-comment_body {
-    padding: 10px;
+    padding: 6px 8px;
+    min-height: 30px;
 }
 
 .doboard_task_widget-comment_time {
     font-weight: 400;
     font-size: 11px;
-    line-height: 100%;
-    text-align: right;
-    padding: 0px 8px 4px 0;
-    opacity: 0.8;
+    opacity: .8;
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
 }
 
 /** SENDING NEW COMMENT **/

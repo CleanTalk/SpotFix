@@ -80,12 +80,11 @@ class SpotFixTemplatesLoader {
 
     static concrete_issue_messages() {
         return `
-<div class="doboard_task_widget-comment_data_wrapper">
+<div class="doboard_task_widget-comment_data_wrapper doboard_task_widget-comment_data_{{issueMessageClassOwner}}">
     <div class="{{avatarCSSClass}}" style="{{avatarStyle}}">
         <span class="doboard_task_widget-avatar-initials {{initialsClass}}">{{taskAuthorInitials}}</span>
     </div>
     <div class="doboard_task_widget-comment_text_container">
-        <img src="{{commentContainerBackgroundSrc}}" alt="">
         <div class="doboard_task_widget-comment_body">{{commentBody}}</div>
         <div class="doboard_task_widget-comment_time">{{commentTime}}</div>
     </div>

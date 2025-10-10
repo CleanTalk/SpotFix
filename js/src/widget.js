@@ -28,8 +28,6 @@ class CleanTalkWidgetDoboard {
             logoDoBoardWrap: SpotFixSVGLoader.getAsDataURI('logoDoBoardWrap'),
             iconSpotPublic: SpotFixSVGLoader.getAsDataURI('iconSpotPublic'),
             iconSpotPrivate: SpotFixSVGLoader.getAsDataURI('iconSpotPrivate'),
-            backgroundCloudCommentSelf: SpotFixSVGLoader.getAsDataURI('backgroundCloudCommentSelf'),
-            backgroundCloudCommentOthers: SpotFixSVGLoader.getAsDataURI('backgroundCloudCommentOthers'),
         };
     }
 
@@ -474,7 +472,6 @@ class CleanTalkWidgetDoboard {
                         const avatarData = getAvatarData({
                             taskAuthorAvatarImgSrc: comment.commentAuthorAvatarSrc,
                             taskAuthorName: comment.commentAuthorName,
-                            userIsIssuer: userIsIssuer
                         });
                         const commentData = {
                             commentAuthorName: comment.commentAuthorName,
@@ -482,13 +479,11 @@ class CleanTalkWidgetDoboard {
                             commentDate: comment.commentDate,
                             commentTime: comment.commentTime,
                             issueTitle: templateVariables.issueTitle,
-                            commentContainerBackgroundSrc: userIsIssuer
-                                ? this.srcVariables.backgroundCloudCommentSelf
-                                : this.srcVariables.backgroundCloudCommentOthers,
                             avatarCSSClass: avatarData.avatarCSSClass,
                             avatarStyle: avatarData.avatarStyle,
                             taskAuthorInitials: avatarData.taskAuthorInitials,
-                            initialsClass: avatarData.initialsClass
+                            initialsClass: avatarData.initialsClass,
+                            issueMessageClassOwner: userIsIssuer ? 'owner' : 'guest',
                         };
                         if (dayMessagesData[comment.commentDate] === undefined) {
                             dayMessagesData[comment.commentDate] = [];
