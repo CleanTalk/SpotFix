@@ -43,29 +43,26 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-issue-title">{{issueTitle}}</div>
         <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
     </div>
-    <div class="doboard_task_widget-content doboard_task_widget-all_issues">
+    <div class="doboard_task_widget-content doboard_task_widget-concrete_issue">
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
             <div class="doboard_task_widget-spinner_for_containers"></div>
         </div>
         <div class="doboard_task_widget-concrete_issues-container">
         </div>
         <div class="doboard_task_widget-send_message">
-            <form>
-                <div class="doboard_task_widget-send_message_elements_wrapper">
+            <div class="doboard_task_widget-send_message_elements_wrapper">
                 <button type="button" class="doboard_task_widget-send_message_paperclip">
                     <img src="{{buttonPaperClip}}" alt="Attach a file" title="Attach a file">
                 </button>
-
+    
                 <div class="doboard_task_widget-send_message_input_wrapper">
-                    <img class="doboard_task_widget-send_message_input-icon" src="{{backgroundInputMessage}}" alt="" title="">
-                    <input type="text" class="doboard_task_widget-send_message_input" placeholder="Write a message...">
+                    <textarea type="text" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
                 </div>
-
+    
                 <button type="submit" class="doboard_task_widget-send_message_button">
                     <img src="{{buttonSendMessage}}" alt="Send message" title="Send message">
                 </button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

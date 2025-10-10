@@ -74,13 +74,6 @@ class SpotFixSVGLoader {
 </svg>`;
     }
 
-    static backgroundInputMessage() {
-        return `
-<svg width="254" height="37" viewBox="0 0 254 37" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="254" height="37" rx="18.5" fill="#F3F6F9"/>
-</svg>`;
-    }
-
     static logoDoBoardWhite() {
         return `
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

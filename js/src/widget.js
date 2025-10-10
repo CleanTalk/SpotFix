@@ -24,7 +24,6 @@ class CleanTalkWidgetDoboard {
             chevronBack: SpotFixSVGLoader.getAsDataURI('chevronBack'),
             buttonPaperClip: SpotFixSVGLoader.getAsDataURI('buttonPaperClip'),
             buttonSendMessage: SpotFixSVGLoader.getAsDataURI('buttonSendMessage'),
-            backgroundInputMessage: SpotFixSVGLoader.getAsDataURI('backgroundInputMessage'),
             logoDoBoardWhite: SpotFixSVGLoader.getAsDataURI('logoDoBoardWhite'),
             logoDoBoardWrap: SpotFixSVGLoader.getAsDataURI('logoDoBoardWrap'),
             iconSpotPublic: SpotFixSVGLoader.getAsDataURI('iconSpotPublic'),
@@ -517,6 +516,22 @@ class CleanTalkWidgetDoboard {
                     issuesCommentsContainer.innerHTML = daysWrapperHTML;
                 } else {
                     issuesCommentsContainer.innerHTML = 'No comments';
+                }
+
+                // textarea (new comment) behaviour
+                const textarea = document.querySelector('.doboard_task_widget-send_message_input');
+                if (textarea) {
+                    function handleTextareaChange() {
+                        const triggerChars = 40;
+
+                        if (this.value.length > triggerChars) {
+                            this.classList.add('high');
+                        } else {
+                            this.classList.remove('high');
+                        }
+                    }
+                    textarea.addEventListener('input', handleTextareaChange)
+                    textarea.addEventListener('change', handleTextareaChange)
                 }
 
                 // Hide spinner preloader
