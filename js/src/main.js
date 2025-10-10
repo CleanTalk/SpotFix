@@ -160,8 +160,10 @@ function getTaskFullDetails(tasksDetails, taskId) {
 function getAvatarData(authorDetails) {
     let avatarStyle;
     let avatarCSSClass;
-    let taskAuthorInitials = authorDetails.taskAuthorName && authorDetails.taskAuthorName != 'Anonymous' ? authorDetails.taskAuthorName.trim().charAt(0).toUpperCase() : null;
-    let hideAvatar = authorDetails.hasOwnProperty('userIsIssuer') && authorDetails.userIsIssuer === true;
+    let taskAuthorInitials =
+        authorDetails.taskAuthorName && authorDetails.taskAuthorName != 'Anonymous'
+            ? authorDetails.taskAuthorName.trim().charAt(0).toUpperCase()
+            : null;
     let initialsClass = 'doboard_task_widget-avatar-initials';
     if (authorDetails.taskAuthorAvatarImgSrc === null && taskAuthorInitials !== null) {
         avatarStyle = 'display: flex;background-color: #f8de7e;justify-content: center;align-items: center;';
