@@ -541,14 +541,22 @@ class CleanTalkWidgetDoboard {
                     });
                 }, 0);
 
-                const sendForm = document.querySelector('.doboard_task_widget-send_message form');
-                if (sendForm) {
-                    sendForm.addEventListener('submit', async (e) => {
+                const sendButton = document.querySelector('.doboard_task_widget-send_message_button');
+                if (sendButton) {
+                    sendButton.addEventListener('click', async (e) => {
                         e.preventDefault();
-                        const input = sendForm.querySelector('.doboard_task_widget-send_message_input');
+
+                        const sendMessageContainer = sendButton.closest('.doboard_task_widget-send_message');
+                        const input = sendMessageContainer.querySelector('.doboard_task_widget-send_message_input');
+
                         const commentText = input.value.trim();
                         if (!commentText) return;
+
+                        // Add other fields handling here
+
                         input.disabled = true;
+                        sendButton.disabled = true;
+
                         try {
                             await addTaskComment(this.params, this.currentActiveTaskId, commentText);
                             input.value = '';
@@ -557,7 +565,9 @@ class CleanTalkWidgetDoboard {
                         } catch (err) {
                             alert('Error when adding a comment: ' + err.message);
                         }
+
                         input.disabled = false;
+                        sendButton.disabled = false;
                     });
                 }
                 break;
