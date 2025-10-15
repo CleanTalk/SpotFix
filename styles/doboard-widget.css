@@ -592,7 +592,7 @@
 
 .doboard_task_widget-comment_text_container {
     position: relative;
-    width: 100%;
+    width: calc(100% - 44px - 5px);
     height: auto;
     margin-left: 5px;
     background: #F3F6F9;
