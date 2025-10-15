@@ -62,17 +62,17 @@ const createTaskDoboard = async (sessionId, taskDetails) => {
 };
 
 const createTaskCommentDoboard = async (accountId, sessionId, taskId, comment, projectToken, status = 'ACTIVE') => {
-    const response = await fetch(
-        DOBOARD_API_URL + '/' + accountId + '/comment_add' +
-        '?session_id=' + sessionId +
-        '&task_id=' + taskId +
-        '&comment=' + comment +
-        '&project_token=' + projectToken +
-        '&status=' + status,
-    {
-        method: 'GET',
-    });
+    const formData = new FormData();
+    formData.append('session_id', sessionId);
+    formData.append('task_id', taskId);
+    formData.append('comment', comment);
+    formData.append('project_token', projectToken);
+    formData.append('status', status);
 
+    const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/comment_add', {
+        method: 'POST',
+        body: formData,
+    });
 
     if (!response.ok) {
         throw new Error('Failed to create task comment');

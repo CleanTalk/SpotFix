@@ -47,10 +47,11 @@ async function handleCreateTask(sessionId, taskDetails) {
 	try {
 		const result = await createTaskDoboard(sessionId, taskDetails);
 		if (result && result.taskId && taskDetails.taskDescription) {
+            const sign = `<br><em>Created from <a href="${window.location.href}"><span class="task-link task-link--done">SpotFix.</span></a></em>`;
 			await addTaskComment({
 				projectToken: taskDetails.projectToken,
 				accountId: taskDetails.accountId
-			}, result.taskId, taskDetails.taskDescription);
+			}, result.taskId, taskDetails.taskDescription+sign);
 		}
 		return result;
 	} catch (err) {
