@@ -18,6 +18,7 @@ function bundle_src_js() {
         'js/src/main.js',
         'js/src/selections.js',
         'js/src/storage.js',
+        'js/src/fileuploader.js',
         'js/src/loaders/SpotFixTemplatesLoader.js',
         'js/src/loaders/SpotFixSVGLoader.js',
         'js/src/loaders/SpotFixSourcesLoader.js',

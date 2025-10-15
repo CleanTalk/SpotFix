@@ -94,6 +94,22 @@ const createTaskCommentDoboard = async (accountId, sessionId, taskId, comment, p
     throw new Error('Unknown error occurred during creating task comment');
 };
 
+const attachmentAddDoboard = async (fileData) => {
+    const formData = new FormData();
+    formData.append('project_token', fileData.params.projectToken);
+    formData.append('account_id', fileData.params.accountId);
+    formData.append('comment_id', fileData.commentId);
+    formData.append('filename', fileData.fileName);
+    formData.append('file', fileData.fileBinary);
+    formData.append('attachment_order', fileData.attachmentOrder);
+    formData.append('session_id', fileData.sessionId);
+
+    return await fetch(DOBOARD_API_URL + '/' + fileData.params.accountId +  '/attachment_add', {
+        method: 'POST',
+        body: formData,
+    });
+};
+
 const registerUserDoboard = async (projectToken, accountId, email, nickname, pageURL) => {
     const formData = new FormData();
     formData.append('project_token', projectToken);
