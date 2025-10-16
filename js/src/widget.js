@@ -864,8 +864,18 @@ class CleanTalkWidgetDoboard {
         // Customising accordion dropdown
         const accordionController = document.querySelector('.doboard_task_widget-login span');
         if ( accordionController ) {
+            const context = this;
             accordionController.addEventListener('click', function() {
                 this.closest('.doboard_task_widget-login').classList.toggle('active');
+                // Scroll
+                context.positionWidgetContainer();
+                setTimeout(() => {
+                    const contentContainer = document.querySelector('.doboard_task_widget-content');
+                    contentContainer.scrollTo({
+                        top: contentContainer.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }, 0);
             });
         }
 
