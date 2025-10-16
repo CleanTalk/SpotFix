@@ -47,7 +47,7 @@ async function handleCreateTask(sessionId, taskDetails) {
 	try {
 		const result = await createTaskDoboard(sessionId, taskDetails);
 		if (result && result.taskId && taskDetails.taskDescription) {
-            const sign = `<br><em>Created from <a href="${window.location.href}"><span class="task-link task-link--done">SpotFix.</span></a></em>`;
+            const sign = `<br><br><br><em>The spot has been posted at the following URL <a href="${window.location.href}"><span class="task-link task-link--done">${window.location.href}</span></a></em>`;
 			await addTaskComment({
 				projectToken: taskDetails.projectToken,
 				accountId: taskDetails.accountId
