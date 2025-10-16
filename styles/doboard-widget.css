@@ -688,6 +688,7 @@
 .doboard_task_widget-send_message_input_wrapper textarea.high {
     height: 170px;
 }
+
 .doboard_task_widget-send_message_input_wrapper textarea:focus {
     background: #F3F6F9;
     border-color: #007bff;
@@ -727,6 +728,87 @@
     mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #fff 0);
     animation: spin 1s linear infinite;
 }
+
+/*fileuplaod*/
+
+.doboard_task_widget__file-upload__wrapper {
+    display: none;
+    border: 1px solid #BBC7D1;
+    margin-top: 14px;
+    padding: 0 10px 10px;
+    border-radius: 4px;
+}
+
+.doboard_task_widget__file-upload__list-header {
+    text-align: left;
+    font-size: .9em;
+    margin: 5px 0;
+    color: #444c529e;
+}
+
+.doboard_task_widget__file-upload__file-input-button {
+    display: none;
+}
+
+.doboard_task_widget__file-upload__file-list {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+    background: #f3f6f9;
+}
+
+.doboard_task_widget__file-upload__file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px;
+    border-bottom: 1px solid #bbc7d16b;
+}
+
+.doboard_task_widget__file-upload__file-item:last-child {
+    border-bottom: none;
+}
+
+.doboard_task_widget__file-upload__file_info {
+    display: inline-flex;
+    align-items: center;
+}
+
+.doboard_task_widget__file-upload__file-name {
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.doboard_task_widget__file-upload__file-item-content {
+    width: 100%;
+}
+
+.doboard_task_widget__file-upload__file_size {
+    color: #666;
+    font-size: 0.8em;
+    margin-left: 6px;
+}
+
+.doboard_task_widget__file-upload__remove-btn {
+    background: #22a475;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.doboard_task_widget__file-upload__error {
+    display: block;
+    margin: 7px 0 0;
+    padding: 7px;
+    border-radius: 4px;
+    background: #ffdddd;
+    border: 1px solid #cf6868;
+}
+
+/*fileuplaod*/
 
 @keyframes spin {
     to { transform: rotate(1turn); }

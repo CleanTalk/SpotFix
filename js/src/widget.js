@@ -29,6 +29,7 @@ class CleanTalkWidgetDoboard {
             iconSpotPublic: SpotFixSVGLoader.getAsDataURI('iconSpotPublic'),
             iconSpotPrivate: SpotFixSVGLoader.getAsDataURI('iconSpotPrivate'),
         };
+        this.fileUploader = new FileUploader(this.escapeHtml);
     }
 
     /**
@@ -423,7 +424,7 @@ class CleanTalkWidgetDoboard {
                 hideContainersSpinner(false);
                 break;
 
-            case 'concrete_issue':
+        case 'concrete_issue':
 
                 tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData);
                 const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId);
@@ -543,6 +544,8 @@ class CleanTalkWidgetDoboard {
 
                 const sendButton = document.querySelector('.doboard_task_widget-send_message_button');
                 if (sendButton) {
+                    this.fileUploader.init();
+                    let widgetClass = this;
                     sendButton.addEventListener('click', async (e) => {
                         e.preventDefault();
 
@@ -557,13 +560,25 @@ class CleanTalkWidgetDoboard {
                         input.disabled = true;
                         sendButton.disabled = true;
 
+                        let newCommentResponse = null;
+
                         try {
-                            await addTaskComment(this.params, this.currentActiveTaskId, commentText);
+                            newCommentResponse = await addTaskComment(this.params, this.currentActiveTaskId, commentText);
                             input.value = '';
                             await this.createWidgetElement('concrete_issue');
                             hideContainersSpinner(false);
                         } catch (err) {
                             alert('Error when adding a comment: ' + err.message);
+                        }
+
+                        if (widgetClass.fileUploader.hasFiles() && newCommentResponse !== null && newCommentResponse.hasOwnProperty('commentId')) {
+                            const sessionId = localStorage.getItem('spotfix_session_id');
+                            const attachmentsSendResult = await widgetClass.fileUploader.sendAttachmentsForComment(widgetClass.params, sessionId, newCommentResponse.commentId);
+                            if (!attachmentsSendResult.success) {
+                                widgetClass.fileUploader.showError('Some files where no sent, see details in the console.');
+                                const toConsole = JSON.stringify(attachmentsSendResult);
+                                console.log(toConsole);
+                            }
                         }
 
                         input.disabled = false;
@@ -586,10 +601,7 @@ class CleanTalkWidgetDoboard {
 
         const paperclipController = document.querySelector('.doboard_task_widget-send_message_paperclip');
         if ( paperclipController ) {
-            paperclipController.addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('This action is not implemented yet..');
-            });
+            this.fileUploader.bindPaperClipAction(paperclipController);
         }
 
         document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', () => {

@@ -49,6 +49,7 @@ class SpotFixTemplatesLoader {
         </div>
         <div class="doboard_task_widget-concrete_issues-container">
         </div>
+        
         <div class="doboard_task_widget-send_message">
             <div class="doboard_task_widget-send_message_elements_wrapper">
                 <button type="button" class="doboard_task_widget-send_message_paperclip">
@@ -62,6 +63,12 @@ class SpotFixTemplatesLoader {
                 <button type="button" class="doboard_task_widget-send_message_button">
                     <img src="{{buttonSendMessage}}" alt="Send message" title="Send message">
                 </button>
+            </div>
+            <div class="doboard_task_widget__file-upload__wrapper" id="doboard_task_widget__file-upload__wrapper">
+                <div class="doboard_task_widget__file-upload__list-header">Attached files</div>
+                <div class="doboard_task_widget__file-upload__file-list" id="doboard_task_widget__file-upload__file-list"></div>
+                <div class="doboard_task_widget__file-upload__error" id="doboard_task_widget__file-upload__error"></div>
+                <input type="file" class="doboard_task_widget__file-upload__file-input-button" id="doboard_task_widget__file-upload__file-input-button" multiple accept="*/*">
             </div>
         </div>
     </div>
