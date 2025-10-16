@@ -684,6 +684,8 @@
     resize: none;
     margin-bottom: 0 !important;
     transition: height 0.2s ease-in-out;
+    padding: 8px;
+    box-sizing: border-box;
 }
 .doboard_task_widget-send_message_input_wrapper textarea.high {
     height: 170px;
