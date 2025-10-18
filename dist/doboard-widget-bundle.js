@@ -254,7 +254,7 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, statu
             commentId: comment.comment_id,
             userId: comment.user_id,
             comment: comment.comment,
-            commentBody: comment.comment_text,
+            commentBody: comment.comment,
             commentDate: comment.updated,
             status: comment.status,
             issueTitle: comment.task_name,
