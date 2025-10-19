@@ -253,7 +253,7 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, statu
             taskId: comment.task_id,
             commentId: comment.comment_id,
             userId: comment.user_id,
-            comment: comment.comment,
+            comment: comment.comment, // @ToDo not used this key?
             commentBody: comment.comment,
             commentDate: comment.updated,
             status: comment.status,
