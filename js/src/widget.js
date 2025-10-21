@@ -389,7 +389,7 @@ class CleanTalkWidgetDoboard {
                                 taskAuthorName: taskFullDetails.taskAuthorName,
                                 taskPublicStatusImgSrc: taskPublicStatusImgSrc,
                                 taskPublicStatusHint: taskPublicStatusHint,
-                                taskLastMessage: taskFullDetails.lastMessageText,
+                                taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
                                 taskLastUpdate: taskFullDetails.lastMessageTime,
                                 nodePath: taskNodePath,
                                 taskId: taskId,
@@ -403,6 +403,7 @@ class CleanTalkWidgetDoboard {
                             if (taskOwnerReplyIsUnread) {
                                 listIssuesTemplateVariables.classUnread = 'unread';
                             }
+
                             document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += this.loadTemplate('list_issues', listIssuesTemplateVariables);
 
                             if ( this.isSpotHaveToBeHighlighted(taskData) ) {
@@ -416,7 +417,7 @@ class CleanTalkWidgetDoboard {
                     document.querySelector('.doboard_task_widget-header span').innerText += ' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll);
                 }
                 if (tasks.length === 0 || issuesQuantityOnPage === 0) {
-                    document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
+                    document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = ksesFilter('<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>');
                 }
 
                 // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
@@ -476,7 +477,7 @@ class CleanTalkWidgetDoboard {
                         });
                         const commentData = {
                             commentAuthorName: comment.commentAuthorName,
-                            commentBody: this.escapeHtml(comment.commentBody),
+                            commentBody: comment.commentBody,
                             commentDate: comment.commentDate,
                             commentTime: comment.commentTime,
                             issueTitle: templateVariables.issueTitle,
@@ -652,10 +653,12 @@ class CleanTalkWidgetDoboard {
 
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
-            let replacement = this.escapeHtml(String(value));
-            if ( templateName === 'concrete_issue_messages' || templateName === 'concrete_issue_day_content' ) {
-                replacement = value;
-            }
+            let replacement;
+            //if (templateName === 'concrete_issue_messages' || templateName === 'concrete_issue_day_content') {
+                replacement = typeof ksesFilter === 'function' ? ksesFilter(String(value)) : this.escapeHtml(String(value));
+            /*} else {
+                replacement = this.escapeHtml(String(value));
+            }*/
             template = template.replaceAll(placeholder, replacement);
         }
 

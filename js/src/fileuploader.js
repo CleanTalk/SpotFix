@@ -179,7 +179,7 @@ class FileUploader {
         if (!this.fileList) return;
 
         if (this.files.length === 0) {
-            this.fileList.innerHTML = '<div style="text-align: center; color: #444c529e;">No files attached</div>';
+            this.fileList.innerHTML = ksesFilter('<div style="text-align: center; color: #444c529e;">No files attached</div>');
             return;
         }
 
@@ -200,7 +200,7 @@ class FileUploader {
         const fileItem = document.createElement('div');
         fileItem.className = 'doboard_task_widget__file-upload__file-item';
 
-        fileItem.innerHTML = `
+        fileItem.innerHTML = ksesFilter(`
             <div class="doboard_task_widget__file-upload__file-item-content">
                 <div class="doboard_task_widget__file-upload__file_info">
                     <div class="doboard_task_widget__file-upload__file-name">${this.escapeHtmlHandler(String(file.name))}</div>
@@ -208,7 +208,7 @@ class FileUploader {
                 </div>
             </div>
             <button type="button" class="doboard_task_widget__file-upload__remove-btn" data-file-id="${id}" aria-label="Remove file">×</button>
-        `;
+        `);
 
         const removeBtn = fileItem.querySelector('.doboard_task_widget__file-upload__remove-btn');
         removeBtn.addEventListener('click', () => this.removeFile(id));

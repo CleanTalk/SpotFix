@@ -253,3 +253,58 @@ async function checkIfTasksHasSiteOwnerUpdates(allTasksData, params) {
 function isSelectionCorrect(selection) {
     return true;
 }
+
+/**
+ * Sanitize HTML
+ * @param {*} html 
+ * @param {*} allowedTags 
+ * @param {*} allowedAttrs 
+ * @returns 
+ */
+function ksesFilter(html) {
+    const allowedTags = {
+        a: true,
+        b: true,
+        i: true,
+        strong: true,
+        em: true,
+        ul: true,
+        ol: true,
+        li: true,
+        p: true,
+        br: true,
+        span: true,
+        div: true,
+        img: true,
+    };
+    const allowedAttrs = {
+        a: ['href', 'title', 'target', 'rel', 'style', 'class'],
+        span: ['style', 'class'],
+        p: ['style', 'class'],
+        div: ['style', 'class'],
+        img: ['src', 'alt', 'title'],
+    };
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    function clean(node) {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+            if (!allowedTags[node.tagName.toLowerCase()]) {
+                node.remove();
+                return;
+            }
+            // Remove disallowed attributes
+            [...node.attributes].forEach(attr => {
+                const attrName = attr.name.toLowerCase();
+                if (!allowedAttrs[node.tagName.toLowerCase()]?.includes(attrName) ||
+                    attrName.startsWith('on') || // Remove event handlers
+                    attr.value.toLowerCase().includes('javascript:')) {
+                    node.removeAttribute(attr.name);
+                }
+            });
+        }
+        // Recursively clean children
+        [...node.childNodes].forEach(clean);
+    }
+    [...doc.body.childNodes].forEach(clean);
+    return doc.body.innerHTML;
+}
