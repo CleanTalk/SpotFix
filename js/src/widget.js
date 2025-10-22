@@ -330,7 +330,7 @@ class CleanTalkWidgetDoboard {
                     selection.type === 'Range'
                 ) {
                     const selectedData = getSelectedData(selection);
-                    this.highlightElements([selectedData]);
+                    //this.highlightElements([selectedData]);
                     scrollToNodePath(selectedData.nodePath);
                 }
                 // bind creation events
