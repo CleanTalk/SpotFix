@@ -1,4 +1,4 @@
-const DOBOARD_API_URL = 'https://api-next.doboard.com';
+const DOBOARD_API_URL = 'https://api.doboard.com';
 
 const userConfirmEmailDoboard = async (emailConfirmationToken) => {
     const response = await fetch(
@@ -253,7 +253,7 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, statu
             taskId: comment.task_id,
             commentId: comment.comment_id,
             userId: comment.user_id,
-            comment: comment.comment,
+            comment: comment.comment, // @ToDo not used this key?
             commentBody: comment.comment,
             commentDate: comment.updated,
             status: comment.status,
@@ -906,7 +906,7 @@ class CleanTalkWidgetDoboard {
                     selection.type === 'Range'
                 ) {
                     const selectedData = getSelectedData(selection);
-                    this.highlightElements([selectedData]);
+                    //this.highlightElements([selectedData]);
                     scrollToNodePath(selectedData.nodePath);
                     this.positionWidgetContainer();
                 }
