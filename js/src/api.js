@@ -1,4 +1,4 @@
-const DOBOARD_API_URL = 'https://api-next.doboard.com';
+const DOBOARD_API_URL = 'https://api.doboard.com';
 
 const userConfirmEmailDoboard = async (emailConfirmationToken) => {
     const response = await fetch(
