@@ -131,10 +131,36 @@ function getSelectedData(selection) {
         focusOffset,
     } = selection;
 
-    let selectedText = selection.toString();
+    // 1) Check the selection is allowed
+    // 2) Check the selection is "simple" or "complex"
+    // 3) Get selection data: nodePath, pageURL, Selected range data
+
+    const isSelectionForbidden = spotfixIsSelectionForbidden(selection)
+    if ( isSelectionForbidden ) {
+        const selectionForbiddenReason = isSelectionForbidden.forbidden ? isSelectionForbidden.forbidden : 'The selected range is not allowed to create a spot.';
+        // @ToDo we can return selection forbidden reason to show this ins the widget
+        return false;
+    }
+
+    const pageURL = window.location.href;
+
+    if ( spotfixIsSelectionIsSimple() ) {
+        let selectedText = selection.toString();
+        return {
+            startSelectPosition: Math.min(anchorOffset, focusOffset),
+            endSelectPosition: Math.max(anchorOffset, focusOffset),
+            selectedText: selectedText,
+            pageURL: pageURL,
+            nodePath: calculateNodePath(targetNode),
+            isTagOfImageType: isTagOfImageType,
+            isWholeTagSelected: isWholeTagSelected
+        };
+    }
+
+
     let isTagOfImageType = false;
     const selectedImage = getSelectedImage(selection);
-    const pageURL = window.location.href;
+
 
     if ( ! selectedText ) {
         if (selectedImage === null) {
@@ -168,6 +194,63 @@ function getSelectedData(selection) {
         isTagOfImageType: isTagOfImageType,
         isWholeTagSelected: isWholeTagSelected
     };
+}
+
+/**
+ * Check if the selection is not correct - do not allow to select:
+ * - All page (parent is <body> or <html>)
+ * - Can not allow to add <span> to the element by specification
+ * - Several different nested nodes (@ToDo make this)
+ *
+ * @param selection
+ * @return {{forbidden: string}|boolean}
+ */
+function spotfixIsSelectionForbidden(selection) {
+    if ( selection.rangeCount > 1 ) {
+        return {
+            forbidden: 'The selected range is more than one instance.'
+        }
+    }
+    const selectedRange = selection.getRangeAt(0);
+    const commonParentElement = selectedRange.commonAncestorContainer
+    if ( spotfixCanAddSpanToElement(commonParentElement) ) {
+        return {
+            forbidden: 'Not allowed to add `span` here.'
+        }
+    }
+    return false;
+}
+
+/**
+ * Determines if a span element can be added as a child to the target element.
+ * Checks if the target element exists and is not a forbidden parent type that
+ * shouldn't have span elements as direct children.
+ *
+ * @param {HTMLElement|null|undefined} targetElement
+ * @return {boolean}
+ */
+function spotfixCanAddSpanToElement(targetElement) {
+    if ( ! targetElement ) {
+        return false;
+    }
+
+    const tagName = targetElement.tagName;
+
+    // Not allow to add `span` for these tags
+    const forbiddenParents = ['UL', 'OL', 'TABLE', 'TBODY', 'THEAD', 'TFOOT', 'TR', 'SELECT', 'OPTGROUP'];
+
+    if (forbiddenParents.includes(tagName)) {
+        // Not allow to add `span` as the direct child
+        return false;
+    }
+
+    // Unknown target element or element is allowed for `span`
+    return true;
+}
+
+
+function spotfixIsSelectionIsSimple(selection) {
+    return selection.anchorNode === selection.focusNode;
 }
 
 /**

@@ -19,8 +19,7 @@ document.addEventListener('selectionchange', function(e) {
     widgetTimeout = setTimeout(() => {
         const selection = window.getSelection();
         if (
-            selection.type === 'Range' &&
-            isSelectionCorrect(selection)
+            selection.type === 'Range'
         ) {
             // Check if selection is inside the widget
             let anchorNode = selection.anchorNode;
@@ -29,7 +28,9 @@ document.addEventListener('selectionchange', function(e) {
                 return;
             }
             const selectedData = getSelectedData(selection);
-            openWidget(selectedData, 'create_issue');
+            if ( selectedData ) {
+                openWidget(selectedData, 'create_issue');
+            }
         }
     }, 1000);
 });
@@ -243,13 +244,4 @@ async function checkIfTasksHasSiteOwnerUpdates(allTasksData, params) {
         }
     }
     return result;
-}
-
-/**
- * Check if the selection is correct - do not allow to select all page, or several different nesting nodes, or something else
- * @param selection
- * @return {boolean}
- */
-function isSelectionCorrect(selection) {
-    return true;
 }
