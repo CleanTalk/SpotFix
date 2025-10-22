@@ -1,4 +1,4 @@
-const DOBOARD_API_URL = 'https://api-next.doboard.com';
+const DOBOARD_API_URL = 'https://api.doboard.com';
 
 const userConfirmEmailDoboard = async (emailConfirmationToken) => {
     const response = await fetch(
@@ -891,7 +891,7 @@ class CleanTalkWidgetDoboard {
                     selection.type === 'Range'
                 ) {
                     const selectedData = getSelectedData(selection);
-                    this.highlightElements([selectedData]);
+                    //this.highlightElements([selectedData]);
                     scrollToNodePath(selectedData.nodePath);
                 }
                 // bind creation events
