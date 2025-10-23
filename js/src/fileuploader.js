@@ -184,7 +184,7 @@ class FileUploader {
         }
 
         const fileItems = this.files.map(fileData => this.createFileItem(fileData));
-        this.fileList.innerHTML = '';
+        this.fileList.innerHTML = ksesFilter('');
         fileItems.forEach(item => this.fileList.appendChild(item));
     }
 

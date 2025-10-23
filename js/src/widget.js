@@ -262,7 +262,7 @@ class CleanTalkWidgetDoboard {
     async createWidgetElement(type, showOnlyCurrentPage = true) {
         const widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
         widgetContainer.className = 'doboard_task_widget';
-        widgetContainer.innerHTML = '';
+        widgetContainer.innerHTML = ksesFilter('');
         widgetContainer.removeAttribute('style');
 
         let templateName = '';
@@ -468,7 +468,7 @@ class CleanTalkWidgetDoboard {
                 let userIsIssuer = false;
                 if ( taskDetails.issueComments.length > 0 ) {
                     storageRemoveUnreadUpdateForTaskID(taskDetails.taskId);
-                    issuesCommentsContainer.innerHTML = '';
+                    issuesCommentsContainer.innerHTML = ksesFilter('');
                     for (const comment of taskDetails.issueComments) {
                         userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
                         const avatarData = getAvatarData({
@@ -512,7 +512,7 @@ class CleanTalkWidgetDoboard {
                     }
                     issuesCommentsContainer.innerHTML = daysWrapperHTML;
                 } else {
-                    issuesCommentsContainer.innerHTML = 'No comments';
+                    issuesCommentsContainer.innerHTML = ksesFilter('No comments');
                 }
 
                 // textarea (new comment) behaviour
@@ -650,15 +650,10 @@ class CleanTalkWidgetDoboard {
      */
     loadTemplate(templateName, variables = {}) {
         let template = SpotFixTemplatesLoader.getTemplateCode(templateName);
-
+        
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
-            let replacement;
-            //if (templateName === 'concrete_issue_messages' || templateName === 'concrete_issue_day_content') {
-                replacement = typeof ksesFilter === 'function' ? ksesFilter(String(value)) : this.escapeHtml(String(value));
-            /*} else {
-                replacement = this.escapeHtml(String(value));
-            }*/
+            let replacement = typeof ksesFilter === 'function' ? ksesFilter(String(value), {template: templateName}) : this.escapeHtml(String(value));
             template = template.replaceAll(placeholder, replacement);
         }
 
@@ -837,7 +832,7 @@ class CleanTalkWidgetDoboard {
                 result = result.slice(0, marker.position) + insertText + result.slice(marker.position);
             });
 
-            element.innerHTML = result;
+            element.innerHTML = ksesFilter(result);
         });
     }
 

@@ -256,13 +256,12 @@ function isSelectionCorrect(selection) {
 
 /**
  * Sanitize HTML
- * @param {*} html 
- * @param {*} allowedTags 
- * @param {*} allowedAttrs 
+ * @param {*} html
+ * @param {*} options
  * @returns 
  */
-function ksesFilter(html) {
-    const allowedTags = {
+function ksesFilter(html, options = false) {
+    let allowedTags = {
         a: true,
         b: true,
         i: true,
@@ -277,25 +276,65 @@ function ksesFilter(html) {
         div: true,
         img: true,
     };
-    const allowedAttrs = {
+    let allowedAttrs = {
         a: ['href', 'title', 'target', 'rel', 'style', 'class'],
         span: ['style', 'class'],
         p: ['style', 'class'],
         div: ['style', 'class'],
         img: ['src', 'alt', 'title'],
     };
+
+    if (options && options.template === 'list_issues') {
+        allowedTags = { ...allowedTags, img: false, br: false };
+    }
+
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
     function clean(node) {
         if (node.nodeType === Node.ELEMENT_NODE) {
-            if (!allowedTags[node.tagName.toLowerCase()]) {
-                node.remove();
-                return;
+            const tag = node.tagName.toLowerCase();
+
+            if (options) {
+                if (allowedTags[tag]) {
+                    // Special handling for images in 'concrete_issue_day_content' template (wrap img in link always)
+                    if (tag === 'img' && options.template === 'concrete_issue_day_content') {
+                        const src = node.getAttribute('src') || '';
+                        const alt = node.getAttribute('alt') || '[image]';
+                        const link = doc.createElement('a');
+                        link.href = src;
+                        link.target = '_blank';
+                        link.className = 'doboard_task_widget-img-link';
+                        const img = doc.createElement('img');
+                        img.src = src;
+                        img.alt = alt;
+                        img.className = 'doboard_task_widget-comment_body-img-strict';
+                        link.appendChild(img);
+                        node.parentNode.insertBefore(link, node);
+                        node.remove();
+                        return;
+                    }
+                }
+
+                if (!allowedTags[tag]) {
+                    // Special handling for images in 'list_issues' template
+                    if (tag === 'img' && options.template === 'list_issues') {
+                        const src = node.getAttribute('src') || '';
+                        const alt = node.getAttribute('alt') || '[image]';
+                        const link = doc.createElement('a');
+                        link.href = src;
+                        link.target = '_blank';
+                        link.textContent = alt;
+                        node.parentNode.insertBefore(link, node);
+                    }
+                    node.remove();
+                    return;
+                }
             }
+
             // Remove disallowed attributes
             [...node.attributes].forEach(attr => {
                 const attrName = attr.name.toLowerCase();
-                if (!allowedAttrs[node.tagName.toLowerCase()]?.includes(attrName) ||
+                if (!allowedAttrs[tag]?.includes(attrName) ||
                     attrName.startsWith('on') || // Remove event handlers
                     attr.value.toLowerCase().includes('javascript:')) {
                     node.removeAttribute(attr.name);
