@@ -650,7 +650,7 @@ class CleanTalkWidgetDoboard {
      */
     loadTemplate(templateName, variables = {}) {
         let template = SpotFixTemplatesLoader.getTemplateCode(templateName);
-        
+
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
             let replacement = typeof ksesFilter === 'function' ? ksesFilter(String(value), {template: templateName}) : this.escapeHtml(String(value));
