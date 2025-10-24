@@ -1170,11 +1170,11 @@ class CleanTalkWidgetDoboard {
 
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
-            let replacement = typeof ksesFilter === 'function' ? ksesFilter(String(value), {template: templateName}) : this.escapeHtml(String(value));
+            let replacement = typeof ksesFilter === 'function' ? ksesFilter(String(value), {template: templateName, imgFilter: true}) : this.escapeHtml(String(value));
             template = template.replaceAll(placeholder, replacement);
         }
 
-        return template;
+        return ksesFilter(template, {template: templateName});
     }
 
     escapeHtml = (unsafe) => {
@@ -1768,13 +1768,21 @@ function ksesFilter(html, options = false) {
         span: true,
         div: true,
         img: true,
+        input: true,
+        label: true,
+        textarea: true,
+        button: true,
     };
     let allowedAttrs = {
         a: ['href', 'title', 'target', 'rel', 'style', 'class'],
-        span: ['style', 'class'],
+        span: ['style', 'class', 'id'],
         p: ['style', 'class'],
-        div: ['style', 'class'],
-        img: ['src', 'alt', 'title'],
+        div: ['style', 'class', 'id', 'data-node-path', 'data-task-id'],
+        img: ['src', 'alt', 'title', 'class', 'style', 'width', 'height'],
+        input: ['type', 'class', 'style', 'id', 'multiple', 'accept', 'value'],
+        label: ['for', 'class', 'style'],
+        textarea: ['class', 'id', 'style', 'rows', 'cols', 'readonly', 'required', 'name'],
+        button: ['type', 'class', 'style', 'id'],
     };
 
     if (options && options.template === 'list_issues') {
@@ -1790,7 +1798,7 @@ function ksesFilter(html, options = false) {
             if (options) {
                 if (allowedTags[tag]) {
                     // Special handling for images in 'concrete_issue_day_content' template (wrap img in link always)
-                    if (tag === 'img' && options.template === 'concrete_issue_day_content') {
+                    if (tag === 'img' && options.template === 'concrete_issue_day_content' && options.imgFilter) {
                         const src = node.getAttribute('src') || '';
                         const alt = node.getAttribute('alt') || '[image]';
                         const link = doc.createElement('a');
@@ -1810,7 +1818,7 @@ function ksesFilter(html, options = false) {
 
                 if (!allowedTags[tag]) {
                     // Special handling for images in 'list_issues' template
-                    if (tag === 'img' && options.template === 'list_issues') {
+                    if (tag === 'img' && options.template === 'list_issues' && options.imgFilter) {
                         const src = node.getAttribute('src') || '';
                         const alt = node.getAttribute('alt') || '[image]';
                         const link = doc.createElement('a');

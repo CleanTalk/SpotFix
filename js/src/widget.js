@@ -653,11 +653,11 @@ class CleanTalkWidgetDoboard {
 
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
-            let replacement = typeof ksesFilter === 'function' ? ksesFilter(String(value), {template: templateName}) : this.escapeHtml(String(value));
+            let replacement = typeof ksesFilter === 'function' ? ksesFilter(String(value), {template: templateName, imgFilter: true}) : this.escapeHtml(String(value));
             template = template.replaceAll(placeholder, replacement);
         }
 
-        return template;
+        return ksesFilter(template, {template: templateName});
     }
 
     escapeHtml = (unsafe) => {
