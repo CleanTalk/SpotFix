@@ -262,7 +262,7 @@ class CleanTalkWidgetDoboard {
     async createWidgetElement(type, showOnlyCurrentPage = true) {
         const widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
         widgetContainer.className = 'doboard_task_widget';
-        widgetContainer.innerHTML = '';
+        widgetContainer.innerHTML = ksesFilter('');
         widgetContainer.removeAttribute('style');
 
         let templateName = '';
@@ -389,7 +389,7 @@ class CleanTalkWidgetDoboard {
                                 taskAuthorName: taskFullDetails.taskAuthorName,
                                 taskPublicStatusImgSrc: taskPublicStatusImgSrc,
                                 taskPublicStatusHint: taskPublicStatusHint,
-                                taskLastMessage: taskFullDetails.lastMessageText,
+                                taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
                                 taskLastUpdate: taskFullDetails.lastMessageTime,
                                 nodePath: taskNodePath,
                                 taskId: taskId,
@@ -403,6 +403,7 @@ class CleanTalkWidgetDoboard {
                             if (taskOwnerReplyIsUnread) {
                                 listIssuesTemplateVariables.classUnread = 'unread';
                             }
+
                             document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += this.loadTemplate('list_issues', listIssuesTemplateVariables);
 
                             if ( this.isSpotHaveToBeHighlighted(taskData) ) {
@@ -416,7 +417,7 @@ class CleanTalkWidgetDoboard {
                     document.querySelector('.doboard_task_widget-header span').innerText += ' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll);
                 }
                 if (tasks.length === 0 || issuesQuantityOnPage === 0) {
-                    document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
+                    document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = ksesFilter('<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>');
                 }
 
                 // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
@@ -467,7 +468,7 @@ class CleanTalkWidgetDoboard {
                 let userIsIssuer = false;
                 if ( taskDetails.issueComments.length > 0 ) {
                     storageRemoveUnreadUpdateForTaskID(taskDetails.taskId);
-                    issuesCommentsContainer.innerHTML = '';
+                    issuesCommentsContainer.innerHTML = ksesFilter('');
                     for (const comment of taskDetails.issueComments) {
                         userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
                         const avatarData = getAvatarData({
@@ -476,7 +477,7 @@ class CleanTalkWidgetDoboard {
                         });
                         const commentData = {
                             commentAuthorName: comment.commentAuthorName,
-                            commentBody: this.escapeHtml(comment.commentBody),
+                            commentBody: comment.commentBody,
                             commentDate: comment.commentDate,
                             commentTime: comment.commentTime,
                             issueTitle: templateVariables.issueTitle,
@@ -511,7 +512,7 @@ class CleanTalkWidgetDoboard {
                     }
                     issuesCommentsContainer.innerHTML = daysWrapperHTML;
                 } else {
-                    issuesCommentsContainer.innerHTML = 'No comments';
+                    issuesCommentsContainer.innerHTML = ksesFilter('No comments');
                 }
 
                 // textarea (new comment) behaviour
@@ -652,10 +653,7 @@ class CleanTalkWidgetDoboard {
 
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
-            let replacement = this.escapeHtml(String(value));
-            if ( templateName === 'concrete_issue_messages' || templateName === 'concrete_issue_day_content' ) {
-                replacement = value;
-            }
+            let replacement = typeof ksesFilter === 'function' ? ksesFilter(String(value), {template: templateName}) : this.escapeHtml(String(value));
             template = template.replaceAll(placeholder, replacement);
         }
 
@@ -834,7 +832,7 @@ class CleanTalkWidgetDoboard {
                 result = result.slice(0, marker.position) + insertText + result.slice(marker.position);
             });
 
-            element.innerHTML = result;
+            element.innerHTML = ksesFilter(result);
         });
     }
 
