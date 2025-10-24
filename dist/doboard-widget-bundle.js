@@ -1484,7 +1484,7 @@ class CleanTalkWidgetDoboard {
     sanitizeNodePath(nodePath) {
     let str = Array.isArray(nodePath) ? JSON.stringify(nodePath) : String(nodePath);
     // Allow only digits, commas, spaces, and square brackets
-    if (/^[\\[\\]0-9,\\s]*$/.test(str)) {
+    if (/^[\[\]0-9,\s]*$/.test(str)) {
         return str;
     }
     return '';
