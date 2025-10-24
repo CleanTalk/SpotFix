@@ -193,7 +193,7 @@ class CleanTalkWidgetDoboard {
                 // Make the submit button disable with spinner
                 const submitButton = document.getElementById('doboard_task_widget-submit_button');
                 submitButton.disabled = true;
-                submitButton.innerText = 'Creating spot...';
+                submitButton.innerText = ksesFilter('Creating spot...');
 
                 let taskDetails = {
                     taskTitle: taskTitle,
@@ -391,7 +391,7 @@ class CleanTalkWidgetDoboard {
                                 taskPublicStatusHint: taskPublicStatusHint,
                                 taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
                                 taskLastUpdate: taskFullDetails.lastMessageTime,
-                                nodePath: taskNodePath,
+                                nodePath: this.sanitizeNodePath(taskNodePath),
                                 taskId: taskId,
                                 avatarCSSClass: avatarData.avatarCSSClass,
                                 avatarStyle: avatarData.avatarStyle,
@@ -414,7 +414,7 @@ class CleanTalkWidgetDoboard {
                     this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                     this.savedIssuesQuantityAll = tasks.length;
                     this.highlightElements(spotsToBeHighlighted);
-                    document.querySelector('.doboard_task_widget-header span').innerText += ' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll);
+                    document.querySelector('.doboard_task_widget-header span').innerText += ksesFilter(' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
                 }
                 if (tasks.length === 0 || issuesQuantityOnPage === 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = ksesFilter('<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>');
@@ -433,7 +433,7 @@ class CleanTalkWidgetDoboard {
                 // Update issue title in the interface
                 const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
                 if (issueTitleElement) {
-                    issueTitleElement.innerText = taskDetails.issueTitle;
+                    issueTitleElement.innerText = ksesFilter(taskDetails.issueTitle);
                 }
 
                 templateVariables.issueTitle = taskDetails.issueTitle;
@@ -683,7 +683,7 @@ class CleanTalkWidgetDoboard {
         });
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
         if ( taskCountElement ) {
-            taskCountElement.innerText = filteredTasks.length;
+            taskCountElement.innerText = ksesFilter(filteredTasks.length);
             taskCountElement.classList.remove('hidden');
         }
     }
@@ -887,15 +887,15 @@ class CleanTalkWidgetDoboard {
         const messageWrap = document.querySelector('.doboard_task_widget-message-wrapper');
 
         if (typeof messageText === 'string' && messageDiv !== null && messageWrap !== null) {
-            messageDiv.innerText = messageText;
+            messageDiv.innerText = ksesFilter(messageText);
             messageWrap.classList.remove('hidden');
             messageDiv.classList.remove('doboard_task_widget-notice_message', 'doboard_task_widget-error_message');
             if (type === 'notice') {
-                titleSpan.innerText = '';
+                titleSpan.innerText = ksesFilter('');
                 messageWrap.classList.add('doboard_task_widget-notice_message');
                 messageDiv.style.color = '#2a5db0';
             } else {
-                titleSpan.innerText = 'Registration error';
+                titleSpan.innerText = ksesFilter('Registration error');
                 messageWrap.classList.add('doboard_task_widget-error_message');
                 messageDiv.style.color = 'red';
             }
@@ -963,4 +963,13 @@ class CleanTalkWidgetDoboard {
     isSpotHaveToBeHighlighted(taskData) {
         return true;
     }
+
+    sanitizeNodePath(nodePath) {
+    let str = Array.isArray(nodePath) ? JSON.stringify(nodePath) : String(nodePath);
+    // Allow only digits, commas, spaces, and square brackets
+    if (/^[\\[\\]0-9,\\s]*$/.test(str)) {
+        return str;
+    }
+    return '';
+}
 }
