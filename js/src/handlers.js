@@ -8,7 +8,13 @@ async function confirmUserEmail(emailConfirmationToken, params) {
 	// Get pending task from LS
 	const pendingTaskRaw = localStorage.getItem('spotfix_pending_task');
 	if (!pendingTaskRaw) throw new Error('No pending task data');
-	const pendingTask = JSON.parse(pendingTaskRaw);
+
+	let pendingTask;
+	try {
+		pendingTask = JSON.parse(pendingTaskRaw);
+	} catch (error) {
+		throw new Error('Invalid pending task data');
+	}
 
 	// Form taskDetails for task creation
 	const taskDetails = {

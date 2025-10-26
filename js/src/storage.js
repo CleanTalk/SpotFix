@@ -39,7 +39,12 @@ function storageSaveTasksUpdateData(tasks) {
         return;
     }
 
-    const storedTasks = JSON.parse(localStorage.getItem('spotfix_task_updates') || '{}');
+    let storedTasks = {};
+    try {
+        storedTasks = JSON.parse(localStorage.getItem('spotfix_task_updates') || '{}');
+    } catch (error) {
+        storedTasks = {};
+    }
 
     tasks.forEach(task => {
         if (task.taskId && task.taskLastUpdate) {
@@ -64,7 +69,12 @@ function storageCheckTaskUpdate(taskId, currentLastUpdate) {
         return null;
     }
 
-    const storedTasks = JSON.parse(localStorage.getItem('spotfix_task_updates') || '{}');
+    let storedTasks = {};
+    try {
+        storedTasks = JSON.parse(localStorage.getItem('spotfix_task_updates') || '{}');
+    } catch (error) {
+        storedTasks = {};
+    }
     const storedTask = storedTasks[taskId];
 
     if (!storedTask) {
@@ -85,7 +95,12 @@ function storageAddUnreadUpdateForTaskID(taskId) {
         return;
     }
 
-    const storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+    let storedUnread = [];
+    try {
+        storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+    } catch (error) {
+        storedUnread = [];
+    }
 
     if (!storedUnread.includes(taskId)) {
         storedUnread.push(taskId);
@@ -103,10 +118,13 @@ function storageRemoveUnreadUpdateForTaskID(taskId) {
         return;
     }
 
-    let storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
-
+    let storedUnread = [];
+    try {
+        storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+    } catch (error) {
+        storedUnread = [];
+    }
     storedUnread = storedUnread.filter(id => id !== taskId);
-
     localStorage.setItem('spotfix_unread_updates', JSON.stringify(storedUnread));
 }
 
@@ -115,7 +133,12 @@ function storageRemoveUnreadUpdateForTaskID(taskId) {
  * @returns {boolean}
  */
 function storageTasksHasUnreadUpdates() {
-    const storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+    let storedUnread = [];
+    try {
+        storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+    } catch (error) {
+        storedUnread = [];
+    }
 
     return storedUnread.length > 0;
 }
@@ -130,7 +153,12 @@ function storageProvidedTaskHasUnreadUpdates(taskId) {
         return false;
     }
 
-    const storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+    let storedUnread = [];
+    try {
+        storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+    } catch (error) {
+        storedUnread = [];
+    }
 
     return storedUnread.includes(taskId.toString());
 }

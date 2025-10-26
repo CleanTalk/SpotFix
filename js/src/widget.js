@@ -360,7 +360,14 @@ class CleanTalkWidgetDoboard {
                         const taskId = elTask.taskId;
                         const taskTitle = elTask.taskTitle;
                         const taskMetaString = elTask.taskMeta;
-                        const taskData = taskMetaString ? JSON.parse(taskMetaString) : null;
+                        let taskData = null;
+                        if (taskMetaString) {
+                            try {
+                                taskData = JSON.parse(taskMetaString);
+                            } catch (error) {
+                                taskData = null;
+                            }
+                        }
                         const currentPageURL = taskData ? taskData.pageURL : '';
                         const taskNodePath = taskData ? taskData.nodePath : '';
 
@@ -621,8 +628,15 @@ class CleanTalkWidgetDoboard {
     bindIssuesClick() {
         document.querySelectorAll('.issue-item').forEach(item => {
             item.addEventListener('click', async () => {
-                const nodePath = JSON.parse(item.getAttribute('data-node-path'));
-                scrollToNodePath(nodePath);
+                let nodePath = null;
+                try {
+                    nodePath = JSON.parse(item.getAttribute('data-node-path'));
+                } catch (error) {
+                    nodePath = null;
+                }
+                if (nodePath) {
+                    scrollToNodePath(nodePath);
+                }
                 this.currentActiveTaskId = item.getAttribute('data-task-id');
                 await this.createWidgetElement('concrete_issue');
 
@@ -762,7 +776,12 @@ class CleanTalkWidgetDoboard {
     getTaskHighlightData(taskIdToSearch) {
         const currentTaskData = this.allTasksData.find((element) => element.taskId.toString() === taskIdToSearch.toString());
         if (currentTaskData && currentTaskData.taskMeta !== undefined) {
-            const currentTaskSpotData = JSON.parse(currentTaskData.taskMeta);
+            let currentTaskSpotData = null;
+            try {
+                currentTaskSpotData = JSON.parse(currentTaskData.taskMeta);
+            } catch (error) {
+                currentTaskSpotData = null;
+            }
             if (currentTaskSpotData !== null && typeof currentTaskSpotData === 'object') {
                 return currentTaskSpotData;
             }
