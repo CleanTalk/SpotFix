@@ -1,285 +1,241 @@
-const DOBOARD_API_URL = 'https://api-next.doboard.com';
+const DOBOARD_API_URL = 'https://api.doboard.com';
+
+/**
+ * Makes an API call to the DoBoard endpoint with form data
+ *
+ * @param {Object} data - The data to send in the request
+ * @param {string} method - The API method to call
+ * @param {string|number} accountId - Optional account ID for the endpoint
+ *
+ * @returns {Promise<Object>} The response data when operation_status is 'SUCCESS'
+ */
+const spotfixApiCall = async(data, method, accountId = undefined) => {
+    if (!data || typeof data !== 'object') {
+        throw new Error('Data must be a valid object');
+    }
+
+    if (!method || typeof method !== 'string') {
+        throw new Error('Method must be a valid string');
+    }
+
+    if (accountId !== undefined && (typeof accountId !== 'string' && typeof accountId !== 'number')) {
+        throw new Error('AccountId must be a string or number');
+    }
+
+    const formData = new FormData();
+    for (const key in data) {
+        if (data.hasOwnProperty(key)) {
+            if (data[key] !== undefined && data[key] !== null) {
+                formData.append(key, data[key]);
+            }
+        }
+    }
+
+    let endpointUrl;
+    if (accountId !== undefined) {
+        endpointUrl = `${DOBOARD_API_URL}/${accountId}/${method}`;
+    } else {
+        endpointUrl = `${DOBOARD_API_URL}/${method}`;
+    }
+
+    try {
+        new URL(endpointUrl);
+    } catch (error) {
+        throw new Error(`Invalid endpoint URL: ${endpointUrl}`);
+    }
+
+    let response;
+    try {
+        response = await fetch(endpointUrl, {
+            method: 'POST',
+            body: formData,
+        });
+    } catch (networkError) {
+        throw new Error(`Network error: ${networkError.message}`);
+    }
+
+    let responseBody;
+    try {
+        responseBody = await response.json();
+    } catch (parseError) {
+        throw new Error('Failed to parse JSON response from server');
+    }
+
+    if (!responseBody || typeof responseBody !== 'object') {
+        throw new Error('Invalid response format from server');
+    }
+
+    if (!responseBody.data) {
+        throw new Error('Missing data field in server response');
+    }
+
+    if (!responseBody.data.operation_status) {
+        throw new Error('Missing operation_status in response data');
+    }
+
+    if (responseBody.data.operation_status === 'FAILED') {
+        const errorMessage = responseBody.data.operation_message || 'Operation failed without specific message';
+        throw new Error(errorMessage);
+    }
+
+    if (responseBody.data.operation_status === 'SUCCESS') {
+        return responseBody.data;
+    }
+
+    throw new Error(`Unknown operation status: ${responseBody.data.operation_status}`);
+}
 
 const userConfirmEmailDoboard = async (emailConfirmationToken) => {
-    const response = await fetch(
-        `${DOBOARD_API_URL}/user_confirm_email?email_confirmation_token=${encodeURIComponent(emailConfirmationToken)}`,
-        { method: 'GET' }
-    );
-    if (!response.ok) {
-        throw new Error('Email confirmation failed');
+    const data = {
+        email_confirmation_token: encodeURIComponent(emailConfirmationToken)
     }
-    const responseBody = await response.json();
-    if (!responseBody || !responseBody.data) {
-        throw new Error('Invalid response from server');
-    }
-    if (responseBody.data.operation_status !== 'CONFIRMED') {
-        throw new Error('Email not confirmed');
-    }
+    const result = await spotfixApiCall(data, 'user_confirm_email');
     return {
-        sessionId: responseBody.data.session_id,
-        userId: responseBody.data.user_id,
-        email: responseBody.data.email,
-        accounts: responseBody.data.accounts,
-        operationStatus: responseBody.data.operation_status
+        sessionId: result.session_id,
+        userId: result.user_id,
+        email: result.email,
+        accounts: result.accounts,
+        operationStatus: result.operation_status
     };
 };
 
 const createTaskDoboard = async (sessionId, taskDetails) => {
-    const accountId = taskDetails.accountId;
-    const formData = new FormData();
-    formData.append('session_id', sessionId);
-    formData.append('project_token', taskDetails.projectToken);
-    formData.append('project_id', taskDetails.projectId);
-    formData.append('user_id', localStorage.getItem('spotfix_user_id'));
-    formData.append('name', taskDetails.taskTitle);
-    formData.append('comment', taskDetails.taskDescription);
-    formData.append('meta', taskDetails.taskMeta);
-    formData.append('task_type', 'PUBLIC');
-    const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/task_add', {
-        method: 'POST',
-        body: formData,
-    });
-
-    if (!response.ok) {
-        throw new Error('Failed to create task');
+    const accountId = taskDetails.accountId
+    const data = {
+        session_id: sessionId,
+        project_token: taskDetails.projectToken,
+        project_id: taskDetails.projectId,
+        user_id: localStorage.getItem('spotfix_user_id'),
+        name: taskDetails.taskTitle,
+        comment: taskDetails.taskDescription,
+        meta: taskDetails.taskMeta,
+        task_type: 'PUBLIC'
     }
-
-    const responseBody = await response.json();
-
-    if ( ! responseBody || ! responseBody.data ) {
-        throw new Error('Invalid response from server');
+    const result = await spotfixApiCall(data, 'task_add', accountId);
+    return {
+        taskId: result.task_id,
     }
-    if ( responseBody.data.operation_status === 'FAILED') {
-        throw new Error(responseBody.data.operation_message);
-    }
-    if ( responseBody.data.operation_status === 'SUCCESS' ) {
-        return {
-            taskId: responseBody.data.task_id,
-            isPublic: 1, //todo MOCK!
-        }
-    }
-    throw new Error('Unknown error occurred during creating task');
 };
 
 const createTaskCommentDoboard = async (accountId, sessionId, taskId, comment, projectToken, status = 'ACTIVE') => {
-    const formData = new FormData();
-    formData.append('session_id', sessionId);
-    formData.append('task_id', taskId);
-    formData.append('comment', comment);
-    formData.append('project_token', projectToken);
-    formData.append('status', status);
-
-    const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/comment_add', {
-        method: 'POST',
-        body: formData,
-    });
-
-    if (!response.ok) {
-        throw new Error('Failed to create task comment');
+    const data = {
+        session_id: sessionId,
+        project_token: projectToken,
+        task_id: taskId,
+        comment: comment,
+        status: status
     }
-
-    const responseBody = await response.json();
-
-    if (!responseBody || !responseBody.data) {
-        throw new Error('Invalid response from server');
-    }
-    if (responseBody.data.operation_status === 'FAILED') {
-        throw new Error(responseBody.data.operation_message);
-    }
-    if (responseBody.data.operation_status === 'SUCCESS') {
-        return {
-            commentId: responseBody.data.comment_id,
-        };
-    }
-    throw new Error('Unknown error occurred during creating task comment');
+    const result = await spotfixApiCall(data, 'comment_add', accountId);
+    return {
+        commentId: result.comment_id,
+    };
 };
 
 const attachmentAddDoboard = async (fileData) => {
-    const formData = new FormData();
-    formData.append('project_token', fileData.params.projectToken);
-    formData.append('account_id', fileData.params.accountId);
-    formData.append('comment_id', fileData.commentId);
-    formData.append('filename', fileData.fileName);
-    formData.append('file', fileData.fileBinary);
-    formData.append('attachment_order', fileData.attachmentOrder);
-    formData.append('session_id', fileData.sessionId);
-
-    return await fetch(DOBOARD_API_URL + '/' + fileData.params.accountId +  '/attachment_add', {
-        method: 'POST',
-        body: formData,
-    });
+    const accountId = fileData.params.accountId;
+    const data = {
+        session_id: fileData.sessionId,
+        project_token: fileData.params.projectToken,
+        account_id: fileData.params.accountId,
+        comment_id: fileData.commentId,
+        filename: fileData.fileName,
+        file: fileData.fileBinary,
+        attachment_order: fileData.attachmentOrder
+    }
+    const result = await spotfixApiCall(data, 'attachment_add', accountId);
+    // @ToDo need to handle result?
 };
 
 const registerUserDoboard = async (projectToken, accountId, email, nickname, pageURL) => {
-    const formData = new FormData();
-    formData.append('project_token', projectToken);
-    formData.append('account_id', accountId);
-    formData.append('confirmation_url', pageURL);
+    let data = {
+        project_token: projectToken,
+        account_id: accountId,
+        confirmation_url: email,
+    }
     if (email && nickname) {
-        formData.append('email', email);
-        formData.append('name', nickname);
+        data.email = email;
+        data.name = nickname;
     }
-
-    const response = await fetch(DOBOARD_API_URL + '/user_registration', {
-        method: 'POST',
-        body: formData,
-    });
-
-    if ( ! response.ok ) {
-        throw new Error('Registration failed');
-    }
-
-    const responseBody = await response.json();
-
-    if ( ! responseBody || ! responseBody.data ) {
-        throw new Error('Invalid response from server');
-    }
-    if ( responseBody.data.operation_status === 'FAILED') {
-        throw new Error(responseBody.data.operation_message);
-    }
-    if ( responseBody.data.operation_status === 'SUCCESS' ) {
-        const result = {
-            sessionId: responseBody.data.session_id,
-            userId: responseBody.data.user_id,
-            email: responseBody.data.email,
-            accountExists: responseBody.data.user_email_confirmed === 1 ? true : false,
-            operationMessage: responseBody.data.operation_message,
-            operationStatus: responseBody.data.operation_status,
-            userEmailConfirmed: responseBody.data.user_email_confirmed,
-        };
-        return result;
-    }
-    throw new Error('Unknown error occurred during registration');
+    const result = await spotfixApiCall(data, 'user_registration');
+    return {
+        sessionId: result.session_id,
+        userId: result.user_id,
+        email: result.email,
+        accountExists: result.user_email_confirmed === 1,
+        operationMessage: result.operation_message,
+        operationStatus: result.operation_status,
+        userEmailConfirmed: result.user_email_confirmed,
+    };
 };
 
 const loginUserDoboard = async (email, password) => {
-    const formData = new FormData();
-    formData.append('email', email);
-    formData.append('password', password);
-
-    const response = await fetch(DOBOARD_API_URL + '/user_authorize', {
-        method: 'POST',
-        body: formData,
-    });
-
-    if ( ! response.ok ) {
-        throw new Error('Authorization failed');
+    const data = {
+        email: email,
+        password: password,
     }
-
-    const responseBody = await response.json();
-
-    if ( ! responseBody || ! responseBody.data ) {
-        throw new Error('Invalid response from server');
+    const result = await spotfixApiCall(data, 'user_authorize');
+    return {
+        sessionId: result.session_id,
+        userId: result.user_id,
+        email: result.email,
+        accountExists: result.user_email_confirmed === 1,
+        operationMessage: result.operation_message,
+        operationStatus: result.operation_status,
+        userEmailConfirmed: result.user_email_confirmed,
     }
-    if ( responseBody.data.operation_status === 'FAILED') {
-        throw new Error(responseBody.data.operation_message);
-    }
-    if ( responseBody.data.operation_status === 'SUCCESS' ) {
-        return {
-            sessionId: responseBody.data.session_id,
-            userId: responseBody.data.user_id,
-            email: responseBody.data.email,
-            accountExists: responseBody.data.user_email_confirmed === 1 ? true : false,
-            operationMessage: responseBody.data.operation_message,
-            operationStatus: responseBody.data.operation_status,
-            userEmailConfirmed: responseBody.data.user_email_confirmed,
-        }
-    }
-    throw new Error('Unknown error occurred during registration');
 }
 
 const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, userId) => {
-    const formData = new FormData();
-    formData.append('project_token', projectToken);
-    formData.append('session_id', sessionId);
-    formData.append('project_id', projectId);
-    formData.append('status', 'ACTIVE');
-    formData.append('task_type', 'PUBLIC');
+    const data = {
+        session_id: sessionId,
+        project_token: projectToken,
+        project_id: projectId,
+        status: 'ACTIVE',
+        task_type: 'PUBLIC'
+    }
     if ( userId ) {
-        formData.append('user_id', userId);
+        data.user_id = userId;
     }
-    const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/task_get', {
-        method: 'POST',
-        body: formData,
-    });
-
-    if ( ! response.ok ) {
-        throw new Error('Getting tasks failed');
-    }
-
-    const responseBody = await response.json();
-
-    if ( ! responseBody || ! responseBody.data ) {
-        throw new Error('Invalid response from server');
-    }
-    if ( responseBody.data.operation_status === 'FAILED') {
-        throw new Error(responseBody.data.operation_message);
-    }
-    if ( responseBody.data.operation_status === 'SUCCESS' ) {
-        return responseBody.data.tasks.map(task => ({
-            taskId: task.task_id,
-            taskTitle: task.name,
-            taskLastUpdate: task.updated,
-            taskCreated: task.created,
-            taskCreatorTaskUser: task.creator_user_id,
-            taskMeta: task.meta,
-        }))
-    }
-    throw new Error('Unknown error occurred during getting tasks');
+    const result = await spotfixApiCall(data, 'task_get', accountId);
+    return result.tasks.map(task => ({
+        taskId: task.task_id,
+        taskTitle: task.name,
+        taskLastUpdate: task.updated,
+        taskCreated: task.created,
+        taskCreatorTaskUser: task.creator_user_id,
+        taskMeta: task.meta,
+    }));
 }
 
 
 const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, status = 'ACTIVE') => {
-    let url = DOBOARD_API_URL + '/' + accountId + '/comment_get' +
-        '?session_id=' + sessionId +
-        '&status=' + status +
-        '&project_token=' + projectToken;
-    const response = await fetch(url, {method: 'GET',});
-
-    if ( ! response.ok ) {
-        throw new Error('Getting logs failed');
+    const data = {
+        session_id: sessionId,
+        project_token: projectToken,
+        status: status
     }
-
-    const responseBody = await response.json();
-
-    if ( ! responseBody || ! responseBody.data ) {
-        throw new Error('Invalid response from server');
-    }
-    if ( responseBody.data.operation_status === 'FAILED') {
-        throw new Error(responseBody.data.operation_message);
-    }
-    if ( responseBody.data.operation_status === 'SUCCESS' ) {
-        return responseBody.data.comments.map(comment => ({
-            taskId: comment.task_id,
-            commentId: comment.comment_id,
-            userId: comment.user_id,
-            comment: comment.comment, // @ToDo not used this key?
-            commentBody: comment.comment,
-            commentDate: comment.updated,
-            status: comment.status,
-            issueTitle: comment.task_name,
-        }));
-    }
-    throw new Error('Unknown error occurred during getting comments');
+    const result = await spotfixApiCall(data, 'comment_get', accountId);
+    return result.comments.map(comment => ({
+        taskId: comment.task_id,
+        commentId: comment.comment_id,
+        userId: comment.user_id,
+        commentBody: comment.comment,
+        commentDate: comment.updated,
+        status: comment.status,
+        issueTitle: comment.task_name,
+    }));
 };
 
 const getUserDoboard = async (sessionId, projectToken, accountId) => {
-    const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/user_get' +
-        '?session_id=' + sessionId +
-        '&project_token=' + projectToken, {
-        method: 'GET',
-    });
-
-    if (!response.ok) {
-        throw new Error('Getting user failed');
+    const data = {
+        session_id: sessionId,
+        project_token: projectToken,
     }
+    const result = await spotfixApiCall(data, 'user_get', accountId);
+    return result.users;
 
-    const responseBody = await response.json();
-
-    if (!responseBody) {
-        throw new Error('Invalid response from server');
-    }
-    // Format 1: users inside data
+    // @ToDo Need to handle these two different answers?
+    /*// Format 1: users inside data
     if (responseBody.data && responseBody.data.operation_status) {
         if (responseBody.data.operation_status === 'FAILED') {
             throw new Error(responseBody.data.operation_message);
@@ -302,37 +258,20 @@ const getUserDoboard = async (sessionId, projectToken, accountId) => {
             }
             return [];
         }
-    }
-    throw new Error('Unknown error occurred during getting user');
+    }*/
 };
 
 const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, timezone) => {
-    const response = await fetch(DOBOARD_API_URL + '/' + accountId + '/user_update' +
-        '?session_id=' + sessionId +
-        '&project_token=' + projectToken +
-        '&user_id=' + userId +
-        '&timezone=' + timezone, {
-        method: 'GET',
-    });
-
-    if (!response.ok) {
-        throw new Error('User update failed');
+    const data = {
+        session_id: sessionId,
+        project_token: projectToken,
+        user_id: userId,
+        timestamp: timezone
     }
-
-    const responseBody = await response.json();
-
-    if (!responseBody || !responseBody.data) {
-        throw new Error('Invalid response from server');
-    }
-    if (responseBody.data.operation_status === 'FAILED') {
-        throw new Error(responseBody.data.operation_message);
-    }
-    if (responseBody.data.operation_status === 'SUCCESS') {
-        return {
-            success: true
-        };
-    }
-    throw new Error('Unknown error occurred during user update');
+    await spotfixApiCall(data, 'user_update', accountId);
+    return {
+        success: true
+    };
 }
 
 async function confirmUserEmail(emailConfirmationToken, params) {
@@ -519,7 +458,7 @@ function registerUser(taskDetails) {
 	const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName, pageURL)
 		.then(response => {
 			if (response.accountExists) {
-				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container").innerText = 'Account already exists. Please, login usin your password.';
+				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container").innerText = ksesFilter('Account already exists. Please, login usin your password.');
 				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container.hidden").classList.remove('hidden');
 				document.getElementById("doboard_task_widget-user_password").focus();
 			} else if (response.sessionId) {
@@ -771,7 +710,7 @@ class CleanTalkWidgetDoboard {
                 // Make the submit button disable with spinner
                 const submitButton = document.getElementById('doboard_task_widget-submit_button');
                 submitButton.disabled = true;
-                submitButton.innerText = 'Creating spot...';
+                submitButton.innerText = ksesFilter('Creating spot...');
 
                 let taskDetails = {
                     taskTitle: taskTitle,
@@ -840,7 +779,7 @@ class CleanTalkWidgetDoboard {
     async createWidgetElement(type, showOnlyCurrentPage = true) {
         const widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
         widgetContainer.className = 'doboard_task_widget';
-        widgetContainer.innerHTML = '';
+        widgetContainer.innerHTML = ksesFilter('');
         widgetContainer.removeAttribute('style');
 
         let templateName = '';
@@ -967,9 +906,9 @@ class CleanTalkWidgetDoboard {
                                 taskAuthorName: taskFullDetails.taskAuthorName,
                                 taskPublicStatusImgSrc: taskPublicStatusImgSrc,
                                 taskPublicStatusHint: taskPublicStatusHint,
-                                taskLastMessage: taskFullDetails.lastMessageText,
+                                taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
                                 taskLastUpdate: taskFullDetails.lastMessageTime,
-                                nodePath: taskNodePath,
+                                nodePath: this.sanitizeNodePath(taskNodePath),
                                 taskId: taskId,
                                 avatarCSSClass: avatarData.avatarCSSClass,
                                 avatarStyle: avatarData.avatarStyle,
@@ -981,6 +920,7 @@ class CleanTalkWidgetDoboard {
                             if (taskOwnerReplyIsUnread) {
                                 listIssuesTemplateVariables.classUnread = 'unread';
                             }
+
                             document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += this.loadTemplate('list_issues', listIssuesTemplateVariables);
 
                             if ( this.isSpotHaveToBeHighlighted(taskData) ) {
@@ -991,10 +931,10 @@ class CleanTalkWidgetDoboard {
                     this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                     this.savedIssuesQuantityAll = tasks.length;
                     this.highlightElements(spotsToBeHighlighted);
-                    document.querySelector('.doboard_task_widget-header span').innerText += ' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll);
+                    document.querySelector('.doboard_task_widget-header span').innerText += ksesFilter(' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
                 }
                 if (tasks.length === 0 || issuesQuantityOnPage === 0) {
-                    document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
+                    document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = ksesFilter('<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>');
                 }
 
                 // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
@@ -1010,7 +950,7 @@ class CleanTalkWidgetDoboard {
                 // Update issue title in the interface
                 const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
                 if (issueTitleElement) {
-                    issueTitleElement.innerText = taskDetails.issueTitle;
+                    issueTitleElement.innerText = ksesFilter(taskDetails.issueTitle);
                 }
 
                 templateVariables.issueTitle = taskDetails.issueTitle;
@@ -1045,7 +985,7 @@ class CleanTalkWidgetDoboard {
                 let userIsIssuer = false;
                 if ( taskDetails.issueComments.length > 0 ) {
                     storageRemoveUnreadUpdateForTaskID(taskDetails.taskId);
-                    issuesCommentsContainer.innerHTML = '';
+                    issuesCommentsContainer.innerHTML = ksesFilter('');
                     for (const comment of taskDetails.issueComments) {
                         userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
                         const avatarData = getAvatarData({
@@ -1054,7 +994,7 @@ class CleanTalkWidgetDoboard {
                         });
                         const commentData = {
                             commentAuthorName: comment.commentAuthorName,
-                            commentBody: this.escapeHtml(comment.commentBody),
+                            commentBody: comment.commentBody,
                             commentDate: comment.commentDate,
                             commentTime: comment.commentTime,
                             issueTitle: templateVariables.issueTitle,
@@ -1089,7 +1029,7 @@ class CleanTalkWidgetDoboard {
                     }
                     issuesCommentsContainer.innerHTML = daysWrapperHTML;
                 } else {
-                    issuesCommentsContainer.innerHTML = 'No comments';
+                    issuesCommentsContainer.innerHTML = ksesFilter('No comments');
                 }
 
                 // textarea (new comment) behaviour
@@ -1230,14 +1170,11 @@ class CleanTalkWidgetDoboard {
 
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
-            let replacement = this.escapeHtml(String(value));
-            if ( templateName === 'concrete_issue_messages' || templateName === 'concrete_issue_day_content' ) {
-                replacement = value;
-            }
+            let replacement = typeof ksesFilter === 'function' ? ksesFilter(String(value), {template: templateName, imgFilter: true}) : this.escapeHtml(String(value));
             template = template.replaceAll(placeholder, replacement);
         }
 
-        return template;
+        return ksesFilter(template, {template: templateName});
     }
 
     escapeHtml = (unsafe) => {
@@ -1263,7 +1200,7 @@ class CleanTalkWidgetDoboard {
         });
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
         if ( taskCountElement ) {
-            taskCountElement.innerText = filteredTasks.length;
+            taskCountElement.innerText = ksesFilter(filteredTasks.length);
             taskCountElement.classList.remove('hidden');
         }
     }
@@ -1412,7 +1349,7 @@ class CleanTalkWidgetDoboard {
                 result = result.slice(0, marker.position) + insertText + result.slice(marker.position);
             });
 
-            element.innerHTML = result;
+            element.innerHTML = ksesFilter(result);
         });
     }
 
@@ -1467,15 +1404,15 @@ class CleanTalkWidgetDoboard {
         const messageWrap = document.querySelector('.doboard_task_widget-message-wrapper');
 
         if (typeof messageText === 'string' && messageDiv !== null && messageWrap !== null) {
-            messageDiv.innerText = messageText;
+            messageDiv.innerText = ksesFilter(messageText);
             messageWrap.classList.remove('hidden');
             messageDiv.classList.remove('doboard_task_widget-notice_message', 'doboard_task_widget-error_message');
             if (type === 'notice') {
-                titleSpan.innerText = '';
+                titleSpan.innerText = ksesFilter('');
                 messageWrap.classList.add('doboard_task_widget-notice_message');
                 messageDiv.style.color = '#2a5db0';
             } else {
-                titleSpan.innerText = 'Registration error';
+                titleSpan.innerText = ksesFilter('Registration error');
                 messageWrap.classList.add('doboard_task_widget-error_message');
                 messageDiv.style.color = 'red';
             }
@@ -1543,6 +1480,15 @@ class CleanTalkWidgetDoboard {
     isSpotHaveToBeHighlighted(taskData) {
         return true;
     }
+
+    sanitizeNodePath(nodePath) {
+    let str = Array.isArray(nodePath) ? JSON.stringify(nodePath) : String(nodePath);
+    // Allow only digits, commas, spaces, and square brackets
+    if (/^[\[\]0-9,\s]*$/.test(str)) {
+        return str;
+    }
+    return '';
+}
 }
 
 var widgetTimeout = null;
@@ -1566,7 +1512,8 @@ document.addEventListener('selectionchange', function(e) {
     widgetTimeout = setTimeout(() => {
         const selection = window.getSelection();
         if (
-            selection.type === 'Range'
+            selection.type === 'Range' &&
+            isSelectionCorrect(selection)
         ) {
             // Check if selection is inside the widget
             let anchorNode = selection.anchorNode;
@@ -1575,9 +1522,7 @@ document.addEventListener('selectionchange', function(e) {
                 return;
             }
             const selectedData = getSelectedData(selection);
-            if ( selectedData ) {
-                openWidget(selectedData, 'create_issue');
-            }
+            openWidget(selectedData, 'create_issue');
         }
     }, 1000);
 });
@@ -1793,7 +1738,118 @@ async function checkIfTasksHasSiteOwnerUpdates(allTasksData, params) {
     return result;
 }
 
-let spotFixCSS = `.doboard_task_widget *{font-family:Inter,sans-serif;font-weight:400;font-size:14px;line-height:130%;color:#40484F}.doboard_task_widget-header *{color:#FFF;margin:0}.doboard_task_widget a{text-decoration:underline;color:#2F68B7}.doboard_task_widget a:hover{text-decoration:none}.doboard_task_widget{position:fixed;right:50px;bottom:20px;z-index:9999;vertical-align:middle;transition:top .1s;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}.doboard_task_widget_cursor-pointer{cursor:pointer}.doboard_task_widget-container{width:360px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-header{display:flex;height:41px;min-height:41px;padding:8px 16px;background:#1C7857;border-radius:8px 8px 0 0;justify-content:space-between;align-items:center;color:#FFF}.doboard_task_widget-input-container.hidden,.doboard_task_widget-wrap.hidden{display:none}.doboard_task_widget-content{flex:1;overflow-y:auto;padding:10px 16px 5px;background:#FFF;border-radius:0 0 8px 8px;border:1px #BBC7D1;border-style:none solid solid;box-shadow:0 4px 15px 8px #CACACA40;scrollbar-width:none;max-height:60vh}.doboard_task_widget-element-container{margin-bottom:30px}.doboard_task_widget-wrap{width:auto;background:0 0;border:none;box-shadow:none;padding:0}#doboard_task_widget-task_count{position:absolute;top:0;right:0;width:22px;height:22px;opacity:1;background:#ef8b43;border-radius:50%;color:#FFF;text-align:center;line-height:22px}#doboard_task_widget-task_count:hover{background:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIiIGhlaWdodD0iMjIiIHZpZXdCb3g9IjAgMCAyMiAyMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxmb3JlaWduT2JqZWN0IHg9Ii00IiB5PSItNCIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIj48ZGl2IHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hodG1sIiBzdHlsZT0iYmFja2Ryb3AtZmlsdGVyOmJsdXIoMnB4KTtjbGlwLXBhdGg6dXJsKCNiZ2JsdXJfMF8xODk4OV8yODI2X2NsaXBfcGF0aCk7aGVpZ2h0OjEwMCU7d2lkdGg6MTAwJSI+PC9kaXY+PC9mb3JlaWduT2JqZWN0PjxwYXRoIGRhdGEtZmlnbWEtYmctYmx1ci1yYWRpdXM9IjQiIGQ9Ik0xMSAyMkMxNy4wNzUxIDIyIDIyIDE3LjA3NTEgMjIgMTFDMjIgNC45MjQ4NyAxNy4wNzUxIDAgMTEgMEM0LjkyNDg3IDAgMCA0LjkyNDg3IDAgMTFDMCAxNy4wNzUxIDQuOTI0ODcgMjIgMTEgMjJaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjciLz4KICAgIDxwYXRoIGQ9Ik0xNiA2TDYgMTYiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICAgIDxwYXRoIGQ9Ik02IDZMMTYgMTYiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICAgIDxkZWZzPgogICAgICAgIDxjbGlwUGF0aCBpZD0iYmdibHVyXzBfMTg5ODlfMjgyNl9jbGlwX3BhdGgiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQgNCkiPjxwYXRoIGQ9Ik0xMSAyMkMxNy4wNzUxIDIyIDIyIDE3LjA3NTEgMjIgMTFDMjIgNC45MjQ4NyAxNy4wNzUxIDAgMTEgMEM0LjkyNDg3IDAgMCA0LjkyNDg3IDAgMTFDMCAxNy4wNzUxIDQuOTI0ODcgMjIgMTEgMjJaIi8+CiAgICAgICAgPC9jbGlwUGF0aD48L2RlZnM+Cjwvc3ZnPg==) center no-repeat;cursor:pointer;overflow:hidden;font-size:0}#doboard_task_widget-task_count.hidden{width:0;height:0;opacity:0}.doboard_task_widget-input-container{position:relative;margin-bottom:24px}.doboard_task_widget-input-container .doboard_task_widget-field{padding:0 8px;border-radius:4px;border:1px solid #BBC7D1;outline:0!important;appearance:none;width:100%;height:40px;background:#FFF;color:#000;max-width:-webkit-fill-available;max-width:-moz-available}.doboard_task_widget-field:focus{border-color:#2F68B7}.doboard_task_widget-input-container textarea.doboard_task_widget-field{height:94px;padding-top:11px;padding-bottom:11px}.doboard_task_widget-field+label{color:#252A2F;background:#fff;position:absolute;top:20px;left:8px;transform:translateY(-50%);transition:all .2s ease-in-out}.doboard_task_widget-field.has-value+label,.doboard_task_widget-field:focus+label{font-size:10px;top:0;left:12px;padding:0 4px;z-index:5}.doboard_task_widget-field:focus+label{color:#2F68B7}.doboard_task_widget-login{background:#F9FBFD;border:1px solid #BBC7D1;border-radius:4px;padding:11px 8px 8px;margin-bottom:40px}.doboard_task_widget-login .doboard_task_widget-accordion{height:0;overflow:hidden;opacity:0;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-accordion{height:auto;overflow:visible;opacity:1}.doboard_task_widget-login .doboard_task_widget-input-container:last-child{margin-bottom:0}.doboard_task_widget-login span{display:block;position:relative;padding-right:24px;cursor:pointer}.doboard_task_widget-login.active span{margin-bottom:24px}.doboard_task_widget-login span::after{position:absolute;top:0;right:4px;content:"";display:block;width:10px;height:10px;transform:rotate(45deg);border:2px solid #40484F;border-radius:1px;border-top:none;border-left:none;transition:all .2s ease-in-out}.doboard_task_widget-login.active span::after{transform:rotate(-135deg);top:7px}.doboard_task_widget-login .doboard_task_widget-field+label,.doboard_task_widget-login .doboard_task_widget-input-container .doboard_task_widget-field{background:#F9FBFD}.doboard_task_widget-submit_button{height:48px;width:100%;margin-bottom:10px;color:#FFF;background:#22A475;border:none;border-radius:6px;font-family:Inter,sans-serif;font-weight:700;font-size:16px;line-height:150%;cursor:pointer;transition:all .2s ease-in-out}.doboard_task_widget-submit_button:hover{background:#1C7857;color:#FFF}.doboard_task_widget-submit_button:disabled{background:rgba(117,148,138,.92);color:#FFF;cursor:wait}.doboard_task_widget-issue-title{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-hidden_element{opacity:0}.doboard_task_widget-message-wrapper{border-radius:4px;padding:8px;margin-bottom:14px;display:grid;justify-items:center}.doboard_task_widget-error_message-wrapper.hidden,.doboard_task_widget-message-wrapper.hidden{display:none}.doboard_task_widget-error_message{background:#fdd;border:1px solid #cf6868}.doboard_task_widget-notice_message{background:#dde9ff;border:1px solid #68a6cf}#doboard_task_widget-error_message-header{font-weight:600}#doboard_task_widget-error_message{text-align:center}.doboard_task_widget-task_row{display:flex;max-height:55px;padding-bottom:4px;margin-bottom:20px;cursor:pointer;align-items:center;justify-content:space-between}.doboard_task_widget-task_row:last-child{margin-bottom:0}.doboard_task_widget-task-text_bold{font-weight:700}.doboard_task_widget-text_selection,.doboard_task_widget-text_selection.image-highlight>img{background:rgba(208,213,127,.68)}.doboard_task_widget-issues_list_empty{text-align:center;margin:20px 0}.doboard_task_widget-avatar_container{display:flex;height:44px;width:44px;border-radius:50%;background-repeat:no-repeat;background-position:center;background-size:100%}.doboard_task_widget-comment_data_owner .doboard_task_widget-avatar_container{opacity:0}.doboard_task_widget-avatar_placeholder{min-height:44px;min-width:44px;border-radius:50%;font-size:24px;line-height:1.2083333333;padding:0;background:#1C7857;display:inline-grid;align-content:center;justify-content:center}.doboard_task_widget-avatar-initials{color:#FFF;width:inherit;text-align:center}.doboard_task_widget-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover}.doboard_task_widget-description_container{height:55px;width:calc(100% - 44px - 8px);border-bottom:1px solid #EBF0F4;display:block;margin-left:8px}.doboard_task_widget-task_row:last-child .doboard_task_widget-description_container{border-bottom:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{overflow:auto;max-height:85vh;display:none}.doboard_task_widget-all_issues-container{scrollbar-width:none}.doboard_task_widget-content.doboard_task_widget-concrete_issue{padding:0}.doboard_task_widget-concrete_issues-container{padding:10px 16px 5px}.doboard_task_widget-all_issues-container::-webkit-scrollbar,.doboard_task_widget-all_issues::-webkit-scrollbar,.doboard_task_widget-concrete_issues-container::-webkit-scrollbar,.doboard_task_widget-content::-webkit-scrollbar{width:0}.doboard_task_widget-task_title{font-weight:700;display:flex;justify-content:space-between;align-items:center}.doboard_task_widget-task_title span{font-weight:700;display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-task_title-details{display:flex;max-width:calc(100% - 40px);align-items:center}.doboard_task_widget-task_title-unread_block{opacity:0;height:8px;width:8px;background:#f08c43;border-radius:50%;display:inline-block;font-size:8px;font-weight:600;position:relative}.doboard_task_widget-task_title-unread_block.unread{opacity:1}.doboard_task_widget-task_last_message{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:85%}.doboard_task_widget_return_to_all{display:flex;gap:8px;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:wrap}.doboard_task_widget-task_title-last_update_time{font-family:Inter,serif;font-weight:400;font-style:normal;font-size:11px;leading-trim:NONE;line-height:100%}.doboard_task_widget-task_title_public_status_img{opacity:50%;margin-left:5px;scale:90%}.doboard_task_widget-description-textarea{resize:none}.doboard_task_widget-switch_row{display:flex;align-items:center;gap:12px;margin:16px 0;justify-content:space-between}.doboard_task_widget-switch-label{font-weight:600;font-size:16px;height:24px;align-content:center}.doboard_task_widget-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}.doboard_task_widget-switch input{opacity:0;width:0;height:0}.doboard_task_widget-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;border-radius:24px;transition:.2s}.doboard_task_widget-slider:before{position:absolute;content:"";height:20px;width:20px;left:2px;bottom:2px;background-color:#fff;border-radius:50%;transition:.2s}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider{background-color:#65D4AC}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider:before{transform:translateX(20px)}.doboard_task_widget-switch-img{width:24px;height:24px;flex-shrink:0}.doboard_task_widget-switch-center{display:flex;gap:2px;flex-direction:column;-moz-flex-direction:column;flex:1 1 auto;min-width:0}.doboard_task_widget-switch-desc{display:block;font-size:12px;color:#707A83;margin:0;line-height:1.2;max-width:180px;word-break:break-word}.doboard_task_widget-concrete_issue-day_content{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-concrete_issue_day_content-month_day{text-align:center;font-weight:400;font-size:12px;line-height:100%;padding:8px;opacity:.75}.doboard_task_widget-concrete_issue_day_content-messages_wrapper{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-comment_data_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;margin-bottom:15px;align-items:flex-end}.doboard_task_widget-comment_text_container{position:relative;width:calc(100% - 44px - 5px);height:auto;margin-left:5px;background:#F3F6F9;border-radius:16px}.doboard_task_widget-comment_text_container:after{content:"";position:absolute;bottom:0;left:-5px;width:13px;height:19px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAxMyAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAuMTEyNTggMTkuMDMzNEM1LjI5NDg2IDE5LjgyMDEgMTAuNjEwNSAxNy45NzQxIDEyLjI3MTUgMTYuMTcxM0MxMi4yNzE1IDE2LjE3MTMgMTAuOTYyMyAtMi43ODEyNCA1LjA5NTU0IDAuMzQ5MDc5QzUuMDc0NCAxLjYxNDU0IDUuMDk1NTQgNS45OTQ5IDUuMDk1NTQgNi43NDA2OUM1LjA5NTU0IDE3LjA2NjIgLTAuODg0MDEyIDE4LjQ0MDEgMC4xMTI1OCAxOS4wMzM0WiIgZmlsbD0iI0YzRjZGOSIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container{background:#EBFAF4}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container:after{left:auto;right:-5px;height:13px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMyAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjc3NzEgMTIuMzA2NkM3LjMzMTM1IDEzLjA5MzcgMS43NDU0NCAxMS4yNDY5IDAgOS40NDMxOUw3LjM5MTYgMEM3LjM5MTYgMTAuMzMwMyAxMy44MjQ0IDExLjcxMzEgMTIuNzc3MSAxMi4zMDY2WiIgZmlsbD0iI0VCRkFGNCIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_body,.doboard_task_widget-comment_time{position:relative;z-index:1}.doboard_task_widget-comment_body{padding:6px 8px;min-height:30px}.doboard_task_widget-comment_time{font-weight:400;font-size:11px;opacity:.8;position:absolute;bottom:6px;right:6px}.doboard_task_widget-send_message{padding:14px 10px;border-top:1px solid #BBC7D1;position:sticky;background:#fff;bottom:0;z-index:4}.doboard_task_widget-send_message_elements_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:nowrap;justify-content:space-between;align-items:end}.doboard_task_widget-send_message_elements_wrapper button{height:37px}.doboard_task_widget-send_message_input_wrapper{position:relative;display:inline-grid;align-items:center;justify-items:center;flex-grow:1;padding:0 6px}.doboard_task_widget-send_message_input_wrapper textarea{position:relative;width:100%;height:37px;border:none;outline:0;box-shadow:none;border-radius:24px;background:#F3F6F9;resize:none;margin-bottom:0!important;transition:height .2s ease-in-out;padding:8px;box-sizing:border-box}.doboard_task_widget-send_message_input_wrapper textarea.high{height:170px}.doboard_task_widget-send_message_input_wrapper textarea:focus{background:#F3F6F9;border-color:#007bff;outline:0}.doboard_task_widget-send_message_button,.doboard_task_widget-send_message_paperclip{display:inline-grid;border:none;background:0 0;cursor:pointer;padding:0;align-items:center}.doboard_task_widget-send_message_button:hover,.doboard_task_widget-send_message_paperclip:hover rect{fill:#45a049}.doboard_task_widget-send_message_button:active,.doboard_task_widget-send_message_paperclip:active{transform:scale(.98)}.doboard_task_widget-spinner_wrapper_for_containers{display:flex;justify-content:center;align-items:center;min-height:60px;width:100%}.doboard_task_widget-spinner_for_containers{width:40px;height:40px;border-radius:50%;background:conic-gradient(transparent,#1C7857);mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#fff 0);animation:spin 1s linear infinite}.doboard_task_widget__file-upload__wrapper{display:none;border:1px solid #BBC7D1;margin-top:14px;padding:0 10px 10px;border-radius:4px}.doboard_task_widget__file-upload__list-header{text-align:left;font-size:.9em;margin:5px 0;color:#444c529e}.doboard_task_widget__file-upload__file-input-button{display:none}.doboard_task_widget__file-upload__file-list{border:1px solid #ddd;border-radius:5px;padding:6px;max-height:200px;overflow-y:auto;background:#f3f6f9}.doboard_task_widget__file-upload__file-item{display:flex;justify-content:space-between;align-items:center;padding:4px;border-bottom:1px solid #bbc7d16b}.doboard_task_widget__file-upload__file-item:last-child{border-bottom:none}.doboard_task_widget__file-upload__file_info{display:inline-flex;align-items:center}.doboard_task_widget__file-upload__file-name{font-weight:700;font-size:.9em}.doboard_task_widget__file-upload__file-item-content{width:100%}.doboard_task_widget__file-upload__file_size{color:#666;font-size:.8em;margin-left:6px}.doboard_task_widget__file-upload__remove-btn{background:#22a475;color:#fff;border:none;border-radius:3px;cursor:pointer}.doboard_task_widget__file-upload__error{display:block;margin:7px 0 0;padding:7px;border-radius:4px;background:#fdd;border:1px solid #cf6868}@keyframes spin{to{transform:rotate(1turn)}}@media (max-width:480px){.doboard_task_widget{position:fixed;right:0;top:auto;bottom:0;margin:0 20px 20px;box-sizing:border-box;transform:translateZ(0);-moz-transform:translateZ(0);will-change:transform;max-height:90vh}.doboard_task_widget-container{width:100%;max-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-content{height:auto;max-height:none;scrollbar-width:none}.doboard_task_widget-content::-webkit-scrollbar{display:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{max-height:80vh}}@supports (-webkit-overflow-scrolling:touch){.doboard_task_widget{position:fixed}}`;
+/**
+ * Check if the selection is correct - do not allow to select all page, or several different nesting nodes, or something else
+ * @param selection
+ * @return {boolean}
+ */
+function isSelectionCorrect(selection) {
+    return true;
+}
+
+/**
+ * Sanitize HTML
+ * @param {*} html
+ * @param {*} options
+ * @returns 
+ */
+function ksesFilter(html, options = false) {
+    let allowedTags = {
+        a: true,
+        b: true,
+        i: true,
+        strong: true,
+        em: true,
+        ul: true,
+        ol: true,
+        li: true,
+        p: true,
+        br: true,
+        span: true,
+        div: true,
+        img: true,
+        input: true,
+        label: true,
+        textarea: true,
+        button: true,
+    };
+    let allowedAttrs = {
+        a: ['href', 'title', 'target', 'rel', 'style', 'class'],
+        span: ['style', 'class', 'id'],
+        p: ['style', 'class'],
+        div: ['style', 'class', 'id', 'data-node-path', 'data-task-id'],
+        img: ['src', 'alt', 'title', 'class', 'style', 'width', 'height'],
+        input: ['type', 'class', 'style', 'id', 'multiple', 'accept', 'value'],
+        label: ['for', 'class', 'style'],
+        textarea: ['class', 'id', 'style', 'rows', 'cols', 'readonly', 'required', 'name'],
+        button: ['type', 'class', 'style', 'id'],
+    };
+
+    if (options && options.template === 'list_issues') {
+        allowedTags = { ...allowedTags, img: false, br: false };
+    }
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    function clean(node) {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+            const tag = node.tagName.toLowerCase();
+
+            if (options) {
+                if (allowedTags[tag]) {
+                    // Special handling for images in 'concrete_issue_day_content' template (wrap img in link always)
+                    if (tag === 'img' && options.template === 'concrete_issue_day_content' && options.imgFilter) {
+                        const src = node.getAttribute('src') || '';
+                        const alt = node.getAttribute('alt') || '[image]';
+                        const link = doc.createElement('a');
+                        link.href = src;
+                        link.target = '_blank';
+                        link.className = 'doboard_task_widget-img-link';
+                        const img = doc.createElement('img');
+                        img.src = src;
+                        img.alt = alt;
+                        img.className = 'doboard_task_widget-comment_body-img-strict';
+                        link.appendChild(img);
+                        node.parentNode.insertBefore(link, node);
+                        node.remove();
+                        return;
+                    }
+                }
+
+                if (!allowedTags[tag]) {
+                    // Special handling for images in 'list_issues' template
+                    if (tag === 'img' && options.template === 'list_issues' && options.imgFilter) {
+                        const src = node.getAttribute('src') || '';
+                        const alt = node.getAttribute('alt') || '[image]';
+                        const link = doc.createElement('a');
+                        link.href = src;
+                        link.target = '_blank';
+                        link.textContent = alt;
+                        node.parentNode.insertBefore(link, node);
+                    }
+                    node.remove();
+                    return;
+                }
+            }
+
+            // Remove disallowed attributes
+            [...node.attributes].forEach(attr => {
+                const attrName = attr.name.toLowerCase();
+                if (!allowedAttrs[tag]?.includes(attrName) ||
+                    attrName.startsWith('on') || // Remove event handlers
+                    attr.value.toLowerCase().includes('javascript:')) {
+                    node.removeAttribute(attr.name);
+                }
+            });
+        }
+        // Recursively clean children
+        [...node.childNodes].forEach(clean);
+    }
+    [...doc.body.childNodes].forEach(clean);
+    return doc.body.innerHTML;
+}
+
+let spotFixCSS = `.doboard_task_widget *{font-family:Inter,sans-serif;font-weight:400;font-size:14px;line-height:130%;color:#40484F}.doboard_task_widget-header *{color:#FFF;margin:0}.doboard_task_widget a{text-decoration:underline;color:#2F68B7}.doboard_task_widget a:hover{text-decoration:none}.doboard_task_widget{position:fixed;right:50px;bottom:20px;z-index:9999;vertical-align:middle;transition:top .1s;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}.doboard_task_widget_cursor-pointer{cursor:pointer}.doboard_task_widget-container{width:360px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-header{display:flex;height:41px;min-height:41px;padding:8px 16px;background:#1C7857;border-radius:8px 8px 0 0;justify-content:space-between;align-items:center;color:#FFF}.doboard_task_widget-content{flex:1;overflow-y:auto;padding:10px 16px 5px;background:#FFF;border-radius:0 0 8px 8px;border:1px #BBC7D1;border-style:none solid solid;box-shadow:0 4px 15px 8px #CACACA40;scrollbar-width:none;max-height:60vh}.doboard_task_widget-element-container{margin-bottom:30px}.doboard_task_widget-wrap{width:auto;background:0 0;border:none;box-shadow:none;padding:0}.doboard_task_widget-wrap.hidden{display:none}#doboard_task_widget-task_count{position:absolute;top:0;right:0;width:22px;height:22px;opacity:1;background:#ef8b43;border-radius:50%;color:#FFF;text-align:center;line-height:22px}#doboard_task_widget-task_count:hover{background:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIiIGhlaWdodD0iMjIiIHZpZXdCb3g9IjAgMCAyMiAyMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxmb3JlaWduT2JqZWN0IHg9Ii00IiB5PSItNCIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIj48ZGl2IHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hodG1sIiBzdHlsZT0iYmFja2Ryb3AtZmlsdGVyOmJsdXIoMnB4KTtjbGlwLXBhdGg6dXJsKCNiZ2JsdXJfMF8xODk4OV8yODI2X2NsaXBfcGF0aCk7aGVpZ2h0OjEwMCU7d2lkdGg6MTAwJSI+PC9kaXY+PC9mb3JlaWduT2JqZWN0PjxwYXRoIGRhdGEtZmlnbWEtYmctYmx1ci1yYWRpdXM9IjQiIGQ9Ik0xMSAyMkMxNy4wNzUxIDIyIDIyIDE3LjA3NTEgMjIgMTFDMjIgNC45MjQ4NyAxNy4wNzUxIDAgMTEgMEM0LjkyNDg3IDAgMCA0LjkyNDg3IDAgMTFDMCAxNy4wNzUxIDQuOTI0ODcgMjIgMTEgMjJaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjciLz4KICAgIDxwYXRoIGQ9Ik0xNiA2TDYgMTYiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICAgIDxwYXRoIGQ9Ik02IDZMMTYgMTYiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICAgIDxkZWZzPgogICAgICAgIDxjbGlwUGF0aCBpZD0iYmdibHVyXzBfMTg5ODlfMjgyNl9jbGlwX3BhdGgiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQgNCkiPjxwYXRoIGQ9Ik0xMSAyMkMxNy4wNzUxIDIyIDIyIDE3LjA3NTEgMjIgMTFDMjIgNC45MjQ4NyAxNy4wNzUxIDAgMTEgMEM0LjkyNDg3IDAgMCA0LjkyNDg3IDAgMTFDMCAxNy4wNzUxIDQuOTI0ODcgMjIgMTEgMjJaIi8+CiAgICAgICAgPC9jbGlwUGF0aD48L2RlZnM+Cjwvc3ZnPg==) center no-repeat;cursor:pointer;overflow:hidden;font-size:0}#doboard_task_widget-task_count.hidden{width:0;height:0;opacity:0}.doboard_task_widget-input-container{position:relative;margin-bottom:24px}.doboard_task_widget-input-container.hidden{display:none}.doboard_task_widget-input-container .doboard_task_widget-field{padding:0 8px;border-radius:4px;border:1px solid #BBC7D1;outline:0!important;appearance:none;width:100%;height:40px;background:#FFF;color:#000;max-width:-webkit-fill-available;max-width:-moz-available}.doboard_task_widget-field:focus{border-color:#2F68B7}.doboard_task_widget-input-container textarea.doboard_task_widget-field{height:94px;padding-top:11px;padding-bottom:11px}.doboard_task_widget-field+label{color:#252A2F;background:#fff;position:absolute;top:20px;left:8px;transform:translateY(-50%);transition:all .2s ease-in-out}.doboard_task_widget-field.has-value+label,.doboard_task_widget-field:focus+label{font-size:10px;top:0;left:12px;padding:0 4px;z-index:5}.doboard_task_widget-field:focus+label{color:#2F68B7}.doboard_task_widget-login{background:#F9FBFD;border:1px solid #BBC7D1;border-radius:4px;padding:11px 8px 8px;margin-bottom:40px}.doboard_task_widget-login .doboard_task_widget-accordion{height:0;overflow:hidden;opacity:0;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-accordion{height:auto;overflow:visible;opacity:1}.doboard_task_widget-login .doboard_task_widget-input-container:last-child{margin-bottom:0}.doboard_task_widget-login span{display:block;position:relative;padding-right:24px;cursor:pointer}.doboard_task_widget-login.active span{margin-bottom:24px}.doboard_task_widget-login span::after{position:absolute;top:0;right:4px;content:"";display:block;width:10px;height:10px;transform:rotate(45deg);border:2px solid #40484F;border-radius:1px;border-top:none;border-left:none;transition:all .2s ease-in-out}.doboard_task_widget-login.active span::after{transform:rotate(-135deg);top:7px}.doboard_task_widget-login .doboard_task_widget-field+label,.doboard_task_widget-login .doboard_task_widget-input-container .doboard_task_widget-field{background:#F9FBFD}.doboard_task_widget-submit_button{height:48px;width:100%;margin-bottom:10px;color:#FFF;background:#22A475;border:none;border-radius:6px;font-family:Inter,sans-serif;font-weight:700;font-size:16px;line-height:150%;cursor:pointer;transition:all .2s ease-in-out}.doboard_task_widget-submit_button:hover{background:#1C7857;color:#FFF}.doboard_task_widget-submit_button:disabled{background:rgba(117,148,138,.92);color:#FFF;cursor:wait}.doboard_task_widget-issue-title{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-hidden_element{opacity:0}.doboard_task_widget-message-wrapper{border-radius:4px;padding:8px;margin-bottom:14px;display:grid;justify-items:center}.doboard_task_widget-error_message-wrapper.hidden,.doboard_task_widget-message-wrapper.hidden{display:none}.doboard_task_widget-error_message{background:#fdd;border:1px solid #cf6868}.doboard_task_widget-notice_message{background:#dde9ff;border:1px solid #68a6cf}#doboard_task_widget-error_message-header{font-weight:600}#doboard_task_widget-error_message{text-align:center}.doboard_task_widget-task_row{display:flex;max-height:55px;padding-bottom:4px;margin-bottom:20px;cursor:pointer;align-items:center;justify-content:space-between}.doboard_task_widget-task_row:last-child{margin-bottom:0}.doboard_task_widget-task-text_bold{font-weight:700}.doboard_task_widget-text_selection,.doboard_task_widget-text_selection.image-highlight>img{background:rgba(208,213,127,.68)}.doboard_task_widget-issues_list_empty{text-align:center;margin:20px 0}.doboard_task_widget-avatar_container{display:flex;height:44px;width:44px;border-radius:50%;background-repeat:no-repeat;background-position:center;background-size:100%}.doboard_task_widget-comment_data_owner .doboard_task_widget-avatar_container{opacity:0}.doboard_task_widget-avatar_placeholder{min-height:44px;min-width:44px;border-radius:50%;font-size:24px;line-height:1.2083333333;padding:0;background:#1C7857;display:inline-grid;align-content:center;justify-content:center}.doboard_task_widget-avatar-initials{color:#FFF;width:inherit;text-align:center}.doboard_task_widget-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover}.doboard_task_widget-description_container{height:55px;width:calc(100% - 44px - 8px);border-bottom:1px solid #EBF0F4;display:block;margin-left:8px}.doboard_task_widget-task_row:last-child .doboard_task_widget-description_container{border-bottom:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{overflow:auto;max-height:85vh;display:none}.doboard_task_widget-all_issues-container{scrollbar-width:none}.doboard_task_widget-content.doboard_task_widget-concrete_issue{padding:0}.doboard_task_widget-concrete_issues-container{padding:10px 16px 5px}.doboard_task_widget-all_issues-container::-webkit-scrollbar,.doboard_task_widget-all_issues::-webkit-scrollbar,.doboard_task_widget-concrete_issues-container::-webkit-scrollbar,.doboard_task_widget-content::-webkit-scrollbar{width:0}.doboard_task_widget-task_title{font-weight:700;display:flex;justify-content:space-between;align-items:center}.doboard_task_widget-task_title span{font-weight:700;display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-task_title-details{display:flex;max-width:calc(100% - 40px);align-items:center}.doboard_task_widget-task_title-unread_block{opacity:0;height:8px;width:8px;background:#f08c43;border-radius:50%;display:inline-block;font-size:8px;font-weight:600;position:relative}.doboard_task_widget-task_title-unread_block.unread{opacity:1}.doboard_task_widget-task_last_message{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:85%;height:36px}.doboard_task_widget_return_to_all{display:flex;gap:8px;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:wrap}.doboard_task_widget-task_title-last_update_time{font-family:Inter,serif;font-weight:400;font-style:normal;font-size:11px;leading-trim:NONE;line-height:100%}.doboard_task_widget-task_title_public_status_img{opacity:50%;margin-left:5px;scale:90%}.doboard_task_widget-description-textarea{resize:none}.doboard_task_widget-switch_row{display:flex;align-items:center;gap:12px;margin:16px 0;justify-content:space-between}.doboard_task_widget-switch-label{font-weight:600;font-size:16px;height:24px;align-content:center}.doboard_task_widget-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}.doboard_task_widget-switch input{opacity:0;width:0;height:0}.doboard_task_widget-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;border-radius:24px;transition:.2s}.doboard_task_widget-slider:before{position:absolute;content:"";height:20px;width:20px;left:2px;bottom:2px;background-color:#fff;border-radius:50%;transition:.2s}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider{background-color:#65D4AC}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider:before{transform:translateX(20px)}.doboard_task_widget-switch-img{width:24px;height:24px;flex-shrink:0}.doboard_task_widget-switch-center{display:flex;gap:2px;flex-direction:column;-moz-flex-direction:column;flex:1 1 auto;min-width:0}.doboard_task_widget-switch-desc{display:block;font-size:12px;color:#707A83;margin:0;line-height:1.2;max-width:180px;word-break:break-word}.doboard_task_widget-concrete_issue-day_content{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-concrete_issue_day_content-month_day{text-align:center;font-weight:400;font-size:12px;line-height:100%;padding:8px;opacity:.75}.doboard_task_widget-concrete_issue_day_content-messages_wrapper{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-comment_data_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;margin-bottom:15px;align-items:flex-end}.doboard_task_widget-comment_text_container{position:relative;width:calc(100% - 44px - 5px);height:auto;margin-left:5px;background:#F3F6F9;border-radius:16px}.doboard_task_widget-comment_text_container:after{content:"";position:absolute;bottom:0;left:-5px;width:13px;height:19px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAxMyAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAuMTEyNTggMTkuMDMzNEM1LjI5NDg2IDE5LjgyMDEgMTAuNjEwNSAxNy45NzQxIDEyLjI3MTUgMTYuMTcxM0MxMi4yNzE1IDE2LjE3MTMgMTAuOTYyMyAtMi43ODEyNCA1LjA5NTU0IDAuMzQ5MDc5QzUuMDc0NCAxLjYxNDU0IDUuMDk1NTQgNS45OTQ5IDUuMDk1NTQgNi43NDA2OUM1LjA5NTU0IDE3LjA2NjIgLTAuODg0MDEyIDE4LjQ0MDEgMC4xMTI1OCAxOS4wMzM0WiIgZmlsbD0iI0YzRjZGOSIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container{background:#EBFAF4}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container:after{left:auto;right:-5px;height:13px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMyAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjc3NzEgMTIuMzA2NkM3LjMzMTM1IDEzLjA5MzcgMS43NDU0NCAxMS4yNDY5IDAgOS40NDMxOUw3LjM5MTYgMEM3LjM5MTYgMTAuMzMwMyAxMy44MjQ0IDExLjcxMzEgMTIuNzc3MSAxMi4zMDY2WiIgZmlsbD0iI0VCRkFGNCIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_body,.doboard_task_widget-comment_time{position:relative;z-index:1}.doboard_task_widget-comment_body{padding:6px 8px;min-height:30px}.doboard_task_widget-comment_time{font-weight:400;font-size:11px;opacity:.8;position:absolute;bottom:6px;right:6px}.doboard_task_widget-comment_body-img-strict{max-width:-webkit-fill-available;height:100px;margin-right:5px}.doboard_task_widget-send_message{padding:14px 10px;border-top:1px solid #BBC7D1;position:sticky;background:#fff;bottom:0;z-index:4}.doboard_task_widget-send_message_elements_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:nowrap;justify-content:space-between;align-items:end}.doboard_task_widget-send_message_elements_wrapper button{height:37px}.doboard_task_widget-send_message_input_wrapper{position:relative;display:inline-grid;align-items:center;justify-items:center;flex-grow:1;padding:0 6px}.doboard_task_widget-send_message_input_wrapper textarea{position:relative;width:100%;height:37px;border:none;outline:0;box-shadow:none;border-radius:24px;background:#F3F6F9;resize:none;margin-bottom:0!important;transition:height .2s ease-in-out;padding:8px;box-sizing:border-box}.doboard_task_widget-send_message_input_wrapper textarea.high{height:170px}.doboard_task_widget-send_message_input_wrapper textarea:focus{background:#F3F6F9;border-color:#007bff;outline:0}.doboard_task_widget-send_message_button,.doboard_task_widget-send_message_paperclip{display:inline-grid;border:none;background:0 0;cursor:pointer;padding:0;align-items:center}.doboard_task_widget-send_message_button:hover,.doboard_task_widget-send_message_paperclip:hover rect{fill:#45a049}.doboard_task_widget-send_message_button:active,.doboard_task_widget-send_message_paperclip:active{transform:scale(.98)}.doboard_task_widget-spinner_wrapper_for_containers{display:flex;justify-content:center;align-items:center;min-height:60px;width:100%}.doboard_task_widget-spinner_for_containers{width:40px;height:40px;border-radius:50%;background:conic-gradient(transparent,#1C7857);mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#fff 0);animation:spin 1s linear infinite}.doboard_task_widget__file-upload__wrapper{display:none;border:1px solid #BBC7D1;margin-top:14px;padding:0 10px 10px;border-radius:4px}.doboard_task_widget__file-upload__list-header{text-align:left;font-size:.9em;margin:5px 0;color:#444c529e}.doboard_task_widget__file-upload__file-input-button{display:none}.doboard_task_widget__file-upload__file-list{border:1px solid #ddd;border-radius:5px;padding:6px;max-height:200px;overflow-y:auto;background:#f3f6f9}.doboard_task_widget__file-upload__file-item{display:flex;justify-content:space-between;align-items:center;padding:4px;border-bottom:1px solid #bbc7d16b}.doboard_task_widget__file-upload__file-item:last-child{border-bottom:none}.doboard_task_widget__file-upload__file_info{display:inline-flex;align-items:center}.doboard_task_widget__file-upload__file-name{font-weight:700;font-size:.9em}.doboard_task_widget__file-upload__file-item-content{width:100%}.doboard_task_widget__file-upload__file_size{color:#666;font-size:.8em;margin-left:6px}.doboard_task_widget__file-upload__remove-btn{background:#22a475;color:#fff;border:none;border-radius:3px;cursor:pointer}.doboard_task_widget__file-upload__error{display:block;margin:7px 0 0;padding:7px;border-radius:4px;background:#fdd;border:1px solid #cf6868}@keyframes spin{to{transform:rotate(1turn)}}@media (max-width:480px){.doboard_task_widget{position:fixed;right:0;top:auto;bottom:0;margin:0 20px 20px;box-sizing:border-box;transform:translateZ(0);-moz-transform:translateZ(0);will-change:transform;max-height:90vh}.doboard_task_widget-container{width:100%;max-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-content{height:auto;max-height:none;scrollbar-width:none}.doboard_task_widget-content::-webkit-scrollbar{display:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{max-height:80vh}}@supports (-webkit-overflow-scrolling:touch){.doboard_task_widget{position:fixed}}`;
 /**
  * Try to find selected image in selection.
  * @param selection
@@ -1927,21 +1983,6 @@ function getSelectedData(selection) {
         focusOffset,
     } = selection;
 
-    // 1) Check the selection is allowed
-    // 2) Check the selection is "simple" or "complex"
-    // 3) Get selection data: nodePath, pageURL, Selected range data
-
-    const isSelectionForbidden = spotfixIsSelectionForbidden(selection)
-    if ( isSelectionForbidden ) {
-        const selectionForbiddenReason = isSelectionForbidden.forbidden ? isSelectionForbidden.forbidden : 'The selected range is not allowed to create a spot.';
-        // @ToDo we can return selection forbidden reason to show this ins the widget
-        return false;
-    }
-
-    if ( spotfixIsSelectionIsSimple() ) {
-
-    }
-
     let selectedText = selection.toString();
     let isTagOfImageType = false;
     const selectedImage = getSelectedImage(selection);
@@ -1979,63 +2020,6 @@ function getSelectedData(selection) {
         isTagOfImageType: isTagOfImageType,
         isWholeTagSelected: isWholeTagSelected
     };
-}
-
-/**
- * Check if the selection is not correct - do not allow to select:
- * - All page (parent is <body> or <html>)
- * - Can not allow to add <span> to the element by specification
- * - Several different nested nodes (@ToDo make this)
- *
- * @param selection
- * @return {{forbidden: string}|boolean}
- */
-function spotfixIsSelectionForbidden(selection) {
-    if ( selection.rangeCount > 1 ) {
-        return {
-            forbidden: 'The selected range is more than one instance.'
-        }
-    }
-    const selectedRange = selection.getRangeAt(0);
-    const commonParentElement = selectedRange.commonAncestorContainer
-    if ( spotfixCanAddSpanToElement(commonParentElement) ) {
-        return {
-            forbidden: 'Not allowed to add `span` here.'
-        }
-    }
-    return false;
-}
-
-function spotfixCanAddSpanToElement(targetElement) {
-    if ( ! targetElement ) {
-        return false;
-    }
-
-    const tagName = targetElement.tagName;
-
-    // Allow to add `span`
-    const allowedParents = ['LI', 'P', 'DIV', 'SECTION', 'ARTICLE', 'MAIN', 'ASIDE', 'NAV', 'HEADER', 'FOOTER', 'SPAN', 'TD', 'TH', 'BUTTON', 'A'];
-
-    // Not allow to add `span`
-    const forbiddenParents = ['UL', 'OL', 'TABLE', 'TBODY', 'THEAD', 'TFOOT', 'TR', 'SELECT', 'OPTGROUP'];
-
-    if (forbiddenParents.includes(tagName)) {
-        // Not allow to add `span` as the direct child
-        return false;
-    }
-
-    if (allowedParents.includes(tagName)) {
-        // Allow to add `span` as the direct child
-        return true;
-    }
-
-    // Unknown target element
-    return true;
-}
-
-
-function spotfixIsSelectionIsSimple(selection) {
-    return selection.anchorNode === selection.focusNode;
 }
 
 /**
@@ -2444,12 +2428,12 @@ class FileUploader {
         if (!this.fileList) return;
 
         if (this.files.length === 0) {
-            this.fileList.innerHTML = '<div style="text-align: center; color: #444c529e;">No files attached</div>';
+            this.fileList.innerHTML = ksesFilter('<div style="text-align: center; color: #444c529e;">No files attached</div>');
             return;
         }
 
         const fileItems = this.files.map(fileData => this.createFileItem(fileData));
-        this.fileList.innerHTML = '';
+        this.fileList.innerHTML = ksesFilter('');
         fileItems.forEach(item => this.fileList.appendChild(item));
     }
 
@@ -2465,7 +2449,7 @@ class FileUploader {
         const fileItem = document.createElement('div');
         fileItem.className = 'doboard_task_widget__file-upload__file-item';
 
-        fileItem.innerHTML = `
+        fileItem.innerHTML = ksesFilter(`
             <div class="doboard_task_widget__file-upload__file-item-content">
                 <div class="doboard_task_widget__file-upload__file_info">
                     <div class="doboard_task_widget__file-upload__file-name">${this.escapeHtmlHandler(String(file.name))}</div>
@@ -2473,7 +2457,7 @@ class FileUploader {
                 </div>
             </div>
             <button type="button" class="doboard_task_widget__file-upload__remove-btn" data-file-id="${id}" aria-label="Remove file">×</button>
-        `;
+        `);
 
         const removeBtn = fileItem.querySelector('.doboard_task_widget__file-upload__remove-btn');
         removeBtn.addEventListener('click', () => this.removeFile(id));

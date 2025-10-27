@@ -446,6 +446,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 85%;
+    height: 36px;
 }
 
 .doboard_task_widget_return_to_all {
@@ -635,6 +636,12 @@
     position: absolute;
     bottom: 6px;
     right: 6px;
+}
+
+.doboard_task_widget-comment_body-img-strict {
+    max-width: -webkit-fill-available;
+    height: 100px;
+    margin-right: 5px;
 }
 
 /** SENDING NEW COMMENT **/
