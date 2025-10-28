@@ -19,15 +19,37 @@ document.addEventListener('selectionchange', function(e) {
     widgetTimeout = setTimeout(() => {
         const selection = window.getSelection();
         if (
-            selection.type === 'Range'
+            selection.type === 'Range' &&
+            isSelectionCorrect(selection)
         ) {
+            // Check if selection is inside the widget
+            let anchorNode = selection.anchorNode;
+            let focusNode = selection.focusNode;
+            if (isInsideWidget(anchorNode) || isInsideWidget(focusNode)) {
+                return;
+            }
             const selectedData = getSelectedData(selection);
-            let widgetExist = document.querySelector('.doboard_task_widget-container');
-            openWidget(selectedData, widgetExist, 'create_issue');
+            openWidget(selectedData, 'create_issue');
         }
     }, 1000);
 });
 
+/**
+ * Check if a node is inside the task widget.
+ * @param {*} node
+ * @returns {boolean}
+ */
+function isInsideWidget(node) {
+    if (!node) return false;
+    let el = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+    while (el) {
+        if (el.classList && el.classList.contains('doboard_task_widget')) {
+            return true;
+        }
+        el = el.parentElement;
+    }
+    return false;
+}
 
 /**
  * Open the widget to create a task.
@@ -35,9 +57,8 @@ document.addEventListener('selectionchange', function(e) {
  * @param {*} widgetExist
  * @param {*} type
  */
-function openWidget(selectedData, widgetExist, type) {
-
-    if (selectedData && !widgetExist) {
+function openWidget(selectedData, type) {
+    if (selectedData) {
         new CleanTalkWidgetDoboard(selectedData, type);
     }
 }
@@ -139,8 +160,10 @@ function getTaskFullDetails(tasksDetails, taskId) {
 function getAvatarData(authorDetails) {
     let avatarStyle;
     let avatarCSSClass;
-    let taskAuthorInitials = authorDetails.taskAuthorName && authorDetails.taskAuthorName != 'Anonymous' ? authorDetails.taskAuthorName.trim().charAt(0).toUpperCase() : null;
-    let hideAvatar = authorDetails.hasOwnProperty('userIsIssuer') && authorDetails.userIsIssuer === true;
+    let taskAuthorInitials =
+        authorDetails.taskAuthorName && authorDetails.taskAuthorName != 'Anonymous'
+            ? authorDetails.taskAuthorName.trim().charAt(0).toUpperCase()
+            : null;
     let initialsClass = 'doboard_task_widget-avatar-initials';
     if (authorDetails.taskAuthorAvatarImgSrc === null && taskAuthorInitials !== null) {
         avatarStyle = 'display: flex;background-color: #f8de7e;justify-content: center;align-items: center;';
@@ -220,4 +243,115 @@ async function checkIfTasksHasSiteOwnerUpdates(allTasksData, params) {
         }
     }
     return result;
+}
+
+/**
+ * Check if the selection is correct - do not allow to select all page, or several different nesting nodes, or something else
+ * @param selection
+ * @return {boolean}
+ */
+function isSelectionCorrect(selection) {
+    return true;
+}
+
+/**
+ * Sanitize HTML
+ * @param {*} html
+ * @param {*} options
+ * @returns 
+ */
+function ksesFilter(html, options = false) {
+    let allowedTags = {
+        a: true,
+        b: true,
+        i: true,
+        strong: true,
+        em: true,
+        ul: true,
+        ol: true,
+        li: true,
+        p: true,
+        br: true,
+        span: true,
+        div: true,
+        img: true,
+        input: true,
+        label: true,
+        textarea: true,
+        button: true,
+    };
+    let allowedAttrs = {
+        a: ['href', 'title', 'target', 'rel', 'style', 'class'],
+        span: ['style', 'class', 'id'],
+        p: ['style', 'class'],
+        div: ['style', 'class', 'id', 'data-node-path', 'data-task-id'],
+        img: ['src', 'alt', 'title', 'class', 'style', 'width', 'height'],
+        input: ['type', 'class', 'style', 'id', 'multiple', 'accept', 'value'],
+        label: ['for', 'class', 'style'],
+        textarea: ['class', 'id', 'style', 'rows', 'cols', 'readonly', 'required', 'name'],
+        button: ['type', 'class', 'style', 'id'],
+    };
+
+    if (options && options.template === 'list_issues') {
+        allowedTags = { ...allowedTags, img: false, br: false };
+    }
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    function clean(node) {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+            const tag = node.tagName.toLowerCase();
+
+            if (options) {
+                if (allowedTags[tag]) {
+                    // Special handling for images in 'concrete_issue_day_content' template (wrap img in link always)
+                    if (tag === 'img' && options.template === 'concrete_issue_day_content' && options.imgFilter) {
+                        const src = node.getAttribute('src') || '';
+                        const alt = node.getAttribute('alt') || '[image]';
+                        const link = doc.createElement('a');
+                        link.href = src;
+                        link.target = '_blank';
+                        link.className = 'doboard_task_widget-img-link';
+                        const img = doc.createElement('img');
+                        img.src = src;
+                        img.alt = alt;
+                        img.className = 'doboard_task_widget-comment_body-img-strict';
+                        link.appendChild(img);
+                        node.parentNode.insertBefore(link, node);
+                        node.remove();
+                        return;
+                    }
+                }
+
+                if (!allowedTags[tag]) {
+                    // Special handling for images in 'list_issues' template
+                    if (tag === 'img' && options.template === 'list_issues' && options.imgFilter) {
+                        const src = node.getAttribute('src') || '';
+                        const alt = node.getAttribute('alt') || '[image]';
+                        const link = doc.createElement('a');
+                        link.href = src;
+                        link.target = '_blank';
+                        link.textContent = alt;
+                        node.parentNode.insertBefore(link, node);
+                    }
+                    node.remove();
+                    return;
+                }
+            }
+
+            // Remove disallowed attributes
+            [...node.attributes].forEach(attr => {
+                const attrName = attr.name.toLowerCase();
+                if (!allowedAttrs[tag]?.includes(attrName) ||
+                    attrName.startsWith('on') || // Remove event handlers
+                    attr.value.toLowerCase().includes('javascript:')) {
+                    node.removeAttribute(attr.name);
+                }
+            });
+        }
+        // Recursively clean children
+        [...node.childNodes].forEach(clean);
+    }
+    [...doc.body.childNodes].forEach(clean);
+    return doc.body.innerHTML;
 }

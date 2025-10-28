@@ -24,14 +24,12 @@ class CleanTalkWidgetDoboard {
             chevronBack: SpotFixSVGLoader.getAsDataURI('chevronBack'),
             buttonPaperClip: SpotFixSVGLoader.getAsDataURI('buttonPaperClip'),
             buttonSendMessage: SpotFixSVGLoader.getAsDataURI('buttonSendMessage'),
-            backgroundInputMessage: SpotFixSVGLoader.getAsDataURI('backgroundInputMessage'),
             logoDoBoardWhite: SpotFixSVGLoader.getAsDataURI('logoDoBoardWhite'),
             logoDoBoardWrap: SpotFixSVGLoader.getAsDataURI('logoDoBoardWrap'),
             iconSpotPublic: SpotFixSVGLoader.getAsDataURI('iconSpotPublic'),
             iconSpotPrivate: SpotFixSVGLoader.getAsDataURI('iconSpotPrivate'),
-            backgroundCloudCommentSelf: SpotFixSVGLoader.getAsDataURI('backgroundCloudCommentSelf'),
-            backgroundCloudCommentOthers: SpotFixSVGLoader.getAsDataURI('backgroundCloudCommentOthers'),
         };
+        this.fileUploader = new FileUploader(this.escapeHtml);
     }
 
     /**
@@ -195,7 +193,7 @@ class CleanTalkWidgetDoboard {
                 // Make the submit button disable with spinner
                 const submitButton = document.getElementById('doboard_task_widget-submit_button');
                 submitButton.disabled = true;
-                submitButton.innerText = 'Creating spot...';
+                submitButton.innerText = ksesFilter('Creating spot...');
 
                 let taskDetails = {
                     taskTitle: taskTitle,
@@ -264,7 +262,7 @@ class CleanTalkWidgetDoboard {
     async createWidgetElement(type, showOnlyCurrentPage = true) {
         const widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
         widgetContainer.className = 'doboard_task_widget';
-        widgetContainer.innerHTML = '';
+        widgetContainer.innerHTML = ksesFilter('');
         widgetContainer.removeAttribute('style');
 
         let templateName = '';
@@ -332,6 +330,7 @@ class CleanTalkWidgetDoboard {
                     const selectedData = getSelectedData(selection);
                     //this.highlightElements([selectedData]);
                     scrollToNodePath(selectedData.nodePath);
+                    this.positionWidgetContainer();
                 }
                 // bind creation events
                 this.bindCreateTaskEvents();
@@ -361,7 +360,14 @@ class CleanTalkWidgetDoboard {
                         const taskId = elTask.taskId;
                         const taskTitle = elTask.taskTitle;
                         const taskMetaString = elTask.taskMeta;
-                        const taskData = taskMetaString ? JSON.parse(taskMetaString) : null;
+                        let taskData = null;
+                        if (taskMetaString) {
+                            try {
+                                taskData = JSON.parse(taskMetaString);
+                            } catch (error) {
+                                taskData = null;
+                            }
+                        }
                         const currentPageURL = taskData ? taskData.pageURL : '';
                         const taskNodePath = taskData ? taskData.nodePath : '';
 
@@ -390,9 +396,9 @@ class CleanTalkWidgetDoboard {
                                 taskAuthorName: taskFullDetails.taskAuthorName,
                                 taskPublicStatusImgSrc: taskPublicStatusImgSrc,
                                 taskPublicStatusHint: taskPublicStatusHint,
-                                taskLastMessage: taskFullDetails.lastMessageText,
+                                taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
                                 taskLastUpdate: taskFullDetails.lastMessageTime,
-                                nodePath: taskNodePath,
+                                nodePath: this.sanitizeNodePath(taskNodePath),
                                 taskId: taskId,
                                 avatarCSSClass: avatarData.avatarCSSClass,
                                 avatarStyle: avatarData.avatarStyle,
@@ -404,18 +410,21 @@ class CleanTalkWidgetDoboard {
                             if (taskOwnerReplyIsUnread) {
                                 listIssuesTemplateVariables.classUnread = 'unread';
                             }
+
                             document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += this.loadTemplate('list_issues', listIssuesTemplateVariables);
 
-                            spotsToBeHighlighted.push(taskData);
+                            if ( this.isSpotHaveToBeHighlighted(taskData) ) {
+                                spotsToBeHighlighted.push(taskData);
+                            }
                         }
                     }
                     this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                     this.savedIssuesQuantityAll = tasks.length;
                     this.highlightElements(spotsToBeHighlighted);
-                    document.querySelector('.doboard_task_widget-header span').innerText += ' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll);
+                    document.querySelector('.doboard_task_widget-header span').innerText += ksesFilter(' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
                 }
                 if (tasks.length === 0 || issuesQuantityOnPage === 0) {
-                    document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>';
+                    document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = ksesFilter('<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>');
                 }
 
                 // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
@@ -423,7 +432,7 @@ class CleanTalkWidgetDoboard {
                 hideContainersSpinner(false);
                 break;
 
-            case 'concrete_issue':
+        case 'concrete_issue':
 
                 tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData);
                 const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId);
@@ -431,7 +440,7 @@ class CleanTalkWidgetDoboard {
                 // Update issue title in the interface
                 const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
                 if (issueTitleElement) {
-                    issueTitleElement.innerText = taskDetails.issueTitle;
+                    issueTitleElement.innerText = ksesFilter(taskDetails.issueTitle);
                 }
 
                 templateVariables.issueTitle = taskDetails.issueTitle;
@@ -466,27 +475,24 @@ class CleanTalkWidgetDoboard {
                 let userIsIssuer = false;
                 if ( taskDetails.issueComments.length > 0 ) {
                     storageRemoveUnreadUpdateForTaskID(taskDetails.taskId);
-                    issuesCommentsContainer.innerHTML = '';
+                    issuesCommentsContainer.innerHTML = ksesFilter('');
                     for (const comment of taskDetails.issueComments) {
                         userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
                         const avatarData = getAvatarData({
                             taskAuthorAvatarImgSrc: comment.commentAuthorAvatarSrc,
                             taskAuthorName: comment.commentAuthorName,
-                            userIsIssuer: userIsIssuer
                         });
                         const commentData = {
                             commentAuthorName: comment.commentAuthorName,
-                            commentBody: this.escapeHtml(comment.commentBody),
+                            commentBody: comment.commentBody,
                             commentDate: comment.commentDate,
                             commentTime: comment.commentTime,
                             issueTitle: templateVariables.issueTitle,
-                            commentContainerBackgroundSrc: userIsIssuer
-                                ? this.srcVariables.backgroundCloudCommentSelf
-                                : this.srcVariables.backgroundCloudCommentOthers,
                             avatarCSSClass: avatarData.avatarCSSClass,
                             avatarStyle: avatarData.avatarStyle,
                             taskAuthorInitials: avatarData.taskAuthorInitials,
-                            initialsClass: avatarData.initialsClass
+                            initialsClass: avatarData.initialsClass,
+                            issueMessageClassOwner: userIsIssuer ? 'owner' : 'guest',
                         };
                         if (dayMessagesData[comment.commentDate] === undefined) {
                             dayMessagesData[comment.commentDate] = [];
@@ -513,7 +519,23 @@ class CleanTalkWidgetDoboard {
                     }
                     issuesCommentsContainer.innerHTML = daysWrapperHTML;
                 } else {
-                    issuesCommentsContainer.innerHTML = 'No comments';
+                    issuesCommentsContainer.innerHTML = ksesFilter('No comments');
+                }
+
+                // textarea (new comment) behaviour
+                const textarea = document.querySelector('.doboard_task_widget-send_message_input');
+                if (textarea) {
+                    function handleTextareaChange() {
+                        const triggerChars = 40;
+
+                        if (this.value.length > triggerChars) {
+                            this.classList.add('high');
+                        } else {
+                            this.classList.remove('high');
+                        }
+                    }
+                    textarea.addEventListener('input', handleTextareaChange)
+                    textarea.addEventListener('change', handleTextareaChange)
                 }
 
                 // Hide spinner preloader
@@ -528,23 +550,47 @@ class CleanTalkWidgetDoboard {
                     });
                 }, 0);
 
-                const sendForm = document.querySelector('.doboard_task_widget-send_message form');
-                if (sendForm) {
-                    sendForm.addEventListener('submit', async (e) => {
+                const sendButton = document.querySelector('.doboard_task_widget-send_message_button');
+                if (sendButton) {
+                    this.fileUploader.init();
+                    let widgetClass = this;
+                    sendButton.addEventListener('click', async (e) => {
                         e.preventDefault();
-                        const input = sendForm.querySelector('.doboard_task_widget-send_message_input');
+
+                        const sendMessageContainer = sendButton.closest('.doboard_task_widget-send_message');
+                        const input = sendMessageContainer.querySelector('.doboard_task_widget-send_message_input');
+
                         const commentText = input.value.trim();
                         if (!commentText) return;
+
+                        // Add other fields handling here
+
                         input.disabled = true;
+                        sendButton.disabled = true;
+
+                        let newCommentResponse = null;
+
                         try {
-                            await addTaskComment(this.params, this.currentActiveTaskId, commentText);
+                            newCommentResponse = await addTaskComment(this.params, this.currentActiveTaskId, commentText);
                             input.value = '';
                             await this.createWidgetElement('concrete_issue');
                             hideContainersSpinner(false);
                         } catch (err) {
                             alert('Error when adding a comment: ' + err.message);
                         }
+
+                        if (widgetClass.fileUploader.hasFiles() && newCommentResponse !== null && newCommentResponse.hasOwnProperty('commentId')) {
+                            const sessionId = localStorage.getItem('spotfix_session_id');
+                            const attachmentsSendResult = await widgetClass.fileUploader.sendAttachmentsForComment(widgetClass.params, sessionId, newCommentResponse.commentId);
+                            if (!attachmentsSendResult.success) {
+                                widgetClass.fileUploader.showError('Some files where no sent, see details in the console.');
+                                const toConsole = JSON.stringify(attachmentsSendResult);
+                                console.log(toConsole);
+                            }
+                        }
+
                         input.disabled = false;
+                        sendButton.disabled = false;
                     });
                 }
                 break;
@@ -563,10 +609,7 @@ class CleanTalkWidgetDoboard {
 
         const paperclipController = document.querySelector('.doboard_task_widget-send_message_paperclip');
         if ( paperclipController ) {
-            paperclipController.addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('This action is not implemented yet..');
-            });
+            this.fileUploader.bindPaperClipAction(paperclipController);
         }
 
         document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', () => {
@@ -585,8 +628,15 @@ class CleanTalkWidgetDoboard {
     bindIssuesClick() {
         document.querySelectorAll('.issue-item').forEach(item => {
             item.addEventListener('click', async () => {
-                const nodePath = JSON.parse(item.getAttribute('data-node-path'));
-                scrollToNodePath(nodePath);
+                let nodePath = null;
+                try {
+                    nodePath = JSON.parse(item.getAttribute('data-node-path'));
+                } catch (error) {
+                    nodePath = null;
+                }
+                if (nodePath) {
+                    scrollToNodePath(nodePath);
+                }
                 this.currentActiveTaskId = item.getAttribute('data-task-id');
                 await this.createWidgetElement('concrete_issue');
 
@@ -617,14 +667,11 @@ class CleanTalkWidgetDoboard {
 
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
-            let replacement = this.escapeHtml(String(value));
-            if ( templateName === 'concrete_issue_messages' || templateName === 'concrete_issue_day_content' ) {
-                replacement = value;
-            }
+            let replacement = typeof ksesFilter === 'function' ? ksesFilter(String(value), {template: templateName, imgFilter: true}) : this.escapeHtml(String(value));
             template = template.replaceAll(placeholder, replacement);
         }
 
-        return template;
+        return ksesFilter(template, {template: templateName});
     }
 
     escapeHtml = (unsafe) => {
@@ -650,7 +697,7 @@ class CleanTalkWidgetDoboard {
         });
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
         if ( taskCountElement ) {
-            taskCountElement.innerText = filteredTasks.length;
+            taskCountElement.innerText = ksesFilter(filteredTasks.length);
             taskCountElement.classList.remove('hidden');
         }
     }
@@ -729,7 +776,12 @@ class CleanTalkWidgetDoboard {
     getTaskHighlightData(taskIdToSearch) {
         const currentTaskData = this.allTasksData.find((element) => element.taskId.toString() === taskIdToSearch.toString());
         if (currentTaskData && currentTaskData.taskMeta !== undefined) {
-            const currentTaskSpotData = JSON.parse(currentTaskData.taskMeta);
+            let currentTaskSpotData = null;
+            try {
+                currentTaskSpotData = JSON.parse(currentTaskData.taskMeta);
+            } catch (error) {
+                currentTaskSpotData = null;
+            }
             if (currentTaskSpotData !== null && typeof currentTaskSpotData === 'object') {
                 return currentTaskSpotData;
             }
@@ -799,7 +851,7 @@ class CleanTalkWidgetDoboard {
                 result = result.slice(0, marker.position) + insertText + result.slice(marker.position);
             });
 
-            element.innerHTML = result;
+            element.innerHTML = ksesFilter(result);
         });
     }
 
@@ -829,8 +881,18 @@ class CleanTalkWidgetDoboard {
         // Customising accordion dropdown
         const accordionController = document.querySelector('.doboard_task_widget-login span');
         if ( accordionController ) {
+            const context = this;
             accordionController.addEventListener('click', function() {
                 this.closest('.doboard_task_widget-login').classList.toggle('active');
+                // Scroll
+                context.positionWidgetContainer();
+                setTimeout(() => {
+                    const contentContainer = document.querySelector('.doboard_task_widget-content');
+                    contentContainer.scrollTo({
+                        top: contentContainer.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }, 0);
             });
         }
 
@@ -844,15 +906,15 @@ class CleanTalkWidgetDoboard {
         const messageWrap = document.querySelector('.doboard_task_widget-message-wrapper');
 
         if (typeof messageText === 'string' && messageDiv !== null && messageWrap !== null) {
-            messageDiv.innerText = messageText;
+            messageDiv.innerText = ksesFilter(messageText);
             messageWrap.classList.remove('hidden');
             messageDiv.classList.remove('doboard_task_widget-notice_message', 'doboard_task_widget-error_message');
             if (type === 'notice') {
-                titleSpan.innerText = '';
+                titleSpan.innerText = ksesFilter('');
                 messageWrap.classList.add('doboard_task_widget-notice_message');
                 messageDiv.style.color = '#2a5db0';
             } else {
-                titleSpan.innerText = 'Registration error';
+                titleSpan.innerText = ksesFilter('Registration error');
                 messageWrap.classList.add('doboard_task_widget-error_message');
                 messageDiv.style.color = 'red';
             }
@@ -911,4 +973,22 @@ class CleanTalkWidgetDoboard {
             this.positionWidgetContainer();
         }, 100);
     }
+
+    /**
+     * Check nodePath, selectedData against page source and return is the provided nodePath is correct and can be highlighted
+     * @param taskData
+     * @return {boolean}
+     */
+    isSpotHaveToBeHighlighted(taskData) {
+        return true;
+    }
+
+    sanitizeNodePath(nodePath) {
+    let str = Array.isArray(nodePath) ? JSON.stringify(nodePath) : String(nodePath);
+    // Allow only digits, commas, spaces, and square brackets
+    if (/^[\[\]0-9,\s]*$/.test(str)) {
+        return str;
+    }
+    return '';
+}
 }

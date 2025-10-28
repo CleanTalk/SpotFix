@@ -43,29 +43,33 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-issue-title">{{issueTitle}}</div>
         <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
     </div>
-    <div class="doboard_task_widget-content doboard_task_widget-all_issues">
+    <div class="doboard_task_widget-content doboard_task_widget-concrete_issue">
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
             <div class="doboard_task_widget-spinner_for_containers"></div>
         </div>
         <div class="doboard_task_widget-concrete_issues-container">
         </div>
+        
         <div class="doboard_task_widget-send_message">
-            <form>
-                <div class="doboard_task_widget-send_message_elements_wrapper">
+            <div class="doboard_task_widget-send_message_elements_wrapper">
                 <button type="button" class="doboard_task_widget-send_message_paperclip">
                     <img src="{{buttonPaperClip}}" alt="Attach a file" title="Attach a file">
                 </button>
-
+    
                 <div class="doboard_task_widget-send_message_input_wrapper">
-                    <img class="doboard_task_widget-send_message_input-icon" src="{{backgroundInputMessage}}" alt="" title="">
-                    <input type="text" class="doboard_task_widget-send_message_input" placeholder="Write a message...">
+                    <textarea name="doboard_task_widget_message" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
                 </div>
-
-                <button type="submit" class="doboard_task_widget-send_message_button">
+    
+                <button type="button" class="doboard_task_widget-send_message_button">
                     <img src="{{buttonSendMessage}}" alt="Send message" title="Send message">
                 </button>
-                </div>
-            </form>
+            </div>
+            <div class="doboard_task_widget__file-upload__wrapper" id="doboard_task_widget__file-upload__wrapper">
+                <div class="doboard_task_widget__file-upload__list-header">Attached files</div>
+                <div class="doboard_task_widget__file-upload__file-list" id="doboard_task_widget__file-upload__file-list"></div>
+                <div class="doboard_task_widget__file-upload__error" id="doboard_task_widget__file-upload__error"></div>
+                <input type="file" class="doboard_task_widget__file-upload__file-input-button" id="doboard_task_widget__file-upload__file-input-button" multiple accept="*/*">
+            </div>
         </div>
     </div>
 </div>
@@ -83,12 +87,11 @@ class SpotFixTemplatesLoader {
 
     static concrete_issue_messages() {
         return `
-<div class="doboard_task_widget-comment_data_wrapper">
+<div class="doboard_task_widget-comment_data_wrapper doboard_task_widget-comment_data_{{issueMessageClassOwner}}">
     <div class="{{avatarCSSClass}}" style="{{avatarStyle}}">
         <span class="doboard_task_widget-avatar-initials {{initialsClass}}">{{taskAuthorInitials}}</span>
     </div>
     <div class="doboard_task_widget-comment_text_container">
-        <img src="{{commentContainerBackgroundSrc}}" alt="">
         <div class="doboard_task_widget-comment_body">{{commentBody}}</div>
         <div class="doboard_task_widget-comment_time">{{commentTime}}</div>
     </div>

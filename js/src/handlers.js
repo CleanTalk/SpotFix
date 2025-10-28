@@ -8,7 +8,13 @@ async function confirmUserEmail(emailConfirmationToken, params) {
 	// Get pending task from LS
 	const pendingTaskRaw = localStorage.getItem('spotfix_pending_task');
 	if (!pendingTaskRaw) throw new Error('No pending task data');
-	const pendingTask = JSON.parse(pendingTaskRaw);
+
+	let pendingTask;
+	try {
+		pendingTask = JSON.parse(pendingTaskRaw);
+	} catch (error) {
+		throw new Error('Invalid pending task data');
+	}
 
 	// Form taskDetails for task creation
 	const taskDetails = {
@@ -47,10 +53,11 @@ async function handleCreateTask(sessionId, taskDetails) {
 	try {
 		const result = await createTaskDoboard(sessionId, taskDetails);
 		if (result && result.taskId && taskDetails.taskDescription) {
+            const sign = `<br><br><br><em>The spot has been posted at the following URL <a href="${window.location.href}"><span class="task-link task-link--done">${window.location.href}</span></a></em>`;
 			await addTaskComment({
 				projectToken: taskDetails.projectToken,
 				accountId: taskDetails.accountId
-			}, result.taskId, taskDetails.taskDescription);
+			}, result.taskId, taskDetails.taskDescription+sign);
 		}
 		return result;
 	} catch (err) {
@@ -181,7 +188,7 @@ function registerUser(taskDetails) {
 	const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName, pageURL)
 		.then(response => {
 			if (response.accountExists) {
-				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container").innerText = 'Account already exists. Please, login usin your password.';
+				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container").innerText = ksesFilter('Account already exists. Please, login usin your password.');
 				document.querySelector(".doboard_task_widget-accordion>.doboard_task_widget-input-container.hidden").classList.remove('hidden');
 				document.getElementById("doboard_task_widget-user_password").focus();
 			} else if (response.sessionId) {
