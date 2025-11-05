@@ -11,10 +11,13 @@ class FileUploader {
         this.files = [];
 
         /** @type {number} Maximum allowed file size in bytes */
-        this.maxFileSize = 10 * 1024 * 1024; // 10MB
+        this.maxFileSize = 5 * 1024 * 1024; // 5MB
 
         /** @type {number} Maximum total size for all files in bytes */
-        this.maxTotalSize = 50 * 1024 * 1024; // 50MB
+        this.maxTotalSize = 25 * 1024 * 1024; // 25MB
+
+        /** @type {number} Maximum number of files allowed */
+        this.maxFiles = 5;
 
         /** @type {string[]} Allowed MIME types for files */
         this.allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain', 'application/msword'];
@@ -89,6 +92,10 @@ class FileUploader {
         this.clearError();
 
         const selectedFiles = Array.from(event.target.files);
+        if (this.files.length + selectedFiles.length > this.maxFiles) {
+            this.showError(`Maximum ${this.maxFiles} files can be attached.`);
+            return;
+        }
         const validFiles = selectedFiles.filter(file => this.validateFile(file));
 
         validFiles.forEach(file => this.addFile(file));

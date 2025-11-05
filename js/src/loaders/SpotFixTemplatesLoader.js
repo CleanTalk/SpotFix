@@ -53,7 +53,10 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-send_message">
             <div class="doboard_task_widget-send_message_elements_wrapper">
                 <button type="button" class="doboard_task_widget-send_message_paperclip">
-                    <img src="{{buttonPaperClip}}" alt="Attach a file" title="Attach a file">
+                    <img src="{{buttonPaperClip}}" alt="Attach a file">
+                    <div class="doboard_task_widget-paperclip-tooltip">
+                        Upload up to 5 JPG, PNG, GIF, PDF, TXT or DOC files (5MB each, 25MB total).
+                    </div>
                 </button>
     
                 <div class="doboard_task_widget-send_message_input_wrapper">
