@@ -750,6 +750,7 @@
 
 .doboard_task_widget-send_message_elements_wrapper button {
     height: 37px;
+    background: none;
 }
 
 .doboard_task_widget-send_message_input_wrapper {
