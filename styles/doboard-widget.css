@@ -751,6 +751,11 @@
 .doboard_task_widget-send_message_elements_wrapper button {
     height: 37px;
     background: none;
+    margin: 0;
+}
+
+.doboard_task_widget-send_message_elements_wrapper img {
+    margin: 0;
 }
 
 .doboard_task_widget-send_message_input_wrapper {
@@ -794,6 +799,7 @@
     cursor: pointer;
     padding: 0;
     align-items: center;
+    margin: 0;
 }
 
 .doboard_task_widget-send_message_button:hover, .doboard_task_widget-send_message_paperclip:hover rect {
