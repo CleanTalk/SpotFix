@@ -21,11 +21,11 @@
 .doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip {
     display: none;
     position: absolute;
-    left: 116px;
-    bottom: 100%;
-    transform: translateX(-50%) translateY(-8px);
+    left: 0;
+    bottom: 0;
+    transform: translateX(-3%) translateY(-43px);
     background: #545b61;
-    color: #FFFFFF;
+    color: #FFF;
     border: none;
     border-radius: 3px;
     padding: 10px 16px;
@@ -36,6 +36,7 @@
     max-width: 320px;
     text-align: left;
     pointer-events: none;
+    text-transform: none;
 }
 
 .doboard_task_widget-send_message_paperclip:hover .doboard_task_widget-paperclip-tooltip {
