@@ -667,7 +667,12 @@ class CleanTalkWidgetDoboard {
 
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
-            let replacement = typeof ksesFilter === 'function' ? ksesFilter(String(value), {template: templateName, imgFilter: true}) : this.escapeHtml(String(value));
+            // 1) For attributes we MUST use escapeHtml!
+            // 2) Only for HTML inserts we must clean data by ksesFilter
+            let replacement =
+                typeof ksesFilter === 'function' /* @ToDo check non-attribute placeholder here */?
+                    ksesFilter(String(value), {template: templateName, imgFilter: true}) :
+                    this.escapeHtml(String(value));
             template = template.replaceAll(placeholder, replacement);
         }
 
