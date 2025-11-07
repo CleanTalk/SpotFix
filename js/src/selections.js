@@ -138,62 +138,25 @@ function getSelectedData(selection) {
     const isSelectionForbidden = spotfixIsSelectionForbidden(selection)
     if ( isSelectionForbidden ) {
         const selectionForbiddenReason = isSelectionForbidden.forbidden ? isSelectionForbidden.forbidden : 'The selected range is not allowed to create a spot.';
-        // @ToDo we can return selection forbidden reason to show this ins the widget
+        // @ToDo we can return selection forbidden reason to show this in the widget
+        console.log(`Selected selection is forbidden: ${selectionForbiddenReason.toString()}`);
         return false;
     }
 
     const pageURL = window.location.href;
 
-    if ( spotfixIsSelectionIsSimple() ) {
+    if ( spotfixIsSelectionIsSimple(selection) ) {
         let selectedText = selection.toString();
         return {
             startSelectPosition: Math.min(anchorOffset, focusOffset),
             endSelectPosition: Math.max(anchorOffset, focusOffset),
             selectedText: selectedText,
             pageURL: pageURL,
-            nodePath: calculateNodePath(targetNode),
-            isTagOfImageType: isTagOfImageType,
-            isWholeTagSelected: isWholeTagSelected
+            nodePath: calculateNodePath(selection.focusNode),
         };
+    } else {
+        console.log(`Selection is complexly for highlighting`)
     }
-
-
-    let isTagOfImageType = false;
-    const selectedImage = getSelectedImage(selection);
-
-
-    if ( ! selectedText ) {
-        if (selectedImage === null) {
-            return createEmptySelectionData(pageURL);
-        } else {
-            selectedText = `${selectedImage.tagName.toUpperCase()} ${selection.anchorNode.offsetHeight.toString()} * ${selection.anchorNode.offsetWidth.toString()}`
-        }
-    }
-
-    if ( selectedImage ) {
-        isTagOfImageType = selectedImage.tagName;
-    }
-
-    const isWholeTagSelected = anchorOffset === 0 &&
-        focusOffset === 0 &&
-        selectedText.length > 0;
-
-    const targetNode = determineTargetNode(
-        selection,
-        isWholeTagSelected,
-        isTagOfImageType,
-        selectedImage
-    );
-
-    return {
-        startSelectPosition: Math.min(anchorOffset, focusOffset),
-        endSelectPosition: Math.max(anchorOffset, focusOffset),
-        selectedText: selectedText,
-        pageURL: pageURL,
-        nodePath: calculateNodePath(targetNode),
-        isTagOfImageType: isTagOfImageType,
-        isWholeTagSelected: isWholeTagSelected
-    };
 }
 
 /**
@@ -213,7 +176,7 @@ function spotfixIsSelectionForbidden(selection) {
     }
     const selectedRange = selection.getRangeAt(0);
     const commonParentElement = selectedRange.commonAncestorContainer
-    if ( spotfixCanAddSpanToElement(commonParentElement) ) {
+    if ( ! spotfixCanAddSpanToElement(commonParentElement) ) {
         return {
             forbidden: 'Not allowed to add `span` here.'
         }
@@ -235,7 +198,6 @@ function spotfixCanAddSpanToElement(targetElement) {
     }
 
     const tagName = targetElement.tagName;
-
     // Not allow to add `span` for these tags
     const forbiddenParents = ['UL', 'OL', 'TABLE', 'TBODY', 'THEAD', 'TFOOT', 'TR', 'SELECT', 'OPTGROUP'];
 
@@ -248,31 +210,15 @@ function spotfixCanAddSpanToElement(targetElement) {
     return true;
 }
 
-
+/**
+ * Checks if the current text selection is simple (within a single node)
+ *
+ * @param {Selection} selection - The Selection object to check
+ *
+ * @returns {boolean} True if selection is contained within a single node, false otherwise
+ */
 function spotfixIsSelectionIsSimple(selection) {
     return selection.anchorNode === selection.focusNode;
-}
-
-/**
- * Determines the target node for path calculation
- * @param {Selection} selection - DOM Selection object
- * @param {boolean} isWholeTagSelected - is entire tag selected
- * @param {boolean} isTagOfImageType - is tag of image type
- * @param {Node|null} selectedImage - if predefined image node exists
- * @returns {Node} Target DOM node
- */
-function determineTargetNode(selection, isWholeTagSelected = false,  isTagOfImageType = false, selectedImage = null) {
-    const { focusNode, anchorNode } = selection;
-
-    if (isWholeTagSelected) {
-        return anchorNode.parentElement;
-    }
-
-    if (isTagOfImageType && selectedImage) {
-        return selectedImage;
-    }
-
-    return focusNode.nodeName !== '#text' ? focusNode : focusNode.parentNode;
 }
 
 /**
@@ -322,21 +268,4 @@ function retrieveNodeFromPath(path) {
         }
     }
     return node;
-}
-
-/**
- * Creates empty selection data object
- * @param {string} pageURL - Current page URL
- * @returns {Object} Empty selection data
- */
-function createEmptySelectionData(pageURL) {
-    return {
-        startSelectPosition: 0,
-        endSelectPosition: 0,
-        selectedText: '',
-        pageURL: pageURL,
-        nodePath: '',
-        isWholeTagSelected: false,
-        isTagOfImageType: false,
-    };
 }
