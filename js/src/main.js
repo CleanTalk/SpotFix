@@ -12,6 +12,11 @@ function spotFixInit() {
 }
 
 document.addEventListener('selectionchange', function(e) {
+    // Do not run widget for non-document events (i.e. inputs focused)
+    if (e.target !== document) {
+        return;
+    }
+
     if (widgetTimeout) {
         clearTimeout(widgetTimeout);
     }
@@ -258,7 +263,7 @@ function isSelectionCorrect(selection) {
  * Sanitize HTML
  * @param {*} html
  * @param {*} options
- * @returns 
+ * @returns
  */
 function ksesFilter(html, options = false) {
     let allowedTags = {
