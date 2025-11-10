@@ -12,6 +12,11 @@ function spotFixInit() {
 }
 
 document.addEventListener('selectionchange', function(e) {
+    // Do not run widget for non-document events (i.e. inputs focused)
+    if (e.target !== document) {
+        return;
+    }
+
     if (widgetTimeout) {
         clearTimeout(widgetTimeout);
     }
@@ -272,14 +277,21 @@ function ksesFilter(html, options = false) {
         ol: true,
         li: true,
         p: true,
+        s: true,
         br: true,
         span: true,
+        blockquote: true,
+        pre: true,
         div: true,
         img: true,
         input: true,
         label: true,
         textarea: true,
         button: true,
+        blockquote: true,
+        pre: true,
+        details: true,
+        summary: true,
     };
     let allowedAttrs = {
         a: ['href', 'title', 'target', 'rel', 'style', 'class'],
@@ -291,6 +303,8 @@ function ksesFilter(html, options = false) {
         label: ['for', 'class', 'style'],
         textarea: ['class', 'id', 'style', 'rows', 'cols', 'readonly', 'required', 'name'],
         button: ['type', 'class', 'style', 'id'],
+        details: ['class', 'style', 'open'],
+        summary: ['class', 'style'],
     };
 
     if (options && options.template === 'list_issues') {

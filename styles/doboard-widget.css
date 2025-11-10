@@ -1,3 +1,47 @@
+.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after {
+    content: "";
+    position: absolute;
+    left: 8%;
+    top: 100%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    background: transparent;
+}
+
+.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after {
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #545b61;
+    display: block;
+}
+.doboard_task_widget-send_message_paperclip {
+    position: relative;
+}
+
+.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip {
+    display: none;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-3%) translateY(-43px);
+    background: #545b61;
+    color: #FFF;
+    border: none;
+    border-radius: 3px;
+    padding: 10px 16px;
+    font-size: 13px;
+    line-height: 1.4;
+    z-index: 100;
+    min-width: 220px;
+    max-width: 320px;
+    text-align: left;
+    pointer-events: none;
+    text-transform: none;
+}
+
+.doboard_task_widget-send_message_paperclip:hover .doboard_task_widget-paperclip-tooltip {
+    display: block;
+}
 /** COMMON CLASSES **/
 
 .doboard_task_widget * {
@@ -629,6 +673,44 @@
     min-height: 30px;
 }
 
+.doboard_task_widget-comment_body strong {
+    font-variation-settings: "wght" 700;
+}
+
+.doboard_task_widget-comment_body blockquote {
+    margin: 0;
+    border-left: 3px solid #22a475;
+}
+
+.doboard_task_widget-comment_body blockquote p {
+    margin: 0 10px;
+}
+
+.doboard_task_widget-comment_body details .mce-accordion-body {
+    padding-left: 20px;
+}
+
+.doboard_task_widget-comment_body details .mce-accordion-summary {
+    background: url("data:image/svg+xml;charset=utf-8,%3Csvg transform='rotate(180 0 0)' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") no-repeat 0;
+    padding-left: 20px;
+}
+
+.doboard_task_widget-comment_body .mce-accordion[open] .mce-accordion-summary {
+    background: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") no-repeat 0;
+}
+
+.doboard_task_widget-comment_body details .mce-accordion-summary::marker {
+    content: "";
+}
+
+.doboard_task_widget-comment_body pre {
+    border: 1px solid #d6dde3;
+    border-left-width: 8px;
+    border-radius: 4px;
+    padding: 13px 16px 14px 12px;
+    white-space: pre-wrap;
+}
+
 .doboard_task_widget-comment_time {
     font-weight: 400;
     font-size: 11px;
@@ -668,6 +750,12 @@
 
 .doboard_task_widget-send_message_elements_wrapper button {
     height: 37px;
+    background: none;
+    margin: 0;
+}
+
+.doboard_task_widget-send_message_elements_wrapper img {
+    margin: 0;
 }
 
 .doboard_task_widget-send_message_input_wrapper {
@@ -711,6 +799,7 @@
     cursor: pointer;
     padding: 0;
     align-items: center;
+    margin: 0;
 }
 
 .doboard_task_widget-send_message_button:hover, .doboard_task_widget-send_message_paperclip:hover rect {
