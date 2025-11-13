@@ -1,5 +1,4 @@
 var widgetTimeout = null;
-var isUserInput = false;
 const SPOTFIX_DEBUG = false;
 
 if( document.readyState !== 'loading' ) {
@@ -13,38 +12,11 @@ function spotFixInit() {
     new CleanTalkWidgetDoboard({}, 'wrap');
 }
 
-// Set flag to user interactivity for the future check this in the `selectionchange`
-document.addEventListener('mousedown', () => {
-    isUserInput = true;
-    setTimeout(() => {
-        isUserInput = false;
-    }, 100);
-});
-document.addEventListener('keydown', () => {
-    isUserInput = true;
-    setTimeout(() => {
-        isUserInput = false;
-    }, 100);
-});
-document.addEventListener('touchstart', () => {
-    isUserInput = true;
-    setTimeout(() => {
-        isUserInput = false;
-    }, 100);
-});
-
 document.addEventListener('selectionchange', function(e) {
     // Do not run widget for non-document events (i.e. inputs focused)
     if (e.target !== document) {
         return;
     }
-
-    // Do not run widget for non-user get selection
-    if (! isUserInput) {
-        return;
-    }
-
-    isUserInput = false;
 
     if (widgetTimeout) {
         clearTimeout(widgetTimeout);
