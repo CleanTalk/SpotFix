@@ -1891,7 +1891,9 @@ function spotFixGetSelectedData(selection) {
 
         case SPOTFIX_SELECTION_TYPE_IMG:
             const imgElement = range.startContainer;
-            nodePath = spotFixCalculateNodePath(spotFixGetSelectedImage(selection));
+            const selectedImage = spotFixGetSelectedImage(selection);
+            selectedText = `Image (${selectedImage.alt ? selectedImage.alt : 'no description'})`;
+            nodePath = spotFixCalculateNodePath(selectedImage);
             // For images, positions represent the image element position in parent
             startSelectPosition = Array.from(imgElement.parentNode.children).indexOf(imgElement);
             endSelectPosition = startSelectPosition + 1;
