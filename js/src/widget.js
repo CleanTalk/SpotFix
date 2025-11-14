@@ -318,7 +318,7 @@ class CleanTalkWidgetDoboard {
         document.body.appendChild(widgetContainer);
 
         // remove highlights before any screen called
-        this.removeHighlights();
+        spotFixRemoveHighlights();
 
         switch (type) {
             case 'create_issue':
@@ -327,9 +327,8 @@ class CleanTalkWidgetDoboard {
                 if (
                     selection.type === 'Range'
                 ) {
-                    const selectedData = getSelectedData(selection);
-                    //this.highlightElements([selectedData]);
-                    scrollToNodePath(selectedData.nodePath);
+                    const selectedData = spotFixGetSelectedData(selection);
+                    spotFixScrollToNodePath(selectedData.nodePath);
                     this.positionWidgetContainer();
                 }
                 // bind creation events
@@ -346,7 +345,7 @@ class CleanTalkWidgetDoboard {
                 hideContainersSpinner(false);
                 break;
             case 'all_issues':
-                this.removeHighlights();
+                spotFixRemoveHighlights();
                 let issuesQuantityOnPage = 0;
                 let tasks = this.allTasksData;
                 tasksFullDetails = await getTasksFullDetails(this.params, tasks);
@@ -420,7 +419,7 @@ class CleanTalkWidgetDoboard {
                     }
                     this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                     this.savedIssuesQuantityAll = tasks.length;
-                    this.highlightElements(spotsToBeHighlighted);
+                    spotFixHighlightElements(spotsToBeHighlighted);
                     document.querySelector('.doboard_task_widget-header span').innerText += ksesFilter(' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
                 }
                 if (tasks.length === 0 || issuesQuantityOnPage === 0) {
@@ -460,12 +459,12 @@ class CleanTalkWidgetDoboard {
                         } catch (e) { nodePath = null; meta = null; }
                     }
                     // remove old highlights before adding new ones
-                    this.removeHighlights();
+                    spotFixRemoveHighlights();
                     if (meta && nodePath) {
                         // Pass the task meta object as an array
-                        this.highlightElements([meta]);
-                        if (typeof scrollToNodePath === 'function') {
-                            scrollToNodePath(nodePath);
+                        spotFixHighlightElements([meta]);
+                        if (typeof spotFixScrollToNodePath === 'function') {
+                            spotFixScrollToNodePath(nodePath);
                         }
                     }
 
@@ -635,7 +634,7 @@ class CleanTalkWidgetDoboard {
                     nodePath = null;
                 }
                 if (nodePath) {
-                    scrollToNodePath(nodePath);
+                    spotFixScrollToNodePath(nodePath);
                 }
                 this.currentActiveTaskId = item.getAttribute('data-task-id');
                 await this.createWidgetElement('concrete_issue');
@@ -643,8 +642,8 @@ class CleanTalkWidgetDoboard {
                 const taskHighlightData = this.getTaskHighlightData(this.currentActiveTaskId)
 
                 if (taskHighlightData) {
-                    this.removeHighlights();
-                    this.highlightElements([taskHighlightData])
+                    spotFixRemoveHighlights();
+                    spotFixHighlightElements([taskHighlightData])
                     this.positionWidgetContainer();
                 }
 
@@ -667,7 +666,12 @@ class CleanTalkWidgetDoboard {
 
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
-            let replacement = typeof ksesFilter === 'function' ? ksesFilter(String(value), {template: templateName, imgFilter: true}) : this.escapeHtml(String(value));
+            // 1) For attributes we MUST use escapeHtml!
+            // 2) Only for HTML inserts we must clean data by ksesFilter
+            let replacement =
+                typeof ksesFilter === 'function' /* @ToDo check non-attribute placeholder here */?
+                    ksesFilter(String(value), {template: templateName, imgFilter: true}) :
+                    this.escapeHtml(String(value));
             template = template.replaceAll(placeholder, replacement);
         }
 
@@ -733,28 +737,8 @@ class CleanTalkWidgetDoboard {
      * Hide the widget
      */
     hide() {
-        this.removeHighlights();
+        spotFixRemoveHighlights();
         this.createWidgetElement('wrap');
-    }
-
-    removeHighlights() {
-        const textSelectionclassName = 'doboard_task_widget-text_selection';
-        const spans = document.querySelectorAll('.' + textSelectionclassName);
-        const affectedParents = new Set(); // Track unique parents
-
-        spans.forEach(span => {
-            const parent = span.parentNode;
-            affectedParents.add(parent); // Mark parent as affected
-
-            // Move all child nodes out of the span and into the parent
-            while (span.firstChild) {
-                parent.insertBefore(span.firstChild, span);
-            }
-            parent.removeChild(span);
-        });
-
-        // Normalize all affected parents to merge adjacent text nodes
-        affectedParents.forEach(parent => parent.normalize());
     }
 
     wrapElementWithSpotfixHighlight(element) {
@@ -787,72 +771,6 @@ class CleanTalkWidgetDoboard {
             }
         }
         return null;
-    }
-
-    /**
-     * Highlight elements.
-     * @param {[object]} spotsToBeHighlighted
-     */
-    highlightElements(spotsToBeHighlighted) {
-
-        if (spotsToBeHighlighted.length === 0) return;
-
-        const elementsMap = new Map();
-
-        // Gropuing elements
-        spotsToBeHighlighted.forEach(spot => {
-            const element = retrieveNodeFromPath(spot.nodePath);
-            if (!element) return;
-
-            if (!elementsMap.has(element)) {
-                elementsMap.set(element, []);
-            }
-            elementsMap.get(element).push(spot);
-        });
-
-        elementsMap.forEach((spots, element) => {
-            const spotfixHighlightOpen = '<span class="doboard_task_widget-text_selection">';
-            const spotfixHighlightClose = '</span>';
-
-            const imgType = spots[0].isTagOfImageType;
-
-            if (imgType !== false) {
-                if (
-                    imgType === 'IMG'
-                ) {
-                    const wrappedElement = this.wrapElementWithSpotfixHighlight(element);
-                    element.replaceWith(wrappedElement);
-                }
-            }
-
-            let text = element.textContent;
-            const markers = [];
-
-            // Mark positions for inserting
-            spots.forEach(spot => {
-                if (spot.isWholeTagSelected) {
-                    markers.push({ position: 0, type: 'start' });
-                    markers.push({ position: text.length, type: 'end' });
-                } else {
-                    markers.push({ position: spot.startSelectPosition, type: 'start' });
-                    markers.push({ position: spot.endSelectPosition, type: 'end' });
-                }
-            });
-
-            // Sort markers backward
-            markers.sort((a, b) => b.position - a.position);
-
-            let result = text;
-            markers.forEach(marker => {
-                const insertText = marker.type === 'start'
-                    ? spotfixHighlightOpen
-                    : spotfixHighlightClose;
-
-                result = result.slice(0, marker.position) + insertText + result.slice(marker.position);
-            });
-
-            element.innerHTML = ksesFilter(result);
-        });
     }
 
     bindWidgetInputsInteractive() {
