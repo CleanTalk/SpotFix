@@ -841,7 +841,7 @@ class CleanTalkWidgetDoboard {
         document.body.appendChild(widgetContainer);
 
         // remove highlights before any screen called
-        this.removeHighlights();
+        spotFixRemoveHighlights();
 
         switch (type) {
             case 'create_issue':
@@ -850,9 +850,8 @@ class CleanTalkWidgetDoboard {
                 if (
                     selection.type === 'Range'
                 ) {
-                    const selectedData = getSelectedData(selection);
-                    //this.highlightElements([selectedData]);
-                    scrollToNodePath(selectedData.nodePath);
+                    const selectedData = spotFixGetSelectedData(selection);
+                    spotFixScrollToNodePath(selectedData.nodePath);
                     this.positionWidgetContainer();
                 }
                 // bind creation events
@@ -869,7 +868,7 @@ class CleanTalkWidgetDoboard {
                 hideContainersSpinner(false);
                 break;
             case 'all_issues':
-                this.removeHighlights();
+                spotFixRemoveHighlights();
                 let issuesQuantityOnPage = 0;
                 let tasks = this.allTasksData;
                 tasksFullDetails = await getTasksFullDetails(this.params, tasks);
@@ -943,7 +942,7 @@ class CleanTalkWidgetDoboard {
                     }
                     this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                     this.savedIssuesQuantityAll = tasks.length;
-                    this.highlightElements(spotsToBeHighlighted);
+                    spotFixHighlightElements(spotsToBeHighlighted);
                     document.querySelector('.doboard_task_widget-header span').innerText += ksesFilter(' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
                 }
                 if (tasks.length === 0 || issuesQuantityOnPage === 0) {
@@ -983,12 +982,12 @@ class CleanTalkWidgetDoboard {
                         } catch (e) { nodePath = null; meta = null; }
                     }
                     // remove old highlights before adding new ones
-                    this.removeHighlights();
+                    spotFixRemoveHighlights();
                     if (meta && nodePath) {
                         // Pass the task meta object as an array
-                        this.highlightElements([meta]);
-                        if (typeof scrollToNodePath === 'function') {
-                            scrollToNodePath(nodePath);
+                        spotFixHighlightElements([meta]);
+                        if (typeof spotFixScrollToNodePath === 'function') {
+                            spotFixScrollToNodePath(nodePath);
                         }
                     }
 
@@ -1158,7 +1157,7 @@ class CleanTalkWidgetDoboard {
                     nodePath = null;
                 }
                 if (nodePath) {
-                    scrollToNodePath(nodePath);
+                    spotFixScrollToNodePath(nodePath);
                 }
                 this.currentActiveTaskId = item.getAttribute('data-task-id');
                 await this.createWidgetElement('concrete_issue');
@@ -1166,8 +1165,8 @@ class CleanTalkWidgetDoboard {
                 const taskHighlightData = this.getTaskHighlightData(this.currentActiveTaskId)
 
                 if (taskHighlightData) {
-                    this.removeHighlights();
-                    this.highlightElements([taskHighlightData])
+                    spotFixRemoveHighlights();
+                    spotFixHighlightElements([taskHighlightData])
                     this.positionWidgetContainer();
                 }
 
@@ -1261,28 +1260,8 @@ class CleanTalkWidgetDoboard {
      * Hide the widget
      */
     hide() {
-        this.removeHighlights();
+        spotFixRemoveHighlights();
         this.createWidgetElement('wrap');
-    }
-
-    removeHighlights() {
-        const textSelectionclassName = 'doboard_task_widget-text_selection';
-        const spans = document.querySelectorAll('.' + textSelectionclassName);
-        const affectedParents = new Set(); // Track unique parents
-
-        spans.forEach(span => {
-            const parent = span.parentNode;
-            affectedParents.add(parent); // Mark parent as affected
-
-            // Move all child nodes out of the span and into the parent
-            while (span.firstChild) {
-                parent.insertBefore(span.firstChild, span);
-            }
-            parent.removeChild(span);
-        });
-
-        // Normalize all affected parents to merge adjacent text nodes
-        affectedParents.forEach(parent => parent.normalize());
     }
 
     wrapElementWithSpotfixHighlight(element) {
@@ -1315,72 +1294,6 @@ class CleanTalkWidgetDoboard {
             }
         }
         return null;
-    }
-
-    /**
-     * Highlight elements.
-     * @param {[object]} spotsToBeHighlighted
-     */
-    highlightElements(spotsToBeHighlighted) {
-
-        if (spotsToBeHighlighted.length === 0) return;
-
-        const elementsMap = new Map();
-
-        // Gropuing elements
-        spotsToBeHighlighted.forEach(spot => {
-            const element = retrieveNodeFromPath(spot.nodePath);
-            if (!element) return;
-
-            if (!elementsMap.has(element)) {
-                elementsMap.set(element, []);
-            }
-            elementsMap.get(element).push(spot);
-        });
-
-        elementsMap.forEach((spots, element) => {
-            const spotfixHighlightOpen = '<span class="doboard_task_widget-text_selection">';
-            const spotfixHighlightClose = '</span>';
-
-            const imgType = spots[0].isTagOfImageType;
-
-            if (imgType !== false) {
-                if (
-                    imgType === 'IMG'
-                ) {
-                    const wrappedElement = this.wrapElementWithSpotfixHighlight(element);
-                    element.replaceWith(wrappedElement);
-                }
-            }
-
-            let text = element.textContent;
-            const markers = [];
-
-            // Mark positions for inserting
-            spots.forEach(spot => {
-                if (spot.isWholeTagSelected) {
-                    markers.push({ position: 0, type: 'start' });
-                    markers.push({ position: text.length, type: 'end' });
-                } else {
-                    markers.push({ position: spot.startSelectPosition, type: 'start' });
-                    markers.push({ position: spot.endSelectPosition, type: 'end' });
-                }
-            });
-
-            // Sort markers backward
-            markers.sort((a, b) => b.position - a.position);
-
-            let result = text;
-            markers.forEach(marker => {
-                const insertText = marker.type === 'start'
-                    ? spotfixHighlightOpen
-                    : spotfixHighlightClose;
-
-                result = result.slice(0, marker.position) + insertText + result.slice(marker.position);
-            });
-
-            element.innerHTML = ksesFilter(result);
-        });
     }
 
     bindWidgetInputsInteractive() {
@@ -1522,6 +1435,7 @@ class CleanTalkWidgetDoboard {
 }
 
 var widgetTimeout = null;
+const SPOTFIX_DEBUG = false;
 
 if( document.readyState !== 'loading' ) {
     document.addEventListener('spotFixLoaded', spotFixInit);
@@ -1547,17 +1461,18 @@ document.addEventListener('selectionchange', function(e) {
     widgetTimeout = setTimeout(() => {
         const selection = window.getSelection();
         if (
-            selection.type === 'Range' &&
-            isSelectionCorrect(selection)
+            selection.type === 'Range'
         ) {
             // Check if selection is inside the widget
             let anchorNode = selection.anchorNode;
             let focusNode = selection.focusNode;
-            if (isInsideWidget(anchorNode) || isInsideWidget(focusNode)) {
+            if (spotFixIsInsideWidget(anchorNode) || spotFixIsInsideWidget(focusNode)) {
                 return;
             }
-            const selectedData = getSelectedData(selection);
-            openWidget(selectedData, 'create_issue');
+            const selectedData = spotFixGetSelectedData(selection);
+            if ( selectedData ) {
+                spotFixOpenWidget(selectedData, 'create_issue');
+            }
         }
     }, 1000);
 });
@@ -1567,7 +1482,7 @@ document.addEventListener('selectionchange', function(e) {
  * @param {*} node
  * @returns {boolean}
  */
-function isInsideWidget(node) {
+function spotFixIsInsideWidget(node) {
     if (!node) return false;
     let el = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
     while (el) {
@@ -1582,37 +1497,23 @@ function isInsideWidget(node) {
 /**
  * Open the widget to create a task.
  * @param {*} selectedData
- * @param {*} widgetExist
  * @param {*} type
  */
-function openWidget(selectedData, type) {
+function spotFixOpenWidget(selectedData, type) {
     if (selectedData) {
         new CleanTalkWidgetDoboard(selectedData, type);
     }
 }
 
 /**
- * Analyze the task selected data
- * @param {Object} taskSelectedData
- * @return {Element|null}
+ * Write message into the console.
+ *
+ * @param {string} message
  */
-function taskAnalysis(taskSelectedData) {
-    const nodePath = taskSelectedData ? taskSelectedData.nodePath : '';
-    return retrieveNodeFromPath(nodePath);
-}
-
-/**
- * Scroll to an element by tag, class, and text content
- * @param {string} path - The path to the element
- * @return {boolean} - True if the element was found and scrolled to, false otherwise
- */
-function scrollToNodePath(path) {
-    const node = retrieveNodeFromPath(path);
-    if (node && node.scrollIntoView) {
-        node.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return true;
+function spotFixDebugLog(message) {
+    if ( SPOTFIX_DEBUG ) {
+        console.log(message);
     }
-    return false;
 }
 
 function hideContainersSpinner() {
@@ -1893,12 +1794,359 @@ function ksesFilter(html, options = false) {
     return doc.body.innerHTML;
 }
 
+let spotFixCSS = `.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after{content:"";position:absolute;left:8%;top:100%;transform:translateX(-50%);pointer-events:none;background:0 0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid #545b61;display:block}.doboard_task_widget-send_message_paperclip{position:relative}.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip{display:none;position:absolute;left:0;bottom:0;transform:translateX(-3%) translateY(-43px);background:#545b61;color:#FFF;border:none;border-radius:3px;padding:10px 16px;font-size:13px;line-height:1.4;z-index:100;min-width:220px;max-width:320px;text-align:left;pointer-events:none;text-transform:none}.doboard_task_widget-send_message_paperclip:hover .doboard_task_widget-paperclip-tooltip{display:block}.doboard_task_widget *{font-family:Inter,sans-serif;font-weight:400;font-size:14px;line-height:130%;color:#40484F}.doboard_task_widget-header *{color:#FFF;margin:0}.doboard_task_widget a{text-decoration:underline;color:#2F68B7}.doboard_task_widget a:hover{text-decoration:none}.doboard_task_widget{position:fixed;right:50px;bottom:20px;z-index:9999;vertical-align:middle;transition:top .1s;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}.doboard_task_widget_cursor-pointer{cursor:pointer}.doboard_task_widget-container{width:360px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-header{display:flex;height:41px;min-height:41px;padding:8px 16px;background:#1C7857;border-radius:8px 8px 0 0;justify-content:space-between;align-items:center;color:#FFF}.doboard_task_widget-content{flex:1;overflow-y:auto;padding:10px 16px 5px;background:#FFF;border-radius:0 0 8px 8px;border:1px #BBC7D1;border-style:none solid solid;box-shadow:0 4px 15px 8px #CACACA40;scrollbar-width:none;max-height:60vh}.doboard_task_widget-element-container{margin-bottom:30px}.doboard_task_widget-wrap{width:auto;background:0 0;border:none;box-shadow:none;padding:0}.doboard_task_widget-wrap.hidden{display:none}#doboard_task_widget-task_count{position:absolute;top:0;right:0;width:22px;height:22px;opacity:1;background:#ef8b43;border-radius:50%;color:#FFF;text-align:center;line-height:22px}#doboard_task_widget-task_count:hover{background:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIiIGhlaWdodD0iMjIiIHZpZXdCb3g9IjAgMCAyMiAyMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxmb3JlaWduT2JqZWN0IHg9Ii00IiB5PSItNCIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIj48ZGl2IHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hodG1sIiBzdHlsZT0iYmFja2Ryb3AtZmlsdGVyOmJsdXIoMnB4KTtjbGlwLXBhdGg6dXJsKCNiZ2JsdXJfMF8xODk4OV8yODI2X2NsaXBfcGF0aCk7aGVpZ2h0OjEwMCU7d2lkdGg6MTAwJSI+PC9kaXY+PC9mb3JlaWduT2JqZWN0PjxwYXRoIGRhdGEtZmlnbWEtYmctYmx1ci1yYWRpdXM9IjQiIGQ9Ik0xMSAyMkMxNy4wNzUxIDIyIDIyIDE3LjA3NTEgMjIgMTFDMjIgNC45MjQ4NyAxNy4wNzUxIDAgMTEgMEM0LjkyNDg3IDAgMCA0LjkyNDg3IDAgMTFDMCAxNy4wNzUxIDQuOTI0ODcgMjIgMTEgMjJaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjciLz4KICAgIDxwYXRoIGQ9Ik0xNiA2TDYgMTYiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICAgIDxwYXRoIGQ9Ik02IDZMMTYgMTYiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICAgIDxkZWZzPgogICAgICAgIDxjbGlwUGF0aCBpZD0iYmdibHVyXzBfMTg5ODlfMjgyNl9jbGlwX3BhdGgiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQgNCkiPjxwYXRoIGQ9Ik0xMSAyMkMxNy4wNzUxIDIyIDIyIDE3LjA3NTEgMjIgMTFDMjIgNC45MjQ4NyAxNy4wNzUxIDAgMTEgMEM0LjkyNDg3IDAgMCA0LjkyNDg3IDAgMTFDMCAxNy4wNzUxIDQuOTI0ODcgMjIgMTEgMjJaIi8+CiAgICAgICAgPC9jbGlwUGF0aD48L2RlZnM+Cjwvc3ZnPg==) center no-repeat;cursor:pointer;overflow:hidden;font-size:0}#doboard_task_widget-task_count.hidden{width:0;height:0;opacity:0}.doboard_task_widget-input-container{position:relative;margin-bottom:24px}.doboard_task_widget-input-container.hidden{display:none}.doboard_task_widget-input-container .doboard_task_widget-field{padding:0 8px;border-radius:4px;border:1px solid #BBC7D1;outline:0!important;appearance:none;width:100%;height:40px;background:#FFF;color:#000;max-width:-webkit-fill-available;max-width:-moz-available}.doboard_task_widget-field:focus{border-color:#2F68B7}.doboard_task_widget-input-container textarea.doboard_task_widget-field{height:94px;padding-top:11px;padding-bottom:11px}.doboard_task_widget-field+label{color:#252A2F;background:#fff;position:absolute;top:20px;left:8px;transform:translateY(-50%);transition:all .2s ease-in-out}.doboard_task_widget-field.has-value+label,.doboard_task_widget-field:focus+label{font-size:10px;top:0;left:12px;padding:0 4px;z-index:5}.doboard_task_widget-field:focus+label{color:#2F68B7}.doboard_task_widget-login{background:#F9FBFD;border:1px solid #BBC7D1;border-radius:4px;padding:11px 8px 8px;margin-bottom:40px}.doboard_task_widget-login .doboard_task_widget-accordion{height:0;overflow:hidden;opacity:0;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-accordion{height:auto;overflow:visible;opacity:1}.doboard_task_widget-login .doboard_task_widget-input-container:last-child{margin-bottom:0}.doboard_task_widget-login span{display:block;position:relative;padding-right:24px;cursor:pointer}.doboard_task_widget-login.active span{margin-bottom:24px}.doboard_task_widget-login span::after{position:absolute;top:0;right:4px;content:"";display:block;width:10px;height:10px;transform:rotate(45deg);border:2px solid #40484F;border-radius:1px;border-top:none;border-left:none;transition:all .2s ease-in-out}.doboard_task_widget-login.active span::after{transform:rotate(-135deg);top:7px}.doboard_task_widget-login .doboard_task_widget-field+label,.doboard_task_widget-login .doboard_task_widget-input-container .doboard_task_widget-field{background:#F9FBFD}.doboard_task_widget-submit_button{height:48px;width:100%;margin-bottom:10px;color:#FFF;background:#22A475;border:none;border-radius:6px;font-family:Inter,sans-serif;font-weight:700;font-size:16px;line-height:150%;cursor:pointer;transition:all .2s ease-in-out}.doboard_task_widget-submit_button:hover{background:#1C7857;color:#FFF}.doboard_task_widget-submit_button:disabled{background:rgba(117,148,138,.92);color:#FFF;cursor:wait}.doboard_task_widget-issue-title{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-hidden_element{opacity:0}.doboard_task_widget-message-wrapper{border-radius:4px;padding:8px;margin-bottom:14px;display:grid;justify-items:center}.doboard_task_widget-error_message-wrapper.hidden,.doboard_task_widget-message-wrapper.hidden{display:none}.doboard_task_widget-error_message{background:#fdd;border:1px solid #cf6868}.doboard_task_widget-notice_message{background:#dde9ff;border:1px solid #68a6cf}#doboard_task_widget-error_message-header{font-weight:600}#doboard_task_widget-error_message{text-align:center}.doboard_task_widget-task_row{display:flex;max-height:55px;padding-bottom:4px;margin-bottom:20px;cursor:pointer;align-items:center;justify-content:space-between}.doboard_task_widget-task_row:last-child{margin-bottom:0}.doboard_task_widget-task-text_bold{font-weight:700}.doboard_task_widget-element_selection,.doboard_task_widget-image_selection,.doboard_task_widget-text_selection,.doboard_task_widget-text_selection.image-highlight>img{background:rgba(208,213,127,.68)}.doboard_task_widget-issues_list_empty{text-align:center;margin:20px 0}.doboard_task_widget-avatar_container{display:flex;height:44px;width:44px;border-radius:50%;background-repeat:no-repeat;background-position:center;background-size:100%}.doboard_task_widget-comment_data_owner .doboard_task_widget-avatar_container{opacity:0}.doboard_task_widget-avatar_placeholder{min-height:44px;min-width:44px;border-radius:50%;font-size:24px;line-height:1.2083333333;padding:0;background:#1C7857;display:inline-grid;align-content:center;justify-content:center}.doboard_task_widget-avatar-initials{color:#FFF;width:inherit;text-align:center}.doboard_task_widget-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover}.doboard_task_widget-description_container{height:55px;width:calc(100% - 44px - 8px);border-bottom:1px solid #EBF0F4;display:block;margin-left:8px}.doboard_task_widget-task_row:last-child .doboard_task_widget-description_container{border-bottom:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{overflow:auto;max-height:85vh;display:none}.doboard_task_widget-all_issues-container{scrollbar-width:none}.doboard_task_widget-content.doboard_task_widget-concrete_issue{padding:0}.doboard_task_widget-concrete_issues-container{padding:10px 16px 5px}.doboard_task_widget-all_issues-container::-webkit-scrollbar,.doboard_task_widget-all_issues::-webkit-scrollbar,.doboard_task_widget-concrete_issues-container::-webkit-scrollbar,.doboard_task_widget-content::-webkit-scrollbar{width:0}.doboard_task_widget-task_title{font-weight:700;display:flex;justify-content:space-between;align-items:center}.doboard_task_widget-task_title span{font-weight:700;display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-task_title-details{display:flex;max-width:calc(100% - 40px);align-items:center}.doboard_task_widget-task_title-unread_block{opacity:0;height:8px;width:8px;background:#f08c43;border-radius:50%;display:inline-block;font-size:8px;font-weight:600;position:relative}.doboard_task_widget-task_title-unread_block.unread{opacity:1}.doboard_task_widget-task_last_message{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:85%;height:36px}.doboard_task_widget_return_to_all{display:flex;gap:8px;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:wrap}.doboard_task_widget-task_title-last_update_time{font-family:Inter,serif;font-weight:400;font-style:normal;font-size:11px;leading-trim:NONE;line-height:100%}.doboard_task_widget-task_title_public_status_img{opacity:50%;margin-left:5px;scale:90%}.doboard_task_widget-description-textarea{resize:none}.doboard_task_widget-switch_row{display:flex;align-items:center;gap:12px;margin:16px 0;justify-content:space-between}.doboard_task_widget-switch-label{font-weight:600;font-size:16px;height:24px;align-content:center}.doboard_task_widget-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}.doboard_task_widget-switch input{opacity:0;width:0;height:0}.doboard_task_widget-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;border-radius:24px;transition:.2s}.doboard_task_widget-slider:before{position:absolute;content:"";height:20px;width:20px;left:2px;bottom:2px;background-color:#fff;border-radius:50%;transition:.2s}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider{background-color:#65D4AC}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider:before{transform:translateX(20px)}.doboard_task_widget-switch-img{width:24px;height:24px;flex-shrink:0}.doboard_task_widget-switch-center{display:flex;gap:2px;flex-direction:column;-moz-flex-direction:column;flex:1 1 auto;min-width:0}.doboard_task_widget-switch-desc{display:block;font-size:12px;color:#707A83;margin:0;line-height:1.2;max-width:180px;word-break:break-word}.doboard_task_widget-concrete_issue-day_content{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-concrete_issue_day_content-month_day{text-align:center;font-weight:400;font-size:12px;line-height:100%;padding:8px;opacity:.75}.doboard_task_widget-concrete_issue_day_content-messages_wrapper{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-comment_data_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;margin-bottom:15px;align-items:flex-end}.doboard_task_widget-comment_text_container{position:relative;width:calc(100% - 44px - 5px);height:auto;margin-left:5px;background:#F3F6F9;border-radius:16px}.doboard_task_widget-comment_text_container:after{content:"";position:absolute;bottom:0;left:-5px;width:13px;height:19px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAxMyAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAuMTEyNTggMTkuMDMzNEM1LjI5NDg2IDE5LjgyMDEgMTAuNjEwNSAxNy45NzQxIDEyLjI3MTUgMTYuMTcxM0MxMi4yNzE1IDE2LjE3MTMgMTAuOTYyMyAtMi43ODEyNCA1LjA5NTU0IDAuMzQ5MDc5QzUuMDc0NCAxLjYxNDU0IDUuMDk1NTQgNS45OTQ5IDUuMDk1NTQgNi43NDA2OUM1LjA5NTU0IDE3LjA2NjIgLTAuODg0MDEyIDE4LjQ0MDEgMC4xMTI1OCAxOS4wMzM0WiIgZmlsbD0iI0YzRjZGOSIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container{background:#EBFAF4}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container:after{left:auto;right:-5px;height:13px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMyAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjc3NzEgMTIuMzA2NkM3LjMzMTM1IDEzLjA5MzcgMS43NDU0NCAxMS4yNDY5IDAgOS40NDMxOUw3LjM5MTYgMEM3LjM5MTYgMTAuMzMwMyAxMy44MjQ0IDExLjcxMzEgMTIuNzc3MSAxMi4zMDY2WiIgZmlsbD0iI0VCRkFGNCIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_body,.doboard_task_widget-comment_time{position:relative;z-index:1}.doboard_task_widget-comment_body{padding:6px 8px;min-height:30px}.doboard_task_widget-comment_body strong{font-variation-settings:"wght" 700}.doboard_task_widget-comment_body blockquote{margin:0;border-left:3px solid #22a475}.doboard_task_widget-comment_body blockquote p{margin:0 10px}.doboard_task_widget-comment_body details .mce-accordion-body{padding-left:20px}.doboard_task_widget-comment_body details .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg transform='rotate(180 0 0)' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") 0 no-repeat;padding-left:20px}.doboard_task_widget-comment_body .mce-accordion[open] .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") 0 no-repeat}.doboard_task_widget-comment_body details .mce-accordion-summary::marker{content:""}.doboard_task_widget-comment_body pre{border:1px solid #d6dde3;border-left-width:8px;border-radius:4px;padding:13px 16px 14px 12px;white-space:pre-wrap}.doboard_task_widget-comment_time{font-weight:400;font-size:11px;opacity:.8;position:absolute;bottom:6px;right:6px}.doboard_task_widget-comment_body-img-strict{max-width:-webkit-fill-available;height:100px;margin-right:5px}.doboard_task_widget-send_message{padding:14px 10px;border-top:1px solid #BBC7D1;position:sticky;background:#fff;bottom:0;z-index:4}.doboard_task_widget-send_message_elements_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:nowrap;justify-content:space-between;align-items:end}.doboard_task_widget-send_message_elements_wrapper button{height:37px;background:0 0;margin:0}.doboard_task_widget-send_message_elements_wrapper img{margin:0}.doboard_task_widget-send_message_input_wrapper{position:relative;display:inline-grid;align-items:center;justify-items:center;flex-grow:1;padding:0 6px}.doboard_task_widget-send_message_input_wrapper textarea{position:relative;width:100%;height:37px;border:none;outline:0;box-shadow:none;border-radius:24px;background:#F3F6F9;resize:none;margin-bottom:0!important;transition:height .2s ease-in-out;padding:8px;box-sizing:border-box}.doboard_task_widget-send_message_input_wrapper textarea.high{height:170px}.doboard_task_widget-send_message_input_wrapper textarea:focus{background:#F3F6F9;border-color:#007bff;outline:0}.doboard_task_widget-send_message_button,.doboard_task_widget-send_message_paperclip{display:inline-grid;border:none;background:0 0;cursor:pointer;padding:0;align-items:center;margin:0}.doboard_task_widget-send_message_button:hover,.doboard_task_widget-send_message_paperclip:hover rect{fill:#45a049}.doboard_task_widget-send_message_button:active,.doboard_task_widget-send_message_paperclip:active{transform:scale(.98)}.doboard_task_widget-spinner_wrapper_for_containers{display:flex;justify-content:center;align-items:center;min-height:60px;width:100%}.doboard_task_widget-spinner_for_containers{width:40px;height:40px;border-radius:50%;background:conic-gradient(transparent,#1C7857);mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#fff 0);animation:spin 1s linear infinite}.doboard_task_widget__file-upload__wrapper{display:none;border:1px solid #BBC7D1;margin-top:14px;padding:0 10px 10px;border-radius:4px}.doboard_task_widget__file-upload__list-header{text-align:left;font-size:.9em;margin:5px 0;color:#444c529e}.doboard_task_widget__file-upload__file-input-button{display:none}.doboard_task_widget__file-upload__file-list{border:1px solid #ddd;border-radius:5px;padding:6px;max-height:200px;overflow-y:auto;background:#f3f6f9}.doboard_task_widget__file-upload__file-item{display:flex;justify-content:space-between;align-items:center;padding:4px;border-bottom:1px solid #bbc7d16b}.doboard_task_widget__file-upload__file-item:last-child{border-bottom:none}.doboard_task_widget__file-upload__file_info{display:inline-flex;align-items:center}.doboard_task_widget__file-upload__file-name{font-weight:700;font-size:.9em}.doboard_task_widget__file-upload__file-item-content{width:100%}.doboard_task_widget__file-upload__file_size{color:#666;font-size:.8em;margin-left:6px}.doboard_task_widget__file-upload__remove-btn{background:#22a475;color:#fff;border:none;border-radius:3px;cursor:pointer}.doboard_task_widget__file-upload__error{display:block;margin:7px 0 0;padding:7px;border-radius:4px;background:#fdd;border:1px solid #cf6868}@keyframes spin{to{transform:rotate(1turn)}}@media (max-width:480px){.doboard_task_widget{position:fixed;right:0;top:auto;bottom:0;margin:0 20px 20px;box-sizing:border-box;transform:translateZ(0);-moz-transform:translateZ(0);will-change:transform;max-height:90vh}.doboard_task_widget-container{width:100%;max-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-content{height:auto;max-height:none;scrollbar-width:none}.doboard_task_widget-content::-webkit-scrollbar{display:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{max-height:80vh}}@supports (-webkit-overflow-scrolling:touch){.doboard_task_widget{position:fixed}}`;
+/**
+ * SELECTION will be grouped into three types:
+ * 1 - Simple text within a single tag
+ * 2 - Image tags
+ * 3 - Any tag containing nested content
+ * Each type will be processed differently.
+ */
+const SPOTFIX_SELECTION_TYPE_TEXT = 'text';
+const SPOTFIX_SELECTION_TYPE_IMG = 'image';
+const SPOTFIX_SELECTION_TYPE_ELEMENT = 'element';
+
+/**
+ * Determines the type of selection
+ * @param {Selection} selection - The DOM Selection object
+ * @returns {string|null} Selection type
+ */
+function spotFixGetSelectionType(selection) {
+    const range = selection.getRangeAt(0);
+    const commonAncestor = range.commonAncestorContainer;
+
+    // Case 1: Image selection
+    if (spotFixGetSelectedImage(selection)) {
+        return SPOTFIX_SELECTION_TYPE_IMG;
+    }
+
+    // Case 2: Element with nested content
+    if (commonAncestor.nodeType === Node.ELEMENT_NODE &&
+        commonAncestor.childNodes.length > 1 &&
+        range.toString().trim() === '' &&
+        range.startContainer === range.endContainer &&
+        range.startContainer.nodeType === Node.ELEMENT_NODE) {
+        return SPOTFIX_SELECTION_TYPE_ELEMENT;
+    }
+
+    // Case 3: Simple text
+    const hasTextContent = range.toString().trim().length > 0;
+    const isTextNode = commonAncestor.nodeType === Node.TEXT_NODE;
+    const isCollapsed = range.collapsed;
+
+    if (hasTextContent && (isTextNode || !isCollapsed)) {
+        return SPOTFIX_SELECTION_TYPE_TEXT;
+    }
+
+    return null;
+}
+
+/**
+ * Extracts selection data from DOM Selection object
+ * @param {Selection} selection - The DOM Selection object
+ * @returns {Object|null} Selection data with text, positions, URL and node path OR null (nothing)
+ */
+function spotFixGetSelectedData(selection) {
+    // Prechecks:
+    // Selection not provided
+    if (!selection) {spotFixDebugLog('`spotFixGetSelectedData` skip by `Selection not provided`'); return null;  }
+    // Range not provided
+    if (selection.rangeCount === 0) { spotFixDebugLog('`spotFixGetSelectedData` skip by `Range not provided`'); return null; }
+    // Several ranges provided
+    if (selection.rangeCount > 1) { spotFixDebugLog('`spotFixGetSelectedData` skip by `Several ranges provided`'); return null; }
+
+    const range = selection.getRangeAt(0);
+    // Selection must be within a single DOM element.
+    if (range.startContainer !== range.endContainer) { spotFixDebugLog('`spotFixGetSelectedData` skip by `Selection within several tags nodes`'); return null; }
+
+    // FIRST - check selection type
+    const selectionType = spotFixGetSelectionType(selection);
+
+    // Selection type not determined
+    if (!selectionType) { spotFixDebugLog('`spotFixGetSelectedData` skip by `Selection type not determined`'); return null; }
+
+    // SECOND - generate selectedData for each selectionType
+    let selectedText = '';
+    let startSelectPosition = 0;
+    let endSelectPosition = 0;
+    let nodePath = '';
+    let imageUrl = '';
+
+    const commonNode = range.commonAncestorContainer;
+
+    switch (selectionType) {
+        case SPOTFIX_SELECTION_TYPE_TEXT:
+            if (range.toString().trim().length === 0) {
+                spotFixDebugLog('`spotFixGetSelectedData` skip by `Selection text is empty`');
+                return null;
+            }
+            selectedText = range.toString();
+            startSelectPosition = range.startOffset;
+            endSelectPosition = range.endOffset;
+            if ( startSelectPosition === 0 && selectedText.length > endSelectPosition ) {
+                endSelectPosition = selectedText.length;
+            }
+            nodePath = spotFixCalculateNodePath(commonNode);
+            break;
+
+        case SPOTFIX_SELECTION_TYPE_IMG:
+            const imgElement = range.startContainer;
+            const selectedImage = spotFixGetSelectedImage(selection);
+            selectedText = `Image (${selectedImage.alt ? selectedImage.alt : 'no description'})`;
+            nodePath = spotFixCalculateNodePath(selectedImage);
+            // For images, positions represent the image element position in parent
+            startSelectPosition = Array.from(imgElement.parentNode.children).indexOf(imgElement);
+            endSelectPosition = startSelectPosition + 1;
+            break;
+
+        case SPOTFIX_SELECTION_TYPE_ELEMENT:
+            const element = commonNode.nodeType === Node.ELEMENT_NODE ? commonNode : commonNode.parentElement;
+            if (element.childNodes.length <= 1) {
+                spotFixDebugLog('`spotFixGetSelectedData` skip by `Selection have not inner data`');
+                return null;
+            }
+            selectedText = element.textContent || '';
+            nodePath = spotFixCalculateNodePath(element);
+            // For elements, positions represent the element's position in parent
+            startSelectPosition = Array.from(element.parentNode.children).indexOf(element);
+            endSelectPosition = startSelectPosition + 1;
+            break;
+    }
+
+    // Get page URL
+    const pageURL = window.location.href;
+
+    return {
+        startSelectPosition,
+        endSelectPosition,
+        selectedText: selectedText.trim(),
+        pageURL,
+        nodePath,
+        selectionType,
+        imageUrl: selectionType === SPOTFIX_SELECTION_TYPE_IMG ? imageUrl : ''
+    };
+}
+
+/**
+ * Highlight elements.
+ * @param {[object]} spotsToBeHighlighted
+ */
+function spotFixHighlightElements(spotsToBeHighlighted) {
+    if (spotsToBeHighlighted.length === 0) return;
+
+    const elementsMap = new Map();
+
+    // Grouping elements with validation
+    spotsToBeHighlighted.forEach(spot => {
+        // nodePath validating: is array
+        if (!spot.nodePath || !Array.isArray(spot.nodePath)) {
+            spotFixDebugLog('Invalid spot: missing or invalid nodePath: ' + spot);
+            return;
+        }
+
+        // nodePath validating: is valid indexes list
+        if (!this.spotFixIsValidNodePath(spot.nodePath)) {
+            spotFixDebugLog('Invalid nodePath format: ' + spot.nodePath);
+            return;
+        }
+
+        const element = spotFixRetrieveNodeFromPath(spot.nodePath);
+        if (!element) {
+            spotFixDebugLog('Element not found for path: ' + spot.nodePath);
+            return;
+        }
+
+        if ( ! spot.selectionType ) {
+            // @ToDo need to apply backward capability here
+            // just `spot.selectionType = 'text';` is not able, this opens ability to unauthorized modify website content
+            spotFixDebugLog('Selection type is not provided.');
+            return;
+        }
+
+        // selectionType parameter validating
+        if (
+            spot.selectionType &&
+            ![
+                SPOTFIX_SELECTION_TYPE_TEXT,
+                SPOTFIX_SELECTION_TYPE_IMG,
+                SPOTFIX_SELECTION_TYPE_ELEMENT
+            ].includes(spot.selectionType)
+        ) {
+            spotFixDebugLog('Invalid selection type: ' + spot.selectionType);
+            return;
+        }
+
+        if (!elementsMap.has(element)) {
+            elementsMap.set(element, []);
+        }
+        elementsMap.get(element).push(spot);
+    });
+
+    elementsMap.forEach((spots, element) => {
+        const selectionType = spots[0].selectionType;
+
+        // MAIN LOGIC: highlight for the different types
+        switch (selectionType) {
+            case 'image':
+                this.spotFixHighlightImageElement(element);
+                break;
+
+            case 'element':
+                this.spotFixHighlightNestedElement(element);
+                break;
+
+            case 'text':
+                this.spotFixHighlightTextInElement(element, spots);
+                break;
+
+            default:
+                spotFixDebugLog('Unknown selection type: ' + selectionType);
+        }
+    });
+}
+
+/**
+ * Highlight image element by adding class
+ * @param {Element} element
+ */
+function spotFixHighlightImageElement(element) {
+    if (element.tagName !== 'IMG') {
+        spotFixDebugLog('Expected IMG element for image highlight, got: ' + element.tagName);
+        return;
+    }
+    element.classList.add('doboard_task_widget-image_selection');
+}
+
+/**
+ * Highlight nested element by adding class
+ * @param {Element} element
+ */
+function spotFixHighlightNestedElement(element) {
+    element.classList.add('doboard_task_widget-element_selection');
+}
+
+/**
+ * Highlight text in element with span wrapping
+ * @param {Element} element
+ * @param {Array} spots
+ */
+function spotFixHighlightTextInElement(element, spots) {
+    const spotfixHighlightOpen = '<span class="doboard_task_widget-text_selection">';
+    const spotfixHighlightClose = '</span>';
+
+    let text = element.textContent;
+    const spotSelectedText = spots[0].selectedText;
+    const markers = [];
+
+    // Mark positions for inserting
+    spots.forEach(spot => {
+        // Validating positions
+        const startPos = parseInt(spot.startSelectPosition) || 0;
+        const endPos = parseInt(spot.endSelectPosition) || 0;
+
+        if (startPos < 0 || endPos > text.length || startPos > endPos) {
+            spotFixDebugLog('Invalid text positions: ' + spot);
+            return;
+        }
+
+        markers.push({ position: startPos, type: 'start' });
+        markers.push({ position: endPos, type: 'end' });
+    });
+
+    if (markers.length === 0) return;
+
+    // Sort markers backward
+    markers.sort((a, b) => b.position - a.position);
+
+    // Check here that element (from meta.nodePath) contains same inner text as in meta.selectedText
+    // Is the `text` in the element equal to the selected text `spotSelectedText`
+    if ( text.slice(markers[1].position, markers[0].position) !== spotSelectedText ) {
+        spotFixDebugLog('It is not allow to highlight element by provided metadata.');
+        return;
+    }
+
+    let result = text;
+    markers.forEach(marker => {
+        const insertText = marker.type === 'start'
+            ? spotfixHighlightOpen
+            : spotfixHighlightClose;
+
+        result = result.slice(0, marker.position) + insertText + result.slice(marker.position);
+    });
+
+    // Safety HTML insert
+    try {
+        element.innerHTML = ksesFilter(result);
+    } catch (error) {
+        spotFixDebugLog('Error updating element content: ' + error);
+    }
+}
+
+/**
+ * Scroll to an element by tag, class, and text content
+ * @param {array} path - The path to the element
+ * @return {boolean} - True if the element was found and scrolled to, false otherwise
+ */
+function spotFixScrollToNodePath(path) {
+    const node = spotFixRetrieveNodeFromPath(path);
+    if (node && node.scrollIntoView) {
+        node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return true;
+    }
+    return false;
+}
+
+function spotFixRemoveHighlights() {
+    const textSelectionclassName = 'doboard_task_widget-text_selection';
+    const spans = document.querySelectorAll('.' + textSelectionclassName);
+    const affectedParents = new Set(); // Track unique parents
+
+    spans.forEach(span => {
+        const parent = span.parentNode;
+        affectedParents.add(parent); // Mark parent as affected
+
+        // Move all child nodes out of the span and into the parent
+        while (span.firstChild) {
+            parent.insertBefore(span.firstChild, span);
+        }
+        parent.removeChild(span);
+    });
+
+    // Normalize all affected parents to merge adjacent text nodes
+    affectedParents.forEach(parent => parent.normalize());
+
+    const elementSelectionClassName = 'doboard_task_widget-element_selection';
+    const elements = document.querySelectorAll(`.${elementSelectionClassName}`);
+    elements.forEach(element => {
+        element.classList.remove(elementSelectionClassName);
+    });
+    const imageSelectionClassName = 'doboard_task_widget-image_selection';
+    const images = document.querySelectorAll(`.${imageSelectionClassName}`);
+    images.forEach(element => {
+        element.classList.remove(imageSelectionClassName);
+    });
+}
+
+/**
+ * Validate nodePath as array of indices
+ * @param {Array} nodePath
+ * @returns {boolean}
+ */
+function spotFixIsValidNodePath(nodePath) {
+    if (!Array.isArray(nodePath)) return false;
+    if (nodePath.length === 0) return false;
+
+    return nodePath.every(index => {
+        return Number.isInteger(index) && index >= 0 && index < 1000;
+    });
+}
+
 /**
  * Try to find selected image in selection.
  * @param selection
  * @returns {Node|*|null}
  */
-function getSelectedImage(selection) {
+function spotFixGetSelectedImage(selection) {
 
     if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
         return null;
@@ -1920,7 +2168,7 @@ function getSelectedImage(selection) {
         {
             acceptNode: function(node) {
                 return node.tagName === 'IMG' &&
-                isElementInRange(node, range) ?
+                spotFixIsElementInRange(node, range) ?
                     NodeFilter.FILTER_ACCEPT :
                     NodeFilter.FILTER_REJECT;
             }
@@ -1933,22 +2181,22 @@ function getSelectedImage(selection) {
     }
 
     // start/end containers
-    const startElement = getElementFromNode(range.startContainer);
-    const endElement = getElementFromNode(range.endContainer);
+    const startElement = spotFixGetElementFromNode(range.startContainer);
+    const endElement = spotFixGetElementFromNode(range.endContainer);
 
     // If selection starts on image
     if (startElement && startElement.tagName === 'IMG' &&
-        isElementPartiallySelected(startElement, range)) {
+        spotFixIsElementPartiallySelected(startElement, range)) {
         return startElement;
     }
 
     if (endElement && endElement.tagName === 'IMG' &&
-        isElementPartiallySelected(endElement, range)) {
+        spotFixIsElementPartiallySelected(endElement, range)) {
         return endElement;
     }
 
     // 4. Get closest IMG
-    const nearbyElements = findNearbyElements(range);
+    const nearbyElements = spotFixFindNearbyElements(range);
     for (const element of nearbyElements) {
         if (element.tagName === 'IMG') {
             return element;
@@ -1958,15 +2206,14 @@ function getSelectedImage(selection) {
     return null;
 }
 
-
-function isElementInRange(element, range) {
+function spotFixIsElementInRange(element, range) {
     const elementRange = document.createRange();
     elementRange.selectNode(element);
     return range.compareBoundaryPoints(Range.START_TO_START, elementRange) <= 0 &&
         range.compareBoundaryPoints(Range.END_TO_END, elementRange) >= 0;
 }
 
-function isElementPartiallySelected(element, range) {
+function spotFixIsElementPartiallySelected(element, range) {
     const elementRect = element.getBoundingClientRect();
     const rangeRect = range.getBoundingClientRect();
 
@@ -1977,7 +2224,7 @@ function isElementPartiallySelected(element, range) {
         elementRect.top > rangeRect.bottom);
 }
 
-function getElementFromNode(node) {
+function spotFixGetElementFromNode(node) {
     return node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
 }
 
@@ -1986,7 +2233,7 @@ function getElementFromNode(node) {
  * @param range
  * @returns {*[]}
  */
-function findNearbyElements(range) {
+function spotFixFindNearbyElements(range) {
     const elements = [];
     const container = range.commonAncestorContainer;
 
@@ -2005,7 +2252,7 @@ function findNearbyElements(range) {
     if (container.nodeType === Node.ELEMENT_NODE) {
         const children = container.children;
         for (let i = 0; i < children.length; i++) {
-            if (isElementPartiallySelected(children[i], range)) {
+            if (spotFixIsElementPartiallySelected(children[i], range)) {
                 elements.push(children[i]);
             }
         }
@@ -2014,86 +2261,13 @@ function findNearbyElements(range) {
     return elements;
 }
 
-
-/**
- * Extracts selection data from DOM Selection object
- * @param {Selection} selection - The DOM Selection object
- * @returns {Object} Selection data with text, positions, URL and node path
- */
-function getSelectedData(selection) {
-    const {
-        anchorOffset,
-        focusOffset,
-    } = selection;
-
-    let selectedText = selection.toString();
-    let isTagOfImageType = false;
-    const selectedImage = getSelectedImage(selection);
-    const pageURL = window.location.href;
-
-    if ( ! selectedText ) {
-        if (selectedImage === null) {
-            return createEmptySelectionData(pageURL);
-        } else {
-            selectedText = `${selectedImage.tagName.toUpperCase()} ${selection.anchorNode.offsetHeight.toString()} * ${selection.anchorNode.offsetWidth.toString()}`
-        }
-    }
-
-    if ( selectedImage ) {
-        isTagOfImageType = selectedImage.tagName;
-    }
-
-    const isWholeTagSelected = anchorOffset === 0 &&
-        focusOffset === 0 &&
-        selectedText.length > 0;
-
-    const targetNode = determineTargetNode(
-        selection,
-        isWholeTagSelected,
-        isTagOfImageType,
-        selectedImage
-    );
-
-    return {
-        startSelectPosition: Math.min(anchorOffset, focusOffset),
-        endSelectPosition: Math.max(anchorOffset, focusOffset),
-        selectedText: selectedText,
-        pageURL: pageURL,
-        nodePath: calculateNodePath(targetNode),
-        isTagOfImageType: isTagOfImageType,
-        isWholeTagSelected: isWholeTagSelected
-    };
-}
-
-/**
- * Determines the target node for path calculation
- * @param {Selection} selection - DOM Selection object
- * @param {boolean} isWholeTagSelected - is entire tag selected
- * @param {boolean} isTagOfImageType - is tag of image type
- * @param {Node|null} selectedImage - if predefined image node exists
- * @returns {Node} Target DOM node
- */
-function determineTargetNode(selection, isWholeTagSelected = false,  isTagOfImageType = false, selectedImage = null) {
-    const { focusNode, anchorNode } = selection;
-
-    if (isWholeTagSelected) {
-        return anchorNode.parentElement;
-    }
-
-    if (isTagOfImageType && selectedImage) {
-        return selectedImage;
-    }
-
-    return focusNode.nodeName !== '#text' ? focusNode : focusNode.parentNode;
-}
-
 /**
  * Calculate the path of a DOM node
  *
  * @param {Node} node
  * @return {int[]}
  */
-function calculateNodePath(node) {
+function spotFixCalculateNodePath(node) {
     let path = [];
     while (node) {
         let index = 0;
@@ -2120,7 +2294,7 @@ function calculateNodePath(node) {
  * @param {int[]} path
  * @return {*|null}
  */
-function retrieveNodeFromPath(path) {
+function spotFixRetrieveNodeFromPath(path) {
     // @ToDo check if the path is correct
     if ( ! path ) {
         return null;
@@ -2136,24 +2310,6 @@ function retrieveNodeFromPath(path) {
     return node;
 }
 
-/**
- * Creates empty selection data object
- * @param {string} pageURL - Current page URL
- * @returns {Object} Empty selection data
- */
-function createEmptySelectionData(pageURL) {
-    return {
-        startSelectPosition: 0,
-        endSelectPosition: 0,
-        selectedText: '',
-        pageURL: pageURL,
-        nodePath: '',
-        isWholeTagSelected: false,
-        isTagOfImageType: false,
-    };
-}
-
-let spotFixCSS = `.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after{content:"";position:absolute;left:8%;top:100%;transform:translateX(-50%);pointer-events:none;background:0 0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid #545b61;display:block}.doboard_task_widget-send_message_paperclip{position:relative}.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip{display:none;position:absolute;left:0;bottom:0;transform:translateX(-3%) translateY(-43px);background:#545b61;color:#FFF;border:none;border-radius:3px;padding:10px 16px;font-size:13px;line-height:1.4;z-index:100;min-width:220px;max-width:320px;text-align:left;pointer-events:none;text-transform:none}.doboard_task_widget-send_message_paperclip:hover .doboard_task_widget-paperclip-tooltip{display:block}.doboard_task_widget *{font-family:Inter,sans-serif;font-weight:400;font-size:14px;line-height:130%;color:#40484F}.doboard_task_widget-header *{color:#FFF;margin:0}.doboard_task_widget a{text-decoration:underline;color:#2F68B7}.doboard_task_widget a:hover{text-decoration:none}.doboard_task_widget{position:fixed;right:50px;bottom:20px;z-index:9999;vertical-align:middle;transition:top .1s;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}.doboard_task_widget_cursor-pointer{cursor:pointer}.doboard_task_widget-container{width:360px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-header{display:flex;height:41px;min-height:41px;padding:8px 16px;background:#1C7857;border-radius:8px 8px 0 0;justify-content:space-between;align-items:center;color:#FFF}.doboard_task_widget-content{flex:1;overflow-y:auto;padding:10px 16px 5px;background:#FFF;border-radius:0 0 8px 8px;border:1px #BBC7D1;border-style:none solid solid;box-shadow:0 4px 15px 8px #CACACA40;scrollbar-width:none;max-height:60vh}.doboard_task_widget-element-container{margin-bottom:30px}.doboard_task_widget-wrap{width:auto;background:0 0;border:none;box-shadow:none;padding:0}.doboard_task_widget-wrap.hidden{display:none}#doboard_task_widget-task_count{position:absolute;top:0;right:0;width:22px;height:22px;opacity:1;background:#ef8b43;border-radius:50%;color:#FFF;text-align:center;line-height:22px}#doboard_task_widget-task_count:hover{background:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIiIGhlaWdodD0iMjIiIHZpZXdCb3g9IjAgMCAyMiAyMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxmb3JlaWduT2JqZWN0IHg9Ii00IiB5PSItNCIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIj48ZGl2IHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hodG1sIiBzdHlsZT0iYmFja2Ryb3AtZmlsdGVyOmJsdXIoMnB4KTtjbGlwLXBhdGg6dXJsKCNiZ2JsdXJfMF8xODk4OV8yODI2X2NsaXBfcGF0aCk7aGVpZ2h0OjEwMCU7d2lkdGg6MTAwJSI+PC9kaXY+PC9mb3JlaWduT2JqZWN0PjxwYXRoIGRhdGEtZmlnbWEtYmctYmx1ci1yYWRpdXM9IjQiIGQ9Ik0xMSAyMkMxNy4wNzUxIDIyIDIyIDE3LjA3NTEgMjIgMTFDMjIgNC45MjQ4NyAxNy4wNzUxIDAgMTEgMEM0LjkyNDg3IDAgMCA0LjkyNDg3IDAgMTFDMCAxNy4wNzUxIDQuOTI0ODcgMjIgMTEgMjJaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjciLz4KICAgIDxwYXRoIGQ9Ik0xNiA2TDYgMTYiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICAgIDxwYXRoIGQ9Ik02IDZMMTYgMTYiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICAgIDxkZWZzPgogICAgICAgIDxjbGlwUGF0aCBpZD0iYmdibHVyXzBfMTg5ODlfMjgyNl9jbGlwX3BhdGgiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQgNCkiPjxwYXRoIGQ9Ik0xMSAyMkMxNy4wNzUxIDIyIDIyIDE3LjA3NTEgMjIgMTFDMjIgNC45MjQ4NyAxNy4wNzUxIDAgMTEgMEM0LjkyNDg3IDAgMCA0LjkyNDg3IDAgMTFDMCAxNy4wNzUxIDQuOTI0ODcgMjIgMTEgMjJaIi8+CiAgICAgICAgPC9jbGlwUGF0aD48L2RlZnM+Cjwvc3ZnPg==) center no-repeat;cursor:pointer;overflow:hidden;font-size:0}#doboard_task_widget-task_count.hidden{width:0;height:0;opacity:0}.doboard_task_widget-input-container{position:relative;margin-bottom:24px}.doboard_task_widget-input-container.hidden{display:none}.doboard_task_widget-input-container .doboard_task_widget-field{padding:0 8px;border-radius:4px;border:1px solid #BBC7D1;outline:0!important;appearance:none;width:100%;height:40px;background:#FFF;color:#000;max-width:-webkit-fill-available;max-width:-moz-available}.doboard_task_widget-field:focus{border-color:#2F68B7}.doboard_task_widget-input-container textarea.doboard_task_widget-field{height:94px;padding-top:11px;padding-bottom:11px}.doboard_task_widget-field+label{color:#252A2F;background:#fff;position:absolute;top:20px;left:8px;transform:translateY(-50%);transition:all .2s ease-in-out}.doboard_task_widget-field.has-value+label,.doboard_task_widget-field:focus+label{font-size:10px;top:0;left:12px;padding:0 4px;z-index:5}.doboard_task_widget-field:focus+label{color:#2F68B7}.doboard_task_widget-login{background:#F9FBFD;border:1px solid #BBC7D1;border-radius:4px;padding:11px 8px 8px;margin-bottom:40px}.doboard_task_widget-login .doboard_task_widget-accordion{height:0;overflow:hidden;opacity:0;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-accordion{height:auto;overflow:visible;opacity:1}.doboard_task_widget-login .doboard_task_widget-input-container:last-child{margin-bottom:0}.doboard_task_widget-login span{display:block;position:relative;padding-right:24px;cursor:pointer}.doboard_task_widget-login.active span{margin-bottom:24px}.doboard_task_widget-login span::after{position:absolute;top:0;right:4px;content:"";display:block;width:10px;height:10px;transform:rotate(45deg);border:2px solid #40484F;border-radius:1px;border-top:none;border-left:none;transition:all .2s ease-in-out}.doboard_task_widget-login.active span::after{transform:rotate(-135deg);top:7px}.doboard_task_widget-login .doboard_task_widget-field+label,.doboard_task_widget-login .doboard_task_widget-input-container .doboard_task_widget-field{background:#F9FBFD}.doboard_task_widget-submit_button{height:48px;width:100%;margin-bottom:10px;color:#FFF;background:#22A475;border:none;border-radius:6px;font-family:Inter,sans-serif;font-weight:700;font-size:16px;line-height:150%;cursor:pointer;transition:all .2s ease-in-out}.doboard_task_widget-submit_button:hover{background:#1C7857;color:#FFF}.doboard_task_widget-submit_button:disabled{background:rgba(117,148,138,.92);color:#FFF;cursor:wait}.doboard_task_widget-issue-title{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-hidden_element{opacity:0}.doboard_task_widget-message-wrapper{border-radius:4px;padding:8px;margin-bottom:14px;display:grid;justify-items:center}.doboard_task_widget-error_message-wrapper.hidden,.doboard_task_widget-message-wrapper.hidden{display:none}.doboard_task_widget-error_message{background:#fdd;border:1px solid #cf6868}.doboard_task_widget-notice_message{background:#dde9ff;border:1px solid #68a6cf}#doboard_task_widget-error_message-header{font-weight:600}#doboard_task_widget-error_message{text-align:center}.doboard_task_widget-task_row{display:flex;max-height:55px;padding-bottom:4px;margin-bottom:20px;cursor:pointer;align-items:center;justify-content:space-between}.doboard_task_widget-task_row:last-child{margin-bottom:0}.doboard_task_widget-task-text_bold{font-weight:700}.doboard_task_widget-text_selection,.doboard_task_widget-text_selection.image-highlight>img{background:rgba(208,213,127,.68)}.doboard_task_widget-issues_list_empty{text-align:center;margin:20px 0}.doboard_task_widget-avatar_container{display:flex;height:44px;width:44px;border-radius:50%;background-repeat:no-repeat;background-position:center;background-size:100%}.doboard_task_widget-comment_data_owner .doboard_task_widget-avatar_container{opacity:0}.doboard_task_widget-avatar_placeholder{min-height:44px;min-width:44px;border-radius:50%;font-size:24px;line-height:1.2083333333;padding:0;background:#1C7857;display:inline-grid;align-content:center;justify-content:center}.doboard_task_widget-avatar-initials{color:#FFF;width:inherit;text-align:center}.doboard_task_widget-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover}.doboard_task_widget-description_container{height:55px;width:calc(100% - 44px - 8px);border-bottom:1px solid #EBF0F4;display:block;margin-left:8px}.doboard_task_widget-task_row:last-child .doboard_task_widget-description_container{border-bottom:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{overflow:auto;max-height:85vh;display:none}.doboard_task_widget-all_issues-container{scrollbar-width:none}.doboard_task_widget-content.doboard_task_widget-concrete_issue{padding:0}.doboard_task_widget-concrete_issues-container{padding:10px 16px 5px}.doboard_task_widget-all_issues-container::-webkit-scrollbar,.doboard_task_widget-all_issues::-webkit-scrollbar,.doboard_task_widget-concrete_issues-container::-webkit-scrollbar,.doboard_task_widget-content::-webkit-scrollbar{width:0}.doboard_task_widget-task_title{font-weight:700;display:flex;justify-content:space-between;align-items:center}.doboard_task_widget-task_title span{font-weight:700;display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-task_title-details{display:flex;max-width:calc(100% - 40px);align-items:center}.doboard_task_widget-task_title-unread_block{opacity:0;height:8px;width:8px;background:#f08c43;border-radius:50%;display:inline-block;font-size:8px;font-weight:600;position:relative}.doboard_task_widget-task_title-unread_block.unread{opacity:1}.doboard_task_widget-task_last_message{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:85%;height:36px}.doboard_task_widget_return_to_all{display:flex;gap:8px;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:wrap}.doboard_task_widget-task_title-last_update_time{font-family:Inter,serif;font-weight:400;font-style:normal;font-size:11px;leading-trim:NONE;line-height:100%}.doboard_task_widget-task_title_public_status_img{opacity:50%;margin-left:5px;scale:90%}.doboard_task_widget-description-textarea{resize:none}.doboard_task_widget-switch_row{display:flex;align-items:center;gap:12px;margin:16px 0;justify-content:space-between}.doboard_task_widget-switch-label{font-weight:600;font-size:16px;height:24px;align-content:center}.doboard_task_widget-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}.doboard_task_widget-switch input{opacity:0;width:0;height:0}.doboard_task_widget-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;border-radius:24px;transition:.2s}.doboard_task_widget-slider:before{position:absolute;content:"";height:20px;width:20px;left:2px;bottom:2px;background-color:#fff;border-radius:50%;transition:.2s}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider{background-color:#65D4AC}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider:before{transform:translateX(20px)}.doboard_task_widget-switch-img{width:24px;height:24px;flex-shrink:0}.doboard_task_widget-switch-center{display:flex;gap:2px;flex-direction:column;-moz-flex-direction:column;flex:1 1 auto;min-width:0}.doboard_task_widget-switch-desc{display:block;font-size:12px;color:#707A83;margin:0;line-height:1.2;max-width:180px;word-break:break-word}.doboard_task_widget-concrete_issue-day_content{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-concrete_issue_day_content-month_day{text-align:center;font-weight:400;font-size:12px;line-height:100%;padding:8px;opacity:.75}.doboard_task_widget-concrete_issue_day_content-messages_wrapper{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-comment_data_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;margin-bottom:15px;align-items:flex-end}.doboard_task_widget-comment_text_container{position:relative;width:calc(100% - 44px - 5px);height:auto;margin-left:5px;background:#F3F6F9;border-radius:16px}.doboard_task_widget-comment_text_container:after{content:"";position:absolute;bottom:0;left:-5px;width:13px;height:19px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAxMyAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAuMTEyNTggMTkuMDMzNEM1LjI5NDg2IDE5LjgyMDEgMTAuNjEwNSAxNy45NzQxIDEyLjI3MTUgMTYuMTcxM0MxMi4yNzE1IDE2LjE3MTMgMTAuOTYyMyAtMi43ODEyNCA1LjA5NTU0IDAuMzQ5MDc5QzUuMDc0NCAxLjYxNDU0IDUuMDk1NTQgNS45OTQ5IDUuMDk1NTQgNi43NDA2OUM1LjA5NTU0IDE3LjA2NjIgLTAuODg0MDEyIDE4LjQ0MDEgMC4xMTI1OCAxOS4wMzM0WiIgZmlsbD0iI0YzRjZGOSIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container{background:#EBFAF4}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container:after{left:auto;right:-5px;height:13px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMyAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjc3NzEgMTIuMzA2NkM3LjMzMTM1IDEzLjA5MzcgMS43NDU0NCAxMS4yNDY5IDAgOS40NDMxOUw3LjM5MTYgMEM3LjM5MTYgMTAuMzMwMyAxMy44MjQ0IDExLjcxMzEgMTIuNzc3MSAxMi4zMDY2WiIgZmlsbD0iI0VCRkFGNCIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_body,.doboard_task_widget-comment_time{position:relative;z-index:1}.doboard_task_widget-comment_body{padding:6px 8px;min-height:30px}.doboard_task_widget-comment_body strong{font-variation-settings:"wght" 700}.doboard_task_widget-comment_body blockquote{margin:0;border-left:3px solid #22a475}.doboard_task_widget-comment_body blockquote p{margin:0 10px}.doboard_task_widget-comment_body details .mce-accordion-body{padding-left:20px}.doboard_task_widget-comment_body details .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg transform='rotate(180 0 0)' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") 0 no-repeat;padding-left:20px}.doboard_task_widget-comment_body .mce-accordion[open] .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") 0 no-repeat}.doboard_task_widget-comment_body details .mce-accordion-summary::marker{content:""}.doboard_task_widget-comment_body pre{border:1px solid #d6dde3;border-left-width:8px;border-radius:4px;padding:13px 16px 14px 12px;white-space:pre-wrap}.doboard_task_widget-comment_time{font-weight:400;font-size:11px;opacity:.8;position:absolute;bottom:6px;right:6px}.doboard_task_widget-comment_body-img-strict{max-width:-webkit-fill-available;height:100px;margin-right:5px}.doboard_task_widget-send_message{padding:14px 10px;border-top:1px solid #BBC7D1;position:sticky;background:#fff;bottom:0;z-index:4}.doboard_task_widget-send_message_elements_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:nowrap;justify-content:space-between;align-items:end}.doboard_task_widget-send_message_elements_wrapper button{height:37px;background:0 0;margin:0}.doboard_task_widget-send_message_elements_wrapper img{margin:0}.doboard_task_widget-send_message_input_wrapper{position:relative;display:inline-grid;align-items:center;justify-items:center;flex-grow:1;padding:0 6px}.doboard_task_widget-send_message_input_wrapper textarea{position:relative;width:100%;height:37px;border:none;outline:0;box-shadow:none;border-radius:24px;background:#F3F6F9;resize:none;margin-bottom:0!important;transition:height .2s ease-in-out;padding:8px;box-sizing:border-box}.doboard_task_widget-send_message_input_wrapper textarea.high{height:170px}.doboard_task_widget-send_message_input_wrapper textarea:focus{background:#F3F6F9;border-color:#007bff;outline:0}.doboard_task_widget-send_message_button,.doboard_task_widget-send_message_paperclip{display:inline-grid;border:none;background:0 0;cursor:pointer;padding:0;align-items:center;margin:0}.doboard_task_widget-send_message_button:hover,.doboard_task_widget-send_message_paperclip:hover rect{fill:#45a049}.doboard_task_widget-send_message_button:active,.doboard_task_widget-send_message_paperclip:active{transform:scale(.98)}.doboard_task_widget-spinner_wrapper_for_containers{display:flex;justify-content:center;align-items:center;min-height:60px;width:100%}.doboard_task_widget-spinner_for_containers{width:40px;height:40px;border-radius:50%;background:conic-gradient(transparent,#1C7857);mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#fff 0);animation:spin 1s linear infinite}.doboard_task_widget__file-upload__wrapper{display:none;border:1px solid #BBC7D1;margin-top:14px;padding:0 10px 10px;border-radius:4px}.doboard_task_widget__file-upload__list-header{text-align:left;font-size:.9em;margin:5px 0;color:#444c529e}.doboard_task_widget__file-upload__file-input-button{display:none}.doboard_task_widget__file-upload__file-list{border:1px solid #ddd;border-radius:5px;padding:6px;max-height:200px;overflow-y:auto;background:#f3f6f9}.doboard_task_widget__file-upload__file-item{display:flex;justify-content:space-between;align-items:center;padding:4px;border-bottom:1px solid #bbc7d16b}.doboard_task_widget__file-upload__file-item:last-child{border-bottom:none}.doboard_task_widget__file-upload__file_info{display:inline-flex;align-items:center}.doboard_task_widget__file-upload__file-name{font-weight:700;font-size:.9em}.doboard_task_widget__file-upload__file-item-content{width:100%}.doboard_task_widget__file-upload__file_size{color:#666;font-size:.8em;margin-left:6px}.doboard_task_widget__file-upload__remove-btn{background:#22a475;color:#fff;border:none;border-radius:3px;cursor:pointer}.doboard_task_widget__file-upload__error{display:block;margin:7px 0 0;padding:7px;border-radius:4px;background:#fdd;border:1px solid #cf6868}@keyframes spin{to{transform:rotate(1turn)}}@media (max-width:480px){.doboard_task_widget{position:fixed;right:0;top:auto;bottom:0;margin:0 20px 20px;box-sizing:border-box;transform:translateZ(0);-moz-transform:translateZ(0);will-change:transform;max-height:90vh}.doboard_task_widget-container{width:100%;max-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-content{height:auto;max-height:none;scrollbar-width:none}.doboard_task_widget-content::-webkit-scrollbar{display:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{max-height:80vh}}@supports (-webkit-overflow-scrolling:touch){.doboard_task_widget{position:fixed}}`;
 /**
  * Return bool if widget is closed in local storage
  * @returns {boolean}
