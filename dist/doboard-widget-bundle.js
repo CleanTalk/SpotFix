@@ -1437,20 +1437,7 @@ class CleanTalkWidgetDoboard {
 const SPOTFIX_DEBUG = true;
 
 const SPOTFIX_SHOW_DELAY = 3000;
-var spotfixShowDelayTimeout = null;
-
-var spotfixState = {
-    widgetVisibility: 'visible', // hidden(show icon), visible(open widget), closed(hide icon and widget)
-    widgetType: 'create_issue', // create_issue(create task), all_issues(all issues), show_one_issue(show one issue)
-    isHighlightsActive: false, // true(highlight something), false(no highlights anything)
-};
-
-function spotFixSetState(state) {
-    spotfixState = {
-        ...spotfixState,
-        ...state,
-    };
-}
+var spotFixShowDelayTimeout = null;
 
 if( document.readyState !== 'loading' ) {
     document.addEventListener('spotFixLoaded', spotFixInit);
@@ -1469,11 +1456,11 @@ document.addEventListener('selectionchange', function(e) {
         return;
     }
 
-    if (spotfixShowDelayTimeout) {
-        clearTimeout(spotfixShowDelayTimeout);
+    if (spotFixShowDelayTimeout) {
+        clearTimeout(spotFixShowDelayTimeout);
     }
 
-    spotfixShowDelayTimeout = setTimeout(() => {
+    spotFixShowDelayTimeout = setTimeout(() => {
         const selection = window.getSelection();
         if (
             selection.type === 'Range'
