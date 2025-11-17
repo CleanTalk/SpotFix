@@ -1,5 +1,20 @@
-var widgetTimeout = null;
-const SPOTFIX_DEBUG = false;
+const SPOTFIX_DEBUG = true;
+
+const SPOTFIX_SHOW_DELAY = 3000;
+var spotfixShowDelayTimeout = null;
+
+var spotfixState = {
+    widgetVisibility: 'visible', // hidden(show icon), visible(open widget), closed(hide icon and widget)
+    widgetType: 'create_issue', // create_issue(create task), all_issues(all issues), show_one_issue(show one issue)
+    isHighlightsActive: false, // true(highlight something), false(no highlights anything)
+};
+
+function spotFixSetState(state) {
+    spotfixState = {
+        ...spotfixState,
+        ...state,
+    };
+}
 
 if( document.readyState !== 'loading' ) {
     document.addEventListener('spotFixLoaded', spotFixInit);
@@ -18,11 +33,11 @@ document.addEventListener('selectionchange', function(e) {
         return;
     }
 
-    if (widgetTimeout) {
-        clearTimeout(widgetTimeout);
+    if (spotfixShowDelayTimeout) {
+        clearTimeout(spotfixShowDelayTimeout);
     }
 
-    widgetTimeout = setTimeout(() => {
+    spotfixShowDelayTimeout = setTimeout(() => {
         const selection = window.getSelection();
         if (
             selection.type === 'Range'
@@ -38,7 +53,7 @@ document.addEventListener('selectionchange', function(e) {
                 spotFixOpenWidget(selectedData, 'create_issue');
             }
         }
-    }, 1000);
+    }, SPOTFIX_SHOW_DELAY);
 });
 
 /**
