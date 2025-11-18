@@ -83,13 +83,14 @@ function spotFixGetSelectedData(selection) {
                 spotFixDebugLog('`spotFixGetSelectedData` skip by `Selection text is empty`');
                 return null;
             }
+            const commonNodeElement = commonNode.nodeType === Node.ELEMENT_NODE ? commonNode : commonNode.parentElement;
             selectedText = range.toString();
             startSelectPosition = range.startOffset;
             endSelectPosition = range.endOffset;
             if ( startSelectPosition === 0 && selectedText.length > endSelectPosition ) {
                 endSelectPosition = selectedText.length;
             }
-            nodePath = spotFixCalculateNodePath(commonNode);
+            nodePath = spotFixCalculateNodePath(commonNodeElement);
             break;
 
         case SPOTFIX_SELECTION_TYPE_IMG:
