@@ -352,6 +352,12 @@ class CleanTalkWidgetDoboard {
                 });
                 hideContainersSpinner(false);
                 break;
+            case 'wrap_review':
+                await this.getTaskCount();
+                document.querySelector('.wrap_review').addEventListener('click', (e) => {
+                    spotFixOpenWidget(this.selectedData, 'create_issue')
+                });
+                break;
             case 'all_issues':
                 spotFixRemoveHighlights();
                 let issuesQuantityOnPage = 0;

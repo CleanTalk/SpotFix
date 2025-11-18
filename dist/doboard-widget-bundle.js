@@ -875,6 +875,12 @@ class CleanTalkWidgetDoboard {
                 });
                 hideContainersSpinner(false);
                 break;
+            case 'wrap_review':
+                await this.getTaskCount();
+                document.querySelector('.wrap_review').addEventListener('click', (e) => {
+                    spotFixOpenWidget(this.selectedData, 'create_issue')
+                });
+                break;
             case 'all_issues':
                 spotFixRemoveHighlights();
                 let issuesQuantityOnPage = 0;
@@ -1458,15 +1464,15 @@ function spotFixInit() {
 
 document.addEventListener('selectionchange', function(e) {
     // Do not run widget for non-document events (i.e. inputs focused)
+    const active = document.activeElement;
 
     if (e.target !== document) {
         return;
     }
 
     const sel = document.getSelection();
-
-    if (!sel || sel.toString() === "") {
-        setTimeout(() => new CleanTalkWidgetDoboard({}, 'wrap'), 1);
+    if ((!sel || sel.toString() === "") && active.closest('.wrap_review')) {
+        new CleanTalkWidgetDoboard({}, 'wrap')
         return;
     }
 

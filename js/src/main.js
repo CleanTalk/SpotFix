@@ -14,15 +14,15 @@ function spotFixInit() {
 
 document.addEventListener('selectionchange', function(e) {
     // Do not run widget for non-document events (i.e. inputs focused)
+    const active = document.activeElement;
 
     if (e.target !== document) {
         return;
     }
 
     const sel = document.getSelection();
-
-    if (!sel || sel.toString() === "") {
-        setTimeout(() => new CleanTalkWidgetDoboard({}, 'wrap'), 1);
+    if ((!sel || sel.toString() === "") && active.closest('.wrap_review')) {
+        new CleanTalkWidgetDoboard({}, 'wrap')
         return;
     }
 
