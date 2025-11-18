@@ -121,14 +121,55 @@
 /*** `WRAP` INTERFACE ***/
 
 .doboard_task_widget-wrap {
-    width: auto;
-    background: none;
     border: none;
     box-shadow: none;
+    position: relative;
     padding: 0;
+    cursor: pointer;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: #1c7857;
+    opacity: 0.6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.doboard_task_widget-wrap img {
+    width: 24px;
+    height: 24px;
+}
+
+.doboard_task_widget-wrap::after {
+    content: "";
+    position: absolute;
+    left: -2px;
+    bottom: -6px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-radius: 20%;
+    border-width: 20px 22px 0 0;
+    border-color: #1c7857 transparent transparent transparent;
+    transform: rotate(30deg);
 }
 
 .doboard_task_widget-wrap.hidden {
+    display: none;
+}
+
+.wrap_review {
+    width: 150px;
+    border-radius: 16px;
+}
+
+#review_content_button_text {
+    color: white;
+    margin-left: 4px;
+}
+
+.wrap_review::after{
     display: none;
 }
 

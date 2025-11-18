@@ -26,6 +26,7 @@ class CleanTalkWidgetDoboard {
             buttonSendMessage: SpotFixSVGLoader.getAsDataURI('buttonSendMessage'),
             logoDoBoardWhite: SpotFixSVGLoader.getAsDataURI('logoDoBoardWhite'),
             logoDoBoardWrap: SpotFixSVGLoader.getAsDataURI('logoDoBoardWrap'),
+            iconSpotWidgetWrap: SpotFixSVGLoader.getAsDataURI('iconSpotWidgetWrap'),
             iconSpotPublic: SpotFixSVGLoader.getAsDataURI('iconSpotPublic'),
             iconSpotPrivate: SpotFixSVGLoader.getAsDataURI('iconSpotPrivate'),
         };
@@ -68,7 +69,7 @@ class CleanTalkWidgetDoboard {
         if (storageTasksHasUnreadUpdates()) {
             taskHasSiteOwnerUpdate = true;
         } else {
-            if (type === 'wrap') {
+            if (type === 'wrap_review') {
                 taskHasSiteOwnerUpdate = await checkIfTasksHasSiteOwnerUpdates(
                     this.allTasksData,
                     this.params
@@ -285,6 +286,13 @@ class CleanTalkWidgetDoboard {
                     return;
                 }
                 templateName = 'wrap';
+                templateVariables = {...this.srcVariables};
+                break;
+            case 'wrap_review':
+                if (storageGetWidgetIsClosed()) {
+                    return;
+                }
+                templateName = 'wrap_review';
                 templateVariables = {...this.srcVariables};
                 break;
             case 'all_issues':

@@ -28,7 +28,7 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-all_issues-container">
         </div>
         <div class="doboard_task_widget_tasks_list">
-            <a href="https://doboard.com">
+            <a href="https://doboard.com/spotfix">
             The Site Improver by doBoard
             </a>
         </div>
@@ -203,9 +203,17 @@ class SpotFixTemplatesLoader {
     static wrap() {
         return `
 <div class="doboard_task_widget-wrap">
-    <img src="{{logoDoBoardWrap}}" alt="Doboard logo">
-    <div id="doboard_task_widget-task_count" class="hidden"></div>
-</div>
-`;
+<img src="{{iconSpotWidgetWrap}}" />
+<!--    <img src="{{logoDoBoardWrap}}" alt="Doboard logo">-->
+<!--    <div id="doboard_task_widget-task_count" class="hidden"></div>-->
+</div>`;
+    }
+
+    static wrap_review() {
+        return `
+<div class="doboard_task_widget-wrap wrap_review">
+<img src="{{iconSpotWidgetWrap}}" />
+<span id="review_content_button_text">Review content</span>
+</div>`;
     }
 }

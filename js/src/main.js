@@ -14,7 +14,15 @@ function spotFixInit() {
 
 document.addEventListener('selectionchange', function(e) {
     // Do not run widget for non-document events (i.e. inputs focused)
+
     if (e.target !== document) {
+        return;
+    }
+
+    const sel = document.getSelection();
+
+    if (!sel || sel.toString() === "") {
+        setTimeout(() => new CleanTalkWidgetDoboard({}, 'wrap'), 1);
         return;
     }
 
@@ -34,8 +42,10 @@ document.addEventListener('selectionchange', function(e) {
                 return;
             }
             const selectedData = spotFixGetSelectedData(selection);
+
             if ( selectedData ) {
-                spotFixOpenWidget(selectedData, 'create_issue');
+                // spotFixOpenWidget(selectedData, 'create_issue');
+                spotFixOpenWidget(selectedData, 'wrap_review');
             }
         }
     }, 1000);
