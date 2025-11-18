@@ -240,6 +240,13 @@ function spotFixHighlightTextInElement(element, spots) {
 
     let text = element.textContent;
     const spotSelectedText = spots[0].selectedText;
+
+    // meta.selectedText can not be empty string
+    if ( ! spotSelectedText ) {
+        spotFixDebugLog('Provided metadata is invalid.');
+        return;
+    }
+
     const markers = [];
 
     // Mark positions for inserting
