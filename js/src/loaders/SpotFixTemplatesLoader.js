@@ -1,5 +1,4 @@
 class SpotFixTemplatesLoader {
-
     static getTemplateCode(templateName) {
         const templateMethod = this[templateName];
 
@@ -27,6 +26,11 @@ class SpotFixTemplatesLoader {
             <div class="doboard_task_widget-spinner_for_containers"></div>
         </div>
         <div class="doboard_task_widget-all_issues-container">
+        </div>
+        <div class="doboard_task_widget_tasks_list">
+            <a href="https://doboard.com">
+            The Site Improver by doBoard
+            </a>
         </div>
     </div>
 </div>`;
