@@ -14,41 +14,42 @@ function spotFixInit() {
 
 document.addEventListener('selectionchange', function(e) {
     // Do not run widget for non-document events (i.e. inputs focused)
-    const active = document.activeElement;
-
-    if (e.target !== document) {
-        return;
-    }
-
-    const sel = document.getSelection();
-    if ((!sel || sel.toString() === "") && active.closest('.wrap_review')) {
-        new CleanTalkWidgetDoboard({}, 'wrap')
-        return;
-    }
-
-    if (widgetTimeout) {
-        clearTimeout(widgetTimeout);
-    }
-
-    widgetTimeout = setTimeout(() => {
-        const selection = window.getSelection();
-        if (
-            selection.type === 'Range'
-        ) {
-            // Check if selection is inside the widget
-            let anchorNode = selection.anchorNode;
-            let focusNode = selection.focusNode;
-            if (spotFixIsInsideWidget(anchorNode) || spotFixIsInsideWidget(focusNode)) {
-                return;
-            }
-            const selectedData = spotFixGetSelectedData(selection);
-
-            if ( selectedData ) {
-                // spotFixOpenWidget(selectedData, 'create_issue');
-                spotFixOpenWidget(selectedData, 'wrap_review');
-            }
+    setTimeout(() => {
+        if (e.target !== document) {
+            return;
         }
-    }, 1000);
+
+        const sel = document.getSelection();
+
+        if (!sel || sel.toString() === "") {
+            new CleanTalkWidgetDoboard({}, 'wrap')
+            return;
+        }
+
+        if (widgetTimeout) {
+            clearTimeout(widgetTimeout);
+        }
+
+        widgetTimeout = setTimeout(() => {
+            const selection = window.getSelection();
+            if (
+                selection.type === 'Range'
+            ) {
+                // Check if selection is inside the widget
+                let anchorNode = selection.anchorNode;
+                let focusNode = selection.focusNode;
+                if (spotFixIsInsideWidget(anchorNode) || spotFixIsInsideWidget(focusNode)) {
+                    return;
+                }
+                const selectedData = spotFixGetSelectedData(selection);
+
+                if ( selectedData ) {
+                    // spotFixOpenWidget(selectedData, 'create_issue');
+                    spotFixOpenWidget(selectedData, 'wrap_review');
+                }
+            }
+        }, 1000);
+    }, 100);
 });
 
 /**
