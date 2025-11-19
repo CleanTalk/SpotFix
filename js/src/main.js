@@ -43,7 +43,7 @@ document.addEventListener('selectionchange', function(e) {
 /**
  * Shows the spot fix widget.
  */
-function showSpotFixWidget() {
+function spotFixShowWidget() {
     const selection = window.getSelection();
 
     if (selection.type !== 'Range') {
