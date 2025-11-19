@@ -44,23 +44,8 @@ document.addEventListener('selectionchange', function(e) {
  * Shows the spot fix widget.
  */
 function spotFixShowWidget() {
-    const selection = window.getSelection();
-
-    if (selection.type !== 'Range') {
-        new CleanTalkWidgetDoboard(null, 'create_issue');
-        return;
-    }
-
-    const { anchorNode, focusNode } = selection;
-    if (!isInsideWidget(anchorNode) && !isInsideWidget(focusNode)) {
-        const selectedData = getSelectedData(selection);
-        openWidget(selectedData, 'create_issue');
-    }
-
     new CleanTalkWidgetDoboard(null, 'create_issue');
 }
-
-
 
 /**
  * Check if a node is inside the task widget.
