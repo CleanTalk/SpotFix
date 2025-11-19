@@ -1,6 +1,7 @@
 var spotFixShowDelayTimeout = null;
 const SPOTFIX_DEBUG = false;
 const SPOTFIX_SHOW_DELAY = 1000;
+let spotFixCurrentSupportButton = null;
 
 if( document.readyState !== 'loading' ) {
     document.addEventListener('spotFixLoaded', spotFixInit);
@@ -45,13 +46,66 @@ document.addEventListener('selectionchange', function(e) {
             }
             const selectedData = spotFixGetSelectedData(selection);
 
-            if ( selectedData ) {
-                // spotFixOpenWidget(selectedData, 'create_issue');
-                spotFixOpenWidget(selectedData, 'wrap_review');
-            }
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            spotfixShowReportButton(rect, selectedData);
         }
     }, SPOTFIX_SHOW_DELAY);
 });
+
+
+/**
+ * Shows the spot fix widget.
+ */
+function spotFixShowWidget() {
+    new CleanTalkWidgetDoboard(null, 'create_issue');
+}
+
+/**
+ * Global click event listener to remove SpotFix button when clicking outside of it
+ * @event document#click
+ * @listens click
+ * @returns {void}
+ */
+document.addEventListener('click', () => {
+    spotfixRemoveCurrentReportButton();
+});
+
+/**
+ * Create and display a SpotFix button
+ * @param {DOMRect} rect
+ * @param {Object} selectedData
+ * @returns {void}
+ */
+function spotfixShowReportButton(rect, selectedData) {
+    spotfixRemoveCurrentReportButton();
+    const widget = document.createElement('div');
+    spotFixCurrentSupportButton = widget;
+
+    widget.textContent = 'Report a Spot';
+    widget.className = 'doboard_task_widget-show_button';
+    widget.style.left = (rect.left + rect.width / 2) + 'px';
+    widget.style.top = (rect.top - 35) + 'px';
+    widget.style.transform = 'translateX(-50%)';
+    widget.addEventListener('click', () => {
+        spotFixOpenWidget(selectedData, 'create_issue');
+        spotfixRemoveCurrentReportButton();
+    });
+
+    document.body.appendChild(widget);
+}
+
+
+/**
+ * Remove the currently displayed SpotFix button from the DOM
+ * @returns {void}
+ */
+function spotfixRemoveCurrentReportButton() {
+    if (spotFixCurrentSupportButton) {
+        spotFixCurrentSupportButton.remove();
+        spotFixCurrentSupportButton = null;
+    }
+}
 
 /**
  * Check if a node is inside the task widget.
