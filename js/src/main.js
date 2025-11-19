@@ -1,4 +1,4 @@
-const SPOTFIX_DEBUG = true;
+const SPOTFIX_DEBUG = false;
 
 const SPOTFIX_SHOW_DELAY = 3000;
 var spotFixShowDelayTimeout = null;
