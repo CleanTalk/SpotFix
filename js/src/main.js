@@ -1,4 +1,5 @@
 var widgetTimeout = null;
+let SpotFixCurrentButton = null;
 
 if( document.readyState !== 'loading' ) {
     document.addEventListener('spotFixLoaded', spotFixInit);
@@ -34,10 +35,59 @@ document.addEventListener('selectionchange', function(e) {
                 return;
             }
             const selectedData = getSelectedData(selection);
-            openWidget(selectedData, 'create_issue');
+
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            showButton(rect, selectedData);
         }
     }, 1000);
 });
+
+/**
+ * Global click event listener to remove SpotFix button when clicking outside of it
+ * @event document#click
+ * @listens click
+ * @returns {void}
+ */
+document.addEventListener('click', () => {
+    removeCurrentButton();
+});
+
+/**
+ * Create and display a SpotFix button
+ * @param {DOMRect} rect
+ * @param {Object} selectedData
+ * @returns {void}
+ */
+function showButton(rect, selectedData) {
+    removeCurrentButton();
+    const widget = document.createElement('div');
+    SpotFixCurrentButton = widget;
+
+    widget.textContent = 'Report a Spot';
+    widget.className = 'doboard_task_widget-show_button';
+    widget.style.left = (rect.left + rect.width / 2) + 'px';
+    widget.style.top = (rect.top - 35) + 'px';
+    widget.style.transform = 'translateX(-50%)';
+    widget.addEventListener('click', () => {
+        openWidget(selectedData, 'create_issue');
+        removeCurrentButton();
+    });
+
+    document.body.appendChild(widget);
+}
+
+
+/**
+ * Remove the currently displayed SpotFix button from the DOM
+ * @returns {void}
+ */
+function removeCurrentButton() {
+    if (SpotFixCurrentButton) {
+        SpotFixCurrentButton.remove();
+        SpotFixCurrentButton = null;
+    }
+}
 
 /**
  * Check if a node is inside the task widget.
