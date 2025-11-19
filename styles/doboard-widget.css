@@ -906,6 +906,16 @@
     border: 1px solid #cf6868;
 }
 
+.doboard_task_widget-show_button {
+    background: #1C7857;
+    color: #FFFFFF;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
 /*fileuplaod*/
 
 @keyframes spin {
