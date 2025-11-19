@@ -211,9 +211,9 @@ class SpotFixTemplatesLoader {
 
     static wrap_review() {
         return `
-<div id="rererer" class="doboard_task_widget-wrap wrap_review">
+<button id="doboard_task_widget_button" class="doboard_task_widget-wrap wrap_review">
 <img src="{{iconSpotWidgetWrap}}" />
 <span id="review_content_button_text">Review content</span>
-</div>`;
+</button>`;
     }
 }

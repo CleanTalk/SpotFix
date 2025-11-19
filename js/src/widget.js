@@ -354,7 +354,7 @@ class CleanTalkWidgetDoboard {
                 break;
             case 'wrap_review':
                 await this.getTaskCount();
-                document.querySelector('.wrap_review').addEventListener('click', (e) => {
+                document.querySelector('#doboard_task_widget_button').addEventListener('click', (e) => {
                     spotFixOpenWidget(this.selectedData, 'create_issue');
                 });
                 break;
