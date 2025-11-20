@@ -17,7 +17,7 @@ class SpotFixTemplatesLoader {
     <div class="doboard_task_widget-header">
         <div style="display: flex;align-items: center;gap: 8px;">
             <img src="{{logoDoBoardWhite}}"  alt="">
-            <span>All spots</span>
+            <span>All spots </span>
         </div>
         <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
     </div>
