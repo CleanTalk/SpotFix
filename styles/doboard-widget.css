@@ -543,9 +543,6 @@
 }
 
 .doboard_task_widget-task_page_url {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     max-width: 85%;
     height: 36px;
     display: flex;
@@ -555,6 +552,11 @@
 .doboard_task_widget-task_page_url a {
     color: #40484F;
     text-decoration: none;
+    margin-left: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .doboard_task_widget_return_to_all {

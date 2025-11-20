@@ -1,9 +1,6 @@
-var widgetTimeout = null;
+var spotFixShowDelayTimeout = null;
 const SPOTFIX_DEBUG = false;
 const SPOTFIX_SHOW_DELAY = 1000;
-
-const SPOTFIX_SHOW_DELAY = 3000;
-var spotFixShowDelayTimeout = null;
 
 if( document.readyState !== 'loading' ) {
     document.addEventListener('spotFixLoaded', spotFixInit);
@@ -23,15 +20,15 @@ document.addEventListener('selectionchange', function(e) {
         return;
     }
 
-    if (widgetTimeout) {
-        clearTimeout(widgetTimeout);
+    const isWrapReviewWidgetExists = !!(document.getElementsByClassName('wrap_review')[0]);
+    const sel = document.getSelection();
 
     if ((!sel || sel.toString() === "") && isWrapReviewWidgetExists) {
         new CleanTalkWidgetDoboard({}, 'wrap')
         return;
     }
 
-    widgetTimeout = setTimeout(() => {
+    if (spotFixShowDelayTimeout) {
         clearTimeout(spotFixShowDelayTimeout);
     }
 
