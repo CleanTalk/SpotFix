@@ -28,7 +28,7 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-all_issues-container">
         </div>
         <div class="doboard_task_widget_tasks_list">
-            <a href="https://doboard.com/spotfix">
+            <a target="_blank" href="https://doboard.com/spotfix">
             The Site Improver by doBoard
             </a>
         </div>
@@ -192,9 +192,10 @@ class SpotFixTemplatesLoader {
             </div>
             <div class="doboard_task_widget-task_title-last_update_time">{{taskLastUpdate}}</div>
         </div>
-        <div class="doboard_task_widget-task_last_message">
-            <span>{{taskLastMessage}}</span>
-        </div>
+        <div class="doboard_task_widget-task_page_url">
+            <img src="{{iconLinkChain}}" />
+            <a href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
+         </div>
     </div>
 </div>
 `;
@@ -203,7 +204,7 @@ class SpotFixTemplatesLoader {
     static wrap() {
         return `
 <div class="doboard_task_widget-wrap">
-<img src="{{iconSpotWidgetWrap}}" />
+<img src="{{iconSpotWidgetWrapPencil}}" />
 <!--    <img src="{{logoDoBoardWrap}}" alt="Doboard logo">-->
 <!--    <div id="doboard_task_widget-task_count" class="hidden"></div>-->
 </div>`;
@@ -212,7 +213,7 @@ class SpotFixTemplatesLoader {
     static wrap_review() {
         return `
 <button id="doboard_task_widget_button" class="doboard_task_widget-wrap wrap_review">
-<img src="{{iconSpotWidgetWrap}}" />
+<img src="{{iconSpotWidgetWrapPencil}}" />
 <span id="review_content_button_text">Review content</span>
 </button>`;
     }

@@ -244,3 +244,13 @@ function userUpdate(projectToken, accountId) {
 
 	return userUpdateDoboard(projectToken, accountId, sessionId, userId, timezone);
 }
+
+function splitUrl(url) {
+	const u = new URL(url);
+	const domain = u.host;
+
+	let path = u.pathname.replace(/^\/+/, '');
+	if (u.search) path += u.search;
+
+	return domain + " / " + path;
+}

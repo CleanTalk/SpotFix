@@ -26,9 +26,10 @@ class CleanTalkWidgetDoboard {
             buttonSendMessage: SpotFixSVGLoader.getAsDataURI('buttonSendMessage'),
             logoDoBoardWhite: SpotFixSVGLoader.getAsDataURI('logoDoBoardWhite'),
             logoDoBoardWrap: SpotFixSVGLoader.getAsDataURI('logoDoBoardWrap'),
-            iconSpotWidgetWrap: SpotFixSVGLoader.getAsDataURI('iconSpotWidgetWrap'),
+            iconSpotWidgetWrapPencil: SpotFixSVGLoader.getAsDataURI('iconSpotWidgetWrapPencil'),
             iconSpotPublic: SpotFixSVGLoader.getAsDataURI('iconSpotPublic'),
             iconSpotPrivate: SpotFixSVGLoader.getAsDataURI('iconSpotPrivate'),
+            iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
         };
         this.fileUploader = new FileUploader(this.escapeHtml);
     }
@@ -260,7 +261,7 @@ class CleanTalkWidgetDoboard {
      * Create widget element
      * @return {HTMLElement} widget element
      */
-    async createWidgetElement(type, showOnlyCurrentPage = true) {
+    async createWidgetElement(type, showOnlyCurrentPage = false) {
         const widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
         widgetContainer.className = 'doboard_task_widget';
         widgetContainer.innerHTML = ksesFilter('');
@@ -410,6 +411,9 @@ class CleanTalkWidgetDoboard {
                                 taskPublicStatusImgSrc: taskPublicStatusImgSrc,
                                 taskPublicStatusHint: taskPublicStatusHint,
                                 taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
+                                taskPageUrl: currentPageURL,
+                                iconLinkChain: this.srcVariables.iconLinkChain,
+                                taskFormattedPageUrl: splitUrl(currentPageURL),
                                 taskLastUpdate: taskFullDetails.lastMessageTime,
                                 nodePath: this.sanitizeNodePath(taskNodePath),
                                 taskId: taskId,
@@ -419,11 +423,11 @@ class CleanTalkWidgetDoboard {
                                 initialsClass: avatarData.initialsClass,
                                 classUnread: '',
                             };
+
                             const taskOwnerReplyIsUnread = storageProvidedTaskHasUnreadUpdates(taskFullDetails.taskId);
                             if (taskOwnerReplyIsUnread) {
                                 listIssuesTemplateVariables.classUnread = 'unread';
                             }
-
                             document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += this.loadTemplate('list_issues', listIssuesTemplateVariables);
 
                             if ( this.isSpotHaveToBeHighlighted(taskData) ) {

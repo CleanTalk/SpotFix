@@ -14,14 +14,15 @@ function spotFixInit() {
 
 document.addEventListener('selectionchange', function(e) {
     // Do not run widget for non-document events (i.e. inputs focused)
-    setTimeout(() => {
+
         if (e.target !== document) {
             return;
         }
 
+        const isWrapReviewWidgetExists = !!(document.getElementsByClassName('wrap_review')[0]);
         const sel = document.getSelection();
 
-        if (!sel || sel.toString() === "") {
+        if ((!sel || sel.toString() === "") && isWrapReviewWidgetExists) {
             new CleanTalkWidgetDoboard({}, 'wrap')
             return;
         }
@@ -49,7 +50,6 @@ document.addEventListener('selectionchange', function(e) {
                 }
             }
         }, 1000);
-    }, 100);
 });
 
 /**
