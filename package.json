@@ -5,8 +5,7 @@
   "author": "CleanTalk Team",
   "main": "src/main.js",
   "scripts": {
-    "eslint": "./node_modules/.bin/eslint -c ./.eslintrc.json js/*.js",
-    "gulp": "gulp"
+    "eslint": "./node_modules/.bin/eslint -c ./.eslintrc.json js/*.js"
   },
   "devDependencies": {
     "@babel/core": "^7.26.7",
@@ -36,7 +35,6 @@
     "JavaScript"
   ],
   "dependencies": {
-    "browser-sync": "^3.0.4",
     "del": "^8.0.1",
     "merge-stream": "^2.0.0"
   }

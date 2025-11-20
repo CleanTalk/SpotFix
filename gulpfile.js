@@ -1,15 +1,13 @@
 'use strict';
 
-let gulp = require('gulp');
-let sourcemaps = require('gulp-sourcemaps');
-let uglify = require('gulp-uglify');
-let rename = require('gulp-rename');
-let concat = require('gulp-concat');
-let wrap = require('gulp-wrap');
-let mergeStream = require('merge-stream');
-let cssmin = require('gulp-cssmin');
-let browserSync = require('browser-sync').create();
-
+var gulp       = require('gulp'),
+    sourcemaps = require('gulp-sourcemaps'),
+    uglify     = require('gulp-uglify'),
+    rename     = require('gulp-rename'),
+    concat     = require('gulp-concat'),
+    wrap     = require('gulp-wrap'),
+    mergeStream   = require('merge-stream'),
+    cssmin   = require('gulp-cssmin');
 
 function bundle_src_js() {
     const cssStream = processCSS();
@@ -29,8 +27,7 @@ function bundle_src_js() {
 
     return mergeStream(cssStream, jsStream)
         .pipe(concat('doboard-widget-bundle.js'))
-        .pipe(gulp.dest('dist/'))
-        .pipe(browserSync.stream());
+        .pipe(gulp.dest('dist/'));
 }
 
 function minify_js() {
@@ -38,9 +35,8 @@ function minify_js() {
         .pipe(sourcemaps.init())
         .pipe(uglify())
         .pipe(rename({suffix: '.min'}))
-        .pipe(sourcemaps.write('.', {addComment: true}))
-        .pipe(gulp.dest('dist/'))
-        .pipe(browserSync.stream());
+        .pipe(sourcemaps.write('.', { addComment: true }))
+        .pipe(gulp.dest('dist/'));
 }
 
 function processCSS() {
@@ -50,27 +46,18 @@ function processCSS() {
         .pipe(concat('css-as-js.js'))
         .pipe(gulp.dest('temp/'))
         .on('end', async () => {
-            const {deleteSync} = await import('del');
+            const { deleteSync} = await import('del');
             deleteSync('temp');
         })
-    ;
+        ;
 }
 
 // Задача для минификации JS
-
 gulp.task('compress-js', gulp.series(bundle_src_js, minify_js));
 
-gulp.task('serve', function() {
-    browserSync.init({
-        server: './',
-        open: false,
-    });
-
-
-    gulp.watch(['js/src/**/*.js', 'styles/**/*.css'], gulp.series('compress-js'));
-
-
-    gulp.watch('*.html').on('change', browserSync.reload);
+gulp.task('watch-js', function() {
+    gulp.watch(
+        ['js/src/api.js', 'js/src/handlers.js', 'js/src/widget.js', 'js/src/main.js'],
+        gulp.series('compress-js')
+    );
 });
-
-gulp.task('default', gulp.series('compress-js', 'serve'));
