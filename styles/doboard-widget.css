@@ -162,6 +162,7 @@
 .wrap_review {
     width: 160px;
     border-radius: 16px;
+    height: 52px;
 }
 
 .wrap_review:hover {

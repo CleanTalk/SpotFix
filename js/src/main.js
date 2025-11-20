@@ -1,5 +1,6 @@
-var widgetTimeout = null;
+var spotFixShowDelayTimeout = null;
 const SPOTFIX_DEBUG = false;
+const SPOTFIX_SHOW_DELAY = 1000;
 
 if( document.readyState !== 'loading' ) {
     document.addEventListener('spotFixLoaded', spotFixInit);
@@ -15,41 +16,41 @@ function spotFixInit() {
 document.addEventListener('selectionchange', function(e) {
     // Do not run widget for non-document events (i.e. inputs focused)
 
-        if (e.target !== document) {
-            return;
-        }
+    if (e.target !== document) {
+        return;
+    }
 
-        const isWrapReviewWidgetExists = !!(document.getElementsByClassName('wrap_review')[0]);
-        const sel = document.getSelection();
+    const isWrapReviewWidgetExists = !!(document.getElementsByClassName('wrap_review')[0]);
+    const sel = document.getSelection();
 
-        if ((!sel || sel.toString() === "") && isWrapReviewWidgetExists) {
-            new CleanTalkWidgetDoboard({}, 'wrap')
-            return;
-        }
+    if ((!sel || sel.toString() === "") && isWrapReviewWidgetExists) {
+        new CleanTalkWidgetDoboard({}, 'wrap')
+        return;
+    }
 
-        if (widgetTimeout) {
-            clearTimeout(widgetTimeout);
-        }
+    if (spotFixShowDelayTimeout) {
+        clearTimeout(spotFixShowDelayTimeout);
+    }
 
-        widgetTimeout = setTimeout(() => {
-            const selection = window.getSelection();
-            if (
-                selection.type === 'Range'
-            ) {
-                // Check if selection is inside the widget
-                let anchorNode = selection.anchorNode;
-                let focusNode = selection.focusNode;
-                if (spotFixIsInsideWidget(anchorNode) || spotFixIsInsideWidget(focusNode)) {
-                    return;
-                }
-                const selectedData = spotFixGetSelectedData(selection);
-
-                if ( selectedData ) {
-                    // spotFixOpenWidget(selectedData, 'create_issue');
-                    spotFixOpenWidget(selectedData, 'wrap_review');
-                }
+    spotFixShowDelayTimeout = setTimeout(() => {
+        const selection = window.getSelection();
+        if (
+            selection.type === 'Range'
+        ) {
+            // Check if selection is inside the widget
+            let anchorNode = selection.anchorNode;
+            let focusNode = selection.focusNode;
+            if (spotFixIsInsideWidget(anchorNode) || spotFixIsInsideWidget(focusNode)) {
+                return;
             }
-        }, 1000);
+            const selectedData = spotFixGetSelectedData(selection);
+
+            if ( selectedData ) {
+                // spotFixOpenWidget(selectedData, 'create_issue');
+                spotFixOpenWidget(selectedData, 'wrap_review');
+            }
+        }
+    }, SPOTFIX_SHOW_DELAY);
 });
 
 /**
