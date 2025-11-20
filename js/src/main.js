@@ -306,7 +306,7 @@ function ksesFilter(html, options = false) {
     };
 
     if (options && options.template === 'list_issues') {
-        allowedTags = { ...allowedTags, img: false, br: false };
+        allowedTags = { ...allowedTags, br: false };
     }
 
     const parser = new DOMParser();
