@@ -29,7 +29,7 @@ class SpotFixTemplatesLoader {
         </div>
         <div class="doboard_task_widget_tasks_list">
             <a target="_blank" href="https://doboard.com/spotfix">
-            The Site Improver by SpotFix
+            SpotFix
             </a>
         </div>
     </div>
@@ -194,7 +194,7 @@ class SpotFixTemplatesLoader {
         </div>
         <div class="doboard_task_widget-task_page_url">
             <img src="{{iconLinkChain}}" />
-            <a title="The spot is located on this URL" href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
+            <a title="The spot is located on this {{taskPageUrl}}" href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
          </div>
     </div>
 </div>

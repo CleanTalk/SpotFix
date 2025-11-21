@@ -1028,5 +1028,11 @@
     height: 36px;
     display: flex;
     flex-direction: column-reverse;
+    align-items: center;
     padding-bottom: 4px;
+}
+
+.doboard_task_widget_tasks_list a {
+    color: #40484F !important;
+    text-decoration: none !important;
 }
