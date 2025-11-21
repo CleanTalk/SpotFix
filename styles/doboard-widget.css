@@ -1024,7 +1024,7 @@
 .doboard_task_widget_tasks_list {
     background-color: white;
     position: sticky;
-    bottom: -5px;
+    bottom: -6px;
     height: 36px;
     display: flex;
     flex-direction: column-reverse;
