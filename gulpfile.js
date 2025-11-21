@@ -56,8 +56,6 @@ function processCSS() {
         ;
 }
 
-// Задача для минификации JS
-
 gulp.task('compress-js', gulp.series(bundle_src_js, minify_js));
 
 gulp.task('serve', function() {
