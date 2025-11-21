@@ -29,7 +29,7 @@ class SpotFixTemplatesLoader {
         </div>
         <div class="doboard_task_widget_tasks_list">
             <a target="_blank" href="https://doboard.com/spotfix">
-            The Site Improver by doBoard
+            The Site Improver by SpotFix
             </a>
         </div>
     </div>
@@ -190,11 +190,11 @@ class SpotFixTemplatesLoader {
                 </div>
                 <span class="doboard_task_widget-task_title-unread_block {{classUnread}}"></span>
             </div>
-            <div class="doboard_task_widget-task_title-last_update_time">{{taskLastUpdate}}</div>
+<!--            <div class="doboard_task_widget-task_title-last_update_time">{{taskLastUpdate}}</div>-->
         </div>
         <div class="doboard_task_widget-task_page_url">
             <img src="{{iconLinkChain}}" />
-            <a href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
+            <a title="The spot is located on this URL" href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
          </div>
     </div>
 </div>
@@ -206,7 +206,7 @@ class SpotFixTemplatesLoader {
 <div class="doboard_task_widget-wrap">
 <img src="{{iconSpotWidgetWrapPencil}}" />
 <!--    <img src="{{logoDoBoardWrap}}" alt="Doboard logo">-->
-<!--    <div id="doboard_task_widget-task_count" class="hidden"></div>-->
+    <div id="doboard_task_widget-task_count" class="hidden"></div>
 </div>`;
     }
 

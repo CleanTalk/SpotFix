@@ -249,8 +249,14 @@ function splitUrl(url) {
 	const u = new URL(url);
 	const domain = u.host;
 
-	let path = u.pathname.replace(/^\/+/, '');
-	if (u.search) path += u.search;
+	const segments = u.pathname.split('/').filter(Boolean);
 
-	return domain + " / " + path;
+	if (u.search && segments.length > 0) {
+		segments[segments.length - 1] += u.search;
+	}
+
+	const allSegments = [...segments].reverse();
+	allSegments.push(domain);
+
+	return allSegments.join(' / ');
 }

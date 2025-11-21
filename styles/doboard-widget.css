@@ -182,8 +182,8 @@
 
 #doboard_task_widget-task_count {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: -5px;
+    right: -5px;
     width: 22px;
     height: 22px;
     opacity: 1;
