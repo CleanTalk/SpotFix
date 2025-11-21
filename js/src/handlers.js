@@ -151,7 +151,7 @@ function getTaskAuthorDetails(params, taskId) {
 }
 
 function getIssuesCounterString(onPageSpotsCount, totalSpotsCount) {
-	return `(${onPageSpotsCount}/${totalSpotsCount})`;
+	return ` (<span>${totalSpotsCount}</span>)`;
 }
 
 // Get the author's avatar
@@ -243,4 +243,20 @@ function userUpdate(projectToken, accountId) {
 	const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 	return userUpdateDoboard(projectToken, accountId, sessionId, userId, timezone);
+}
+
+function splitUrl(url) {
+	const u = new URL(url);
+	const domain = u.host;
+
+	const segments = u.pathname.split('/').filter(Boolean);
+
+	if (u.search && segments.length > 0) {
+		segments[segments.length - 1] += u.search;
+	}
+
+	const allSegments = [...segments].reverse();
+	allSegments.push(domain);
+
+	return allSegments.join(' / ');
 }

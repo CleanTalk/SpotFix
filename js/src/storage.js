@@ -162,3 +162,4 @@ function storageProvidedTaskHasUnreadUpdates(taskId) {
 
     return storedUnread.includes(taskId.toString());
 }
+
