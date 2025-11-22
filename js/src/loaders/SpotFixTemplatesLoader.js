@@ -28,7 +28,7 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-all_issues-container">
         </div>
         <div class="doboard_task_widget_tasks_list">
-            <a target="_blank" href="https://doboard.com/spotfix">
+            <a rel="nofollow" target="_blank" href="https://doboard.com/spotfix">
             SpotFix
             </a>
         </div>

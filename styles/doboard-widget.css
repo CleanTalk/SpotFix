@@ -473,6 +473,10 @@
     border-bottom: none;
 }
 
+.doboard_task_widget-all_issues {
+   padding-bottom: 0;
+}
+
 .doboard_task_widget-all_issues-container, .doboard_task_widget-concrete_issues-container {
     overflow: auto;
     max-height: 85vh;
@@ -1024,12 +1028,12 @@
 .doboard_task_widget_tasks_list {
     background-color: white;
     position: sticky;
-    bottom: -6px;
-    height: 36px;
+    bottom: 0px;
+    height: 38px;
     display: flex;
     flex-direction: column-reverse;
     align-items: center;
-    padding-bottom: 4px;
+    padding-bottom: 8px;
 }
 
 .doboard_task_widget_tasks_list a {
