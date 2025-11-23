@@ -413,7 +413,7 @@ class CleanTalkWidgetDoboard {
                                 taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
                                 taskPageUrl: currentPageURL,
                                 iconLinkChain: this.srcVariables.iconLinkChain,
-                                taskFormattedPageUrl: splitUrl(currentPageURL),
+                                taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
                                 taskLastUpdate: taskFullDetails.lastMessageTime,
                                 nodePath: this.sanitizeNodePath(taskNodePath),
                                 taskId: taskId,

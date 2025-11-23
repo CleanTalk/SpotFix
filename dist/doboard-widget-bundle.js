@@ -521,21 +521,22 @@ function userUpdate(projectToken, accountId) {
 	return userUpdateDoboard(projectToken, accountId, sessionId, userId, timezone);
 }
 
-function splitUrl(url) {
+function spotFixSplitUrl(url) {
 	const u = new URL(url);
 	const domain = u.host;
 
 	const segments = u.pathname.split('/').filter(Boolean);
 
-	if (u.search && segments.length > 0) {
-		segments[segments.length - 1] += u.search;
+	if (segments.length === 0) {
+		return domain;
 	}
 
-	const allSegments = [...segments].reverse();
-	allSegments.push(domain);
+	const reversed = segments.reverse();
+	reversed.push(domain);
 
-	return allSegments.join(' / ');
+	return reversed.join(' / ');
 }
+
 
 /**
  * Widget class to create a task widget
@@ -952,7 +953,7 @@ class CleanTalkWidgetDoboard {
                                 taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
                                 taskPageUrl: currentPageURL,
                                 iconLinkChain: this.srcVariables.iconLinkChain,
-                                taskFormattedPageUrl: splitUrl(currentPageURL),
+                                taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
                                 taskLastUpdate: taskFullDetails.lastMessageTime,
                                 nodePath: this.sanitizeNodePath(taskNodePath),
                                 taskId: taskId,
