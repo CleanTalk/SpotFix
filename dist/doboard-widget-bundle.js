@@ -1464,8 +1464,10 @@ class CleanTalkWidgetDoboard {
 }
 }
 
-var widgetTimeout = null;
 const SPOTFIX_DEBUG = false;
+
+const SPOTFIX_SHOW_DELAY = 3000;
+var spotFixShowDelayTimeout = null;
 
 if( document.readyState !== 'loading' ) {
     document.addEventListener('spotFixLoaded', spotFixInit);
@@ -1484,11 +1486,11 @@ document.addEventListener('selectionchange', function(e) {
         return;
     }
 
-    if (widgetTimeout) {
-        clearTimeout(widgetTimeout);
+    if (spotFixShowDelayTimeout) {
+        clearTimeout(spotFixShowDelayTimeout);
     }
 
-    widgetTimeout = setTimeout(() => {
+    spotFixShowDelayTimeout = setTimeout(() => {
         const selection = window.getSelection();
         if (
             selection.type === 'Range'
@@ -1504,7 +1506,7 @@ document.addEventListener('selectionchange', function(e) {
                 spotFixOpenWidget(selectedData, 'create_issue');
             }
         }
-    }, 1000);
+    }, SPOTFIX_SHOW_DELAY);
 });
 
 /**
