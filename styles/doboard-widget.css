@@ -121,21 +121,69 @@
 /*** `WRAP` INTERFACE ***/
 
 .doboard_task_widget-wrap {
-    width: auto;
-    background: none;
     border: none;
     box-shadow: none;
+    position: relative;
     padding: 0;
+    cursor: pointer;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: #1c7857;
+    opacity: 0.6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.doboard_task_widget-wrap img {
+    width: 24px;
+    height: 24px;
+}
+
+.doboard_task_widget-wrap::after {
+    content: "";
+    position: absolute;
+    left: -2px;
+    bottom: -6px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-radius: 20%;
+    border-width: 20px 22px 0 0;
+    border-color: #1c7857 transparent transparent transparent;
+    transform: rotate(30deg);
 }
 
 .doboard_task_widget-wrap.hidden {
     display: none;
 }
 
+.wrap_review {
+    width: 160px;
+    border-radius: 16px;
+    height: 52px;
+}
+
+.wrap_review:hover {
+    background-color: #1c7857;
+}
+
+#review_content_button_text {
+    color: white;
+    margin-left: 4px;
+    font-size: 16px;
+    text-transform: none !important;
+}
+
+.wrap_review::after{
+    display: none;
+}
+
 #doboard_task_widget-task_count {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: -5px;
+    right: -5px;
     width: 22px;
     height: 22px;
     opacity: 1;
@@ -425,6 +473,10 @@
     border-bottom: none;
 }
 
+.doboard_task_widget-all_issues {
+   padding-bottom: 0;
+}
+
 .doboard_task_widget-all_issues-container, .doboard_task_widget-concrete_issues-container {
     overflow: auto;
     max-height: 85vh;
@@ -493,6 +545,23 @@
     text-overflow: ellipsis;
     max-width: 85%;
     height: 36px;
+}
+
+.doboard_task_widget-task_page_url {
+    max-width: 85%;
+    height: 36px;
+    display: flex;
+    align-items: center;
+}
+
+.doboard_task_widget-task_page_url a {
+    color: #40484F;
+    text-decoration: none;
+    margin-left: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .doboard_task_widget_return_to_all {
@@ -956,3 +1025,18 @@
     }
 }
 
+.doboard_task_widget_tasks_list {
+    background-color: white;
+    position: sticky;
+    bottom: 0px;
+    height: 38px;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    padding-bottom: 8px;
+}
+
+.doboard_task_widget_tasks_list a {
+    color: #40484F !important;
+    text-decoration: none !important;
+}
