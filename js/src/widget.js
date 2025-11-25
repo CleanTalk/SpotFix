@@ -684,16 +684,46 @@ class CleanTalkWidgetDoboard {
 
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
+            let replacement;
+
             // 1) For attributes we MUST use escapeHtml!
             // 2) Only for HTML inserts we must clean data by ksesFilter
-            let replacement =
-                typeof ksesFilter === 'function' /* @ToDo check non-attribute placeholder here */?
-                    ksesFilter(String(value), {template: templateName, imgFilter: true}) :
-                    this.escapeHtml(String(value));
+            // Check if placeholder is used in an attribute context
+            if (this.isPlaceholderInAttribute(template, placeholder)) {
+                // For attributes, use escapeHtml to prevent XSS
+                replacement = this.escapeHtml(String(value));
+            } else {
+                // For HTML content, use ksesFilter to sanitize HTML
+                replacement = ksesFilter(String(value), {template: templateName, imgFilter: true});
+            }
+            
             template = template.replaceAll(placeholder, replacement);
         }
 
         return ksesFilter(template, {template: templateName});
+    }
+
+    /**
+     * Check if a placeholder is used inside an HTML attribute
+     * @param {string} template - The template string
+     * @param {string} placeholder - The placeholder to check (e.g., "{{key}}")
+     * @return {boolean} - True if placeholder is in an attribute context
+     */
+    isPlaceholderInAttribute(template, placeholder) {
+        // Escape special regex characters in placeholder
+        const escapedPlaceholder = placeholder.replace(/[{}]/g, '\\$&');
+        
+        // Pattern to match attribute="..." or attribute='...' containing the placeholder
+        // This regex looks for: word characters (attribute name) = " or ' followed by content including the placeholder
+        // Matches patterns like: src="{{key}}", class="{{key}}", style="{{key}}", etc.
+        const attributePattern = new RegExp(
+            `[\\w-]+\\s*=\\s*["'][^"']*${escapedPlaceholder}[^"']*["']`,
+            'g'
+        );
+        
+        // Check if placeholder appears in any attribute context
+        // If it does, we'll use escapeHtml for all occurrences (safer approach)
+        return attributePattern.test(template);
     }
 
     escapeHtml = (unsafe) => {
