@@ -1,4 +1,7 @@
-var widgetTimeout = null;
+const SPOTFIX_DEBUG = false;
+
+const SPOTFIX_SHOW_DELAY = 3000;
+var spotFixShowDelayTimeout = null;
 
 if( document.readyState !== 'loading' ) {
     document.addEventListener('spotFixLoaded', spotFixInit);
@@ -17,26 +20,27 @@ document.addEventListener('selectionchange', function(e) {
         return;
     }
 
-    if (widgetTimeout) {
-        clearTimeout(widgetTimeout);
+    if (spotFixShowDelayTimeout) {
+        clearTimeout(spotFixShowDelayTimeout);
     }
 
-    widgetTimeout = setTimeout(() => {
+    spotFixShowDelayTimeout = setTimeout(() => {
         const selection = window.getSelection();
         if (
-            selection.type === 'Range' &&
-            isSelectionCorrect(selection)
+            selection.type === 'Range'
         ) {
             // Check if selection is inside the widget
             let anchorNode = selection.anchorNode;
             let focusNode = selection.focusNode;
-            if (isInsideWidget(anchorNode) || isInsideWidget(focusNode)) {
+            if (spotFixIsInsideWidget(anchorNode) || spotFixIsInsideWidget(focusNode)) {
                 return;
             }
-            const selectedData = getSelectedData(selection);
-            openWidget(selectedData, 'create_issue');
+            const selectedData = spotFixGetSelectedData(selection);
+            if ( selectedData ) {
+                spotFixOpenWidget(selectedData, 'create_issue');
+            }
         }
-    }, 1000);
+    }, SPOTFIX_SHOW_DELAY);
 });
 
 
@@ -52,7 +56,7 @@ function spotFixShowWidget() {
  * @param {*} node
  * @returns {boolean}
  */
-function isInsideWidget(node) {
+function spotFixIsInsideWidget(node) {
     if (!node) return false;
     let el = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
     while (el) {
@@ -67,37 +71,23 @@ function isInsideWidget(node) {
 /**
  * Open the widget to create a task.
  * @param {*} selectedData
- * @param {*} widgetExist
  * @param {*} type
  */
-function openWidget(selectedData, type) {
+function spotFixOpenWidget(selectedData, type) {
     if (selectedData) {
         new CleanTalkWidgetDoboard(selectedData, type);
     }
 }
 
 /**
- * Analyze the task selected data
- * @param {Object} taskSelectedData
- * @return {Element|null}
+ * Write message into the console.
+ *
+ * @param {string} message
  */
-function taskAnalysis(taskSelectedData) {
-    const nodePath = taskSelectedData ? taskSelectedData.nodePath : '';
-    return retrieveNodeFromPath(nodePath);
-}
-
-/**
- * Scroll to an element by tag, class, and text content
- * @param {string} path - The path to the element
- * @return {boolean} - True if the element was found and scrolled to, false otherwise
- */
-function scrollToNodePath(path) {
-    const node = retrieveNodeFromPath(path);
-    if (node && node.scrollIntoView) {
-        node.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return true;
+function spotFixDebugLog(message) {
+    if ( SPOTFIX_DEBUG ) {
+        console.log(message);
     }
-    return false;
 }
 
 function hideContainersSpinner() {

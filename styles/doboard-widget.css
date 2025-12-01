@@ -364,7 +364,9 @@
 }
 
 .doboard_task_widget-text_selection,
-.doboard_task_widget-text_selection.image-highlight > img{
+.doboard_task_widget-text_selection.image-highlight > img,
+.doboard_task_widget-element_selection,
+.doboard_task_widget-image_selection {
     background: rgba(208, 213, 127, 0.68);
 }
 
