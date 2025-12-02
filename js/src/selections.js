@@ -143,7 +143,7 @@ function spotFixHighlightElements(spotsToBeHighlighted) {
     // Grouping elements with validation
     spotsToBeHighlighted.forEach(spot => {
         // nodePath validating: is array
-        if (!spot.nodePath || !Array.isArray(spot.nodePath)) {
+        if (!spot?.nodePath || !Array.isArray(spot?.nodePath)) {
             spotFixDebugLog('Invalid spot: missing or invalid nodePath: ' + spot);
             return;
         }

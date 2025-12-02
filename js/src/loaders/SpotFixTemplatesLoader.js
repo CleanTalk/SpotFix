@@ -53,7 +53,7 @@ class SpotFixTemplatesLoader {
         </div>
         <div class="doboard_task_widget-concrete_issues-container">
         </div>
-        
+            {{statusFixedHtml}}
         <div class="doboard_task_widget-send_message">
             <div class="doboard_task_widget-send_message_elements_wrapper">
                 <button type="button" class="doboard_task_widget-send_message_paperclip">
@@ -177,7 +177,7 @@ class SpotFixTemplatesLoader {
 
     static list_issues() {
         return `
-<div class="doboard_task_widget-task_row issue-item" data-node-path='[{{nodePath}}]' data-task-id='{{taskId}}'>
+<div class="doboard_task_widget-task_row issue-item {{elementBgCSSClass}}" data-node-path='[{{nodePath}}]' data-task-id='{{taskId}}'>
     <div class="{{avatarCSSClass}}" style="{{avatarStyle}}">
         <span class="doboard_task_widget-avatar-initials {{initialsClass}}">{{taskAuthorInitials}}</span>
     </div>
@@ -192,10 +192,13 @@ class SpotFixTemplatesLoader {
             </div>
 <!--            <div class="doboard_task_widget-task_title-last_update_time">{{taskLastUpdate}}</div>-->
         </div>
-        <div class="doboard_task_widget-task_page_url">
-            <img src="{{iconLinkChain}}" />
-            <a title="The spot is located on this {{taskPageUrl}}" href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
-         </div>
+        <div class="doboard_task_widget-bottom">
+            <div class="doboard_task_widget-task_page_url">
+                <img src="{{iconLinkChain}}" />
+                <a title="The spot is located on this {{taskPageUrl}}" href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
+             </div>
+                {{statusFixedHtml}}
+        </div>
     </div>
 </div>
 `;
@@ -217,4 +220,12 @@ class SpotFixTemplatesLoader {
 <span id="review_content_button_text">Review content</span>
 </button>`;
     }
+
+    static fixedHtml() {
+        return `<p><span class="doboard_task_widget-bottom-is-fixed">Finished</span></p>`;
+    }
+    static fixedTaskHtml() {
+        return `<p class="doboard_task_widget-bottom-is-fixed-task-block"><span class="doboard_task_widget-bottom-is-fixed-task">This issue already fixed</span></p>`;
+    }
+
 }

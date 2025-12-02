@@ -103,7 +103,6 @@
 .doboard_task_widget-content {
     flex: 1;
     overflow-y: auto;
-    padding: 10px 16px 5px 16px;
     background: #FFFFFF;
     border-radius: 0 0 8px 8px;
     border: 1px;
@@ -397,11 +396,10 @@
 .doboard_task_widget-task_row {
     display: flex;
     max-height: 55px;
-    padding-bottom: 4px;
-    margin-bottom: 20px;
     cursor: pointer;
     align-items: center;
     justify-content: space-between;
+    padding: 1px 12px;
 }
 .doboard_task_widget-task_row:last-child {
     margin-bottom: 0;
@@ -562,6 +560,33 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
+}
+
+.doboard_task_widget-bottom {
+    display: flex;
+    justify-content: space-between;
+}
+
+.doboard_task_widget-bottom-is-fixed {
+    background: #EBFAF4;
+    border-radius: 10px;
+    padding: 3px 6px;
+}
+
+.doboard_task_widget-bottom-is-fixed-task-block {
+    text-align: center;
+}
+.doboard_task_widget-bottom-is-fixed-task {
+    background: #F3F6F9;
+    color: #1C7857;
+    display: inline-block;
+    border-radius: 10px;
+    padding: 5px 8px;
+    margin: 0 auto;
+}
+
+.doboard_task_widget-task_row-green {
+    background: #EBF0F4;
 }
 
 .doboard_task_widget_return_to_all {

@@ -363,7 +363,7 @@ class CleanTalkWidgetDoboard {
                 spotFixRemoveHighlights();
                 let issuesQuantityOnPage = 0;
                 let tasks = this.allTasksData;
-                tasksFullDetails = await getTasksFullDetails(this.params, tasks);
+                tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId);
                 let spotsToBeHighlighted = [];
                 if (tasks.length > 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
@@ -378,6 +378,8 @@ class CleanTalkWidgetDoboard {
                         if (taskMetaString) {
                             try {
                                 taskData = JSON.parse(taskMetaString);
+                                taskData.isFixed = elTask.taskStatus === 'DONE';
+                                taskData.taskId = elTask.taskId;
                             } catch (error) {
                                 taskData = null;
                             }
@@ -422,6 +424,8 @@ class CleanTalkWidgetDoboard {
                                 taskAuthorInitials: avatarData.taskAuthorInitials,
                                 initialsClass: avatarData.initialsClass,
                                 classUnread: '',
+                                elementBgCSSClass: elTask.taskStatus !== 'DONE' ? '' : 'doboard_task_widget-task_row-green',
+                                statusFixedHtml: elTask.taskStatus !== 'DONE' ? '' : this.loadTemplate('fixedHtml'),
                             };
 
                             const taskOwnerReplyIsUnread = storageProvidedTaskHasUnreadUpdates(taskFullDetails.taskId);
@@ -451,7 +455,7 @@ class CleanTalkWidgetDoboard {
 
         case 'concrete_issue':
 
-                tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData);
+                tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId);
                 const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId);
 
                 // Update issue title in the interface
@@ -460,8 +464,9 @@ class CleanTalkWidgetDoboard {
                     issueTitleElement.innerText = ksesFilter(taskDetails.issueTitle);
                 }
 
-                templateVariables.issueTitle = taskDetails.issueTitle;
-                templateVariables.issueComments = taskDetails.issueComments;
+                templateVariables.issueTitle = taskDetails?.issueTitle;
+                templateVariables.issueComments = taskDetails?.issueComments;
+                templateVariables.statusFixedHtml = tasksFullDetails?.taskStatus !== 'DONE' ? '' : this.loadTemplate('fixedTaskHtml');
 
                 widgetContainer.innerHTML = this.loadTemplate('concrete_issue', templateVariables);
                 document.body.appendChild(widgetContainer);

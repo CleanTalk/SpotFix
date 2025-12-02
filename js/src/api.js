@@ -190,7 +190,6 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         session_id: sessionId,
         project_token: projectToken,
         project_id: projectId,
-        status: 'ACTIVE',
         task_type: 'PUBLIC'
     }
     if ( userId ) {
@@ -204,6 +203,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         taskCreated: task.created,
         taskCreatorTaskUser: task.creator_user_id,
         taskMeta: task.meta,
+        taskStatus: task.status,
     }));
 }
 
