@@ -441,7 +441,7 @@ class CleanTalkWidgetDoboard {
                     }
                     this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                     this.savedIssuesQuantityAll = tasks.length;
-                    spotFixHighlightElements(spotsToBeHighlighted);
+                    spotFixHighlightElements(spotsToBeHighlighted, this);
                     document.querySelector('.doboard_task_widget-header span').innerHTML += ksesFilter(' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
                 }
                 if (tasks.length === 0 || issuesQuantityOnPage === 0) {
@@ -485,7 +485,7 @@ class CleanTalkWidgetDoboard {
                     spotFixRemoveHighlights();
                     if (meta && nodePath) {
                         // Pass the task meta object as an array
-                        spotFixHighlightElements([meta]);
+                        spotFixHighlightElements([meta], this);
                         if (typeof spotFixScrollToNodePath === 'function') {
                             spotFixScrollToNodePath(nodePath);
                         }
@@ -660,19 +660,28 @@ class CleanTalkWidgetDoboard {
                     spotFixScrollToNodePath(nodePath);
                 }
                 this.currentActiveTaskId = item.getAttribute('data-task-id');
-                await this.createWidgetElement('concrete_issue');
-
-                const taskHighlightData = this.getTaskHighlightData(this.currentActiveTaskId)
-
-                if (taskHighlightData) {
-                    spotFixRemoveHighlights();
-                    spotFixHighlightElements([taskHighlightData])
-                    this.positionWidgetContainer();
-                }
-
-                hideContainersSpinner(false);
+                await this.showOneTask();
             });
         });
+    }
+
+    /**
+     * Show one task
+     *
+     * @return {Promise<void>}
+     *
+     */
+    async showOneTask() {
+        await this.createWidgetElement('concrete_issue');
+        const taskHighlightData = this.getTaskHighlightData(this.currentActiveTaskId)
+
+        if (taskHighlightData) {
+            spotFixRemoveHighlights();
+            spotFixHighlightElements([taskHighlightData], this)
+            this.positionWidgetContainer();
+        }
+
+        hideContainersSpinner(false);
     }
 
     /**

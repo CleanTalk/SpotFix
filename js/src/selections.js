@@ -134,8 +134,10 @@ function spotFixGetSelectedData(selection) {
 /**
  * Highlight elements.
  * @param {[object]} spotsToBeHighlighted
+ * @param widgetInstance
  */
-function spotFixHighlightElements(spotsToBeHighlighted) {
+function spotFixHighlightElements(spotsToBeHighlighted, widgetInstance) {
+
     if (spotsToBeHighlighted.length === 0) return;
 
     const elementsMap = new Map();
@@ -200,7 +202,7 @@ function spotFixHighlightElements(spotsToBeHighlighted) {
                 break;
 
             case 'text':
-                this.spotFixHighlightTextInElement(element, spots);
+                this.spotFixHighlightTextInElement(element, spots, widgetInstance);
                 break;
 
             default:
@@ -233,10 +235,26 @@ function spotFixHighlightNestedElement(element) {
  * Highlight text in element with span wrapping
  * @param {Element} element
  * @param {Array} spots
+ * @param widgetInstance
  */
-function spotFixHighlightTextInElement(element, spots) {
-    const spotfixHighlightOpen = '<span class="doboard_task_widget-text_selection">';
-    const spotfixHighlightClose = '</span>';
+function spotFixHighlightTextInElement(element, spots,widgetInstance) {
+    let tooltipTitleText = '';
+    if (spots[0].isFixed) {
+        tooltipTitleText = `You can see history.`;
+    } else {
+        tooltipTitleText = `We are already working on this issue.`;
+    }
+
+    const tooltip = `<div class="doboard_task_widget-text_selection_tooltip_element">
+                            <span class="doboard_task_widget-text_selection_tooltip_icon"></span>
+                            <span>
+                                <div>${tooltipTitleText}</div>
+                                <div>You can see history <span class="doboard_task_widget-see-task doboard_task_widget-see-task__task-id-${spots[0].taskId}">Here</span></div>
+                            </span>
+                        </div>`;
+
+    const spotfixHighlightOpen = `<span class="doboard_task_widget-text_selection"><span class="doboard_task_widget-text_selection_tooltip">${tooltip}</span>`;
+    const spotfixHighlightClose = `</span>`;
 
     let text = element.textContent;
     const spotSelectedText = spots[0].selectedText;
@@ -288,6 +306,22 @@ function spotFixHighlightTextInElement(element, spots) {
     // Safety HTML insert
     try {
         element.innerHTML = ksesFilter(result);
+        document.querySelectorAll('.doboard_task_widget-see-task').forEach(link => {
+            link.addEventListener('click', (e) => {
+
+                e.preventDefault();
+                const classList = link.className.split(' ');
+                const idClass = classList.find(cls => cls.includes('__task-id-'));
+                let taskId = null;
+                if (idClass) {
+                    taskId = idClass.split('__task-id-')[1];
+                }
+                if (taskId) {
+                    widgetInstance.currentActiveTaskId = taskId;
+                    widgetInstance.showOneTask();
+                }
+            });
+        });
     } catch (error) {
         spotFixDebugLog('Error updating element content: ' + error);
     }
@@ -315,6 +349,8 @@ function spotFixRemoveHighlights() {
     spans.forEach(span => {
         const parent = span.parentNode;
         affectedParents.add(parent); // Mark parent as affected
+        const tooltip = span.querySelector('.doboard_task_widget-text_selection_tooltip');
+        if (tooltip) tooltip.remove();
 
         // Move all child nodes out of the span and into the parent
         while (span.firstChild) {
