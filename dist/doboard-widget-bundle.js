@@ -197,7 +197,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         data.user_id = userId;
     }
     const result = await spotfixApiCall(data, 'task_get', accountId);
-    return result.tasks.map(task => ({
+    const tasks = result.tasks.map(task => ({
         taskId: task.task_id,
         taskTitle: task.name,
         taskLastUpdate: task.updated,
@@ -205,6 +205,10 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         taskCreatorTaskUser: task.creator_user_id,
         taskMeta: task.meta,
     }));
+
+    storageSaveTasksCount(tasks);
+
+    return tasks;
 }
 
 
@@ -899,7 +903,6 @@ class CleanTalkWidgetDoboard {
                 hideContainersSpinner(false);
                 break;
             case 'wrap_review':
-                await this.getTaskCount();
                 document.querySelector('#doboard_task_widget_button').addEventListener('click', (e) => {
                     spotFixOpenWidget(this.selectedData, 'create_issue');
                 });
@@ -1241,7 +1244,7 @@ class CleanTalkWidgetDoboard {
                 // For HTML content, use ksesFilter to sanitize HTML
                 replacement = ksesFilter(String(value), {template: templateName, imgFilter: true});
             }
-            
+
             template = template.replaceAll(placeholder, replacement);
         }
 
@@ -1257,7 +1260,7 @@ class CleanTalkWidgetDoboard {
     isPlaceholderInAttribute(template, placeholder) {
         // Escape special regex characters in placeholder
         const escapedPlaceholder = placeholder.replace(/[{}]/g, '\\$&');
-        
+
         // Pattern to match attribute="..." or attribute='...' containing the placeholder
         // This regex looks for: word characters (attribute name) = " or ' followed by content including the placeholder
         // Matches patterns like: src="{{key}}", class="{{key}}", style="{{key}}", etc.
@@ -1265,7 +1268,7 @@ class CleanTalkWidgetDoboard {
             `[\\w-]+\\s*=\\s*["'][^"']*${escapedPlaceholder}[^"']*["']`,
             'g'
         );
-        
+
         // Check if placeholder appears in any attribute context
         // If it does, we'll use escapeHtml for all occurrences (safer approach)
         return attributePattern.test(template);
@@ -1288,13 +1291,21 @@ class CleanTalkWidgetDoboard {
         const projectToken = this.params.projectToken;
         const sessionId = localStorage.getItem('spotfix_session_id');
 
-        const tasks = await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
-        const filteredTasks = tasks.filter(task => {
-            return task.taskMeta;
-        });
+        const tasksCountLS = localStorage.getItem('spotfix_tasks_count');
+
+        let tasksCount;
+
+        if(tasksCountLS !== 0 && !tasksCountLS){
+            const tasks = await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
+            const filteredTasks = tasks.filter(task => {
+                return task.taskMeta;
+            });
+            tasksCount = filteredTasks.length;
+        } else tasksCount = tasksCountLS;
+
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
         if ( taskCountElement ) {
-            taskCountElement.innerText = ksesFilter(filteredTasks.length);
+            taskCountElement.innerText = ksesFilter(tasksCount);
             taskCountElement.classList.remove('hidden');
         }
     }
@@ -2458,6 +2469,18 @@ function storageSaveTasksUpdateData(tasks) {
     });
 
     localStorage.setItem('spotfix_task_updates', JSON.stringify(storedTasks));
+}
+
+function storageSaveTasksCount(tasks) {
+    if (!tasks || !Array.isArray(tasks)) {
+        return;
+    }
+
+    const count = tasks.filter(task => {
+        return task.taskMeta;
+    })?.length;
+
+    localStorage.setItem('spotfix_tasks_count', `${count}`);
 }
 
 /**
