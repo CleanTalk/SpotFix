@@ -924,6 +924,10 @@
     animation: spin 1s linear infinite;
 }
 
+.doboard_task_widget-create_issue {
+    padding: 10px;
+}
+
 /*fileuplaod*/
 
 .doboard_task_widget__file-upload__wrapper {
