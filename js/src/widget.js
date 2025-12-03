@@ -333,6 +333,11 @@ class CleanTalkWidgetDoboard {
             case 'create_issue':
                 // highlight selected item during task creation
                 const selection = window.getSelection();
+                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+                const email = localStorage.getItem('spotfix_email');
+                if (sessionIdExists && email && !email.includes('spotfix_')) {
+                    document.querySelector('.doboard_task_widget-login').classList.add('hidden');
+                }
                 if (
                     selection.type === 'Range'
                 ) {
