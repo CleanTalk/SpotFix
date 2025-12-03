@@ -982,6 +982,23 @@
     border: 1px solid #cf6868;
 }
 
+.doboard_task_widget-show_button {
+    position: fixed;
+    background: #1C7857;
+    color: #FFFFFF;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    z-index: 10000;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transform: translate(-50%, -100%);
+    margin-top: -8px;
+    white-space: nowrap;
+    border: none;
+    font-family: inherit;
+}
+
 /*fileuplaod*/
 
 @keyframes spin {
