@@ -61,7 +61,10 @@ class CleanTalkWidgetDoboard {
             }
         } else {
             // Load all tasks
-            this.allTasksData = await getAllTasks(this.params);
+            const isWidgetClosed = localStorage.getItem('spotfix_widget_is_closed');
+            if((isWidgetClosed && !this.selectedText) || !isWidgetClosed){
+                this.allTasksData = await getAllTasks(this.params);
+            }
         }
 
         // Check if any task has updates
@@ -278,6 +281,7 @@ class CleanTalkWidgetDoboard {
                 templateVariables = {
                     selectedText: this.selectedText,
                     currentDomain: document.location.hostname || '',
+                    buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
                     ...this.srcVariables
                 };
                 storageGetUserIsDefined() && storageSetWidgetIsClosed(false);
@@ -366,7 +370,10 @@ class CleanTalkWidgetDoboard {
             case 'all_issues':
                 spotFixRemoveHighlights();
                 let issuesQuantityOnPage = 0;
-                let tasks = this.allTasksData;
+                if (!this.allTasksData?.length) {
+                    this.allTasksData = await getAllTasks(this.params);
+                }
+                const tasks = this.allTasksData;
                 tasksFullDetails = await getTasksFullDetails(this.params, tasks);
                 let spotsToBeHighlighted = [];
                 if (tasks.length > 0) {
