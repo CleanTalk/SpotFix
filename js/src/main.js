@@ -45,13 +45,21 @@ document.addEventListener('selectionchange', function(e) {
             }
             const selectedData = spotFixGetSelectedData(selection);
 
-            if ( selectedData ) {
+             if ( selectedData ) {
                 // spotFixOpenWidget(selectedData, 'create_issue');
                 spotFixOpenWidget(selectedData, 'wrap_review');
             }
         }
     }, SPOTFIX_SHOW_DELAY);
 });
+
+
+/**
+ * Shows the spot fix widget.
+ */
+function spotFixShowWidget() {
+    new CleanTalkWidgetDoboard(null, 'create_issue');
+}
 
 /**
  * Check if a node is inside the task widget.

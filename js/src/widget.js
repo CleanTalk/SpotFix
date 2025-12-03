@@ -16,8 +16,8 @@ class CleanTalkWidgetDoboard {
      * Constructor
      */
     constructor(selectedData, type) {
-        this.selectedData = selectedData;
-        this.selectedText = selectedData.selectedText;
+        this.selectedData = selectedData || '';
+        this.selectedText = selectedData?.selectedText || '';
         this.init(type);
         this.srcVariables = {
             buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
