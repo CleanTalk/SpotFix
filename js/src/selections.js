@@ -240,7 +240,7 @@ function spotFixHighlightNestedElement(element) {
 function spotFixHighlightTextInElement(element, spots,widgetInstance) {
     let tooltipTitleText = '';
     if (spots[0].isFixed) {
-        tooltipTitleText = `You can see history.`;
+        tooltipTitleText = `This issue already fixed.`;
     } else {
         tooltipTitleText = `We are already working on this issue.`;
     }
@@ -249,7 +249,7 @@ function spotFixHighlightTextInElement(element, spots,widgetInstance) {
                             <span class="doboard_task_widget-text_selection_tooltip_icon"></span>
                             <span>
                                 <div>${tooltipTitleText}</div>
-                                <div>You can see history <span class="doboard_task_widget-see-task doboard_task_widget-see-task__task-id-${spots[0].taskId}">Here</span></div>
+                                <div>You can see history<span class="doboard_task_widget-see-task doboard_task_widget-see-task__task-id-${spots[0].taskId}">Here</span></div>
                             </span>
                         </div>`;
 

@@ -88,6 +88,12 @@
     -moz-flex-direction: column;
 }
 
+    @media (max-height: 800px) {
+        .doboard_task_widget-container {
+              max-height: calc(60vh - 40px);
+        }
+    }
+
 .doboard_task_widget-header {
     display: flex;
     height: 41px;
@@ -399,7 +405,7 @@
     cursor: pointer;
     align-items: center;
     justify-content: space-between;
-    padding: 1px 12px;
+    padding: 1px 15px;
 }
 .doboard_task_widget-task_row:last-child {
     margin-bottom: 0;
@@ -483,6 +489,7 @@
 
 .doboard_task_widget-all_issues-container {
     scrollbar-width: none;
+    margin-top: 10px;
 }
 
 .doboard_task_widget-content.doboard_task_widget-concrete_issue {

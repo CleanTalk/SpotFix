@@ -248,21 +248,21 @@ function userUpdate(projectToken, accountId) {
 }
 
 function spotFixSplitUrl(url) {
+	try {
+		const u = new URL(url);
+		const domain = u.host;
 
-	console.log(url)
+		const segments = u.pathname.split('/').filter(Boolean);
 
-	const u = new URL('https://doboard.com/');
-	const domain = u.host;
+		if (segments.length === 0) {
+			return domain;
+		}
 
-	const segments = u.pathname.split('/').filter(Boolean);
-
-	if (segments.length === 0) {
-		return domain;
+		const reversed = segments.reverse();
+		reversed.push(domain);
+	} catch (error) {
+		return '';
 	}
-
-	const reversed = segments.reverse();
-	reversed.push(domain);
-
 	return reversed.join(' / ');
 }
 

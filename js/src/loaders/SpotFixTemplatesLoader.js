@@ -53,7 +53,6 @@ class SpotFixTemplatesLoader {
         </div>
         <div class="doboard_task_widget-concrete_issues-container">
         </div>
-            {{statusFixedHtml}}
         <div class="doboard_task_widget-send_message">
             <div class="doboard_task_widget-send_message_elements_wrapper">
                 <button type="button" class="doboard_task_widget-send_message_paperclip">
@@ -88,6 +87,7 @@ class SpotFixTemplatesLoader {
 <div class="doboard_task_widget-concrete_issue-day_content">
     <div class="doboard_task_widget-concrete_issue_day_content-month_day">{{dayContentMonthDay}}</div>
     <div class="doboard_task_widget-concrete_issue_day_content-messages_wrapper">{{dayContentMessages}}</div>
+    {{statusFixedHtml}}
 </div>
 `;
     }

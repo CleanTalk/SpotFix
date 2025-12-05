@@ -466,7 +466,6 @@ class CleanTalkWidgetDoboard {
 
                 templateVariables.issueTitle = taskDetails?.issueTitle;
                 templateVariables.issueComments = taskDetails?.issueComments;
-                templateVariables.statusFixedHtml = tasksFullDetails?.taskStatus !== 'DONE' ? '' : this.loadTemplate('fixedTaskHtml');
 
                 widgetContainer.innerHTML = this.loadTemplate('concrete_issue', templateVariables);
                 document.body.appendChild(widgetContainer);
@@ -524,6 +523,7 @@ class CleanTalkWidgetDoboard {
                         }
                     }
                     let daysWrapperHTML = '';
+
                     for (const day in dayMessagesData) {
                         let currentDayMessages = dayMessagesData[day];
                         let dayMessagesWrapperHTML = '';
@@ -536,6 +536,7 @@ class CleanTalkWidgetDoboard {
                             {
                                 dayContentMonthDay: day,
                                 dayContentMessages: dayMessagesWrapperHTML,
+                                statusFixedHtml: tasksFullDetails?.taskStatus !== 'DONE' ? '' : this.loadTemplate('fixedTaskHtml')
                             },
                         );
                     }
