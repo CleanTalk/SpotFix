@@ -536,10 +536,11 @@ function spotFixSplitUrl(url) {
 
 		const reversed = segments.reverse();
 		reversed.push(domain);
+		return reversed.join(' / ');
 	} catch (error) {
 		return '';
 	}
-	return reversed.join(' / ');
+
 }
 
 
