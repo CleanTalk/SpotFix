@@ -313,6 +313,7 @@ class CleanTalkWidgetDoboard {
                         } catch (e) { return false; }
                     }).length
                     : 0;
+
                 templateVariables = {
                     issueTitle: '...',
                     issueComments: [],
@@ -406,8 +407,11 @@ class CleanTalkWidgetDoboard {
                             }
                         }
 
-                        if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
+                        if(currentPageURL === window.location.href){
                             issuesQuantityOnPage++;
+                        }
+
+                        if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
 
                             const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId)
 
