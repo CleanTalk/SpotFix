@@ -427,7 +427,7 @@ function getTaskAuthorDetails(params, taskId) {
 }
 
 function getIssuesCounterString(onPageSpotsCount, totalSpotsCount) {
-	return ` (<span>${totalSpotsCount}</span>)`;
+	return ` (${onPageSpotsCount}/${totalSpotsCount})`;
 }
 
 // Get the author's avatar
@@ -853,6 +853,7 @@ class CleanTalkWidgetDoboard {
                         } catch (e) { return false; }
                     }).length
                     : 0;
+
                 templateVariables = {
                     issueTitle: '...',
                     issueComments: [],
@@ -906,9 +907,17 @@ class CleanTalkWidgetDoboard {
                 tasksFullDetails = await getTasksFullDetails(this.params, tasks);
                 let spotsToBeHighlighted = [];
                 if (tasks.length > 0) {
+                    const currentURL = window.location.href;
+                    const sortedTasks = tasks.sort((a, b) => {
+                        const aIsHere = JSON.parse(a.taskMeta).pageURL === currentURL ? 1 : 0;
+                        const bIsHere = JSON.parse(b.taskMeta).pageURL === currentURL ? 1 : 0;
+                        return bIsHere - aIsHere;
+                    });
+
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
-                    for (let i = 0; i < tasks.length; i++) {
-                        const elTask = tasks[i];
+
+                    for (let i = 0; i < sortedTasks.length; i++) {
+                        const elTask = sortedTasks[i];
 
                         // Data from api
                         const taskId = elTask.taskId;
@@ -938,8 +947,11 @@ class CleanTalkWidgetDoboard {
                             }
                         }
 
-                        if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
+                        if(currentPageURL === window.location.href){
                             issuesQuantityOnPage++;
+                        }
+
+                        if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
 
                             const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId)
 
@@ -980,7 +992,8 @@ class CleanTalkWidgetDoboard {
                     spotFixHighlightElements(spotsToBeHighlighted);
                     document.querySelector('.doboard_task_widget-header span').innerHTML += ksesFilter(' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
                 }
-                if (tasks.length === 0 || issuesQuantityOnPage === 0) {
+
+                if (tasks.length === 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = ksesFilter('<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>');
                 }
 
@@ -1236,7 +1249,7 @@ class CleanTalkWidgetDoboard {
                 // For HTML content, use ksesFilter to sanitize HTML
                 replacement = ksesFilter(String(value), {template: templateName, imgFilter: true});
             }
-            
+
             template = template.replaceAll(placeholder, replacement);
         }
 
@@ -1252,7 +1265,7 @@ class CleanTalkWidgetDoboard {
     isPlaceholderInAttribute(template, placeholder) {
         // Escape special regex characters in placeholder
         const escapedPlaceholder = placeholder.replace(/[{}]/g, '\\$&');
-        
+
         // Pattern to match attribute="..." or attribute='...' containing the placeholder
         // This regex looks for: word characters (attribute name) = " or ' followed by content including the placeholder
         // Matches patterns like: src="{{key}}", class="{{key}}", style="{{key}}", etc.
@@ -1260,7 +1273,7 @@ class CleanTalkWidgetDoboard {
             `[\\w-]+\\s*=\\s*["'][^"']*${escapedPlaceholder}[^"']*["']`,
             'g'
         );
-        
+
         // Check if placeholder appears in any attribute context
         // If it does, we'll use escapeHtml for all occurrences (safer approach)
         return attributePattern.test(template);
