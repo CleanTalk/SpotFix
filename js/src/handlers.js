@@ -153,7 +153,7 @@ function getTaskAuthorDetails(params, taskId) {
 }
 
 function getIssuesCounterString(onPageSpotsCount, totalSpotsCount) {
-	return ` (<span>${totalSpotsCount}</span>)`;
+	return ` (${onPageSpotsCount}/${totalSpotsCount})`;
 }
 
 // Get the author's avatar

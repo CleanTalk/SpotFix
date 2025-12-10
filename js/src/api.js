@@ -196,7 +196,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         data.user_id = userId;
     }
     const result = await spotfixApiCall(data, 'task_get', accountId);
-    return result.tasks.map(task => ({
+    const tasks = result.tasks.map(task => ({
         taskId: task.task_id,
         taskTitle: task.name,
         taskLastUpdate: task.updated,
@@ -205,6 +205,10 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         taskMeta: task.meta,
         taskStatus: task.status,
     }));
+
+    storageSaveTasksCount(tasks);
+
+    return tasks;
 }
 
 

@@ -61,7 +61,10 @@ class CleanTalkWidgetDoboard {
             }
         } else {
             // Load all tasks
-            this.allTasksData = await getAllTasks(this.params);
+            const isWidgetClosed = localStorage.getItem('spotfix_widget_is_closed');
+            if((isWidgetClosed && !this.selectedText) || !isWidgetClosed){
+                this.allTasksData = await getAllTasks(this.params);
+            }
         }
 
         // Check if any task has updates
@@ -278,6 +281,7 @@ class CleanTalkWidgetDoboard {
                 templateVariables = {
                     selectedText: this.selectedText,
                     currentDomain: document.location.hostname || '',
+                    buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
                     ...this.srcVariables
                 };
                 storageGetUserIsDefined() && storageSetWidgetIsClosed(false);
@@ -290,9 +294,6 @@ class CleanTalkWidgetDoboard {
                 templateVariables = {...this.srcVariables};
                 break;
             case 'wrap_review':
-                if (storageGetWidgetIsClosed()) {
-                    return;
-                }
                 templateName = 'wrap_review';
                 templateVariables = {...this.srcVariables};
                 break;
@@ -313,6 +314,7 @@ class CleanTalkWidgetDoboard {
                         } catch (e) { return false; }
                     }).length
                     : 0;
+
                 templateVariables = {
                     issueTitle: '...',
                     issueComments: [],
@@ -333,6 +335,11 @@ class CleanTalkWidgetDoboard {
             case 'create_issue':
                 // highlight selected item during task creation
                 const selection = window.getSelection();
+                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+                const email = localStorage.getItem('spotfix_email');
+                if (sessionIdExists && email && !email.includes('spotfix_')) {
+                    document.querySelector('.doboard_task_widget-login').classList.add('hidden');
+                }
                 if (
                     selection.type === 'Range'
                 ) {
@@ -354,7 +361,6 @@ class CleanTalkWidgetDoboard {
                 hideContainersSpinner(false);
                 break;
             case 'wrap_review':
-                await this.getTaskCount();
                 document.querySelector('#doboard_task_widget_button').addEventListener('click', (e) => {
                     spotFixOpenWidget(this.selectedData, 'create_issue');
                 });
@@ -362,13 +368,24 @@ class CleanTalkWidgetDoboard {
             case 'all_issues':
                 spotFixRemoveHighlights();
                 let issuesQuantityOnPage = 0;
-                let tasks = this.allTasksData;
+                if (!this.allTasksData?.length) {
+                    this.allTasksData = await getAllTasks(this.params);
+                }
+                const tasks = this.allTasksData;
                 tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId);
                 let spotsToBeHighlighted = [];
                 if (tasks.length > 0) {
+                    const currentURL = window.location.href;
+                    const sortedTasks = tasks.sort((a, b) => {
+                        const aIsHere = JSON.parse(a.taskMeta).pageURL === currentURL ? 1 : 0;
+                        const bIsHere = JSON.parse(b.taskMeta).pageURL === currentURL ? 1 : 0;
+                        return bIsHere - aIsHere;
+                    });
+
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
-                    for (let i = 0; i < tasks.length; i++) {
-                        const elTask = tasks[i];
+
+                    for (let i = 0; i < sortedTasks.length; i++) {
+                        const elTask = sortedTasks[i];
 
                         // Data from api
                         const taskId = elTask.taskId;
@@ -400,8 +417,11 @@ class CleanTalkWidgetDoboard {
                             }
                         }
 
-                        if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
+                        if(currentPageURL === window.location.href){
                             issuesQuantityOnPage++;
+                        }
+
+                        if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
 
                             const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId)
 
@@ -444,7 +464,8 @@ class CleanTalkWidgetDoboard {
                     spotFixHighlightElements(spotsToBeHighlighted, this);
                     document.querySelector('.doboard_task_widget-header span').innerHTML += ksesFilter(' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
                 }
-                if (tasks.length === 0 || issuesQuantityOnPage === 0) {
+
+                if (tasks.length === 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = ksesFilter('<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>');
                 }
 
@@ -711,7 +732,7 @@ class CleanTalkWidgetDoboard {
                 // For HTML content, use ksesFilter to sanitize HTML
                 replacement = ksesFilter(String(value), {template: templateName, imgFilter: true});
             }
-            
+
             template = template.replaceAll(placeholder, replacement);
         }
 
@@ -727,7 +748,7 @@ class CleanTalkWidgetDoboard {
     isPlaceholderInAttribute(template, placeholder) {
         // Escape special regex characters in placeholder
         const escapedPlaceholder = placeholder.replace(/[{}]/g, '\\$&');
-        
+
         // Pattern to match attribute="..." or attribute='...' containing the placeholder
         // This regex looks for: word characters (attribute name) = " or ' followed by content including the placeholder
         // Matches patterns like: src="{{key}}", class="{{key}}", style="{{key}}", etc.
@@ -735,7 +756,7 @@ class CleanTalkWidgetDoboard {
             `[\\w-]+\\s*=\\s*["'][^"']*${escapedPlaceholder}[^"']*["']`,
             'g'
         );
-        
+
         // Check if placeholder appears in any attribute context
         // If it does, we'll use escapeHtml for all occurrences (safer approach)
         return attributePattern.test(template);
@@ -758,13 +779,21 @@ class CleanTalkWidgetDoboard {
         const projectToken = this.params.projectToken;
         const sessionId = localStorage.getItem('spotfix_session_id');
 
-        const tasks = await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
-        const filteredTasks = tasks.filter(task => {
-            return task.taskMeta;
-        });
+        const tasksCountLS = localStorage.getItem('spotfix_tasks_count');
+
+        let tasksCount;
+
+        if(tasksCountLS !== 0 && !tasksCountLS){
+            const tasks = await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
+            const filteredTasks = tasks.filter(task => {
+                return task.taskMeta;
+            });
+            tasksCount = filteredTasks.length;
+        } else tasksCount = tasksCountLS;
+
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
         if ( taskCountElement ) {
-            taskCountElement.innerText = ksesFilter(filteredTasks.length);
+            taskCountElement.innerText = ksesFilter(tasksCount);
             taskCountElement.classList.remove('hidden');
         }
     }
