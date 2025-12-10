@@ -58,6 +58,18 @@ function storageSaveTasksUpdateData(tasks) {
     localStorage.setItem('spotfix_task_updates', JSON.stringify(storedTasks));
 }
 
+function storageSaveTasksCount(tasks) {
+    if (!tasks || !Array.isArray(tasks)) {
+        return;
+    }
+
+    const count = tasks.filter(task => {
+        return task.taskMeta;
+    })?.length;
+
+    localStorage.setItem('spotfix_tasks_count', `${count}`);
+}
+
 /**
  * Check if a specific task has been updated since last check
  * @param taskId
@@ -162,3 +174,4 @@ function storageProvidedTaskHasUnreadUpdates(taskId) {
 
     return storedUnread.includes(taskId.toString());
 }
+

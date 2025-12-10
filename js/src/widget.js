@@ -16,8 +16,8 @@ class CleanTalkWidgetDoboard {
      * Constructor
      */
     constructor(selectedData, type) {
-        this.selectedData = selectedData;
-        this.selectedText = selectedData.selectedText;
+        this.selectedData = selectedData || '';
+        this.selectedText = selectedData?.selectedText || '';
         this.init(type);
         this.srcVariables = {
             buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
@@ -26,8 +26,10 @@ class CleanTalkWidgetDoboard {
             buttonSendMessage: SpotFixSVGLoader.getAsDataURI('buttonSendMessage'),
             logoDoBoardWhite: SpotFixSVGLoader.getAsDataURI('logoDoBoardWhite'),
             logoDoBoardWrap: SpotFixSVGLoader.getAsDataURI('logoDoBoardWrap'),
+            iconSpotWidgetWrapPencil: SpotFixSVGLoader.getAsDataURI('iconSpotWidgetWrapPencil'),
             iconSpotPublic: SpotFixSVGLoader.getAsDataURI('iconSpotPublic'),
             iconSpotPrivate: SpotFixSVGLoader.getAsDataURI('iconSpotPrivate'),
+            iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
         };
         this.fileUploader = new FileUploader(this.escapeHtml);
     }
@@ -59,7 +61,10 @@ class CleanTalkWidgetDoboard {
             }
         } else {
             // Load all tasks
-            this.allTasksData = await getAllTasks(this.params);
+            const isWidgetClosed = localStorage.getItem('spotfix_widget_is_closed');
+            if((isWidgetClosed && !this.selectedText) || !isWidgetClosed){
+                this.allTasksData = await getAllTasks(this.params);
+            }
         }
 
         // Check if any task has updates
@@ -68,7 +73,7 @@ class CleanTalkWidgetDoboard {
         if (storageTasksHasUnreadUpdates()) {
             taskHasSiteOwnerUpdate = true;
         } else {
-            if (type === 'wrap') {
+            if (type === 'wrap_review') {
                 taskHasSiteOwnerUpdate = await checkIfTasksHasSiteOwnerUpdates(
                     this.allTasksData,
                     this.params
@@ -259,7 +264,7 @@ class CleanTalkWidgetDoboard {
      * Create widget element
      * @return {HTMLElement} widget element
      */
-    async createWidgetElement(type, showOnlyCurrentPage = true) {
+    async createWidgetElement(type, showOnlyCurrentPage = false) {
         const widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
         widgetContainer.className = 'doboard_task_widget';
         widgetContainer.innerHTML = ksesFilter('');
@@ -276,6 +281,7 @@ class CleanTalkWidgetDoboard {
                 templateVariables = {
                     selectedText: this.selectedText,
                     currentDomain: document.location.hostname || '',
+                    buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
                     ...this.srcVariables
                 };
                 storageGetUserIsDefined() && storageSetWidgetIsClosed(false);
@@ -285,6 +291,10 @@ class CleanTalkWidgetDoboard {
                     return;
                 }
                 templateName = 'wrap';
+                templateVariables = {...this.srcVariables};
+                break;
+            case 'wrap_review':
+                templateName = 'wrap_review';
                 templateVariables = {...this.srcVariables};
                 break;
             case 'all_issues':
@@ -304,6 +314,7 @@ class CleanTalkWidgetDoboard {
                         } catch (e) { return false; }
                     }).length
                     : 0;
+
                 templateVariables = {
                     issueTitle: '...',
                     issueComments: [],
@@ -324,6 +335,11 @@ class CleanTalkWidgetDoboard {
             case 'create_issue':
                 // highlight selected item during task creation
                 const selection = window.getSelection();
+                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+                const email = localStorage.getItem('spotfix_email');
+                if (sessionIdExists && email && !email.includes('spotfix_')) {
+                    document.querySelector('.doboard_task_widget-login').classList.add('hidden');
+                }
                 if (
                     selection.type === 'Range'
                 ) {
@@ -344,16 +360,32 @@ class CleanTalkWidgetDoboard {
                 });
                 hideContainersSpinner(false);
                 break;
+            case 'wrap_review':
+                document.querySelector('#doboard_task_widget_button').addEventListener('click', (e) => {
+                    spotFixOpenWidget(this.selectedData, 'create_issue');
+                });
+                break;
             case 'all_issues':
                 spotFixRemoveHighlights();
                 let issuesQuantityOnPage = 0;
-                let tasks = this.allTasksData;
+                if (!this.allTasksData?.length) {
+                    this.allTasksData = await getAllTasks(this.params);
+                }
+                const tasks = this.allTasksData;
                 tasksFullDetails = await getTasksFullDetails(this.params, tasks);
                 let spotsToBeHighlighted = [];
                 if (tasks.length > 0) {
+                    const currentURL = window.location.href;
+                    const sortedTasks = tasks.sort((a, b) => {
+                        const aIsHere = JSON.parse(a.taskMeta).pageURL === currentURL ? 1 : 0;
+                        const bIsHere = JSON.parse(b.taskMeta).pageURL === currentURL ? 1 : 0;
+                        return bIsHere - aIsHere;
+                    });
+
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
-                    for (let i = 0; i < tasks.length; i++) {
-                        const elTask = tasks[i];
+
+                    for (let i = 0; i < sortedTasks.length; i++) {
+                        const elTask = sortedTasks[i];
 
                         // Data from api
                         const taskId = elTask.taskId;
@@ -383,8 +415,11 @@ class CleanTalkWidgetDoboard {
                             }
                         }
 
-                        if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
+                        if(currentPageURL === window.location.href){
                             issuesQuantityOnPage++;
+                        }
+
+                        if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
 
                             const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId)
 
@@ -396,6 +431,9 @@ class CleanTalkWidgetDoboard {
                                 taskPublicStatusImgSrc: taskPublicStatusImgSrc,
                                 taskPublicStatusHint: taskPublicStatusHint,
                                 taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
+                                taskPageUrl: currentPageURL,
+                                iconLinkChain: this.srcVariables.iconLinkChain,
+                                taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
                                 taskLastUpdate: taskFullDetails.lastMessageTime,
                                 nodePath: this.sanitizeNodePath(taskNodePath),
                                 taskId: taskId,
@@ -405,11 +443,11 @@ class CleanTalkWidgetDoboard {
                                 initialsClass: avatarData.initialsClass,
                                 classUnread: '',
                             };
+
                             const taskOwnerReplyIsUnread = storageProvidedTaskHasUnreadUpdates(taskFullDetails.taskId);
                             if (taskOwnerReplyIsUnread) {
                                 listIssuesTemplateVariables.classUnread = 'unread';
                             }
-
                             document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += this.loadTemplate('list_issues', listIssuesTemplateVariables);
 
                             if ( this.isSpotHaveToBeHighlighted(taskData) ) {
@@ -420,9 +458,10 @@ class CleanTalkWidgetDoboard {
                     this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                     this.savedIssuesQuantityAll = tasks.length;
                     spotFixHighlightElements(spotsToBeHighlighted);
-                    document.querySelector('.doboard_task_widget-header span').innerText += ksesFilter(' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
+                    document.querySelector('.doboard_task_widget-header span').innerHTML += ksesFilter(' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
                 }
-                if (tasks.length === 0 || issuesQuantityOnPage === 0) {
+
+                if (tasks.length === 0) {
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = ksesFilter('<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>');
                 }
 
@@ -666,16 +705,46 @@ class CleanTalkWidgetDoboard {
 
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
+            let replacement;
+
             // 1) For attributes we MUST use escapeHtml!
             // 2) Only for HTML inserts we must clean data by ksesFilter
-            let replacement =
-                typeof ksesFilter === 'function' /* @ToDo check non-attribute placeholder here */?
-                    ksesFilter(String(value), {template: templateName, imgFilter: true}) :
-                    this.escapeHtml(String(value));
+            // Check if placeholder is used in an attribute context
+            if (this.isPlaceholderInAttribute(template, placeholder)) {
+                // For attributes, use escapeHtml to prevent XSS
+                replacement = this.escapeHtml(String(value));
+            } else {
+                // For HTML content, use ksesFilter to sanitize HTML
+                replacement = ksesFilter(String(value), {template: templateName, imgFilter: true});
+            }
+
             template = template.replaceAll(placeholder, replacement);
         }
 
         return ksesFilter(template, {template: templateName});
+    }
+
+    /**
+     * Check if a placeholder is used inside an HTML attribute
+     * @param {string} template - The template string
+     * @param {string} placeholder - The placeholder to check (e.g., "{{key}}")
+     * @return {boolean} - True if placeholder is in an attribute context
+     */
+    isPlaceholderInAttribute(template, placeholder) {
+        // Escape special regex characters in placeholder
+        const escapedPlaceholder = placeholder.replace(/[{}]/g, '\\$&');
+
+        // Pattern to match attribute="..." or attribute='...' containing the placeholder
+        // This regex looks for: word characters (attribute name) = " or ' followed by content including the placeholder
+        // Matches patterns like: src="{{key}}", class="{{key}}", style="{{key}}", etc.
+        const attributePattern = new RegExp(
+            `[\\w-]+\\s*=\\s*["'][^"']*${escapedPlaceholder}[^"']*["']`,
+            'g'
+        );
+
+        // Check if placeholder appears in any attribute context
+        // If it does, we'll use escapeHtml for all occurrences (safer approach)
+        return attributePattern.test(template);
     }
 
     escapeHtml = (unsafe) => {
@@ -695,13 +764,21 @@ class CleanTalkWidgetDoboard {
         const projectToken = this.params.projectToken;
         const sessionId = localStorage.getItem('spotfix_session_id');
 
-        const tasks = await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
-        const filteredTasks = tasks.filter(task => {
-            return task.taskMeta;
-        });
+        const tasksCountLS = localStorage.getItem('spotfix_tasks_count');
+
+        let tasksCount;
+
+        if(tasksCountLS !== 0 && !tasksCountLS){
+            const tasks = await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
+            const filteredTasks = tasks.filter(task => {
+                return task.taskMeta;
+            });
+            tasksCount = filteredTasks.length;
+        } else tasksCount = tasksCountLS;
+
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
         if ( taskCountElement ) {
-            taskCountElement.innerText = ksesFilter(filteredTasks.length);
+            taskCountElement.innerText = ksesFilter(tasksCount);
             taskCountElement.classList.remove('hidden');
         }
     }

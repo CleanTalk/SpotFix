@@ -151,7 +151,7 @@ function getTaskAuthorDetails(params, taskId) {
 }
 
 function getIssuesCounterString(onPageSpotsCount, totalSpotsCount) {
-	return `(${onPageSpotsCount}/${totalSpotsCount})`;
+	return ` (${onPageSpotsCount}/${totalSpotsCount})`;
 }
 
 // Get the author's avatar
@@ -244,3 +244,20 @@ function userUpdate(projectToken, accountId) {
 
 	return userUpdateDoboard(projectToken, accountId, sessionId, userId, timezone);
 }
+
+function spotFixSplitUrl(url) {
+	const u = new URL(url);
+	const domain = u.host;
+
+	const segments = u.pathname.split('/').filter(Boolean);
+
+	if (segments.length === 0) {
+		return domain;
+	}
+
+	const reversed = segments.reverse();
+	reversed.push(domain);
+
+	return reversed.join(' / ');
+}
+

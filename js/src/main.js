@@ -1,7 +1,6 @@
-const SPOTFIX_DEBUG = false;
-
-const SPOTFIX_SHOW_DELAY = 3000;
 var spotFixShowDelayTimeout = null;
+const SPOTFIX_DEBUG = false;
+const SPOTFIX_SHOW_DELAY = 1000;
 
 if( document.readyState !== 'loading' ) {
     document.addEventListener('spotFixLoaded', spotFixInit);
@@ -16,7 +15,16 @@ function spotFixInit() {
 
 document.addEventListener('selectionchange', function(e) {
     // Do not run widget for non-document events (i.e. inputs focused)
+
     if (e.target !== document) {
+        return;
+    }
+
+    const isWrapReviewWidgetExists = !!(document.getElementsByClassName('wrap_review')[0]);
+    const sel = document.getSelection();
+
+    if ((!sel || sel.toString() === "") && isWrapReviewWidgetExists) {
+        new CleanTalkWidgetDoboard({}, 'wrap')
         return;
     }
 
@@ -36,12 +44,22 @@ document.addEventListener('selectionchange', function(e) {
                 return;
             }
             const selectedData = spotFixGetSelectedData(selection);
-            if ( selectedData ) {
-                spotFixOpenWidget(selectedData, 'create_issue');
+
+             if ( selectedData ) {
+                // spotFixOpenWidget(selectedData, 'create_issue');
+                spotFixOpenWidget(selectedData, 'wrap_review');
             }
         }
     }, SPOTFIX_SHOW_DELAY);
 });
+
+
+/**
+ * Shows the spot fix widget.
+ */
+function spotFixShowWidget() {
+    new CleanTalkWidgetDoboard(null, 'create_issue');
+}
 
 /**
  * Check if a node is inside the task widget.
@@ -297,7 +315,7 @@ function ksesFilter(html, options = false) {
     };
 
     if (options && options.template === 'list_issues') {
-        allowedTags = { ...allowedTags, img: false, br: false };
+        allowedTags = { ...allowedTags, br: false };
     }
 
     const parser = new DOMParser();
