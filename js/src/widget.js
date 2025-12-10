@@ -294,9 +294,6 @@ class CleanTalkWidgetDoboard {
                 templateVariables = {...this.srcVariables};
                 break;
             case 'wrap_review':
-                if (storageGetWidgetIsClosed()) {
-                    return;
-                }
                 templateName = 'wrap_review';
                 templateVariables = {...this.srcVariables};
                 break;
