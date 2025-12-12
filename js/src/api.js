@@ -156,6 +156,13 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname, pag
         data.email = email;
         data.name = nickname;
     }
+
+    if(localStorage.getItem('bot_detector_event_token')) {
+        const botDetectorData = JSON.parse(localStorage.getItem('bot_detector_event_token'));
+        if(botDetectorData?.value) {
+            data.bot_detector_event_token = botDetectorData.value;
+        }
+    }
     const result = await spotfixApiCall(data, 'user_registration');
     return {
         sessionId: result.session_id,
