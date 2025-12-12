@@ -36,15 +36,17 @@ async function confirmUserEmail(emailConfirmationToken, params) {
 	return createdTask;
 }
 
-async function getTasksFullDetails(params, tasks) {
+async function getTasksFullDetails(params, tasks, currentActiveTaskId) {
     if (tasks.length > 0) {
         const sessionId = localStorage.getItem('spotfix_session_id');
         const comments = await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken);
         const users = await getUserDoboard(sessionId, params.projectToken, params.accountId);
+		const foundTask = tasks.find(item => +item.taskId === +currentActiveTaskId);
 
         return {
             comments: comments,
             users: users,
+			taskStatus: foundTask?.taskStatus,
         };
     }
 }
@@ -246,18 +248,22 @@ function userUpdate(projectToken, accountId) {
 }
 
 function spotFixSplitUrl(url) {
-	const u = new URL(url);
-	const domain = u.host;
+	try {
+		const u = new URL(url);
+		const domain = u.host;
 
-	const segments = u.pathname.split('/').filter(Boolean);
+		const segments = u.pathname.split('/').filter(Boolean);
 
-	if (segments.length === 0) {
-		return domain;
+		if (segments.length === 0) {
+			return domain;
+		}
+
+		const reversed = segments.reverse();
+		reversed.push(domain);
+		return reversed.join(' / ');
+	} catch (error) {
+		return '';
 	}
 
-	const reversed = segments.reverse();
-	reversed.push(domain);
-
-	return reversed.join(' / ');
 }
 

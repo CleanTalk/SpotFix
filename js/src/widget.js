@@ -372,7 +372,7 @@ class CleanTalkWidgetDoboard {
                     this.allTasksData = await getAllTasks(this.params);
                 }
                 const tasks = this.allTasksData;
-                tasksFullDetails = await getTasksFullDetails(this.params, tasks);
+                tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId);
                 let spotsToBeHighlighted = [];
                 if (tasks.length > 0) {
                     const currentURL = window.location.href;
@@ -395,6 +395,8 @@ class CleanTalkWidgetDoboard {
                         if (taskMetaString) {
                             try {
                                 taskData = JSON.parse(taskMetaString);
+                                taskData.isFixed = elTask.taskStatus === 'DONE';
+                                taskData.taskId = elTask.taskId;
                             } catch (error) {
                                 taskData = null;
                             }
@@ -442,6 +444,8 @@ class CleanTalkWidgetDoboard {
                                 taskAuthorInitials: avatarData.taskAuthorInitials,
                                 initialsClass: avatarData.initialsClass,
                                 classUnread: '',
+                                elementBgCSSClass: elTask.taskStatus !== 'DONE' ? '' : 'doboard_task_widget-task_row-green',
+                                statusFixedHtml: elTask.taskStatus !== 'DONE' ? '' : this.loadTemplate('fixedHtml'),
                             };
 
                             const taskOwnerReplyIsUnread = storageProvidedTaskHasUnreadUpdates(taskFullDetails.taskId);
@@ -457,7 +461,7 @@ class CleanTalkWidgetDoboard {
                     }
                     this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                     this.savedIssuesQuantityAll = tasks.length;
-                    spotFixHighlightElements(spotsToBeHighlighted);
+                    spotFixHighlightElements(spotsToBeHighlighted, this);
                     document.querySelector('.doboard_task_widget-header span').innerHTML += ksesFilter(' ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
                 }
 
@@ -472,7 +476,7 @@ class CleanTalkWidgetDoboard {
 
         case 'concrete_issue':
 
-                tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData);
+                tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId);
                 const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId);
 
                 // Update issue title in the interface
@@ -481,8 +485,8 @@ class CleanTalkWidgetDoboard {
                     issueTitleElement.innerText = ksesFilter(taskDetails.issueTitle);
                 }
 
-                templateVariables.issueTitle = taskDetails.issueTitle;
-                templateVariables.issueComments = taskDetails.issueComments;
+                templateVariables.issueTitle = taskDetails?.issueTitle;
+                templateVariables.issueComments = taskDetails?.issueComments;
 
                 widgetContainer.innerHTML = this.loadTemplate('concrete_issue', templateVariables);
                 document.body.appendChild(widgetContainer);
@@ -501,7 +505,7 @@ class CleanTalkWidgetDoboard {
                     spotFixRemoveHighlights();
                     if (meta && nodePath) {
                         // Pass the task meta object as an array
-                        spotFixHighlightElements([meta]);
+                        spotFixHighlightElements([meta], this);
                         if (typeof spotFixScrollToNodePath === 'function') {
                             spotFixScrollToNodePath(nodePath);
                         }
@@ -540,6 +544,7 @@ class CleanTalkWidgetDoboard {
                         }
                     }
                     let daysWrapperHTML = '';
+
                     for (const day in dayMessagesData) {
                         let currentDayMessages = dayMessagesData[day];
                         let dayMessagesWrapperHTML = '';
@@ -552,6 +557,7 @@ class CleanTalkWidgetDoboard {
                             {
                                 dayContentMonthDay: day,
                                 dayContentMessages: dayMessagesWrapperHTML,
+                                statusFixedHtml: tasksFullDetails?.taskStatus !== 'DONE' ? '' : this.loadTemplate('fixedTaskHtml')
                             },
                         );
                     }
@@ -676,19 +682,28 @@ class CleanTalkWidgetDoboard {
                     spotFixScrollToNodePath(nodePath);
                 }
                 this.currentActiveTaskId = item.getAttribute('data-task-id');
-                await this.createWidgetElement('concrete_issue');
-
-                const taskHighlightData = this.getTaskHighlightData(this.currentActiveTaskId)
-
-                if (taskHighlightData) {
-                    spotFixRemoveHighlights();
-                    spotFixHighlightElements([taskHighlightData])
-                    this.positionWidgetContainer();
-                }
-
-                hideContainersSpinner(false);
+                await this.showOneTask();
             });
         });
+    }
+
+    /**
+     * Show one task
+     *
+     * @return {Promise<void>}
+     *
+     */
+    async showOneTask() {
+        await this.createWidgetElement('concrete_issue');
+        const taskHighlightData = this.getTaskHighlightData(this.currentActiveTaskId)
+
+        if (taskHighlightData) {
+            spotFixRemoveHighlights();
+            spotFixHighlightElements([taskHighlightData], this)
+            this.positionWidgetContainer();
+        }
+
+        hideContainersSpinner(false);
     }
 
     /**
