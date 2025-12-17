@@ -3413,7 +3413,7 @@ class SpotFixTemplatesLoader {
             </div>
         </div>
         </div>
-        <div style="padding: 8px; font-size: 13px; position: sticky; bottom: 0">
+        <div style="padding: 16px; font-size: 13px; position: sticky; bottom: 0">
             <span>{{spotfixVersion}}</span>
             <span>Powered by
             <a rel="nofollow" target="_blank" href="https://doboard.com">
