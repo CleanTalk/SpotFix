@@ -276,8 +276,11 @@ function spotFixSplitUrl(url) {
 
 function setToggleStatus(rootElement){
 	const clickHandler = () => {
-		localStorage.setItem('spotfix_widget_is_closed', '1');
-		rootElement.hide();
+		const timer = setTimeout(() => {
+			localStorage.setItem('spotfix_widget_is_closed', '1');
+			rootElement.hide();
+			clearTimeout(timer);
+		}, 300);
 	};
 	const toggle = document.getElementById('widget_visibility');
 	toggle.checked = true;
