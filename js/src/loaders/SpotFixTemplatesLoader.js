@@ -19,7 +19,12 @@ class SpotFixTemplatesLoader {
             <img src="{{logoDoBoardWhite}}"  alt="">
             <span>All spots </span>
         </div>
-        <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        <div>
+            <span id="openUserMenuButton">
+                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        </div>
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-all_issues">
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
@@ -45,7 +50,12 @@ class SpotFixTemplatesLoader {
             <span title="Return to all spots list"> All {{issuesCounter}}</span>
         </div>
         <div class="doboard_task_widget-issue-title">{{issueTitle}}</div>
-        <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        <div>
+            <span id="openUserMenuButton">
+                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        </div>
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-concrete_issue">
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
@@ -114,14 +124,19 @@ class SpotFixTemplatesLoader {
             <img src="{{logoDoBoardWhite}}"  alt="">
             <span>Report an issue</span>
         </div>
-        <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        <div>
+            <span id="openUserMenuButton">
+                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        </div>
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-create_issue">
 
         <div class="doboard_task_widget-element-container">
             <span>
-                If you found issue with <span style="color: #000000;">{{currentDomain}}</span> page, you are in right place. Please use this form to tell us about the issue you’re experiencing.
-                <a href="https://doboard.com" target="_blank">doboard.com</a>
+                Tell us about any issue you’re experiencing on <span style="color: #000000;">{{currentDomain}}</span>. 
+                You’re also welcome to review spelling, grammar, or ask a question related to this page.
             </span>
         </div>
 
@@ -202,6 +217,63 @@ class SpotFixTemplatesLoader {
     </div>
 </div>
 `;
+    }
+
+    static user_menu() {
+        return `
+<div class="doboard_task_widget-container">
+    <div class="doboard_task_widget-user_menu-header">
+        <div class="doboard_task_widget-user_menu-header-top">
+            <div id="spotfix_back_button" class="doboard_task_widget_cursor-pointer" 
+            style="display: flex;align-items: center;gap: 8px;">
+                <img src="{{chevronBackDark}}" alt="">
+                <span> Back</span>
+            </div>
+            <div>
+                <img src="{{buttonCloseScreenDark}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center">
+             <img style="max-width: 60px; max-height: 60px; border-radius: 50%; margin-bottom: 4px" src="{{avatar}}" alt="">
+             <span style="font-size: 16px; font-weight: 700">{{userName}}</span>
+             <span style="font-size: 12px;">{{email}}</span>
+        </div>
+    </div>
+    <div class="doboard_task_widget-content">
+        <div style="height: 392px">
+        <div style="position: sticky; top: 0">
+            <div class="doboard_task_widget-user_menu-item">
+                <img src="{{iconEye}}" alt="" style="margin-right: 12px">
+                <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
+                    <span style="display: inline-flex; flex-direction: column">
+                        <span style="font-weight: 500; font-size: 14px; color: #252A2F">
+                        Show widget on my screen</span>
+                        <span style="font-size: 10px; color: #40484F">
+                        The widget will be visible again if you select any text on the site</span>
+                    </span>
+                    <label class="toggle" style="margin-left: 8px">
+                      <input id="widget_visibility" type="checkbox">
+                      <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="doboard_task_widget-user_menu-item">
+                <img src="{{iconDoor}}" alt="" style="margin-right: 12px; cursor: pointer">
+                <div>
+                    <span class="logout_button">Log out</span>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div style="padding: 8px; font-size: 13px; position: sticky; bottom: 0">
+            <span>{{spotfixVersion}}</span>
+            <span>Powered by
+            <a rel="nofollow" target="_blank" href="https://doboard.com">
+             doboard.com
+            </a></span>
+        </div>
+    </div>
+</div>`;
     }
 
     static wrap() {

@@ -230,11 +230,13 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, statu
     }));
 };
 
-const getUserDoboard = async (sessionId, projectToken, accountId) => {
+const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
     const data = {
         session_id: sessionId,
         project_token: projectToken,
     }
+    if (userId) data.user_id = userId;
+
     const result = await spotfixApiCall(data, 'user_get', accountId);
     return result.users;
 
@@ -277,3 +279,20 @@ const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, tim
         success: true
     };
 }
+
+const getReleaseVersion = async () => {
+    try {
+        const res = await fetch('https://api.github.com/repos/CleanTalk/SpotFix/releases');
+        const data = await res.json();
+
+        if (data.length > 0 && data[0].tag_name) {
+            localStorage.setItem('spotfix_app_version', data[0].tag_name);
+            return data[0].tag_name;
+        }
+
+        return null;
+    } catch (err) {
+        return null;
+    }
+};
+

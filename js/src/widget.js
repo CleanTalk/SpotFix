@@ -21,6 +21,7 @@ class CleanTalkWidgetDoboard {
         this.init(type);
         this.srcVariables = {
             buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
+            iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
             chevronBack: SpotFixSVGLoader.getAsDataURI('chevronBack'),
             buttonPaperClip: SpotFixSVGLoader.getAsDataURI('buttonPaperClip'),
             buttonSendMessage: SpotFixSVGLoader.getAsDataURI('buttonSendMessage'),
@@ -278,10 +279,12 @@ class CleanTalkWidgetDoboard {
         switch (type) {
             case 'create_issue':
                 templateName = 'create_issue';
+                this.type_name = templateName;
                 templateVariables = {
                     selectedText: this.selectedText,
                     currentDomain: document.location.hostname || '',
                     buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
+                    iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
                     ...this.srcVariables
                 };
                 storageGetUserIsDefined() && storageSetWidgetIsClosed(false);
@@ -299,10 +302,26 @@ class CleanTalkWidgetDoboard {
                 break;
             case 'all_issues':
                 templateName = 'all_issues';
+                this.type_name = templateName;
                 templateVariables = {...this.srcVariables};
+                break;
+            case 'user_menu':
+                templateName = 'user_menu';
+                const versionFromLS = localStorage.getItem('spotfix_app_version');
+                templateVariables = {
+                    spotfixVersion: versionFromLS ? 'Spotfix version ' + versionFromLS + '.' : '',
+                    avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
+                    iconEye: SpotFixSVGLoader.getAsDataURI('iconEye'),
+                    iconDoor: SpotFixSVGLoader.getAsDataURI('iconDoor'),
+                    chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
+                    buttonCloseScreenDark: SpotFixSVGLoader.getAsDataURI('buttonCloseScreenDark'),
+                    userName: '',
+                    email: '',
+                    ...this.srcVariables};
                 break;
             case 'concrete_issue':
                 templateName = 'concrete_issue';
+                this.type_name = templateName;
                 // Update the number of tasks
                 this.savedIssuesQuantityAll = Array.isArray(this.allTasksData) ? this.allTasksData.length : 0;
                 // Calculate the number of issues on the current page
@@ -473,7 +492,28 @@ class CleanTalkWidgetDoboard {
                 this.bindIssuesClick();
                 hideContainersSpinner(false);
                 break;
+        case 'user_menu':
 
+                setToggleStatus(this);
+                const user = await getUserDetails(this.params);
+                const gitHubAppVersion = await getReleaseVersion();
+                let spotfixVersion = '';
+                const version = localStorage.getItem('spotfix_app_version') || gitHubAppVersion;
+                spotfixVersion = version ? `Spotfix version ${version}.` : '';
+
+                templateVariables.spotfixVersion = spotfixVersion || '';
+
+                if(user){
+                    templateVariables.userName = user.name;
+                    templateVariables.email = user.email;
+                    if(user?.avatar?.s) templateVariables.avatar = user?.avatar?.s;
+                }
+
+                widgetContainer.innerHTML = this.loadTemplate('user_menu', templateVariables);
+                document.body.appendChild(widgetContainer);
+                setToggleStatus(this);
+
+                break;
         case 'concrete_issue':
 
                 tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId);
@@ -656,15 +696,23 @@ class CleanTalkWidgetDoboard {
             this.fileUploader.bindPaperClipAction(paperclipController);
         }
 
-        document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', () => {
+        document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', (e) => {
             this.hide();
         }) || '';
 
-        document.querySelector('#doboard_task_widget-task_count')?.addEventListener('click', () => {
-            const widget = document.querySelector('.doboard_task_widget-wrap');
-            widget.classList.add('hidden');
-            storageSetWidgetIsClosed(true);
+        document.querySelector('#openUserMenuButton')?.addEventListener('click', () => {
+            this.createWidgetElement('user_menu')
         }) || '';
+
+        document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {
+            this.createWidgetElement(this.type_name)
+        }) || '';
+
+        // document.querySelector('#doboard_task_widget-task_count')?.addEventListener('click', () => {
+        //     const widget = document.querySelector('.doboard_task_widget-wrap');
+        //     widget.classList.add('hidden');
+        //     storageSetWidgetIsClosed(true);
+        // }) || '';
 
         return widgetContainer;
     }

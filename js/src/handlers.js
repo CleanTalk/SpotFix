@@ -51,6 +51,13 @@ async function getTasksFullDetails(params, tasks, currentActiveTaskId) {
     }
 }
 
+async function getUserDetails(params) {
+		const sessionId = localStorage.getItem('spotfix_session_id');
+		const currentUserId = localStorage.getItem('spotfix_user_id');
+		const users = await getUserDoboard(sessionId, params.projectToken, params.accountId, currentUserId);
+		return users[0] || {};
+}
+
 async function handleCreateTask(sessionId, taskDetails) {
 	try {
 		const result = await createTaskDoboard(sessionId, taskDetails);
@@ -267,3 +274,12 @@ function spotFixSplitUrl(url) {
 
 }
 
+function setToggleStatus(rootElement){
+	const clickHandler = () => {
+		localStorage.setItem('spotfix_widget_is_closed', '1');
+		rootElement.hide();
+	};
+	const toggle = document.getElementById('widget_visibility');
+	toggle.checked = true;
+	toggle.addEventListener('click', clickHandler);
+}
