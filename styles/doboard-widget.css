@@ -126,6 +126,15 @@
     justify-content: space-between;
 }
 
+.doboard_task_widget-user_menu-header-avatar {
+    max-width: 60px;
+    max-height: 60px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 4px
+}
+
 .doboard_task_widget-user_menu-item {
     display: flex;
     align-items: center;
@@ -1237,3 +1246,4 @@ input:checked + .slider:before {
     color: #707A83;
     cursor: pointer;
 }
+

@@ -34,7 +34,7 @@ class SpotFixTemplatesLoader {
         </div>
         <div class="doboard_task_widget_tasks_list">
             <a rel="nofollow" target="_blank" href="https://doboard.com/spotfix">
-            SpotFix
+             doBoard / SpotFix
             </a>
         </div>
     </div>
@@ -234,9 +234,12 @@ class SpotFixTemplatesLoader {
             </div>
         </div>
         <div style="display: flex; flex-direction: column; align-items: center">
-             <img style="max-width: 60px; max-height: 60px; border-radius: 50%; margin-bottom: 4px" src="{{avatar}}" alt="">
+             <img class="doboard_task_widget-user_menu-header-avatar" src="{{avatar}}" alt="">
              <span style="font-size: 16px; font-weight: 700">{{userName}}</span>
              <span style="font-size: 12px;">{{email}}</span>
+             <span id="doboard_task_widget-user_menu-signlog_button">
+                 <a style="cursor: pointer" rel="nofollow" target="_blank">Sign up or Log in</a>
+             </span>
         </div>
     </div>
     <div class="doboard_task_widget-content">
@@ -258,10 +261,10 @@ class SpotFixTemplatesLoader {
                 </div>
             </div>
             <div class="doboard_task_widget-user_menu-item">
-                <img src="{{iconDoor}}" alt="" style="margin-right: 12px; cursor: pointer">
-                <div>
+                <span id="doboard_task_widget-user_menu-logout_button">
+                    <img src="{{iconDoor}}" alt="" style="margin-right: 12px; cursor: pointer">
                     <span class="logout_button">Log out</span>
-                </div>
+                </span>
             </div>
         </div>
         </div>
@@ -269,7 +272,7 @@ class SpotFixTemplatesLoader {
             <span>{{spotfixVersion}}</span>
             <span>Powered by
             <a rel="nofollow" target="_blank" href="https://doboard.com">
-             doboard.com
+             doBoard
             </a></span>
         </div>
     </div>

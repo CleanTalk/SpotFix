@@ -315,7 +315,7 @@ class CleanTalkWidgetDoboard {
                     iconDoor: SpotFixSVGLoader.getAsDataURI('iconDoor'),
                     chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
                     buttonCloseScreenDark: SpotFixSVGLoader.getAsDataURI('buttonCloseScreenDark'),
-                    userName: '',
+                    userName: 'Guest',
                     email: '',
                     ...this.srcVariables};
                 break;
@@ -495,6 +495,8 @@ class CleanTalkWidgetDoboard {
         case 'user_menu':
 
                 setToggleStatus(this);
+                checkLogInOutButtonsVisible();
+
                 const user = await getUserDetails(this.params);
                 const gitHubAppVersion = await getReleaseVersion();
                 let spotfixVersion = '';
@@ -504,14 +506,15 @@ class CleanTalkWidgetDoboard {
                 templateVariables.spotfixVersion = spotfixVersion || '';
 
                 if(user){
-                    templateVariables.userName = user.name;
-                    templateVariables.email = user.email;
+                    templateVariables.userName = user.name || 'Guest';
+                    templateVariables.email = user.email || '';
                     if(user?.avatar?.s) templateVariables.avatar = user?.avatar?.s;
                 }
 
                 widgetContainer.innerHTML = this.loadTemplate('user_menu', templateVariables);
                 document.body.appendChild(widgetContainer);
                 setToggleStatus(this);
+                checkLogInOutButtonsVisible();
 
                 break;
         case 'concrete_issue':
@@ -702,6 +705,10 @@ class CleanTalkWidgetDoboard {
 
         document.querySelector('#openUserMenuButton')?.addEventListener('click', () => {
             this.createWidgetElement('user_menu')
+        }) || '';
+
+        document.querySelector('#doboard_task_widget-user_menu-signlog_button')?.addEventListener('click', () => {
+            spotFixShowWidget();
         }) || '';
 
         document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {
