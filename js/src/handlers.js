@@ -258,6 +258,9 @@ function userUpdate(projectToken, accountId) {
 
 function spotFixSplitUrl(url) {
 	try {
+		if (!url || url.trim() === '') {
+			return '';
+		}
 		const u = new URL(url);
 		const domain = u.host;
 
