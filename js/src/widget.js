@@ -20,7 +20,6 @@ class CleanTalkWidgetDoboard {
         this.selectedText = selectedData?.selectedText || '';
         this.init(type);
         this.srcVariables = {
-            widgetContainerClases: +localStorage.getItem('maximize') ? 'doboard_task_widget-container doboard_task_widget-container-maximize' : 'doboard_task_widget-container',
             buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
             iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
             iconPlus: SpotFixSVGLoader.getAsDataURI('iconPlus'),
@@ -286,7 +285,6 @@ class CleanTalkWidgetDoboard {
                 this.type_name = templateName;
                 templateVariables = {
                     selectedText: this.selectedText,
-                    widgetContainerClases: +localStorage.getItem('maximize') ? 'doboard_task_widget-container doboard_task_widget-container-maximize' : 'doboard_task_widget-container',
                     currentDomain: document.location.hostname || '',
                     buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
                     iconMaximize: SpotFixSVGLoader.getAsDataURI('iconMaximize'),
@@ -309,9 +307,7 @@ class CleanTalkWidgetDoboard {
             case 'all_issues':
                 templateName = 'all_issues';
                 this.type_name = templateName;
-                templateVariables = {
-                    widgetContainerClases: +localStorage.getItem('maximize') ? 'doboard_task_widget-container doboard_task_widget-container-maximize' : 'doboard_task_widget-container',
-                    ...this.srcVariables};
+                templateVariables = {...this.srcVariables};
                 break;
             case 'user_menu':
                 templateName = 'user_menu';
@@ -345,7 +341,6 @@ class CleanTalkWidgetDoboard {
                 templateVariables = {
                     issueTitle: '...',
                     issueComments: [],
-                    widgetContainerClases: +localStorage.getItem('maximize') ? 'doboard_task_widget-container doboard_task_widget-container-maximize' : 'doboard_task_widget-container',
                     issuesCounter: getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll),
                     ...this.srcVariables,
                 };
@@ -358,9 +353,15 @@ class CleanTalkWidgetDoboard {
 
         // remove highlights before any screen called
         spotFixRemoveHighlights();
-
+        const container = document.querySelector('.doboard_task_widget-container');
         switch (type) {
             case 'create_issue':
+
+                if(container && +localStorage.getItem('maximize')){
+                    container.classList.add('doboard_task_widget-container-maximize');
+                } else if(container) {
+                    container.classList.remove('doboard_task_widget-container-maximize');
+                }
                 // highlight selected item during task creation
                 const selection = window.getSelection();
                 const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
@@ -395,11 +396,9 @@ class CleanTalkWidgetDoboard {
                 });
                 break;
             case 'all_issues':
-                const container = document.querySelector('.doboard_task_widget-container');
-
-                    if(+localStorage.getItem('maximize')){
+                    if(container && +localStorage.getItem('maximize')){
                         container.classList.add('doboard_task_widget-container-maximize');
-                    } else {
+                    } else if(container) {
                         container.classList.remove('doboard_task_widget-container-maximize');
                     }
 
@@ -536,6 +535,11 @@ class CleanTalkWidgetDoboard {
 
                 break;
         case 'concrete_issue':
+            if(container && +localStorage.getItem('maximize')){
+                container.classList.add('doboard_task_widget-container-maximize');
+            } else if(container) {
+                container.classList.remove('doboard_task_widget-container-maximize');
+            }
                 tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId);
                 const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId);
                 // Update issue title in the interface
@@ -564,7 +568,8 @@ class CleanTalkWidgetDoboard {
             const taskFormattedPageUrl = meta.pageURL.replace(window.location.origin, '');
             templateVariables.taskFormattedPageUrl = taskFormattedPageUrl.length < 2
                 ? meta.pageURL.replace(window.location.protocol + '/', '') : taskFormattedPageUrl;
-
+            templateVariables.contenerClasess = +localStorage.getItem('maximize')
+                ? 'doboard_task_widget-container-maximize doboard_task_widget-container' : 'doboard_task_widget-container'
             widgetContainer.innerHTML = this.loadTemplate('concrete_issue', templateVariables);
             document.body.appendChild(widgetContainer);
 
@@ -705,6 +710,7 @@ class CleanTalkWidgetDoboard {
                         sendButton.disabled = false;
                     });
                 }
+
                 break;
 
             default:

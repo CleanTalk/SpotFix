@@ -13,7 +13,7 @@ class SpotFixTemplatesLoader {
 
     static all_issues() {
         return `
-<div class="{{widgetContainerClases}}">
+<div class="doboard_task_widget-container">
     <div class="doboard_task_widget-header">
         <div style="display: flex;align-items: center;gap: 8px;">
             <img src="{{logoDoBoardWhite}}"  alt="">
@@ -49,7 +49,7 @@ class SpotFixTemplatesLoader {
 
     static concrete_issue() {
         return `
-<div class="{{widgetContainerClases}}">
+<div class="{{contenerClasess}}">
     <div class="doboard_task_widget-header">
         <div class="doboard_task_widget_return_to_all doboard_task_widget_cursor-pointer">
             <img src="{{chevronBack}}" alt="" title="Return to all spots list">
@@ -133,7 +133,7 @@ class SpotFixTemplatesLoader {
 
     static create_issue() {
         return `
-<div class="{{widgetContainerClases}}">
+<div class="doboard_task_widget-container">
     <div class="doboard_task_widget-header">
         <div style="display: flex;align-items: center;gap: 8px;">
             <img src="{{logoDoBoardWhite}}"  alt="">
