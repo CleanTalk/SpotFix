@@ -1132,9 +1132,14 @@
     padding-bottom: 8px;
 }
 
-.doboard_task_widget_tasks_list a {
-    color: #40484F !important;
-    text-decoration: none !important;
+/*.doboard_task_widget_tasks_list a {*/
+/*    color: #40484F !important;*/
+/*    text-decoration: none !important;*/
+/*}*/
+
+#doboard_task_widget-user_menu-logout_button {
+    display: inline-flex;
+    align-items: center;
 }
 
 .doboard_task_widget-text_selection {

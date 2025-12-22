@@ -707,6 +707,10 @@ class CleanTalkWidgetDoboard {
             this.createWidgetElement('user_menu')
         }) || '';
 
+        document.querySelector('#doboard_task_widget-user_menu-logout_button')?.addEventListener('click', () => {
+            jogoutUserDoboard(this.params.accountId);
+        }) || '';
+
         document.querySelector('#doboard_task_widget-user_menu-signlog_button')?.addEventListener('click', () => {
             spotFixShowWidget();
         }) || '';

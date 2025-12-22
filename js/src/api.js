@@ -185,6 +185,23 @@ const loginUserDoboard = async (email, password) => {
     }
 }
 
+const jogoutUserDoboard = async (accountId) => {
+    const sessionId = localStorage.getItem('spotfix_session_id');
+    if(sessionId && accountId) {
+        const data = {
+            session_id: sessionId,
+        };
+
+        const result = await spotfixApiCall(data, 'user_unauthorize', accountId);
+        if(result.operation_status === 'SUCCESS') {
+            localStorage.removeItem('spotfix_email');
+            localStorage.removeItem('spotfix_session_id');
+            localStorage.removeItem('spotfix_user_id');
+            localStorage.setItem('spotfix_widget_is_closed', '1');
+        }
+    }
+}
+
 const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, userId) => {
     const data = {
         session_id: sessionId,
