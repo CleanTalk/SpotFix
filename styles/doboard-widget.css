@@ -207,6 +207,7 @@
 
 .wrap_review {
     width: 164px;
+    min-width: 164px;
     height: 54px;
     top: -100px;
 }
@@ -223,7 +224,7 @@
 
 #review_content_button_text {
     color: #D5991A;
-    margin-left: 4px;
+    margin-left: 6px;
     font-weight: 600;
     font-size: 14px;
     text-transform: none !important;
