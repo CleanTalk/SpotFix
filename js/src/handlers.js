@@ -303,3 +303,11 @@ function checkLogInOutButtonsVisible (){
 		if(el) el.style.display = 'none';
 	}
 }
+
+function changeSize(container){
+	if(container && +localStorage.getItem('maximize')){
+		container.classList.add('doboard_task_widget-container-maximize');
+	} else if(container) {
+		container.classList.remove('doboard_task_widget-container-maximize');
+	}
+}

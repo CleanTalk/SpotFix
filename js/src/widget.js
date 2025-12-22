@@ -397,11 +397,7 @@ class CleanTalkWidgetDoboard {
                 });
                 break;
             case 'all_issues':
-                    if(container && +localStorage.getItem('maximize')){
-                        container.classList.add('doboard_task_widget-container-maximize');
-                    } else if(container) {
-                        container.classList.remove('doboard_task_widget-container-maximize');
-                    }
+                    changeSize(container);
 
                     spotFixRemoveHighlights();
                 let issuesQuantityOnPage = 0;
@@ -536,11 +532,7 @@ class CleanTalkWidgetDoboard {
 
                 break;
         case 'concrete_issue':
-            if(container && +localStorage.getItem('maximize')){
-                container.classList.add('doboard_task_widget-container-maximize');
-            } else if(container) {
-                container.classList.remove('doboard_task_widget-container-maximize');
-            }
+                changeSize(container);
                 tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId);
                 const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId);
                 // Update issue title in the interface
