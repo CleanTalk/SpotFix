@@ -13,15 +13,21 @@ class SpotFixTemplatesLoader {
 
     static all_issues() {
         return `
-<div class="doboard_task_widget-container">
+<div class="{{widgetContainerClases}}">
     <div class="doboard_task_widget-header">
         <div style="display: flex;align-items: center;gap: 8px;">
             <img src="{{logoDoBoardWhite}}"  alt="">
             <span>All spots </span>
         </div>
         <div>
+            <span id="addNewTaskButton">
+                <img src="{{iconPlus}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
             <span id="openUserMenuButton">
                 <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="maximizeWidgetContainer">
+                <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
         </div>
@@ -43,7 +49,7 @@ class SpotFixTemplatesLoader {
 
     static concrete_issue() {
         return `
-<div class="doboard_task_widget-container">
+<div class="{{widgetContainerClases}}">
     <div class="doboard_task_widget-header">
         <div class="doboard_task_widget_return_to_all doboard_task_widget_cursor-pointer">
             <img src="{{chevronBack}}" alt="" title="Return to all spots list">
@@ -51,13 +57,22 @@ class SpotFixTemplatesLoader {
         </div>
         <div class="doboard_task_widget-issue-title">{{issueTitle}}</div>
         <div>
+            <span id="addNewTaskButton">
+                <img src="{{iconPlus}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
             <span id="openUserMenuButton">
                 <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="maximizeWidgetContainer">
+                <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
         </div>
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-concrete_issue">
+        <div style="background-color: #D6DDE3; padding: 12px 16px">
+                <a rel="nofollow" href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
+        </div>
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
             <div class="doboard_task_widget-spinner_for_containers"></div>
         </div>
@@ -118,7 +133,7 @@ class SpotFixTemplatesLoader {
 
     static create_issue() {
         return `
-<div class="doboard_task_widget-container">
+<div class="{{widgetContainerClases}}">
     <div class="doboard_task_widget-header">
         <div style="display: flex;align-items: center;gap: 8px;">
             <img src="{{logoDoBoardWhite}}"  alt="">
@@ -127,6 +142,9 @@ class SpotFixTemplatesLoader {
         <div>
             <span id="openUserMenuButton">
                 <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="maximizeWidgetContainer">
+                <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
         </div>

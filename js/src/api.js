@@ -100,7 +100,7 @@ const userConfirmEmailDoboard = async (emailConfirmationToken) => {
 };
 
 const createTaskDoboard = async (sessionId, taskDetails) => {
-    const accountId = taskDetails.accountId
+    const accountId = taskDetails.accountId;
     const data = {
         session_id: sessionId,
         project_token: taskDetails.projectToken,

@@ -80,8 +80,17 @@
     cursor: pointer;
 }
 
+.doboard_task_widget-container-maximize {
+    width: 80vw !important;
+    max-width: 1120px !important;
+    max-height: calc(100vh - 40px);
+    display: flex;
+    flex-direction: column;
+    -moz-flex-direction: column;
+}
+
 .doboard_task_widget-container {
-    width: 400px;
+    width: 430px;
     max-height: calc(100vh - 40px);
     display: flex;
     flex-direction: column;
@@ -91,6 +100,9 @@
     @media (max-height: 800px) {
         .doboard_task_widget-container {
               max-height: calc(60vh - 40px);
+        }
+        .doboard_task_widget-container-maximize {
+            max-height: calc(60vh - 40px);
         }
     }
 
@@ -368,6 +380,7 @@
 .doboard_task_widget-submit_button {
     height: 48px;
     width: 100%;
+    max-width: 400px;
     margin-bottom: 10px;
     color: #FFFFFF;
     background: #22A475;
@@ -1093,7 +1106,22 @@
         max-height: 90vh;
     }
 
+    .doboard_task_widget-header {
+        padding: 8px;
+    }
+
+    .doboard_task_widget-issue-title {
+        max-width: 70px;
+    }
+
     .doboard_task_widget-container {
+        width: 100%;
+        max-width: 290px;
+        margin: 0 auto;
+        max-height: 90vh;
+    }
+
+    .doboard_task_widget-container-maximize {
         width: 100%;
         max-width: 290px;
         margin: 0 auto;
