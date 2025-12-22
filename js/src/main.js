@@ -11,6 +11,22 @@ if( document.readyState !== 'loading' ) {
 function spotFixInit() {
     new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
+    loadTinyMCE();
+}
+
+/**
+ * Downloads TinyMCE script from doboard.com
+ */
+function loadTinyMCE() {
+    const script = document.createElement('script');
+    script.src = 'https://doboard.com/tinymce/tinymce.min.js';
+    script.async = true;
+
+    script.onload = function() {
+       addIconPack();
+    };
+
+    document.head.appendChild(script);
 }
 
 document.addEventListener('selectionchange', function(e) {

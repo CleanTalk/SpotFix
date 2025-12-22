@@ -388,4 +388,70 @@ class FileUploader {
 
         return results;
     }
+
+     /**
+     * Make a screenshot and add it as a file
+     * @returns {Promise<void>}
+     */
+    async makeScreenshot() {
+        if (!navigator.mediaDevices?.getDisplayMedia) {
+            return null;
+        }
+
+        let stream;
+        try {
+            stream = await navigator.mediaDevices.getDisplayMedia({
+                video: { frameRate: 5 },
+                audio: false
+            });
+        } catch (err) {
+            return null;
+        }
+
+        const video = document.createElement('video');
+        video.srcObject = stream;
+
+        try {
+            await video.play();
+        } catch (err) {
+            return null;
+        }
+
+        await new Promise(r => setTimeout(r, 2000));
+
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        if (!canvas.width || !canvas.height) {
+            stream.getTracks().forEach(t => t.stop());
+            return null;
+        }
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        stream.getTracks().forEach(t => t.stop());
+
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        if (!blob) {
+            return null;
+        }
+
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const year = now.getFullYear();
+
+        const fileName = `Screenshot_${hours}:${minutes}_${day}_${month}_${year}.png`;
+
+        const file = new File([blob], fileName, {
+            type: 'image/png',
+            lastModified: Date.now()
+        });
+        this.addFile(file);
+    }
+
 }

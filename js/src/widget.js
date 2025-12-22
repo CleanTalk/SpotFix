@@ -349,6 +349,40 @@ class CleanTalkWidgetDoboard {
                 }
                 // bind creation events
                 this.bindCreateTaskEvents();
+
+                tinymce.init({
+                    selector: '#doboard_task_widget-description',
+                    plugins: 'link lists',
+                    menubar: false,
+                    statusbar: false,
+                    toolbar_location: 'bottom',
+                    toolbar: 'emoticons bullist numlist bold italic strikethrough underline blockquote',
+                    height: 120,
+                    icons: 'my_icon_pack',
+                    file_picker_types: 'file image media',
+                    setup: function (editor) {
+                        editor.on('change', function () {
+                            editor.save();
+                        });
+                        // editor.ui.registry.addButton('attachmentButton', {
+                        //     icon: 'paperclip',
+                        //     tooltip: 'Add file',
+                        //         disabled: true,
+                        //         onAction: (e) => {
+                        //          //  fileUploader?.fileInput?.click(e);
+                        //
+                        //         },
+                        //     });
+                        //     editor.ui.registry.addButton('screenshotButton', {
+                        //         icon: 'screenshot',
+                        //         tooltip: 'Screenshot',
+                        //         disabled: true,
+                        //         onAction: (e) => {
+                        //           // fileUploader?.makeScreenshot();
+                        //         },
+                        //     });
+                         }
+                    })
                 break;
             case 'wrap':
                 await this.getTaskCount();
@@ -580,7 +614,43 @@ class CleanTalkWidgetDoboard {
                     }
                     textarea.addEventListener('input', handleTextareaChange)
                     textarea.addEventListener('change', handleTextareaChange)
-                }
+
+                    const fileUploader = this.fileUploader;
+
+                    tinymce.init({
+                        selector: '.doboard_task_widget-send_message_input',
+                        plugins: 'link lists',
+                        menubar: false,
+                        statusbar: false,
+                        toolbar_location: 'bottom',
+                        toolbar: 'attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
+                        height: 120,
+                        icons: 'my_icon_pack',
+                        file_picker_types: 'file image media',
+                        setup: function (editor) {
+                            editor.on('change', function () {
+                                editor.save();
+                            });
+                            editor.ui.registry.addButton('attachmentButton', {
+                                icon: 'paperclip',
+                                tooltip: 'Add file',
+                                    disabled: true,
+                                    onAction: (e) => {
+                                       fileUploader?.fileInput?.click(e);
+
+                                    },
+                                });
+                                editor.ui.registry.addButton('screenshotButton', {
+                                    icon: 'screenshot',
+                                    tooltip: 'Screenshot',
+                                    disabled: true,
+                                    onAction: (e) => {
+                                       fileUploader?.makeScreenshot();
+                                    },
+                                });
+                            }
+                        });
+                    }
 
                 // Hide spinner preloader
                 hideContainersSpinner();

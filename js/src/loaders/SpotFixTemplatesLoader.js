@@ -54,21 +54,11 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-concrete_issues-container">
         </div>
         <div class="doboard_task_widget-send_message">
-            <div class="doboard_task_widget-send_message_elements_wrapper">
-                <button type="button" class="doboard_task_widget-send_message_paperclip">
-                    <img src="{{buttonPaperClip}}" alt="Attach a file">
-                    <div class="doboard_task_widget-paperclip-tooltip">
-                        Upload up to 5 JPG, PNG, GIF, PDF, TXT or DOC files (5MB each, 25MB total).
-                    </div>
-                </button>
-    
-                <div class="doboard_task_widget-send_message_input_wrapper">
-                    <textarea name="doboard_task_widget_message" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
-                </div>
-    
-                <button type="button" class="doboard_task_widget-send_message_button">
-                    <img src="{{buttonSendMessage}}" alt="Send message" title="Send message">
-                </button>
+             <textarea name="doboard_task_widget_message" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
+            <div>
+              <div class="doboard_task_widget-field">
+                <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button doboard_task_widget-send_message_button">Submit</button>
+            </div>
             </div>
             <div class="doboard_task_widget__file-upload__wrapper" id="doboard_task_widget__file-upload__wrapper">
                 <div class="doboard_task_widget__file-upload__list-header">Attached files</div>
@@ -131,8 +121,8 @@ class SpotFixTemplatesLoader {
         </div>
 
         <div class="doboard_task_widget-input-container">
-            <textarea id="doboard_task_widget-description" class="doboard_task_widget-field" name="description" required></textarea>
             <label for="doboard_task_widget-description">Description</label>
+            <textarea id="doboard_task_widget-description" class="doboard_task_widget-field" name="description" required></textarea>
         </div>
 
         <div class="doboard_task_widget-login">
