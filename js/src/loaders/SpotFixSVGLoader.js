@@ -27,7 +27,7 @@ class SpotFixSVGLoader {
     static chevronBack() {
         return `
 <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M7 13L1 7L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M7 13L1 7L7 1" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
     }
 
@@ -39,14 +39,6 @@ class SpotFixSVGLoader {
     }
 
     static buttonCloseScreen() {
-        return `
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M18 6L6 18" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6 6L18 18" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>`;
-    }
-
-    static buttonCloseScreenDark() {
         return `
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M18 6L6 18" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -77,12 +69,19 @@ class SpotFixSVGLoader {
 </svg>`;
     }
 
-    static logoDoBoardWhite() {
+    static logoDoBoardGreen() {
         return `
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M12.3435 1.87294e-10H0V24H7.04064H12.3435C27.8855 24 27.8855 -7.7417e-05 12.3435 1.87294e-10ZM7.04064 24C3.18002 24 0.0503678 20.7764 0.0503678 16.8C0.0503678 12.8236 3.18002 9.6 7.04064 9.6C10.9012 9.6 14.0309 12.8236 14.0309 16.8C14.0309 20.7764 10.9012 24 7.04064 24Z" fill="white"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M12.3435 1.87294e-10H0V24H7.04064H12.3435C27.8855 24 27.8855 -7.7417e-05 12.3435 1.87294e-10ZM7.04064 24C3.18002 24 0.0503678 20.7764 0.0503678 16.8C0.0503678 12.8236 3.18002 9.6 7.04064 9.6C10.9012 9.6 14.0309 12.8236 14.0309 16.8C14.0309 20.7764 10.9012 24 7.04064 24Z" fill="#1C7857"/>
 </svg>`;
     }
+
+//     static logoDoBoardWhite() {
+//         return `
+// <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+// <path fill-rule="evenodd" clip-rule="evenodd" d="M12.3435 1.87294e-10H0V24H7.04064H12.3435C27.8855 24 27.8855 -7.7417e-05 12.3435 1.87294e-10ZM7.04064 24C3.18002 24 0.0503678 20.7764 0.0503678 16.8C0.0503678 12.8236 3.18002 9.6 7.04064 9.6C10.9012 9.6 14.0309 12.8236 14.0309 16.8C14.0309 20.7764 10.9012 24 7.04064 24Z" fill="white"/>
+// </svg>`;
+//     }
 
     static logoDoBoardWrap() {
         return `
@@ -123,10 +122,10 @@ class SpotFixSVGLoader {
     }
 
     static iconEllipsesMore() {
-        return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M12 6C12.5523 6 13 5.55228 13 5C13 4.44772 12.5523 4 12 4C11.4477 4 11 4.44772 11 5C11 5.55228 11.4477 6 12 6Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M12 20C12.5523 20 13 19.5523 13 19C13 18.4477 12.5523 18 12 18C11.4477 18 11 18.4477 11 19C11 19.5523 11.4477 20 12 20Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        return `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 6C12.5523 6 13 5.55228 13 5C13 4.44772 12.5523 4 12 4C11.4477 4 11 4.44772 11 5C11 5.55228 11.4477 6 12 6Z" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 20C12.5523 20 13 19.5523 13 19C13 18.4477 12.5523 18 12 18C11.4477 18 11 18.4477 11 19C11 19.5523 11.4477 20 12 20Z" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
     }
 
@@ -163,19 +162,24 @@ class SpotFixSVGLoader {
 
     static iconPlus() {
         return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M11 4.58398V17.4173" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M4.58331 11H17.4166" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M11 4.58398V17.4173" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.58331 11H17.4166" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 `;
     }
 
     static iconMaximize() {
         return `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M13.75 2.75H19.25V8.25" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8.25 19.25H2.75V13.75" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M19.25 2.75L12.8333 9.16667" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M2.75 19.2507L9.16667 12.834" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M13.75 2.75H19.25V8.25" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.25 19.25H2.75V13.75" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M19.25 2.75L12.8333 9.16667" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M2.75 19.2507L9.16667 12.834" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 `;
+    }
+
+    static iconMarker() {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><image href="data:image/png;base64,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" 
+height="100%" width="100%"/></svg>`;
     }
 }

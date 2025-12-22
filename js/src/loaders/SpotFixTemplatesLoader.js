@@ -16,7 +16,7 @@ class SpotFixTemplatesLoader {
 <div class="doboard_task_widget-container">
     <div class="doboard_task_widget-header">
         <div style="display: flex;align-items: center;gap: 8px;">
-            <img src="{{logoDoBoardWhite}}"  alt="">
+            <img src="{{logoDoBoardGreen}}"  alt="">
             <span>All spots </span>
         </div>
         <div>
@@ -136,7 +136,7 @@ class SpotFixTemplatesLoader {
 <div class="doboard_task_widget-container">
     <div class="doboard_task_widget-header">
         <div style="display: flex;align-items: center;gap: 8px;">
-            <img src="{{logoDoBoardWhite}}"  alt="">
+            <img src="{{logoDoBoardGreen}}"  alt="">
             <span>Report an issue</span>
         </div>
         <div>
@@ -248,7 +248,7 @@ class SpotFixTemplatesLoader {
                 <span> Back</span>
             </div>
             <div>
-                <img src="{{buttonCloseScreenDark}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+                <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
             </div>
         </div>
         <div style="display: flex; flex-direction: column; align-items: center">
@@ -300,7 +300,7 @@ class SpotFixTemplatesLoader {
     static wrap() {
         return `
 <div class="doboard_task_widget-wrap">
-<img src="{{iconSpotWidgetWrapPencil}}" />
+<img src="{{iconMarker}}" />
 <!--    <img src="{{logoDoBoardWrap}}" alt="Doboard logo">-->
     <div id="doboard_task_widget-task_count" class="hidden"></div>
 </div>`;
@@ -309,7 +309,7 @@ class SpotFixTemplatesLoader {
     static wrap_review() {
         return `
 <button id="doboard_task_widget_button" class="doboard_task_widget-wrap wrap_review">
-<img src="{{iconSpotWidgetWrapPencil}}" />
+<img src="{{iconMarker}}" />
 <span id="review_content_button_text">Review content</span>
 </button>`;
     }
