@@ -185,11 +185,12 @@ const loginUserDoboard = async (email, password) => {
     }
 }
 
-const jogoutUserDoboard = async (accountId) => {
+const jogoutUserDoboard = async (accountId, projectToken) => {
     const sessionId = localStorage.getItem('spotfix_session_id');
     if(sessionId && accountId) {
         const data = {
             session_id: sessionId,
+            project_token: projectToken
         };
 
         const result = await spotfixApiCall(data, 'user_unauthorize', accountId);

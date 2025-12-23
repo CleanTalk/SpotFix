@@ -283,7 +283,7 @@ function setToggleStatus(rootElement){
 	const clickHandler = () => {
 		const timer = setTimeout(() => {
 			localStorage.setItem('spotfix_widget_is_closed', '1');
-			rootElement.hide();
+			rootElement.hide(true);
 			clearTimeout(timer);
 		}, 300);
 	};
