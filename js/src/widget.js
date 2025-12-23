@@ -316,7 +316,7 @@ class CleanTalkWidgetDoboard {
                     chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
                     buttonCloseScreenDark: SpotFixSVGLoader.getAsDataURI('buttonCloseScreenDark'),
                     userName: 'Guest',
-                    email: '',
+                    email: localStorage.getItem('spotfix_email') || '',
                     ...this.srcVariables};
                 break;
             case 'concrete_issue':
@@ -507,7 +507,7 @@ class CleanTalkWidgetDoboard {
 
                 if(user){
                     templateVariables.userName = user.name || 'Guest';
-                    templateVariables.email = user.email || '';
+                    templateVariables.email = user.email || localStorage.getItem('spotfix_email') || '';
                     if(user?.avatar?.s) templateVariables.avatar = user?.avatar?.s;
                 }
 

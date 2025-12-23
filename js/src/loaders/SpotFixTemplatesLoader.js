@@ -242,7 +242,7 @@ class SpotFixTemplatesLoader {
              </span>
         </div>
     </div>
-    <div class="doboard_task_widget-content">
+    <div class="doboard_task_widget-content" style="min-height:200px ">
         <div style="height: 392px">
         <div style="position: sticky; top: 0">
             <div class="doboard_task_widget-user_menu-item">
