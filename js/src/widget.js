@@ -280,6 +280,15 @@ class CleanTalkWidgetDoboard {
 
         let templateVariables = {};
 
+        const config = window.SpotfixWidgetConfig;
+        const position = {
+            compact: '0vh',
+            short: '20vh',
+            regular: '45vh',
+            tall: '60vh',
+            extra: '85vh',
+        };
+
         switch (type) {
             case 'create_issue':
                 templateName = 'create_issue';
@@ -298,12 +307,13 @@ class CleanTalkWidgetDoboard {
                 if (storageGetWidgetIsClosed()) {
                     return;
                 }
+
                 templateName = 'wrap';
-                templateVariables = {...this.srcVariables};
+                templateVariables = {position: position[config?.verticalPosition] || position.compact, ...this.srcVariables};
                 break;
             case 'wrap_review':
                 templateName = 'wrap_review';
-                templateVariables = {...this.srcVariables};
+                templateVariables = {position: position[config?.verticalPosition] || position.compact, ...this.srcVariables};
                 break;
             case 'all_issues':
                 templateName = 'all_issues';

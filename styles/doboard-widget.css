@@ -180,7 +180,6 @@
 .doboard_task_widget-wrap {
     box-shadow: none;
     position: fixed;
-    top: -80px;
     right: -50px;
     padding: 0;
     cursor: pointer;
