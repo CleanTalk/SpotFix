@@ -1164,10 +1164,14 @@
 }
 
 .doboard_task_widget-content .tox .tox-toolbar__group {
-    padding: 0 8px !important
+    padding: 0 8px !important;
 }
 
 .doboard_task_widget-content .tox-tinymce {
     border: 1px solid #BBC7D1;
     border-radius: 4px;
+}
+
+ .doboard_task_widget-content ul, .doboard_task_widget-content ol {
+    margin: 0 0 0 1em !important;
 }
