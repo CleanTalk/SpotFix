@@ -221,6 +221,12 @@
     background-color: rgb(255, 255, 255);
 }
 
+@media (max-width: 480px) {
+    .doboard_task_widget-wrap {
+        right: -20px;
+    }
+}
+
 #review_content_button_text {
     color: #D5991A;
     margin-left: 6px;
