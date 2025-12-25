@@ -194,10 +194,7 @@ const logoutUserDoboard = async (accountId) => {
 
         const result = await spotfixApiCall(data, 'user_unauthorize', accountId);
         if(result.operation_status === 'SUCCESS') {
-            localStorage.removeItem('spotfix_email');
-            localStorage.removeItem('spotfix_session_id');
-            localStorage.removeItem('spotfix_user_id');
-            localStorage.setItem('spotfix_widget_is_closed', '1');
+            clearLocalstorageOnLogout();
         }
     }
 }
@@ -303,7 +300,7 @@ const getReleaseVersion = async () => {
         const data = await res.json();
 
         if (data.length > 0 && data[0].tag_name) {
-            localStorage.setItem('spotfix_app_version', data[0].tag_name);
+            storageSaveSpotfixVersion(data[0].tag_name);
             return data[0].tag_name;
         }
 

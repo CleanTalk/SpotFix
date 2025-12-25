@@ -212,7 +212,7 @@ class CleanTalkWidgetDoboard {
                     projectToken: this.params.projectToken,
                     projectId: this.params.projectId,
                     accountId: this.params.accountId,
-                    taskMeta: JSON.stringify(this.selectedData ? this.selectedData : {pageURL:"http://localhost/"}),
+                    taskMeta: JSON.stringify(this.selectedData ? this.selectedData : { pageURL: window.location.href }),
                 };
 
                 if ( userEmail ) {
@@ -768,12 +768,6 @@ class CleanTalkWidgetDoboard {
         document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {
             this.createWidgetElement(this.type_name)
         }) || '';
-
-        // document.querySelector('#doboard_task_widget-task_count')?.addEventListener('click', () => {
-        //     const widget = document.querySelector('.doboard_task_widget-wrap');
-        //     widget.classList.add('hidden');
-        //     storageSetWidgetIsClosed(true);
-        // }) || '';
 
         return widgetContainer;
     }
