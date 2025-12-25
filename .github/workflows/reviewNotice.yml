@@ -17,7 +17,7 @@ jobs:
         uses: Glomberg/matrix-messenger-action@master
         with:
           server: ${{ secrets.MATRIX_SERVER }}
-          to: ${{ secrets.MATRIX_EXTERNSION_ROOM }}
+          to: ${{ secrets.MATRIX_SPOTFIX_ROOM }}
           token: ${{ secrets.MATRIX_USER_TOKEN }}
           message: |
             💥🎉🎉🎉💥 Pull-request <a href="${{ github.event.pull_request.html_url }}"><strong>${{ github.event.pull_request.title }}</strong></a> 
