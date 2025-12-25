@@ -185,7 +185,7 @@ const loginUserDoboard = async (email, password) => {
     }
 }
 
-const jogoutUserDoboard = async (accountId, projectToken) => {
+const logoutUserDoboard = async (accountId, projectToken) => {
     const sessionId = localStorage.getItem('spotfix_session_id');
     if(sessionId && accountId) {
         const data = {

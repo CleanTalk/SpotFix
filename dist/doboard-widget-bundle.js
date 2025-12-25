@@ -185,7 +185,7 @@ const loginUserDoboard = async (email, password) => {
     }
 }
 
-const jogoutUserDoboard = async (accountId, projectToken) => {
+const logoutUserDoboard = async (accountId, projectToken) => {
     const sessionId = localStorage.getItem('spotfix_session_id');
     if(sessionId && accountId) {
         const data = {
@@ -1331,7 +1331,7 @@ class CleanTalkWidgetDoboard {
         }) || '';
 
         document.querySelector('#doboard_task_widget-user_menu-logout_button')?.addEventListener('click', () => {
-            jogoutUserDoboard(this.params.accountId, this.params.projectToken).then(() => this.hide());
+            logoutUserDoboard(this.params.accountId, this.params.projectToken).then(() => this.hide());
 
         }) || '';
 

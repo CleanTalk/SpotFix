@@ -708,7 +708,7 @@ class CleanTalkWidgetDoboard {
         }) || '';
 
         document.querySelector('#doboard_task_widget-user_menu-logout_button')?.addEventListener('click', () => {
-            jogoutUserDoboard(this.params.accountId, this.params.projectToken).then(() => this.hide());
+            logoutUserDoboard(this.params.accountId, this.params.projectToken).then(() => this.hide());
 
         }) || '';
 
