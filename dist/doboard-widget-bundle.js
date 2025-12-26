@@ -605,15 +605,17 @@ function setToggleStatus(rootElement){
 		}, 300);
 	};
 	const toggle = document.getElementById('widget_visibility');
-	toggle.checked = true;
-	toggle.addEventListener('click', clickHandler);
+	if(toggle) {
+		toggle.checked = true;
+		toggle.addEventListener('click', clickHandler);
+	}
 }
 
 function checkLogInOutButtonsVisible (){
 	if(!localStorage.getItem('spotfix_session_id')) {
 		const el = document
 			.getElementById('doboard_task_widget-user_menu-logout_button')
-			.closest('.doboard_task_widget-user_menu-item');
+			?.closest('.doboard_task_widget-user_menu-item');
 			if(el) el.style.display = 'none';
 	} else {
 		const el = document.getElementById('doboard_task_widget-user_menu-signlog_button');
@@ -1342,12 +1344,6 @@ class CleanTalkWidgetDoboard {
         document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {
             this.createWidgetElement(this.type_name)
         }) || '';
-
-        // document.querySelector('#doboard_task_widget-task_count')?.addEventListener('click', () => {
-        //     const widget = document.querySelector('.doboard_task_widget-wrap');
-        //     widget.classList.add('hidden');
-        //     storageSetWidgetIsClosed(true);
-        // }) || '';
 
         return widgetContainer;
     }

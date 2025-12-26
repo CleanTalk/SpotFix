@@ -720,12 +720,6 @@ class CleanTalkWidgetDoboard {
             this.createWidgetElement(this.type_name)
         }) || '';
 
-        // document.querySelector('#doboard_task_widget-task_count')?.addEventListener('click', () => {
-        //     const widget = document.querySelector('.doboard_task_widget-wrap');
-        //     widget.classList.add('hidden');
-        //     storageSetWidgetIsClosed(true);
-        // }) || '';
-
         return widgetContainer;
     }
 
