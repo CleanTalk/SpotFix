@@ -100,7 +100,7 @@ const userConfirmEmailDoboard = async (emailConfirmationToken) => {
 };
 
 const createTaskDoboard = async (sessionId, taskDetails) => {
-    const accountId = taskDetails.accountId
+    const accountId = taskDetails.accountId;
     const data = {
         session_id: sessionId,
         project_token: taskDetails.projectToken,
@@ -185,6 +185,20 @@ const loginUserDoboard = async (email, password) => {
     }
 }
 
+const logoutUserDoboard = async (accountId) => {
+    const sessionId = localStorage.getItem('spotfix_session_id');
+    if(sessionId && accountId) {
+        const data = {
+            session_id: sessionId,
+        };
+
+        const result = await spotfixApiCall(data, 'user_unauthorize', accountId);
+        if(result.operation_status === 'SUCCESS') {
+            clearLocalstorageOnLogout();
+        }
+    }
+}
+
 const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, userId) => {
     const data = {
         session_id: sessionId,
@@ -230,11 +244,13 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, statu
     }));
 };
 
-const getUserDoboard = async (sessionId, projectToken, accountId) => {
+const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
     const data = {
         session_id: sessionId,
         project_token: projectToken,
     }
+    if (userId) data.user_id = userId;
+
     const result = await spotfixApiCall(data, 'user_get', accountId);
     return result.users;
 
@@ -277,3 +293,20 @@ const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, tim
         success: true
     };
 }
+
+const getReleaseVersion = async () => {
+    try {
+        const res = await fetch('https://api.github.com/repos/CleanTalk/SpotFix/releases');
+        const data = await res.json();
+
+        if (data.length > 0 && data[0].tag_name) {
+            storageSaveSpotfixVersion(data[0].tag_name);
+            return data[0].tag_name;
+        }
+
+        return null;
+    } catch (err) {
+        return null;
+    }
+};
+
