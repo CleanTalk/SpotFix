@@ -36,17 +36,28 @@ async function confirmUserEmail(emailConfirmationToken, params) {
 	return createdTask;
 }
 
-async function getTasksFullDetails(params, tasks) {
+async function getTasksFullDetails(params, tasks, currentActiveTaskId) {
     if (tasks.length > 0) {
         const sessionId = localStorage.getItem('spotfix_session_id');
         const comments = await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken);
         const users = await getUserDoboard(sessionId, params.projectToken, params.accountId);
+		const foundTask = tasks.find(item => +item.taskId === +currentActiveTaskId);
 
         return {
             comments: comments,
             users: users,
+			taskStatus: foundTask?.taskStatus,
         };
     }
+}
+
+async function getUserDetails(params) {
+		const sessionId = localStorage.getItem('spotfix_session_id');
+		const currentUserId = localStorage.getItem('spotfix_user_id');
+		if(currentUserId) {
+			const users = await getUserDoboard(sessionId, params.projectToken, params.accountId, currentUserId);
+			return users[0] || {};
+		}
 }
 
 async function handleCreateTask(sessionId, taskDetails) {
@@ -246,18 +257,59 @@ function userUpdate(projectToken, accountId) {
 }
 
 function spotFixSplitUrl(url) {
-	const u = new URL(url);
-	const domain = u.host;
+	try {
+		if (!url || url.trim() === '') {
+			return '';
+		}
+		const u = new URL(url);
+		const domain = u.host;
 
-	const segments = u.pathname.split('/').filter(Boolean);
+		const segments = u.pathname.split('/').filter(Boolean);
 
-	if (segments.length === 0) {
-		return domain;
+		if (segments.length === 0) {
+			return domain;
+		}
+
+		const reversed = segments.reverse();
+		reversed.push(domain);
+		return reversed.join(' / ');
+	} catch (error) {
+		return '';
 	}
 
-	const reversed = segments.reverse();
-	reversed.push(domain);
-
-	return reversed.join(' / ');
 }
 
+function setToggleStatus(rootElement){
+	const clickHandler = () => {
+		const timer = setTimeout(() => {
+			localStorage.setItem('spotfix_widget_is_closed', '1');
+			rootElement.hide();
+			clearTimeout(timer);
+		}, 300);
+	};
+	const toggle = document.getElementById('widget_visibility');
+	if(toggle) {
+		toggle.checked = true;
+		toggle.addEventListener('click', clickHandler);
+	}
+}
+
+function checkLogInOutButtonsVisible (){
+	if(!localStorage.getItem('spotfix_session_id')) {
+		const el = document
+			.getElementById('doboard_task_widget-user_menu-logout_button')
+			?.closest('.doboard_task_widget-user_menu-item');
+			if(el) el.style.display = 'none';
+	} else {
+		const el = document.getElementById('doboard_task_widget-user_menu-signlog_button');
+		if(el) el.style.display = 'none';
+	}
+}
+
+function changeSize(container){
+	if(container && +localStorage.getItem('maximize')){
+		container.classList.add('doboard_task_widget-container-maximize');
+	} else if(container) {
+		container.classList.remove('doboard_task_widget-container-maximize');
+	}
+}
