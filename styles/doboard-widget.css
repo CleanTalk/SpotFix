@@ -56,6 +56,10 @@
     margin: 0;
 }
 
+.doboard_task_widget-header-icons {
+    display: flex;
+}
+
 .doboard_task_widget a {
     text-decoration: underline;
     color: #2F68B7;
