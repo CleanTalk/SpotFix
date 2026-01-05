@@ -136,7 +136,7 @@ function hideContainersSpinner() {
 
 function getTaskFullDetails(tasksDetails, taskId) {
     const comments = tasksDetails.comments.filter(comment => {
-        return comment.taskId.toString() === taskId.toString()
+        return comment?.taskId?.toString() === taskId?.toString()
     });
     const users = tasksDetails.users;
     // Last comment

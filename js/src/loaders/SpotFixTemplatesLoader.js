@@ -16,10 +16,21 @@ class SpotFixTemplatesLoader {
 <div class="doboard_task_widget-container">
     <div class="doboard_task_widget-header">
         <div style="display: flex;align-items: center;gap: 8px;">
-            <img src="{{logoDoBoardWhite}}"  alt="">
+            <img src="{{logoDoBoardGreen}}"  alt="">
             <span>All spots </span>
         </div>
-        <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        <div>
+            <span id="addNewTaskButton">
+                <img src="{{iconPlus}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="openUserMenuButton">
+                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="maximizeWidgetContainer">
+                <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        </div>
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-all_issues">
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
@@ -29,7 +40,7 @@ class SpotFixTemplatesLoader {
         </div>
         <div class="doboard_task_widget_tasks_list">
             <a rel="nofollow" target="_blank" href="https://doboard.com/spotfix">
-            SpotFix
+             doBoard / SpotFix
             </a>
         </div>
     </div>
@@ -38,16 +49,30 @@ class SpotFixTemplatesLoader {
 
     static concrete_issue() {
         return `
-<div class="doboard_task_widget-container">
+<div class="{{contenerClasess}}">
     <div class="doboard_task_widget-header">
         <div class="doboard_task_widget_return_to_all doboard_task_widget_cursor-pointer">
             <img src="{{chevronBack}}" alt="" title="Return to all spots list">
             <span title="Return to all spots list"> All {{issuesCounter}}</span>
         </div>
         <div class="doboard_task_widget-issue-title">{{issueTitle}}</div>
-        <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        <div>
+            <span id="addNewTaskButton">
+                <img src="{{iconPlus}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="openUserMenuButton">
+                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="maximizeWidgetContainer">
+                <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        </div>
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-concrete_issue">
+        <div style="background-color: #D6DDE3; padding: 12px 16px">
+                <a rel="nofollow" href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
+        </div>
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
             <div class="doboard_task_widget-spinner_for_containers"></div>
         </div>
@@ -101,17 +126,25 @@ class SpotFixTemplatesLoader {
 <div class="doboard_task_widget-container">
     <div class="doboard_task_widget-header">
         <div style="display: flex;align-items: center;gap: 8px;">
-            <img src="{{logoDoBoardWhite}}"  alt="">
+            <img src="{{logoDoBoardGreen}}"  alt="">
             <span>Report an issue</span>
         </div>
-        <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        <div>
+            <span id="openUserMenuButton">
+                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="maximizeWidgetContainer">
+                <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        </div>
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-create_issue">
 
         <div class="doboard_task_widget-element-container">
             <span>
-                If you found issue with <span style="color: #000000;">{{currentDomain}}</span> page, you are in right place. Please use this form to tell us about the issue you’re experiencing.
-                <a href="https://doboard.com" target="_blank">doboard.com</a>
+                Tell us about any issue you’re experiencing on <span style="color: #000000;">{{currentDomain}}</span>. 
+                You’re also welcome to review spelling, grammar, or ask a question related to this page.
             </span>
         </div>
 
@@ -194,10 +227,70 @@ class SpotFixTemplatesLoader {
 `;
     }
 
+    static user_menu() {
+        return `
+<div class="doboard_task_widget-container">
+    <div class="doboard_task_widget-user_menu-header">
+        <div class="doboard_task_widget-user_menu-header-top">
+            <div id="spotfix_back_button" class="doboard_task_widget_cursor-pointer" 
+            style="display: flex;align-items: center;gap: 8px;">
+                <img src="{{chevronBackDark}}" alt="">
+                <span> Back</span>
+            </div>
+            <div>
+                <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center">
+             <img class="doboard_task_widget-user_menu-header-avatar" src="{{avatar}}" alt="">
+             <span style="font-size: 16px; font-weight: 700">{{userName}}</span>
+             <span style="font-size: 12px;">{{email}}</span>
+             <span id="doboard_task_widget-user_menu-signlog_button">
+                 <a style="cursor: pointer" rel="nofollow" target="_blank">Sign up or Log in</a>
+             </span>
+        </div>
+    </div>
+    <div class="doboard_task_widget-content" style="min-height:200px ">
+        <div style="height: 392px">
+        <div style="position: sticky; top: 0">
+            <div class="doboard_task_widget-user_menu-item">
+                <img src="{{iconEye}}" alt="" style="margin-right: 12px">
+                <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
+                    <span style="display: inline-flex; flex-direction: column">
+                        <span style="font-weight: 500; font-size: 14px; color: #252A2F">
+                        Show widget on my screen</span>
+                        <span style="font-size: 10px; color: #40484F">
+                        The widget will be visible again if you select any text on the site</span>
+                    </span>
+                    <label class="toggle" style="margin-left: 8px">
+                      <input id="widget_visibility" type="checkbox">
+                      <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="doboard_task_widget-user_menu-item">
+                <span id="doboard_task_widget-user_menu-logout_button">
+                    <img src="{{iconDoor}}" alt="" style="margin-right: 12px; cursor: pointer">
+                    <span class="logout_button">Log out</span>
+                </span>
+            </div>
+        </div>
+        </div>
+        <div style="padding: 16px; font-size: 13px; position: sticky; bottom: 0">
+            <span>{{spotfixVersion}}</span>
+            <span>Powered by
+            <a rel="nofollow" target="_blank" href="https://doboard.com">
+             doBoard
+            </a></span>
+        </div>
+    </div>
+</div>`;
+    }
+
     static wrap() {
         return `
-<div class="doboard_task_widget-wrap">
-<img src="{{iconSpotWidgetWrapPencil}}" />
+<div class="doboard_task_widget-wrap" style="bottom: {{position}}">
+<img src="{{iconMarker}}" />
 <!--    <img src="{{logoDoBoardWrap}}" alt="Doboard logo">-->
     <div id="doboard_task_widget-task_count" class="hidden"></div>
 </div>`;
@@ -205,8 +298,8 @@ class SpotFixTemplatesLoader {
 
     static wrap_review() {
         return `
-<button id="doboard_task_widget_button" class="doboard_task_widget-wrap wrap_review">
-<img src="{{iconSpotWidgetWrapPencil}}" />
+<button id="doboard_task_widget_button" class="doboard_task_widget-wrap wrap_review" style="bottom: {{position}};">
+<img src="{{iconMarker}}" />
 <span id="review_content_button_text">Review content</span>
 </button>`;
     }

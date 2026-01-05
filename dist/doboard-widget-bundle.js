@@ -100,7 +100,7 @@ const userConfirmEmailDoboard = async (emailConfirmationToken) => {
 };
 
 const createTaskDoboard = async (sessionId, taskDetails) => {
-    const accountId = taskDetails.accountId
+    const accountId = taskDetails.accountId;
     const data = {
         session_id: sessionId,
         project_token: taskDetails.projectToken,
@@ -185,6 +185,20 @@ const loginUserDoboard = async (email, password) => {
     }
 }
 
+const logoutUserDoboard = async (accountId) => {
+    const sessionId = localStorage.getItem('spotfix_session_id');
+    if(sessionId && accountId) {
+        const data = {
+            session_id: sessionId,
+        };
+
+        const result = await spotfixApiCall(data, 'user_unauthorize', accountId);
+        if(result.operation_status === 'SUCCESS') {
+            clearLocalstorageOnLogout();
+        }
+    }
+}
+
 const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, userId) => {
     const data = {
         session_id: sessionId,
@@ -230,11 +244,13 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, statu
     }));
 };
 
-const getUserDoboard = async (sessionId, projectToken, accountId) => {
+const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
     const data = {
         session_id: sessionId,
         project_token: projectToken,
     }
+    if (userId) data.user_id = userId;
+
     const result = await spotfixApiCall(data, 'user_get', accountId);
     return result.users;
 
@@ -277,6 +293,23 @@ const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, tim
         success: true
     };
 }
+
+const getReleaseVersion = async () => {
+    try {
+        const res = await fetch('https://api.github.com/repos/CleanTalk/SpotFix/releases');
+        const data = await res.json();
+
+        if (data.length > 0 && data[0].tag_name) {
+            storageSaveSpotfixVersion(data[0].tag_name);
+            return data[0].tag_name;
+        }
+
+        return null;
+    } catch (err) {
+        return null;
+    }
+};
+
 
 async function confirmUserEmail(emailConfirmationToken, params) {
 	const result = await userConfirmEmailDoboard(emailConfirmationToken);
@@ -329,6 +362,15 @@ async function getTasksFullDetails(params, tasks, currentActiveTaskId) {
 			taskStatus: foundTask?.taskStatus,
         };
     }
+}
+
+async function getUserDetails(params) {
+		const sessionId = localStorage.getItem('spotfix_session_id');
+		const currentUserId = localStorage.getItem('spotfix_user_id');
+		if(currentUserId) {
+			const users = await getUserDoboard(sessionId, params.projectToken, params.accountId, currentUserId);
+			return users[0] || {};
+		}
 }
 
 async function handleCreateTask(sessionId, taskDetails) {
@@ -529,6 +571,9 @@ function userUpdate(projectToken, accountId) {
 
 function spotFixSplitUrl(url) {
 	try {
+		if (!url || url.trim() === '') {
+			return '';
+		}
 		const u = new URL(url);
 		const domain = u.host;
 
@@ -547,65 +592,41 @@ function spotFixSplitUrl(url) {
 
 }
 
-function addIconPack() {
-
-	if (tinymce?.IconManager) {
-		tinymce.IconManager.add("my_icon_pack", {
-			icons: {
-				'paperclip': '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">\n' +
-					'<path d="M14.4648 0.522461C15.6367 0.522493 16.7612 0.987773 17.5898 1.81641C18.4185 2.64507 18.8838 3.76952 18.8838 4.94141C18.8837 6.11309 18.4183 7.23685 17.5898 8.06543L9.15625 16.4902C8.6717 16.9747 8.01428 17.247 7.3291 17.2471C6.64372 17.2471 5.98563 16.9749 5.50098 16.4902C5.01634 16.0056 4.74414 15.3475 4.74414 14.6621C4.74422 13.9769 5.01652 13.3195 5.50098 12.835L13.2842 5.06152C13.5771 4.76897 14.052 4.7688 14.3447 5.06152C14.6374 5.35457 14.6377 5.83034 14.3447 6.12305L6.5625 13.8955C6.35922 14.0988 6.24422 14.3746 6.24414 14.6621C6.24414 14.9497 6.35916 15.2254 6.5625 15.4287C6.76585 15.632 7.04154 15.7471 7.3291 15.7471C7.61656 15.747 7.89243 15.632 8.0957 15.4287L16.5293 7.00488L16.7227 6.79102C17.1482 6.27169 17.3837 5.61868 17.3838 4.94141C17.3838 4.16735 17.0766 3.42431 16.5293 2.87695C15.982 2.32963 15.2389 2.02249 14.4648 2.02246C13.691 2.02253 12.9486 2.32984 12.4014 2.87695L3.97754 11.3018C3.08624 12.1931 2.58504 13.4016 2.58496 14.6621C2.58496 15.9227 3.08617 17.1321 3.97754 18.0234C4.86885 18.9146 6.0775 19.415 7.33789 19.415C8.59844 19.415 9.80788 18.9148 10.6992 18.0234L19.123 9.59961C19.4159 9.30678 19.8907 9.30674 20.1836 9.59961C20.4763 9.8925 20.4764 10.3673 20.1836 10.6602L11.7598 19.084C10.5871 20.2566 8.99626 20.915 7.33789 20.915C5.67955 20.915 4.08866 20.2566 2.91602 19.084C1.74348 17.9113 1.08496 16.3204 1.08496 14.6621C1.08504 13.004 1.74366 11.4138 2.91602 10.2412L11.3408 1.81641C12.1694 0.987987 13.2932 0.52253 14.4648 0.522461Z" fill="#707A83"/>\n' +
-					'</svg>',
-				'ordered-list': '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">\n' +
-					'<path d="M3.20117 15.0879C3.36239 15.0879 3.50533 15.1152 3.62891 15.1699C3.75311 15.2246 3.84938 15.3007 3.91895 15.3965C3.98914 15.4915 4.02406 15.6 4.02344 15.7227C4.02486 15.8447 3.98351 15.9453 3.89844 16.0234C3.81392 16.1016 3.70614 16.1479 3.57617 16.1621V16.1787C3.75221 16.1979 3.88486 16.2521 3.97363 16.3408C4.06241 16.4289 4.10591 16.5403 4.10449 16.6738C4.10511 16.8015 4.06658 16.9151 3.98926 17.0137C3.91259 17.1121 3.80577 17.1891 3.66895 17.2451C3.53262 17.3012 3.37547 17.3301 3.19727 17.3301C3.02548 17.3301 2.87273 17.3001 2.73926 17.2412C2.60645 17.1816 2.50178 17.0995 2.42578 16.9951C2.34979 16.8907 2.31126 16.7704 2.31055 16.6348H2.90723C2.90794 16.6766 2.92051 16.7147 2.94531 16.748C2.9708 16.7806 3.00596 16.8058 3.0498 16.8242C3.09379 16.8427 3.14444 16.8525 3.20117 16.8525C3.25586 16.8525 3.30478 16.8424 3.34668 16.8232C3.38835 16.8034 3.42099 16.7759 3.44434 16.7412C3.46765 16.7065 3.47922 16.6667 3.47852 16.6221C3.47919 16.5781 3.46516 16.5389 3.4375 16.5049C3.41056 16.471 3.373 16.4439 3.32422 16.4248C3.27521 16.4056 3.21822 16.3965 3.1543 16.3965H2.93262V15.9873H3.1543C3.213 15.9873 3.26495 15.978 3.30957 15.959C3.35485 15.9399 3.3902 15.9128 3.41504 15.8789C3.44055 15.8449 3.45378 15.8056 3.45312 15.7617C3.45384 15.7191 3.44318 15.6811 3.42188 15.6484C3.40057 15.6158 3.37036 15.5907 3.33203 15.5723C3.29442 15.5538 3.25083 15.5439 3.20117 15.5439C3.14728 15.544 3.0992 15.5541 3.05664 15.5732C3.01479 15.5924 2.98117 15.6183 2.95703 15.6523C2.93296 15.6863 2.92071 15.7257 2.91992 15.7695H2.35352C2.3543 15.6362 2.39053 15.5182 2.46289 15.416C2.53604 15.3138 2.63657 15.234 2.76367 15.1758C2.89074 15.1176 3.03649 15.0879 3.20117 15.0879Z" fill="#707A83"/>\n' +
-					'<path d="M19.25 15.75C19.6641 15.7502 20 16.0859 20 16.5C20 16.9141 19.6641 17.2498 19.25 17.25H7.33301C6.91896 17.2498 6.58301 16.9141 6.58301 16.5C6.58301 16.0859 6.91896 15.7502 7.33301 15.75H19.25Z" fill="#707A83"/>\n' +
-					'<path d="M3.13965 9.58789C3.31434 9.5879 3.46593 9.61577 3.59375 9.67188C3.72211 9.72721 3.82106 9.80558 3.89062 9.90625C3.96094 10.0071 3.99609 10.1261 3.99609 10.2617C3.99606 10.3454 3.97904 10.4288 3.94434 10.5117C3.90959 10.594 3.84681 10.6852 3.75684 10.7852C3.66666 10.8853 3.53819 11.0051 3.37207 11.1436L3.16699 11.3145V11.3271H4.01953V11.7998H2.34473V11.374L3.15918 10.7002C3.21301 10.6556 3.2586 10.6132 3.29688 10.5742C3.33592 10.5345 3.36613 10.494 3.38672 10.4521C3.40803 10.4102 3.41895 10.3636 3.41895 10.3125C3.41893 10.2566 3.40684 10.2086 3.38281 10.1689C3.35938 10.1292 3.32608 10.0985 3.28418 10.0771C3.24235 10.0552 3.19421 10.044 3.13965 10.0439C3.0851 10.0439 3.03694 10.0552 2.99512 10.0771C2.95394 10.0992 2.92116 10.1312 2.89844 10.1738C2.87571 10.2164 2.86426 10.269 2.86426 10.3301H2.30176C2.30176 10.1768 2.33651 10.0443 2.40527 9.93359C2.47413 9.82286 2.57165 9.73739 2.69727 9.67773C2.82298 9.61808 2.97061 9.58789 3.13965 9.58789Z" fill="#707A83"/>\n' +
-					'<path d="M19.25 10.25C19.6641 10.2502 20 10.5859 20 11C20 11.4141 19.6641 11.7498 19.25 11.75H7.33301C6.91896 11.7498 6.58301 11.4141 6.58301 11C6.58301 10.5859 6.91896 10.2502 7.33301 10.25H19.25Z" fill="#707A83"/>\n' +
-					'<path d="M3.41406 6.2998H2.82227V4.66309H2.80957L2.33203 4.94922V4.44629L2.86914 4.11816H3.41406V6.2998Z" fill="#707A83"/>\n' +
-					'<path d="M19.25 4.75C19.6641 4.75018 20 5.0859 20 5.5C20 5.9141 19.6641 6.24982 19.25 6.25H7.33301C6.91896 6.2498 6.58301 5.91409 6.58301 5.5C6.58301 5.08591 6.91896 4.7502 7.33301 4.75H19.25Z" fill="#707A83"/>\n' +
-					'</svg>',
-				'screenshot': '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">\n' +
-					'<path fill-rule="evenodd" clip-rule="evenodd" d="M14.667 13C15.352 13.0001 16.0088 13.2724 16.4932 13.7568C16.9776 14.2412 17.2499 14.898 17.25 15.583C17.25 16.2682 16.9776 16.9257 16.4932 17.4102C16.0088 17.8944 15.3519 18.1669 14.667 18.167C13.9818 18.167 13.3243 17.8946 12.8398 17.4102C12.3554 16.9257 12.083 16.2682 12.083 15.583C12.0831 14.8981 12.3556 14.2412 12.8398 13.7568C13.3243 13.2724 13.9818 13 14.667 13ZM14.667 14.5C14.3797 14.5 14.1036 14.6142 13.9004 14.8174C13.6974 15.0205 13.5831 15.2959 13.583 15.583C13.583 15.8703 13.6972 16.1464 13.9004 16.3496C14.1036 16.5528 14.3797 16.667 14.667 16.667C14.9541 16.6669 15.2295 16.5526 15.4326 16.3496C15.6358 16.1464 15.75 15.8703 15.75 15.583C15.7499 15.2958 15.6357 15.0205 15.4326 14.8174C15.2295 14.6143 14.9542 14.5001 14.667 14.5Z" fill="#707A83"/>\n' +
-					'<path fill-rule="evenodd" clip-rule="evenodd" d="M16.4551 9.34277C16.562 9.35633 16.6673 9.38342 16.7676 9.42285L16.915 9.49219L17.0518 9.57812C17.1393 9.6412 17.2188 9.71518 17.2881 9.79785L17.3848 9.92871L18.6504 11.8945H19.6172C19.745 11.8946 19.8722 11.9132 19.9941 11.9502L20.1143 11.9932L20.2295 12.0479C20.3045 12.088 20.3756 12.1355 20.4414 12.1895L20.5361 12.2754L20.6221 12.3691C20.676 12.4349 20.7236 12.506 20.7637 12.5811L20.8184 12.6963L20.8613 12.8174C20.8982 12.9393 20.917 13.0665 20.917 13.1943V19.6162C20.917 19.7869 20.8837 19.9566 20.8184 20.1143C20.7531 20.2717 20.6566 20.4146 20.5361 20.5352C20.4155 20.6558 20.2719 20.7521 20.1143 20.8174C19.9568 20.8826 19.7876 20.9159 19.6172 20.916H9.7168C9.54633 20.916 9.37725 20.8826 9.21973 20.8174C9.06208 20.7521 8.91853 20.6558 8.79785 20.5352C8.67731 20.4146 8.58092 20.2718 8.51562 20.1143C8.45029 19.9565 8.41699 19.7869 8.41699 19.6162V13.1943C8.41699 12.8496 8.55416 12.5192 8.79785 12.2754L8.89355 12.1885C9.12475 11.9993 9.41542 11.8946 9.7168 11.8945H10.6836L11.9492 9.92871L12.0459 9.79785C12.1498 9.67401 12.2763 9.57012 12.4189 9.49219C12.6096 9.38824 12.8239 9.33318 13.041 9.33301H16.293L16.4551 9.34277ZM11.8848 12.7988C11.7672 12.9812 11.6054 13.1313 11.415 13.2354C11.2245 13.3393 11.0101 13.3943 10.793 13.3945H9.91699V19.416H19.417V13.3945H18.541C18.3239 13.3944 18.1096 13.3393 17.9189 13.2354C17.7285 13.1314 17.5668 12.9812 17.4492 12.7988L16.1836 10.833H13.1504L11.8848 12.7988Z" fill="#707A83"/>\n' +
-					'<path d="M2.75 15.75C3.16421 15.75 3.5 16.0858 3.5 16.5V18.5H5.04199C5.45606 18.5002 5.79199 18.8359 5.79199 19.25C5.79199 19.6641 5.45606 19.9998 5.04199 20H2.75C2.33579 20 2 19.6642 2 19.25V16.5C2 16.0858 2.33579 15.75 2.75 15.75Z" fill="#707A83"/>\n' +
-					'<path d="M2.75 7.95801C3.1641 7.95801 3.49982 8.29394 3.5 8.70801V13.292C3.49982 13.7061 3.16411 14.042 2.75 14.042C2.33589 14.042 2.00018 13.7061 2 13.292V8.70801C2.00018 8.29394 2.3359 7.95801 2.75 7.95801Z" fill="#707A83"/>\n' +
-					'<path d="M19.25 7.04199C19.6642 7.04199 20 7.37778 20 7.79199V9.16699C19.9998 9.58106 19.6641 9.91699 19.25 9.91699C18.8359 9.91699 18.5002 9.58106 18.5 9.16699V7.79199C18.5 7.37778 18.8358 7.04199 19.25 7.04199Z" fill="#707A83"/>\n' +
-					'<path d="M5.5 2C5.91421 2 6.25 2.33579 6.25 2.75C6.25 3.16421 5.91421 3.5 5.5 3.5H3.5V5.5C3.5 5.91421 3.16421 6.25 2.75 6.25C2.33579 6.25 2 5.91421 2 5.5V2.75C2 2.33579 2.33579 2 2.75 2H5.5Z" fill="#707A83"/>\n' +
-					'<path d="M19.25 2C19.6642 2 20 2.33579 20 2.75V5.04199C19.9998 5.45606 19.6641 5.79199 19.25 5.79199C18.8359 5.79199 18.5002 5.45606 18.5 5.04199V3.5H16.5C16.0858 3.5 15.75 3.16421 15.75 2.75C15.75 2.33579 16.0858 2 16.5 2H19.25Z" fill="#707A83"/>\n' +
-					'<path d="M13.292 2C13.7061 2.00018 14.042 2.33589 14.042 2.75C14.042 3.16411 13.7061 3.49982 13.292 3.5H8.70801C8.29394 3.49982 7.95801 3.1641 7.95801 2.75C7.95801 2.3359 8.29394 2.00018 8.70801 2H13.292Z" fill="#707A83"/>\n' +
-					'</svg>\n',
-				'unordered-list': '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">\n' +
-					'<path d="M2.75879 15.75C3.17279 15.7502 3.50879 16.0859 3.50879 16.5C3.50879 16.9141 3.17279 17.2498 2.75879 17.25H2.75C2.33579 17.25 2 16.9142 2 16.5C2 16.0858 2.33579 15.75 2.75 15.75H2.75879Z" fill="#707A83"/>\n' +
-					'<path d="M19.25 15.75C19.6641 15.7502 20 16.0859 20 16.5C20 16.9141 19.6641 17.2498 19.25 17.25H7.33301C6.91896 17.2498 6.58301 16.9141 6.58301 16.5C6.58301 16.0859 6.91896 15.7502 7.33301 15.75H19.25Z" fill="#707A83"/>\n' +
-					'<path d="M2.75879 10.25C3.17279 10.2502 3.50879 10.5859 3.50879 11C3.50879 11.4141 3.17279 11.7498 2.75879 11.75H2.75C2.33579 11.75 2 11.4142 2 11C2 10.5858 2.33579 10.25 2.75 10.25H2.75879Z" fill="#707A83"/>\n' +
-					'<path d="M19.25 10.25C19.6641 10.2502 20 10.5859 20 11C20 11.4141 19.6641 11.7498 19.25 11.75H7.33301C6.91896 11.7498 6.58301 11.4141 6.58301 11C6.58301 10.5859 6.91896 10.2502 7.33301 10.25H19.25Z" fill="#707A83"/>\n' +
-					'<path d="M2.75879 4.75C3.17279 4.75025 3.50879 5.08594 3.50879 5.5C3.50879 5.91406 3.17279 6.24975 2.75879 6.25H2.75C2.33579 6.25 2 5.91421 2 5.5C2 5.08579 2.33579 4.75 2.75 4.75H2.75879Z" fill="#707A83"/>\n' +
-					'<path d="M19.25 4.75C19.6641 4.75018 20 5.0859 20 5.5C20 5.9141 19.6641 6.24982 19.25 6.25H7.33301C6.91896 6.2498 6.58301 5.91409 6.58301 5.5C6.58301 5.08591 6.91896 4.7502 7.33301 4.75H19.25Z" fill="#707A83"/>\n' +
-					'</svg>',
-				'bold': '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"\n' +
-					'xmlns="http://www.w3.org/2000/svg">\n' +
-					'<path fill-rule="evenodd" clip-rule="evenodd"\n' +
-					'd="M12.833 2.91699C14.0044 2.91699 15.1278 3.38265 15.9561 4.21094C16.7843 5.03922 17.25 6.16261 17.25 7.33398C17.2499 8.50524 16.7843 9.62882 15.9561 10.457C15.8706 10.5424 15.7809 10.6226 15.6895 10.7002C16.1237 10.9126 16.5248 11.1957 16.873 11.5439C17.7012 12.3722 18.167 13.4957 18.167 14.667C18.1669 15.8382 17.7013 16.9618 16.873 17.79C16.0448 18.6182 14.9213 19.083 13.75 19.083H5.5C5.08579 19.083 4.75 18.7472 4.75 18.333V3.66699C4.75 3.25278 5.08579 2.91699 5.5 2.91699H12.833ZM6.25 17.583H13.75C14.5235 17.583 15.2655 17.2764 15.8125 16.7295C16.3594 16.1826 16.6669 15.4404 16.667 14.667C16.667 13.8935 16.3594 13.1515 15.8125 12.6045C15.2655 12.0575 14.5235 11.75 13.75 11.75H6.25V17.583ZM6.25 10.25H12.833C13.6064 10.25 14.3486 9.94326 14.8955 9.39648C15.4424 8.84958 15.7499 8.10741 15.75 7.33398C15.75 6.56044 15.4425 5.81847 14.8955 5.27148C14.3485 4.7245 13.6066 4.41699 12.833 4.41699H6.25V10.25Z"\n' +
-					'fill="#707A83"/></svg>',
-				'italic': '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">\n' +
-					'<path d="M17.417 2.91699C17.831 2.91719 18.167 3.2529 18.167 3.66699C18.167 4.08108 17.831 4.41679 17.417 4.41699H14.2695L9.33203 17.583H12.833C13.2472 17.583 13.583 17.9188 13.583 18.333C13.583 18.7472 13.2472 19.083 12.833 19.083H4.58301C4.16896 19.0828 3.83301 18.7471 3.83301 18.333C3.83301 17.9189 4.16896 17.5832 4.58301 17.583H7.73047L12.668 4.41699H9.16699C8.75278 4.41699 8.41699 4.08121 8.41699 3.66699C8.41699 3.25278 8.75278 2.91699 9.16699 2.91699H17.417Z" fill="#707A83"/>\n' +
-					'</svg>',
-				'strike-through': '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">\n' +
-					'<path d="M17.875 10.25C18.2892 10.25 18.625 10.5858 18.625 11C18.625 11.4142 18.2892 11.75 17.875 11.75H15.3926C16.1188 12.5542 16.5625 13.6179 16.5625 14.7812C16.5625 17.2751 14.5251 19.3124 12.0312 19.3125H9.96875C7.61343 19.3124 5.66563 17.4955 5.45605 15.1934C5.41856 14.781 5.72253 14.4157 6.13477 14.3779C6.54713 14.3404 6.91247 14.6443 6.9502 15.0566C7.09006 16.5946 8.39732 17.8124 9.96875 17.8125H12.0312C13.6966 17.8124 15.0625 16.4467 15.0625 14.7812C15.0625 13.1158 13.6966 11.7501 12.0312 11.75H4.125C3.71079 11.75 3.375 11.4142 3.375 11C3.375 10.5858 3.71079 10.25 4.125 10.25H17.875Z" fill="#707A83"/>\n' +
-					'<path d="M12.0312 2.6875C14.3869 2.6875 16.3337 4.50478 16.5439 6.80664C16.5816 7.21903 16.2776 7.58424 15.8652 7.62207C15.4528 7.65973 15.0875 7.35577 15.0498 6.94336C14.9093 5.40491 13.6025 4.1875 12.0312 4.1875H9.96875C8.30328 4.1875 6.9375 5.55328 6.9375 7.21875C6.9375 7.71424 7.05778 8.18093 7.27051 8.59375C7.46023 8.96192 7.3154 9.41472 6.94727 9.60449C6.57909 9.79422 6.12628 9.6494 5.93652 9.28125C5.61713 8.66145 5.4375 7.95939 5.4375 7.21875C5.4375 4.72485 7.47485 2.6875 9.96875 2.6875H12.0312Z" fill="#707A83"/>\n' +
-					'</svg>',
-				'underline': '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">\n' +
-					'<path d="M18.334 18.5C18.7479 18.5004 19.084 18.836 19.084 19.25C19.084 19.664 18.7479 19.9996 18.334 20H3.66699C3.25278 20 2.91699 19.6642 2.91699 19.25C2.91699 18.8358 3.25278 18.5 3.66699 18.5H18.334Z" fill="#707A83"/>\n' +
-					'<path d="M16.5 2C16.9142 2 17.25 2.33579 17.25 2.75V9.16699C17.2499 10.8245 16.591 12.4139 15.4189 13.5859C14.2469 14.7579 12.6575 15.417 11 15.417C9.34247 15.417 7.75314 14.7579 6.58105 13.5859C5.40903 12.4139 4.75009 10.8245 4.75 9.16699V2.75C4.75 2.33579 5.08579 2 5.5 2C5.91421 2 6.25 2.33579 6.25 2.75V9.16699C6.25009 10.4267 6.75088 11.6347 7.6416 12.5254C8.53238 13.4161 9.7403 13.917 11 13.917C12.2597 13.917 13.4676 13.4161 14.3584 12.5254C15.2491 11.6347 15.7499 10.4267 15.75 9.16699V2.75C15.75 2.33579 16.0858 2 16.5 2Z" fill="#707A83"/>\n' +
-					'</svg>',
-				'quote': '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">\n' +
-					'<path fill-rule="evenodd" clip-rule="evenodd" d="M7.7002 3.65039C8.21285 3.65046 8.69041 3.87329 9.03125 4.24512C9.36994 4.61478 9.5498 5.1036 9.5498 5.60059V11C9.5498 12.5956 9.25596 13.9528 8.46484 15.1611C7.68229 16.3563 6.4632 17.3296 4.75977 18.2588C4.39633 18.457 3.94071 18.3231 3.74219 17.96C3.54388 17.5964 3.67753 17.1408 4.04102 16.9424C5.63696 16.0718 6.61759 15.2444 7.20996 14.3398C7.68479 13.6146 7.93975 12.7885 8.01953 11.75H3.2998C2.78726 11.7499 2.31053 11.527 1.96973 11.1553C1.631 10.7857 1.45029 10.2977 1.4502 9.80078V5.60059C1.4502 5.10346 1.63083 4.61482 1.96973 4.24512C2.31052 3.87345 2.7873 3.6505 3.2998 3.65039H7.7002ZM3.2998 5.15039C3.2292 5.1505 3.14672 5.18082 3.0752 5.25879C3.00155 5.33918 2.9502 5.46125 2.9502 5.60059V9.80078C2.95029 9.94001 3.00158 10.0623 3.0752 10.1426C3.14668 10.2204 3.22927 10.2499 3.2998 10.25H8.0498V5.60059C8.0498 5.46127 7.99843 5.33918 7.9248 5.25879C7.85322 5.18075 7.77084 5.15046 7.7002 5.15039H3.2998Z" fill="#707A83"/>\n' +
-					'<path fill-rule="evenodd" clip-rule="evenodd" d="M18.7002 3.65039C19.2129 3.65046 19.6904 3.87329 20.0312 4.24512C20.3699 4.61478 20.5498 5.10361 20.5498 5.60059V11C20.5498 12.5956 20.256 13.9528 19.4648 15.1611C18.6823 16.3563 17.4632 17.3296 15.7598 18.2588C15.3963 18.457 14.9407 18.3231 14.7422 17.96C14.5439 17.5964 14.6775 17.1408 15.041 16.9424C16.637 16.0718 17.6176 15.2444 18.21 14.3398C18.6848 13.6146 18.9398 12.7885 19.0195 11.75H14.2998C13.7873 11.7499 13.3105 11.527 12.9697 11.1553C12.631 10.7857 12.4503 10.2977 12.4502 9.80078V5.60059C12.4502 5.10346 12.6308 4.61482 12.9697 4.24512C13.3105 3.87345 13.7873 3.6505 14.2998 3.65039H18.7002ZM14.2998 5.15039C14.2292 5.1505 14.1467 5.18082 14.0752 5.25879C14.0016 5.33918 13.9502 5.46125 13.9502 5.60059V9.80078C13.9503 9.94001 14.0016 10.0623 14.0752 10.1426C14.1467 10.2204 14.2293 10.2499 14.2998 10.25H19.0498V5.60059C19.0498 5.46127 18.9984 5.33918 18.9248 5.25879C18.8532 5.18075 18.7708 5.15046 18.7002 5.15039H14.2998Z" fill="#707A83"/>\n' +
-					'</svg>',
-
-			}
-		})
+function setToggleStatus(rootElement){
+	const clickHandler = () => {
+		const timer = setTimeout(() => {
+			localStorage.setItem('spotfix_widget_is_closed', '1');
+			rootElement.hide();
+			clearTimeout(timer);
+		}, 300);
+	};
+	const toggle = document.getElementById('widget_visibility');
+	if(toggle) {
+		toggle.checked = true;
+		toggle.addEventListener('click', clickHandler);
 	}
 }
+
+function checkLogInOutButtonsVisible (){
+	if(!localStorage.getItem('spotfix_session_id')) {
+		const el = document
+			.getElementById('doboard_task_widget-user_menu-logout_button')
+			?.closest('.doboard_task_widget-user_menu-item');
+			if(el) el.style.display = 'none';
+	} else {
+		const el = document.getElementById('doboard_task_widget-user_menu-signlog_button');
+		if(el) el.style.display = 'none';
+	}
+}
+
+function changeSize(container){
+	if(container && +localStorage.getItem('maximize')){
+		container.classList.add('doboard_task_widget-container-maximize');
+	} else if(container) {
+		container.classList.remove('doboard_task_widget-container-maximize');
+	}
+}
+
 /**
  * Widget class to create a task widget
  */
@@ -629,12 +650,16 @@ class CleanTalkWidgetDoboard {
         this.init(type);
         this.srcVariables = {
             buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
+            iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
+            iconPlus: SpotFixSVGLoader.getAsDataURI('iconPlus'),
+            iconMaximize: SpotFixSVGLoader.getAsDataURI('iconMaximize'),
             chevronBack: SpotFixSVGLoader.getAsDataURI('chevronBack'),
             buttonPaperClip: SpotFixSVGLoader.getAsDataURI('buttonPaperClip'),
             buttonSendMessage: SpotFixSVGLoader.getAsDataURI('buttonSendMessage'),
-            logoDoBoardWhite: SpotFixSVGLoader.getAsDataURI('logoDoBoardWhite'),
+            logoDoBoardGreen: SpotFixSVGLoader.getAsDataURI('logoDoBoardGreen'),
             logoDoBoardWrap: SpotFixSVGLoader.getAsDataURI('logoDoBoardWrap'),
             iconSpotWidgetWrapPencil: SpotFixSVGLoader.getAsDataURI('iconSpotWidgetWrapPencil'),
+            iconMarker: SpotFixSVGLoader.getAsDataURI('iconMarker'),
             iconSpotPublic: SpotFixSVGLoader.getAsDataURI('iconSpotPublic'),
             iconSpotPrivate: SpotFixSVGLoader.getAsDataURI('iconSpotPrivate'),
             iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
@@ -816,8 +841,9 @@ class CleanTalkWidgetDoboard {
                     projectToken: this.params.projectToken,
                     projectId: this.params.projectId,
                     accountId: this.params.accountId,
-                    taskMeta: JSON.stringify(this.selectedData),
+                    taskMeta: JSON.stringify(this.selectedData ? this.selectedData : { pageURL: window.location.href }),
                 };
+
                 if ( userEmail ) {
                     taskDetails.userEmail = userEmail
                 }
@@ -883,13 +909,25 @@ class CleanTalkWidgetDoboard {
 
         let templateVariables = {};
 
+        const config = window.SpotfixWidgetConfig;
+        const position = {
+            compact: '0vh',
+            short: '20vh',
+            regular: '45vh',
+            tall: '60vh',
+            extra: '85vh',
+        };
+
         switch (type) {
             case 'create_issue':
                 templateName = 'create_issue';
+                this.type_name = templateName;
                 templateVariables = {
                     selectedText: this.selectedText,
                     currentDomain: document.location.hostname || '',
                     buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
+                    iconMaximize: SpotFixSVGLoader.getAsDataURI('iconMaximize'),
+                    iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
                     ...this.srcVariables
                 };
                 storageGetUserIsDefined() && storageSetWidgetIsClosed(false);
@@ -898,19 +936,36 @@ class CleanTalkWidgetDoboard {
                 if (storageGetWidgetIsClosed()) {
                     return;
                 }
+
                 templateName = 'wrap';
-                templateVariables = {...this.srcVariables};
+                templateVariables = {position: position[config?.verticalPosition] || position.compact, ...this.srcVariables};
                 break;
             case 'wrap_review':
                 templateName = 'wrap_review';
-                templateVariables = {...this.srcVariables};
+                templateVariables = {position: position[config?.verticalPosition] || position.compact, ...this.srcVariables};
                 break;
             case 'all_issues':
                 templateName = 'all_issues';
+                this.type_name = templateName;
                 templateVariables = {...this.srcVariables};
+                break;
+            case 'user_menu':
+                templateName = 'user_menu';
+                const versionFromLS = localStorage.getItem('spotfix_app_version');
+                templateVariables = {
+                    spotfixVersion: versionFromLS ? 'Spotfix version ' + versionFromLS + '.' : '',
+                    avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
+                    iconEye: SpotFixSVGLoader.getAsDataURI('iconEye'),
+                    iconDoor: SpotFixSVGLoader.getAsDataURI('iconDoor'),
+                    chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
+                    buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
+                    userName: 'Guest',
+                    email: localStorage.getItem('spotfix_email') || '',
+                    ...this.srcVariables};
                 break;
             case 'concrete_issue':
                 templateName = 'concrete_issue';
+                this.type_name = templateName;
                 // Update the number of tasks
                 this.savedIssuesQuantityAll = Array.isArray(this.allTasksData) ? this.allTasksData.length : 0;
                 // Calculate the number of issues on the current page
@@ -938,13 +993,20 @@ class CleanTalkWidgetDoboard {
 
         // remove highlights before any screen called
         spotFixRemoveHighlights();
-
+        const container = document.querySelector('.doboard_task_widget-container');
         switch (type) {
             case 'create_issue':
+
+                if(container && +localStorage.getItem('maximize')){
+                    container.classList.add('doboard_task_widget-container-maximize');
+                } else if(container) {
+                    container.classList.remove('doboard_task_widget-container-maximize');
+                }
                 // highlight selected item during task creation
                 const selection = window.getSelection();
                 const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
                 const email = localStorage.getItem('spotfix_email');
+
                 if (sessionIdExists && email && !email.includes('spotfix_')) {
                     document.querySelector('.doboard_task_widget-login').classList.add('hidden');
                 }
@@ -957,40 +1019,6 @@ class CleanTalkWidgetDoboard {
                 }
                 // bind creation events
                 this.bindCreateTaskEvents();
-
-                tinymce.init({
-                    selector: '#doboard_task_widget-description',
-                    plugins: 'link lists',
-                    menubar: false,
-                    statusbar: false,
-                    toolbar_location: 'bottom',
-                    toolbar: 'emoticons bullist numlist bold italic strikethrough underline blockquote',
-                    height: 120,
-                    icons: 'my_icon_pack',
-                    file_picker_types: 'file image media',
-                    setup: function (editor) {
-                        editor.on('change', function () {
-                            editor.save();
-                        });
-                        // editor.ui.registry.addButton('attachmentButton', {
-                        //     icon: 'paperclip',
-                        //     tooltip: 'Add file',
-                        //         disabled: true,
-                        //         onAction: (e) => {
-                        //          //  fileUploader?.fileInput?.click(e);
-                        //
-                        //         },
-                        //     });
-                        //     editor.ui.registry.addButton('screenshotButton', {
-                        //         icon: 'screenshot',
-                        //         tooltip: 'Screenshot',
-                        //         disabled: true,
-                        //         onAction: (e) => {
-                        //           // fileUploader?.makeScreenshot();
-                        //         },
-                        //     });
-                         }
-                    })
                 break;
             case 'wrap':
                 await this.getTaskCount();
@@ -1008,7 +1036,9 @@ class CleanTalkWidgetDoboard {
                 });
                 break;
             case 'all_issues':
-                spotFixRemoveHighlights();
+                    changeSize(container);
+
+                    spotFixRemoveHighlights();
                 let issuesQuantityOnPage = 0;
                 if (!this.allTasksData?.length) {
                     this.allTasksData = await getAllTasks(this.params);
@@ -1115,12 +1145,35 @@ class CleanTalkWidgetDoboard {
                 this.bindIssuesClick();
                 hideContainersSpinner(false);
                 break;
+        case 'user_menu':
 
+                setToggleStatus(this);
+                checkLogInOutButtonsVisible();
+
+                const user = await getUserDetails(this.params);
+                const gitHubAppVersion = await getReleaseVersion();
+                let spotfixVersion = '';
+                const version = localStorage.getItem('spotfix_app_version') || gitHubAppVersion;
+                spotfixVersion = version ? `Spotfix version ${version}.` : '';
+
+                templateVariables.spotfixVersion = spotfixVersion || '';
+
+                if(user){
+                    templateVariables.userName = user.name || 'Guest';
+                    templateVariables.email = user.email || localStorage.getItem('spotfix_email') || '';
+                    if(user?.avatar?.s) templateVariables.avatar = user?.avatar?.s;
+                }
+
+                widgetContainer.innerHTML = this.loadTemplate('user_menu', templateVariables);
+                document.body.appendChild(widgetContainer);
+                setToggleStatus(this);
+                checkLogInOutButtonsVisible();
+
+                break;
         case 'concrete_issue':
-
+                changeSize(container);
                 tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId);
                 const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId);
-
                 // Update issue title in the interface
                 const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
                 if (issueTitleElement) {
@@ -1130,21 +1183,31 @@ class CleanTalkWidgetDoboard {
                 templateVariables.issueTitle = taskDetails?.issueTitle;
                 templateVariables.issueComments = taskDetails?.issueComments;
 
-                widgetContainer.innerHTML = this.loadTemplate('concrete_issue', templateVariables);
-                document.body.appendChild(widgetContainer);
 
                 // Highlight the task's selected text
                 let nodePath = null;
                     const currentTaskData = this.allTasksData.find((element) => String(element.taskId) === String(taskDetails.taskId));
                     let meta = null;
+
                     if (currentTaskData && currentTaskData.taskMeta) {
                         try {
                             meta = JSON.parse(currentTaskData.taskMeta);
                             nodePath = meta.nodePath || null;
                         } catch (e) { nodePath = null; meta = null; }
                     }
+
+            templateVariables.taskPageUrl = meta.pageURL;
+            const taskFormattedPageUrl = meta.pageURL.replace(window.location.origin, '');
+            templateVariables.taskFormattedPageUrl = taskFormattedPageUrl.length < 2
+                ? meta.pageURL.replace(window.location.protocol + '/', '') : taskFormattedPageUrl;
+            templateVariables.contenerClasess = +localStorage.getItem('maximize')
+                ? 'doboard_task_widget-container-maximize doboard_task_widget-container' : 'doboard_task_widget-container'
+            widgetContainer.innerHTML = this.loadTemplate('concrete_issue', templateVariables);
+            document.body.appendChild(widgetContainer);
+
                     // remove old highlights before adding new ones
                     spotFixRemoveHighlights();
+
                     if (meta && nodePath) {
                         // Pass the task meta object as an array
                         spotFixHighlightElements([meta], this);
@@ -1222,43 +1285,7 @@ class CleanTalkWidgetDoboard {
                     }
                     textarea.addEventListener('input', handleTextareaChange)
                     textarea.addEventListener('change', handleTextareaChange)
-
-                    const fileUploader = this.fileUploader;
-
-                    tinymce.init({
-                        selector: '.doboard_task_widget-send_message_input',
-                        plugins: 'link lists',
-                        menubar: false,
-                        statusbar: false,
-                        toolbar_location: 'bottom',
-                        toolbar: 'attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
-                        height: 120,
-                        icons: 'my_icon_pack',
-                        file_picker_types: 'file image media',
-                        setup: function (editor) {
-                            editor.on('change', function () {
-                                editor.save();
-                            });
-                            editor.ui.registry.addButton('attachmentButton', {
-                                icon: 'paperclip',
-                                tooltip: 'Add file',
-                                    disabled: true,
-                                    onAction: (e) => {
-                                       fileUploader?.fileInput?.click(e);
-
-                                    },
-                                });
-                                editor.ui.registry.addButton('screenshotButton', {
-                                    icon: 'screenshot',
-                                    tooltip: 'Screenshot',
-                                    disabled: true,
-                                    onAction: (e) => {
-                                       fileUploader?.makeScreenshot();
-                                    },
-                                });
-                            }
-                        });
-                    }
+                }
 
                 // Hide spinner preloader
                 hideContainersSpinner();
@@ -1315,6 +1342,7 @@ class CleanTalkWidgetDoboard {
                         sendButton.disabled = false;
                     });
                 }
+
                 break;
 
             default:
@@ -1334,14 +1362,40 @@ class CleanTalkWidgetDoboard {
             this.fileUploader.bindPaperClipAction(paperclipController);
         }
 
-        document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', () => {
+        document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', (e) => {
             this.hide();
         }) || '';
 
-        document.querySelector('#doboard_task_widget-task_count')?.addEventListener('click', () => {
-            const widget = document.querySelector('.doboard_task_widget-wrap');
-            widget.classList.add('hidden');
-            storageSetWidgetIsClosed(true);
+        document.querySelector('#openUserMenuButton')?.addEventListener('click', () => {
+            this.createWidgetElement('user_menu')
+        }) || '';
+
+        document.querySelector('#doboard_task_widget-user_menu-logout_button')?.addEventListener('click', () => {
+            logoutUserDoboard(this.params.accountId);
+        }) || '';
+
+        document.getElementById('addNewTaskButton')?.addEventListener('click', () => {
+            spotFixShowWidget();
+        }) || '';
+
+        document.getElementById('maximizeWidgetContainer')?.addEventListener('click', () => {
+            const container = document.querySelector('.doboard_task_widget-container');
+
+            if(+localStorage.getItem('maximize') && container.classList.contains('doboard_task_widget-container-maximize')){
+                localStorage.setItem('maximize', '0');
+                container.classList.remove('doboard_task_widget-container-maximize');
+            } else {
+                localStorage.setItem('maximize', '1');
+                container.classList.add('doboard_task_widget-container-maximize');
+            }
+        }) || '';
+
+        document.querySelector('#doboard_task_widget-user_menu-signlog_button')?.addEventListener('click', () => {
+            spotFixShowWidget();
+        }) || '';
+
+        document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {
+            this.createWidgetElement(this.type_name)
         }) || '';
 
         return widgetContainer;
@@ -1509,6 +1563,7 @@ class CleanTalkWidgetDoboard {
     hide() {
         spotFixRemoveHighlights();
         this.createWidgetElement('wrap');
+
     }
 
     wrapElementWithSpotfixHighlight(element) {
@@ -1694,22 +1749,6 @@ if( document.readyState !== 'loading' ) {
 function spotFixInit() {
     new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
-    loadTinyMCE();
-}
-
-/**
- * Downloads TinyMCE script from doboard.com
- */
-function loadTinyMCE() {
-    const script = document.createElement('script');
-    script.src = 'https://doboard.com/tinymce/tinymce.min.js';
-    script.async = true;
-
-    script.onload = function() {
-       addIconPack();
-    };
-
-    document.head.appendChild(script);
 }
 
 document.addEventListener('selectionchange', function(e) {
@@ -1819,7 +1858,7 @@ function hideContainersSpinner() {
 
 function getTaskFullDetails(tasksDetails, taskId) {
     const comments = tasksDetails.comments.filter(comment => {
-        return comment.taskId.toString() === taskId.toString()
+        return comment?.taskId?.toString() === taskId?.toString()
     });
     const users = tasksDetails.users;
     // Last comment
@@ -2636,7 +2675,7 @@ function spotFixRetrieveNodeFromPath(path) {
     return node;
 }
 
-let spotFixCSS = `.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after{content:"";position:absolute;left:8%;top:100%;transform:translateX(-50%);pointer-events:none;background:0 0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid #545b61;display:block}.doboard_task_widget-send_message_paperclip{position:relative}.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip{display:none;position:absolute;left:0;bottom:0;transform:translateX(-3%) translateY(-43px);background:#545b61;color:#FFF;border:none;border-radius:3px;padding:10px 16px;font-size:13px;line-height:1.4;z-index:100;min-width:220px;max-width:320px;text-align:left;pointer-events:none;text-transform:none}.doboard_task_widget-send_message_paperclip:hover .doboard_task_widget-paperclip-tooltip{display:block}.doboard_task_widget *{font-family:Inter,sans-serif;font-weight:400;font-size:14px;line-height:130%;color:#40484F}.doboard_task_widget-header *{color:#FFF;margin:0}.doboard_task_widget a{text-decoration:underline;color:#2F68B7}.doboard_task_widget a:hover{text-decoration:none}.doboard_task_widget{position:fixed;right:50px;bottom:20px;z-index:9999;vertical-align:middle;transition:top .1s;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}.doboard_task_widget_cursor-pointer{cursor:pointer}.doboard_task_widget-container{width:360px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;-moz-flex-direction:column}@media (max-height:800px){.doboard_task_widget-container{max-height:calc(60vh - 40px)}}.doboard_task_widget-header{display:flex;height:41px;min-height:41px;padding:8px 16px;background:#1C7857;border-radius:8px 8px 0 0;justify-content:space-between;align-items:center;color:#FFF}.doboard_task_widget-content{flex:1;overflow-y:auto;background:#FFF;border-radius:0 0 8px 8px;border:1px #BBC7D1;border-style:none solid solid;box-shadow:0 4px 15px 8px #CACACA40;scrollbar-width:none;max-height:60vh}.doboard_task_widget-element-container{margin-bottom:30px}.doboard_task_widget-wrap{border:none;box-shadow:none;position:relative;padding:0;cursor:pointer;width:56px;height:56px;border-radius:50%;background-color:#1c7857;opacity:.6;display:flex;align-items:center;justify-content:center}.doboard_task_widget-wrap img{width:24px;height:24px}.doboard_task_widget-wrap::after{content:"";position:absolute;left:-2px;bottom:-6px;width:0;height:0;border-style:solid;border-radius:20%;border-width:20px 22px 0 0;border-color:#1c7857 transparent transparent;transform:rotate(30deg)}.doboard_task_widget-wrap.hidden{display:none}.wrap_review{width:160px;border-radius:16px;height:52px}.wrap_review:hover{background-color:#1c7857}#review_content_button_text{color:#fff;margin-left:4px;font-size:16px;text-transform:none!important}.wrap_review::after{display:none}#doboard_task_widget-task_count{position:absolute;top:-5px;right:-5px;width:22px;height:22px;opacity:1;background:#ef8b43;border-radius:50%;color:#FFF;text-align:center;line-height:22px}#doboard_task_widget-task_count:hover{background:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIiIGhlaWdodD0iMjIiIHZpZXdCb3g9IjAgMCAyMiAyMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxmb3JlaWduT2JqZWN0IHg9Ii00IiB5PSItNCIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIj48ZGl2IHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hodG1sIiBzdHlsZT0iYmFja2Ryb3AtZmlsdGVyOmJsdXIoMnB4KTtjbGlwLXBhdGg6dXJsKCNiZ2JsdXJfMF8xODk4OV8yODI2X2NsaXBfcGF0aCk7aGVpZ2h0OjEwMCU7d2lkdGg6MTAwJSI+PC9kaXY+PC9mb3JlaWduT2JqZWN0PjxwYXRoIGRhdGEtZmlnbWEtYmctYmx1ci1yYWRpdXM9IjQiIGQ9Ik0xMSAyMkMxNy4wNzUxIDIyIDIyIDE3LjA3NTEgMjIgMTFDMjIgNC45MjQ4NyAxNy4wNzUxIDAgMTEgMEM0LjkyNDg3IDAgMCA0LjkyNDg3IDAgMTFDMCAxNy4wNzUxIDQuOTI0ODcgMjIgMTEgMjJaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjciLz4KICAgIDxwYXRoIGQ9Ik0xNiA2TDYgMTYiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICAgIDxwYXRoIGQ9Ik02IDZMMTYgMTYiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICAgIDxkZWZzPgogICAgICAgIDxjbGlwUGF0aCBpZD0iYmdibHVyXzBfMTg5ODlfMjgyNl9jbGlwX3BhdGgiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQgNCkiPjxwYXRoIGQ9Ik0xMSAyMkMxNy4wNzUxIDIyIDIyIDE3LjA3NTEgMjIgMTFDMjIgNC45MjQ4NyAxNy4wNzUxIDAgMTEgMEM0LjkyNDg3IDAgMCA0LjkyNDg3IDAgMTFDMCAxNy4wNzUxIDQuOTI0ODcgMjIgMTEgMjJaIi8+CiAgICAgICAgPC9jbGlwUGF0aD48L2RlZnM+Cjwvc3ZnPg==) center no-repeat;cursor:pointer;overflow:hidden;font-size:0}#doboard_task_widget-task_count.hidden{width:0;height:0;opacity:0}.doboard_task_widget-input-container{position:relative;margin-bottom:24px}.doboard_task_widget-input-container.hidden{display:none}.doboard_task_widget-input-container .doboard_task_widget-field{padding:0 8px;border-radius:4px;border:1px solid #BBC7D1;outline:0!important;appearance:none;width:100%;height:40px;background:#FFF;color:#000;max-width:-webkit-fill-available;max-width:-moz-available}.doboard_task_widget-field:focus{border-color:#2F68B7}.doboard_task_widget-input-container textarea.doboard_task_widget-field{height:94px;padding-top:11px;padding-bottom:11px}.doboard_task_widget-field+label{color:#252A2F;background:#fff;position:absolute;top:20px;left:8px;transform:translateY(-50%);transition:all .2s ease-in-out}.doboard_task_widget-field.has-value+label,.doboard_task_widget-field:focus+label{font-size:10px;top:0;left:12px;padding:0 4px;z-index:5}.doboard_task_widget-field:focus+label{color:#2F68B7}.doboard_task_widget-login{background:#F9FBFD;border:1px solid #BBC7D1;border-radius:4px;padding:11px 8px 8px;margin-bottom:40px}.doboard_task_widget-login.hidden{display:none}.doboard_task_widget-login .doboard_task_widget-accordion{height:0;overflow:hidden;opacity:0;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-accordion{height:auto;overflow:visible;opacity:1}.doboard_task_widget-login .doboard_task_widget-input-container:last-child{margin-bottom:0}.doboard_task_widget-login span{display:block;position:relative;padding-right:24px;cursor:pointer}.doboard_task_widget-login.active span{margin-bottom:24px}.doboard_task_widget-login span::after{position:absolute;top:0;right:4px;content:"";display:block;width:10px;height:10px;transform:rotate(45deg);border:2px solid #40484F;border-radius:1px;border-top:none;border-left:none;transition:all .2s ease-in-out}.doboard_task_widget-login.active span::after{transform:rotate(-135deg);top:7px}.doboard_task_widget-login .doboard_task_widget-field+label,.doboard_task_widget-login .doboard_task_widget-input-container .doboard_task_widget-field{background:#F9FBFD}.doboard_task_widget-submit_button{height:48px;width:100%;margin-bottom:10px;color:#FFF;background:#22A475;border:none;border-radius:6px;font-family:Inter,sans-serif;font-weight:700;font-size:16px;line-height:150%;cursor:pointer;transition:all .2s ease-in-out}.doboard_task_widget-submit_button:hover{background:#1C7857;color:#FFF}.doboard_task_widget-submit_button:disabled{background:rgba(117,148,138,.92);color:#FFF;cursor:wait}.doboard_task_widget-issue-title{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-hidden_element{opacity:0}.doboard_task_widget-message-wrapper{border-radius:4px;padding:8px;margin-bottom:14px;display:grid;justify-items:center}.doboard_task_widget-error_message-wrapper.hidden,.doboard_task_widget-message-wrapper.hidden{display:none}.doboard_task_widget-error_message{background:#fdd;border:1px solid #cf6868}.doboard_task_widget-notice_message{background:#dde9ff;border:1px solid #68a6cf}#doboard_task_widget-error_message-header{font-weight:600}#doboard_task_widget-error_message{text-align:center}.doboard_task_widget-task_row{display:flex;max-height:55px;cursor:pointer;align-items:center;justify-content:space-between;padding:1px 15px}.doboard_task_widget-task_row:last-child{margin-bottom:0}.doboard_task_widget-task-text_bold{font-weight:700}.doboard_task_widget-element_selection,.doboard_task_widget-image_selection,.doboard_task_widget-text_selection,.doboard_task_widget-text_selection.image-highlight>img{background:rgba(208,213,127,.68)}.doboard_task_widget-issues_list_empty{text-align:center;margin:20px 0}.doboard_task_widget-avatar_container{display:flex;height:44px;width:44px;border-radius:50%;background-repeat:no-repeat;background-position:center;background-size:100%}.doboard_task_widget-comment_data_owner .doboard_task_widget-avatar_container{opacity:0}.doboard_task_widget-avatar_placeholder{min-height:44px;min-width:44px;border-radius:50%;font-size:24px;line-height:1.2083333333;padding:0;background:#1C7857;display:inline-grid;align-content:center;justify-content:center}.doboard_task_widget-avatar-initials{color:#FFF;width:inherit;text-align:center}.doboard_task_widget-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover}.doboard_task_widget-description_container{height:55px;width:calc(100% - 44px - 8px);border-bottom:1px solid #EBF0F4;display:block;margin-left:8px}.doboard_task_widget-task_row:last-child .doboard_task_widget-description_container{border-bottom:none}.doboard_task_widget-all_issues{padding-bottom:0}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{overflow:auto;max-height:85vh;display:none}.doboard_task_widget-task_last_message,.doboard_task_widget-task_page_url a,.doboard_task_widget-task_title span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.doboard_task_widget-all_issues-container{scrollbar-width:none;margin-top:10px}.doboard_task_widget-content.doboard_task_widget-concrete_issue{padding:0}.doboard_task_widget-concrete_issues-container{padding:10px 16px 5px}.doboard_task_widget-all_issues-container::-webkit-scrollbar,.doboard_task_widget-all_issues::-webkit-scrollbar,.doboard_task_widget-concrete_issues-container::-webkit-scrollbar,.doboard_task_widget-content::-webkit-scrollbar{width:0}.doboard_task_widget-task_title{font-weight:700;display:flex;justify-content:space-between;align-items:center}.doboard_task_widget-task_title span{font-weight:700;display:inline-block}.doboard_task_widget-task_title-details{display:flex;max-width:calc(100% - 40px);align-items:center}.doboard_task_widget-task_title-unread_block{opacity:0;height:8px;width:8px;background:#f08c43;border-radius:50%;display:inline-block;font-size:8px;font-weight:600;position:relative}.doboard_task_widget-task_title-unread_block.unread{opacity:1}.doboard_task_widget-task_last_message{max-width:85%;height:36px}.doboard_task_widget-task_page_url{max-width:70%;height:36px;display:flex;align-items:center}.doboard_task_widget-task_page_url a{color:#40484F;text-decoration:none;margin-left:8px;max-width:100%}.doboard_task_widget-bottom{display:flex;justify-content:space-between}.doboard_task_widget-bottom-is-fixed{border-radius:10px;background:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkiIGhlaWdodD0iMTkiIHZpZXdCb3g9IjAgMCAxOSAxOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCjxwYXRoIGQ9Ik03LjA4MTE5IDAuMjIzNDM0QzguOTkxNjkgLTAuMjA4MTY3IDEwLjk5MTMgLTAuMDExMjE5NCAxMi43ODA0IDAuNzg1OTM0QzEzLjE1ODQgMC45NTQ2MjQgMTMuMzI4NiAxLjM5ODAzIDEzLjE2MDMgMS43NzYxN0MxMi45OTE3IDIuMTU0MTkgMTIuNTQ4MiAyLjMyNDI0IDEyLjE3MDEgMi4xNTYwNUMxMC42NzY0IDEuNDkwNTIgOS4wMDcyNiAxLjMyNiA3LjQxMjI1IDEuNjg2MzJDNS44MTcxNyAyLjA0NjcxIDQuMzgwOTcgMi45MTI5NiAzLjMxODUgNC4xNTYwNUMyLjI1NjIzIDUuMzk5MDEgMS42MjQ0MSA2Ljk1MjI5IDEuNTE2NzQgOC41ODM3OUMxLjQwOTI0IDEwLjIxNTQgMS44MzE4NCAxMS44MzkgMi43MjE4MiAxMy4yMTA3QzMuNjExNzkgMTQuNTgyMiA0LjkyMTY0IDE1LjYyOTQgNi40NTUyMSAxNi4xOTYxQzcuOTg5MDIgMTYuNzYyNiA5LjY2NTUzIDE2LjgxODkgMTEuMjMzNSAxNi4zNTUzQzEyLjgwMTYgMTUuODkxNiAxNC4xNzgzIDE0LjkzMzUgMTUuMTU3NCAxMy42MjM4QzE2LjEzNjQgMTIuMzE0MiAxNi42NjYxIDEwLjcyMjcgMTYuNjY3MSA5LjA4NzY5TDE4LjE2NzEgOS4wODg2N0MxOC4xNjU4IDExLjA0NzEgMTcuNTMxMiAxMi45NTM2IDE2LjM1ODUgMTQuNTIyM0MxNS4xODU5IDE2LjA5MDcgMTMuNTM3MyAxNy4yMzg0IDExLjY1OTMgMTcuNzkzN0M5Ljc4MTEgMTguMzQ5MSA3Ljc3MjkzIDE4LjI4MiA1LjkzNTY4IDE3LjYwMzNDNC4wOTg1IDE2LjkyNDYgMi41MjkxMiAxNS42NzAxIDEuNDYzMDMgMTQuMDI3MUMwLjM5NzAzNSAxMi4zODQxIC0wLjEwOTEwOSAxMC40Mzk1IDAuMDE5NjY4MyA4LjQ4NTE1QzAuMTQ4NjA3IDYuNTMwOCAwLjkwNjMyMyA0LjY3MDMzIDIuMTc4ODUgMy4xODE0NEMzLjQ1MTM2IDEuNjkyNjggNS4xNzA4OCAwLjY1NTE2MiA3LjA4MTE5IDAuMjIzNDM0WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPHBhdGggZD0iTTE2Ljg4NTkgMS44OTA0M0MxNy4xNzg2IDEuNTk3NTMgMTcuNjUzNCAxLjU5Nzg0IDE3Ljk0NjQgMS44OTA0M0MxOC4yMzkzIDIuMTgzMTYgMTguMjQwMSAyLjY1Nzk2IDE3Ljk0NzQgMi45NTA5N0w5LjYxMzQyIDExLjI5MjhDOS40NzI4MiAxMS40MzMzIDkuMjgxOTYgMTEuNTEyNCA5LjA4MzE1IDExLjUxMjVDOC44ODQzMiAxMS41MTI1IDguNjkzNDggMTEuNDMzMyA4LjU1Mjg3IDExLjI5MjhMNi4wNTI4NyA4Ljc5Mjc3QzUuNzYwMTQgOC40OTk5IDUuNzYwMTEgOC4wMjUwOCA2LjA1Mjg3IDcuNzMyMjJDNi4zNDU3MiA3LjQzOTM3IDYuODIwNTEgNy40Mzk0NiA3LjExMzQyIDcuNzMyMjJMOS4wODIxNyA5LjcwMDk3TDE2Ljg4NTkgMS44OTA0M1oiIGZpbGw9IiMyMkE0NzUiLz4NCjxwYXRoIGQ9Ik0xNy40MTcxIDcuNTcxMDlDMTcuODMxIDcuNTcxNDQgMTguMTY3IDcuOTA3MTYgMTguMTY3MSA4LjMyMTA5VjkuMDg4NjdMMTcuNDE3MSA5LjA4NzY5SDE2LjY2NzFWOC4zMjEwOUMxNi42NjcyIDcuOTA2OTQgMTcuMDAzIDcuNTcxMDkgMTcuNDE3MSA3LjU3MTA5WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPC9zdmc+) 8px center no-repeat #EBFAF4;padding:4px 7px 4px 30px}.doboard_task_widget-bottom-is-fixed-task-block{text-align:center}.doboard_task_widget-bottom-is-fixed-task{background:#F3F6F9;color:#1C7857;display:inline-block;border-radius:10px;padding:5px 8px;margin:0 auto}.doboard_task_widget-task_row-green{background:#EBF0F4}.doboard_task_widget_return_to_all{display:flex;gap:8px;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:wrap}.doboard_task_widget-task_title-last_update_time{font-family:Inter,serif;font-weight:400;font-style:normal;font-size:11px;leading-trim:NONE;line-height:100%}.doboard_task_widget-task_title_public_status_img{opacity:50%;margin-left:5px;scale:90%}.doboard_task_widget-description-textarea{resize:none}.doboard_task_widget-switch_row{display:flex;align-items:center;gap:12px;margin:16px 0;justify-content:space-between}.doboard_task_widget-switch-label{font-weight:600;font-size:16px;height:24px;align-content:center}.doboard_task_widget-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}.doboard_task_widget-switch input{opacity:0;width:0;height:0}.doboard_task_widget-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;border-radius:24px;transition:.2s}.doboard_task_widget-slider:before{position:absolute;content:"";height:20px;width:20px;left:2px;bottom:2px;background-color:#fff;border-radius:50%;transition:.2s}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider{background-color:#65D4AC}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider:before{transform:translateX(20px)}.doboard_task_widget-switch-img{width:24px;height:24px;flex-shrink:0}.doboard_task_widget-switch-center{display:flex;gap:2px;flex-direction:column;-moz-flex-direction:column;flex:1 1 auto;min-width:0}.doboard_task_widget-switch-desc{display:block;font-size:12px;color:#707A83;margin:0;line-height:1.2;max-width:180px;word-break:break-word}.doboard_task_widget-concrete_issue-day_content{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-concrete_issue_day_content-month_day{text-align:center;font-weight:400;font-size:12px;line-height:100%;padding:8px;opacity:.75}.doboard_task_widget-concrete_issue_day_content-messages_wrapper{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-comment_data_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;margin-bottom:15px;align-items:flex-end}.doboard_task_widget-comment_text_container{position:relative;width:calc(100% - 44px - 5px);height:auto;margin-left:5px;background:#F3F6F9;border-radius:16px}.doboard_task_widget-comment_text_container:after{content:"";position:absolute;bottom:0;left:-5px;width:13px;height:19px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAxMyAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAuMTEyNTggMTkuMDMzNEM1LjI5NDg2IDE5LjgyMDEgMTAuNjEwNSAxNy45NzQxIDEyLjI3MTUgMTYuMTcxM0MxMi4yNzE1IDE2LjE3MTMgMTAuOTYyMyAtMi43ODEyNCA1LjA5NTU0IDAuMzQ5MDc5QzUuMDc0NCAxLjYxNDU0IDUuMDk1NTQgNS45OTQ5IDUuMDk1NTQgNi43NDA2OUM1LjA5NTU0IDE3LjA2NjIgLTAuODg0MDEyIDE4LjQ0MDEgMC4xMTI1OCAxOS4wMzM0WiIgZmlsbD0iI0YzRjZGOSIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container{background:#EBFAF4}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container:after{left:auto;right:-5px;height:13px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMyAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjc3NzEgMTIuMzA2NkM3LjMzMTM1IDEzLjA5MzcgMS43NDU0NCAxMS4yNDY5IDAgOS40NDMxOUw3LjM5MTYgMEM3LjM5MTYgMTAuMzMwMyAxMy44MjQ0IDExLjcxMzEgMTIuNzc3MSAxMi4zMDY2WiIgZmlsbD0iI0VCRkFGNCIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_body,.doboard_task_widget-comment_time{position:relative;z-index:1}.doboard_task_widget-comment_body{padding:6px 8px;min-height:30px}.doboard_task_widget-comment_body strong{font-variation-settings:"wght" 700}.doboard_task_widget-comment_body blockquote{margin:0;border-left:3px solid #22a475}.doboard_task_widget-comment_body blockquote p{margin:0 10px}.doboard_task_widget-comment_body details .mce-accordion-body{padding-left:20px}.doboard_task_widget-comment_body details .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg transform='rotate(180 0 0)' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") 0 no-repeat;padding-left:20px}.doboard_task_widget-comment_body .mce-accordion[open] .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") 0 no-repeat}.doboard_task_widget-comment_body details .mce-accordion-summary::marker{content:""}.doboard_task_widget-comment_body pre{border:1px solid #d6dde3;border-left-width:8px;border-radius:4px;padding:13px 16px 14px 12px;white-space:pre-wrap}.doboard_task_widget-comment_time{font-weight:400;font-size:11px;opacity:.8;position:absolute;bottom:6px;right:6px}.doboard_task_widget-comment_body-img-strict{max-width:-webkit-fill-available;height:100px;margin-right:5px}.doboard_task_widget-send_message{padding:14px 10px;border-top:1px solid #BBC7D1;position:sticky;background:#fff;bottom:0;z-index:4}.doboard_task_widget-send_message_elements_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:nowrap;justify-content:space-between;align-items:end}.doboard_task_widget-send_message_elements_wrapper img{margin:0}.doboard_task_widget-send_message_input_wrapper{position:relative;display:inline-grid;align-items:center;justify-items:center;flex-grow:1;padding:0 6px}.doboard_task_widget-send_message_input_wrapper textarea{position:relative;width:100%;height:37px;border:none;outline:0;box-shadow:none;border-radius:24px;background:#F3F6F9;resize:none;margin-bottom:0!important;transition:height .2s ease-in-out;padding:8px;box-sizing:border-box}.doboard_task_widget-send_message_input_wrapper textarea.high{height:170px}.doboard_task_widget-send_message_input_wrapper textarea:focus{background:#F3F6F9;border-color:#007bff;outline:0}.doboard_task_widget-send_message_button{display:inline-grid;border:none;cursor:pointer;padding:0;width:100%;align-items:center;margin:20px 0 0}.doboard_task_widget-send_message_paperclip{display:inline-grid;border:none;background:0 0;cursor:pointer;padding:0;align-items:center;margin:0}.doboard_task_widget-send_message_button:hover,.doboard_task_widget-send_message_paperclip:hover rect{fill:#45a049}.doboard_task_widget-send_message_button:active,.doboard_task_widget-send_message_paperclip:active{transform:scale(.98)}.doboard_task_widget-spinner_wrapper_for_containers{display:flex;justify-content:center;align-items:center;min-height:60px;width:100%}.doboard_task_widget-spinner_for_containers{width:40px;height:40px;border-radius:50%;background:conic-gradient(transparent,#1C7857);mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#fff 0);animation:spin 1s linear infinite}.doboard_task_widget-create_issue{padding:10px}.doboard_task_widget__file-upload__wrapper{display:none;border:1px solid #BBC7D1;margin-top:14px;padding:0 10px 10px;border-radius:4px}.doboard_task_widget__file-upload__list-header{text-align:left;font-size:.9em;margin:5px 0;color:#444c529e}.doboard_task_widget__file-upload__file-input-button{display:none}.doboard_task_widget__file-upload__file-list{border:1px solid #ddd;border-radius:5px;padding:6px;max-height:200px;overflow-y:auto;background:#f3f6f9}.doboard_task_widget__file-upload__file-item{display:flex;justify-content:space-between;align-items:center;padding:4px;border-bottom:1px solid #bbc7d16b}.doboard_task_widget__file-upload__file-item:last-child{border-bottom:none}.doboard_task_widget__file-upload__file_info{display:inline-flex;align-items:center}.doboard_task_widget__file-upload__file-name{font-weight:700;font-size:.9em}.doboard_task_widget__file-upload__file-item-content{width:100%}.doboard_task_widget__file-upload__file_size{color:#666;font-size:.8em;margin-left:6px}.doboard_task_widget__file-upload__remove-btn{background:#22a475;color:#fff;border:none;border-radius:3px;cursor:pointer}.doboard_task_widget__file-upload__error{display:block;margin:7px 0 0;padding:7px;border-radius:4px;background:#fdd;border:1px solid #cf6868}.doboard_task_widget-show_button{position:fixed;background:#1C7857;color:#FFF;padding:8px 12px;border-radius:4px;font-size:14px;z-index:10000;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);transform:translate(-50%,-100%);margin-top:-8px;white-space:nowrap;border:none;font-family:inherit}@keyframes spin{to{transform:rotate(1turn)}}@media (max-width:480px){.doboard_task_widget{position:fixed;right:0;top:auto;bottom:0;margin:0 20px 20px;box-sizing:border-box;transform:translateZ(0);-moz-transform:translateZ(0);will-change:transform;max-height:90vh}.doboard_task_widget-container{width:100%;max-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-content{height:auto;max-height:none;scrollbar-width:none}.doboard_task_widget-content::-webkit-scrollbar{display:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{max-height:80vh}}@supports (-webkit-overflow-scrolling:touch){.doboard_task_widget{position:fixed}}.doboard_task_widget_tasks_list{background-color:#fff;position:sticky;bottom:0;height:38px;display:flex;flex-direction:column-reverse;align-items:center;padding-bottom:8px}.doboard_task_widget_tasks_list a{color:#40484F!important;text-decoration:none!important}.doboard_task_widget-text_selection{position:relative;display:inline-block}.doboard_task_widget-see-task{cursor:pointer;text-decoration:underline}.doboard_task_widget-text_selection_tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#FFF;color:#000;padding:4px 8px;border-radius:4px;font-size:10px;white-space:nowrap;z-index:9000;border:1px solid #BBC7D1;margin-bottom:8px}.doboard_task_widget-text_selection_tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#FFF}.doboard_task_widget-text_selection_tooltip::before{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#BBC7D1;z-index:-1}.doboard_task_widget-text_selection_tooltip_icon{background-image:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDEwMyAxMDAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDEwMyAxMDA7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtmaWxsOiMxNzcyNTA7fQ0KPC9zdHlsZT4NCjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik01MywwSDB2MTAwaDMwLjJINTNDMTE5LjYsMTAwLDExOS42LDAsNTMsMHogTTMwLjIsMTAwYy0xNi42LDAtMzAtMTMuNC0zMC0zMHMxMy40LTMwLDMwLTMwDQoJYzE2LjYsMCwzMCwxMy40LDMwLDMwUzQ2LjgsMTAwLDMwLjIsMTAweiIvPg0KPC9zdmc+DQo=);background-repeat:no-repeat;width:22px;height:22px;margin:5px 3px}.doboard_task_widget-text_selection_tooltip_element{display:flex;justify-content:space-between}.doboard_task_widget-content .tox .tox-toolbar__group{padding:0 8px!important}.doboard_task_widget-content .tox-tinymce{border:1px solid #BBC7D1;border-radius:4px}.doboard_task_widget-content ol,.doboard_task_widget-content ul{margin:0 0 0 1em!important}`;
+let spotFixCSS = `.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after{content:"";position:absolute;left:8%;top:100%;transform:translateX(-50%);pointer-events:none;background:0 0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid #545b61;display:block}.doboard_task_widget-send_message_paperclip{position:relative}.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip{display:none;position:absolute;left:0;bottom:0;transform:translateX(-3%) translateY(-43px);background:#545b61;color:#FFF;border:none;border-radius:3px;padding:10px 16px;font-size:13px;line-height:1.4;z-index:100;min-width:220px;max-width:320px;text-align:left;pointer-events:none;text-transform:none}.doboard_task_widget-send_message_paperclip:hover .doboard_task_widget-paperclip-tooltip{display:block}.doboard_task_widget *{font-family:Inter,sans-serif;font-weight:400;font-size:14px;line-height:130%;color:#40484F}.doboard_task_widget-header *{color:#252A2F;margin:0}.doboard_task_widget a{text-decoration:underline;color:#2F68B7}.doboard_task_widget a:hover{text-decoration:none}.doboard_task_widget{position:fixed;right:50px;bottom:20px;z-index:9999;vertical-align:middle;transition:top .1s;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}.doboard_task_widget_cursor-pointer{cursor:pointer}.doboard_task_widget-container-maximize{width:80vw!important;max-width:1120px!important;max-height:calc(100vh - 40px);display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-container{width:430px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;-moz-flex-direction:column}@media (max-height:800px){.doboard_task_widget-container,.doboard_task_widget-container-maximize{max-height:calc(60vh - 40px)}}.doboard_task_widget-header{display:flex;height:41px;min-height:41px;padding:0 16px;background-color:#EBF0F4;border-radius:8px 8px 0 0;border:1px solid #BBC7D1;border-bottom:none;justify-content:space-between;align-items:center;color:#FFF}.doboard_task_widget-user_menu-header{display:flex;padding:16px;border:1px solid #BBC7D1;border-bottom-color:#EBF0F4;border-radius:8px 8px 0 0;flex-direction:column;align-items:center;color:#252A2F;background-color:#F3F6F9}.doboard_task_widget-user_menu-header-top{display:flex;height:fit-content;align-items:center;width:100%;justify-content:space-between}.doboard_task_widget-user_menu-header-avatar{max-width:60px;max-height:60px;width:60px;height:60px;border-radius:50%;margin-bottom:4px}.doboard_task_widget-user_menu-item{display:flex;align-items:center;border-bottom:1px #EBF0F4 solid;padding:0 16px;height:65px}.doboard_task_widget-content{flex:1;overflow-y:auto;background:#FFF;border-radius:0 0 8px 8px;border:1px #BBC7D1;border-style:none solid solid;box-shadow:0 4px 15px 8px #CACACA40;scrollbar-width:none;max-height:60vh}.doboard_task_widget-element-container{margin-bottom:30px}.doboard_task_widget-wrap{box-shadow:none;position:fixed;right:-50px;padding:0;cursor:pointer;width:69px;height:52px;border-top-left-radius:4px;border-bottom-left-radius:4px;background-color:rgba(255,255,255,.9);border:1px solid #EBF0F4;display:flex;align-items:center;justify-content:center}.doboard_task_widget-input-container.hidden,.doboard_task_widget-login.hidden,.doboard_task_widget-wrap.hidden,.wrap_review::after{display:none}.doboard_task_widget-wrap img{width:32px;height:32px;transform:scaleX(-1)}.wrap_review{width:164px;min-width:164px;height:54px}.wrap_review img{width:28px;height:28px;transform:scaleX(-1)}.wrap_review:hover{background-color:#fff}@media (max-width:480px){.doboard_task_widget-wrap{right:-20px}}#review_content_button_text{color:#D5991A;margin-left:6px;font-weight:600;font-size:14px;text-transform:none!important}#doboard_task_widget-task_count{position:absolute;top:-12px;right:4px;width:22px;height:22px;opacity:1;background:#ef8b43;border-radius:50%;color:#FFF;text-align:center;line-height:22px}#doboard_task_widget-task_count.hidden{width:0;height:0;opacity:0}.doboard_task_widget-input-container{position:relative;margin-bottom:24px}.doboard_task_widget-input-container .doboard_task_widget-field{padding:0 8px;border-radius:4px;border:1px solid #BBC7D1;outline:0!important;appearance:none;width:100%;height:40px;background:#FFF;color:#000;max-width:-webkit-fill-available;max-width:-moz-available}.doboard_task_widget-field:focus{border-color:#2F68B7}.doboard_task_widget-input-container textarea.doboard_task_widget-field{height:94px;padding-top:11px;padding-bottom:11px}.doboard_task_widget-field+label{color:#252A2F;background:#fff;position:absolute;top:20px;left:8px;transform:translateY(-50%);transition:all .2s ease-in-out}.doboard_task_widget-field.has-value+label,.doboard_task_widget-field:focus+label{font-size:10px;top:0;left:12px;padding:0 4px;z-index:5}.doboard_task_widget-field:focus+label{color:#2F68B7}.doboard_task_widget-login{background:#F9FBFD;border:1px solid #BBC7D1;border-radius:4px;padding:11px 8px 8px;margin-bottom:24px}.doboard_task_widget-login .doboard_task_widget-accordion{height:0;overflow:hidden;opacity:0;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-accordion{height:auto;overflow:visible;opacity:1}.doboard_task_widget-login .doboard_task_widget-input-container:last-child{margin-bottom:0}.doboard_task_widget-login span{display:block;position:relative;padding-right:24px;cursor:pointer}.doboard_task_widget-login.active span{margin-bottom:24px}.doboard_task_widget-login span::after{position:absolute;top:0;right:4px;content:"";display:block;width:10px;height:10px;transform:rotate(45deg);border:2px solid #40484F;border-radius:1px;border-top:none;border-left:none;transition:all .2s ease-in-out}.doboard_task_widget-login.active span::after{transform:rotate(-135deg);top:7px}.doboard_task_widget-login .doboard_task_widget-field+label,.doboard_task_widget-login .doboard_task_widget-input-container .doboard_task_widget-field{background:#F9FBFD}.doboard_task_widget-submit_button{height:48px;width:100%;max-width:400px;margin-bottom:10px;color:#FFF;background:#22A475;border:none;border-radius:6px;font-family:Inter,sans-serif;font-weight:700;font-size:16px;line-height:150%;cursor:pointer;transition:all .2s ease-in-out}.doboard_task_widget-submit_button:hover{background:#1C7857;color:#FFF}.doboard_task_widget-submit_button:disabled{background:rgba(117,148,138,.92);color:#FFF;cursor:wait}.doboard_task_widget-issue-title{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-hidden_element{opacity:0}.doboard_task_widget-message-wrapper{border-radius:4px;padding:8px;margin-bottom:14px;display:grid;justify-items:center}.doboard_task_widget-error_message-wrapper.hidden,.doboard_task_widget-message-wrapper.hidden{display:none}.doboard_task_widget-error_message{background:#fdd;border:1px solid #cf6868}.doboard_task_widget-notice_message{background:#dde9ff;border:1px solid #68a6cf}#doboard_task_widget-error_message-header{font-weight:600}#doboard_task_widget-error_message{text-align:center}.doboard_task_widget-task_row{display:flex;max-height:55px;cursor:pointer;align-items:center;justify-content:space-between;padding:1px 15px}.doboard_task_widget-task_row:last-child{margin-bottom:0}.doboard_task_widget-task-text_bold{font-weight:700}.doboard_task_widget-element_selection,.doboard_task_widget-image_selection,.doboard_task_widget-text_selection,.doboard_task_widget-text_selection.image-highlight>img{background:rgba(208,213,127,.68)}.doboard_task_widget-issues_list_empty{text-align:center;margin:20px 0}.doboard_task_widget-avatar_container{display:flex;height:44px;width:44px;border-radius:50%;background-repeat:no-repeat;background-position:center;background-size:100%}.doboard_task_widget-comment_data_owner .doboard_task_widget-avatar_container{opacity:0}.doboard_task_widget-avatar_placeholder{min-height:44px;min-width:44px;border-radius:50%;font-size:24px;line-height:1.2083333333;padding:0;background:#1C7857;display:inline-grid;align-content:center;justify-content:center}.doboard_task_widget-avatar-initials{color:#FFF;width:inherit;text-align:center}.doboard_task_widget-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover}.doboard_task_widget-description_container{height:55px;width:calc(100% - 44px - 8px);border-bottom:1px solid #EBF0F4;display:block;margin-left:8px}.doboard_task_widget-task_row:last-child .doboard_task_widget-description_container{border-bottom:none}.doboard_task_widget-all_issues{padding-bottom:0}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{overflow:auto;max-height:85vh;display:none}.doboard_task_widget-task_last_message,.doboard_task_widget-task_page_url a,.doboard_task_widget-task_title span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.doboard_task_widget-all_issues-container{scrollbar-width:none;margin-top:10px}.doboard_task_widget-content.doboard_task_widget-concrete_issue{padding:0}.doboard_task_widget-concrete_issues-container{padding:10px 16px 5px}.doboard_task_widget-all_issues-container::-webkit-scrollbar,.doboard_task_widget-all_issues::-webkit-scrollbar,.doboard_task_widget-concrete_issues-container::-webkit-scrollbar,.doboard_task_widget-content::-webkit-scrollbar{width:0}.doboard_task_widget-task_title{font-weight:700;display:flex;justify-content:space-between;align-items:center}.doboard_task_widget-task_title span{font-weight:700;display:inline-block}.doboard_task_widget-task_title-details{display:flex;max-width:calc(100% - 40px);align-items:center}.doboard_task_widget-task_title-unread_block{opacity:0;height:8px;width:8px;background:#f08c43;border-radius:50%;display:inline-block;font-size:8px;font-weight:600;position:relative}.doboard_task_widget-task_title-unread_block.unread{opacity:1}.doboard_task_widget-task_last_message{max-width:85%;height:36px}.doboard_task_widget-task_page_url{max-width:70%;height:36px;display:flex;align-items:center}.doboard_task_widget-task_page_url a{color:#40484F;text-decoration:none;margin-left:8px;max-width:100%}.doboard_task_widget-bottom{display:flex;justify-content:space-between}.doboard_task_widget-bottom-is-fixed{border-radius:10px;background:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkiIGhlaWdodD0iMTkiIHZpZXdCb3g9IjAgMCAxOSAxOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCjxwYXRoIGQ9Ik03LjA4MTE5IDAuMjIzNDM0QzguOTkxNjkgLTAuMjA4MTY3IDEwLjk5MTMgLTAuMDExMjE5NCAxMi43ODA0IDAuNzg1OTM0QzEzLjE1ODQgMC45NTQ2MjQgMTMuMzI4NiAxLjM5ODAzIDEzLjE2MDMgMS43NzYxN0MxMi45OTE3IDIuMTU0MTkgMTIuNTQ4MiAyLjMyNDI0IDEyLjE3MDEgMi4xNTYwNUMxMC42NzY0IDEuNDkwNTIgOS4wMDcyNiAxLjMyNiA3LjQxMjI1IDEuNjg2MzJDNS44MTcxNyAyLjA0NjcxIDQuMzgwOTcgMi45MTI5NiAzLjMxODUgNC4xNTYwNUMyLjI1NjIzIDUuMzk5MDEgMS42MjQ0MSA2Ljk1MjI5IDEuNTE2NzQgOC41ODM3OUMxLjQwOTI0IDEwLjIxNTQgMS44MzE4NCAxMS44MzkgMi43MjE4MiAxMy4yMTA3QzMuNjExNzkgMTQuNTgyMiA0LjkyMTY0IDE1LjYyOTQgNi40NTUyMSAxNi4xOTYxQzcuOTg5MDIgMTYuNzYyNiA5LjY2NTUzIDE2LjgxODkgMTEuMjMzNSAxNi4zNTUzQzEyLjgwMTYgMTUuODkxNiAxNC4xNzgzIDE0LjkzMzUgMTUuMTU3NCAxMy42MjM4QzE2LjEzNjQgMTIuMzE0MiAxNi42NjYxIDEwLjcyMjcgMTYuNjY3MSA5LjA4NzY5TDE4LjE2NzEgOS4wODg2N0MxOC4xNjU4IDExLjA0NzEgMTcuNTMxMiAxMi45NTM2IDE2LjM1ODUgMTQuNTIyM0MxNS4xODU5IDE2LjA5MDcgMTMuNTM3MyAxNy4yMzg0IDExLjY1OTMgMTcuNzkzN0M5Ljc4MTEgMTguMzQ5MSA3Ljc3MjkzIDE4LjI4MiA1LjkzNTY4IDE3LjYwMzNDNC4wOTg1IDE2LjkyNDYgMi41MjkxMiAxNS42NzAxIDEuNDYzMDMgMTQuMDI3MUMwLjM5NzAzNSAxMi4zODQxIC0wLjEwOTEwOSAxMC40Mzk1IDAuMDE5NjY4MyA4LjQ4NTE1QzAuMTQ4NjA3IDYuNTMwOCAwLjkwNjMyMyA0LjY3MDMzIDIuMTc4ODUgMy4xODE0NEMzLjQ1MTM2IDEuNjkyNjggNS4xNzA4OCAwLjY1NTE2MiA3LjA4MTE5IDAuMjIzNDM0WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPHBhdGggZD0iTTE2Ljg4NTkgMS44OTA0M0MxNy4xNzg2IDEuNTk3NTMgMTcuNjUzNCAxLjU5Nzg0IDE3Ljk0NjQgMS44OTA0M0MxOC4yMzkzIDIuMTgzMTYgMTguMjQwMSAyLjY1Nzk2IDE3Ljk0NzQgMi45NTA5N0w5LjYxMzQyIDExLjI5MjhDOS40NzI4MiAxMS40MzMzIDkuMjgxOTYgMTEuNTEyNCA5LjA4MzE1IDExLjUxMjVDOC44ODQzMiAxMS41MTI1IDguNjkzNDggMTEuNDMzMyA4LjU1Mjg3IDExLjI5MjhMNi4wNTI4NyA4Ljc5Mjc3QzUuNzYwMTQgOC40OTk5IDUuNzYwMTEgOC4wMjUwOCA2LjA1Mjg3IDcuNzMyMjJDNi4zNDU3MiA3LjQzOTM3IDYuODIwNTEgNy40Mzk0NiA3LjExMzQyIDcuNzMyMjJMOS4wODIxNyA5LjcwMDk3TDE2Ljg4NTkgMS44OTA0M1oiIGZpbGw9IiMyMkE0NzUiLz4NCjxwYXRoIGQ9Ik0xNy40MTcxIDcuNTcxMDlDMTcuODMxIDcuNTcxNDQgMTguMTY3IDcuOTA3MTYgMTguMTY3MSA4LjMyMTA5VjkuMDg4NjdMMTcuNDE3MSA5LjA4NzY5SDE2LjY2NzFWOC4zMjEwOUMxNi42NjcyIDcuOTA2OTQgMTcuMDAzIDcuNTcxMDkgMTcuNDE3MSA3LjU3MTA5WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPC9zdmc+) 8px center no-repeat #EBFAF4;padding:4px 7px 4px 30px}.doboard_task_widget-bottom-is-fixed-task-block{text-align:center}.doboard_task_widget-bottom-is-fixed-task{background:#F3F6F9;color:#1C7857;display:inline-block;border-radius:10px;padding:5px 8px;margin:0 auto}.doboard_task_widget-task_row-green{background:#EBF0F4}.doboard_task_widget_return_to_all{display:flex;gap:8px;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:wrap}.doboard_task_widget-task_title-last_update_time{font-family:Inter,serif;font-weight:400;font-style:normal;font-size:11px;leading-trim:NONE;line-height:100%}.doboard_task_widget-task_title_public_status_img{opacity:50%;margin-left:5px;scale:90%}.doboard_task_widget-description-textarea{resize:none}.doboard_task_widget-switch_row{display:flex;align-items:center;gap:12px;margin:16px 0;justify-content:space-between}.doboard_task_widget-switch-label{font-weight:600;font-size:16px;height:24px;align-content:center}.doboard_task_widget-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}.doboard_task_widget-switch input{opacity:0;width:0;height:0}.doboard_task_widget-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;border-radius:24px;transition:.2s}.doboard_task_widget-slider:before{position:absolute;content:"";height:20px;width:20px;left:2px;bottom:2px;background-color:#fff;border-radius:50%;transition:.2s}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider{background-color:#65D4AC}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider:before{transform:translateX(20px)}.doboard_task_widget-switch-img{width:24px;height:24px;flex-shrink:0}.doboard_task_widget-switch-center{display:flex;gap:2px;flex-direction:column;-moz-flex-direction:column;flex:1 1 auto;min-width:0}.doboard_task_widget-switch-desc{display:block;font-size:12px;color:#707A83;margin:0;line-height:1.2;max-width:180px;word-break:break-word}.doboard_task_widget-concrete_issue-day_content{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-concrete_issue_day_content-month_day{text-align:center;font-weight:400;font-size:12px;line-height:100%;padding:8px;opacity:.75}.doboard_task_widget-concrete_issue_day_content-messages_wrapper{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-comment_data_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;margin-bottom:15px;align-items:flex-end}.doboard_task_widget-comment_text_container{position:relative;width:calc(100% - 44px - 5px);height:auto;margin-left:5px;background:#F3F6F9;border-radius:16px}.doboard_task_widget-comment_text_container:after{content:"";position:absolute;bottom:0;left:-5px;width:13px;height:19px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAxMyAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAuMTEyNTggMTkuMDMzNEM1LjI5NDg2IDE5LjgyMDEgMTAuNjEwNSAxNy45NzQxIDEyLjI3MTUgMTYuMTcxM0MxMi4yNzE1IDE2LjE3MTMgMTAuOTYyMyAtMi43ODEyNCA1LjA5NTU0IDAuMzQ5MDc5QzUuMDc0NCAxLjYxNDU0IDUuMDk1NTQgNS45OTQ5IDUuMDk1NTQgNi43NDA2OUM1LjA5NTU0IDE3LjA2NjIgLTAuODg0MDEyIDE4LjQ0MDEgMC4xMTI1OCAxOS4wMzM0WiIgZmlsbD0iI0YzRjZGOSIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container{background:#EBFAF4}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container:after{left:auto;right:-5px;height:13px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMyAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjc3NzEgMTIuMzA2NkM3LjMzMTM1IDEzLjA5MzcgMS43NDU0NCAxMS4yNDY5IDAgOS40NDMxOUw3LjM5MTYgMEM3LjM5MTYgMTAuMzMwMyAxMy44MjQ0IDExLjcxMzEgMTIuNzc3MSAxMi4zMDY2WiIgZmlsbD0iI0VCRkFGNCIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_body,.doboard_task_widget-comment_time{position:relative;z-index:1}.doboard_task_widget-comment_body{padding:6px 8px;min-height:30px}.doboard_task_widget-comment_body strong{font-variation-settings:"wght" 700}.doboard_task_widget-comment_body blockquote{margin:0;border-left:3px solid #22a475}.doboard_task_widget-comment_body blockquote p{margin:0 10px}.doboard_task_widget-comment_body details .mce-accordion-body{padding-left:20px}.doboard_task_widget-comment_body details .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg transform='rotate(180 0 0)' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") 0 no-repeat;padding-left:20px}.doboard_task_widget-comment_body .mce-accordion[open] .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") 0 no-repeat}.doboard_task_widget-comment_body details .mce-accordion-summary::marker{content:""}.doboard_task_widget-comment_body pre{border:1px solid #d6dde3;border-left-width:8px;border-radius:4px;padding:13px 16px 14px 12px;white-space:pre-wrap}.doboard_task_widget-comment_time{font-weight:400;font-size:11px;opacity:.8;position:absolute;bottom:6px;right:6px}.doboard_task_widget-comment_body-img-strict{max-width:-webkit-fill-available;height:100px;margin-right:5px}.doboard_task_widget-send_message{padding:14px 10px;border-top:1px solid #BBC7D1;position:sticky;background:#fff;bottom:0;z-index:4}.doboard_task_widget-send_message_elements_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:nowrap;justify-content:space-between;align-items:end}.doboard_task_widget-send_message_elements_wrapper button{height:37px;background:0 0;margin:0}.doboard_task_widget-send_message_elements_wrapper img{margin:0}.doboard_task_widget-send_message_input_wrapper{position:relative;display:inline-grid;align-items:center;justify-items:center;flex-grow:1;padding:0 6px}.doboard_task_widget-send_message_input_wrapper textarea{position:relative;width:100%;height:37px;border:none;outline:0;box-shadow:none;border-radius:24px;background:#F3F6F9;resize:none;margin-bottom:0!important;transition:height .2s ease-in-out;padding:8px;box-sizing:border-box}.doboard_task_widget-send_message_input_wrapper textarea.high{height:170px}.doboard_task_widget-send_message_input_wrapper textarea:focus{background:#F3F6F9;border-color:#007bff;outline:0}.doboard_task_widget-send_message_button,.doboard_task_widget-send_message_paperclip{display:inline-grid;border:none;background:0 0;cursor:pointer;padding:0;align-items:center;margin:0}.doboard_task_widget-send_message_button:hover,.doboard_task_widget-send_message_paperclip:hover rect{fill:#45a049}.doboard_task_widget-send_message_button:active,.doboard_task_widget-send_message_paperclip:active{transform:scale(.98)}.doboard_task_widget-spinner_wrapper_for_containers{display:flex;justify-content:center;align-items:center;min-height:60px;width:100%}.doboard_task_widget-spinner_for_containers{width:40px;height:40px;border-radius:50%;background:conic-gradient(transparent,#1C7857);mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#fff 0);animation:spin 1s linear infinite}.doboard_task_widget-create_issue{padding:10px}.doboard_task_widget__file-upload__wrapper{display:none;border:1px solid #BBC7D1;margin-top:14px;padding:0 10px 10px;border-radius:4px}.doboard_task_widget__file-upload__list-header{text-align:left;font-size:.9em;margin:5px 0;color:#444c529e}.doboard_task_widget__file-upload__file-input-button{display:none}.doboard_task_widget__file-upload__file-list{border:1px solid #ddd;border-radius:5px;padding:6px;max-height:200px;overflow-y:auto;background:#f3f6f9}.doboard_task_widget__file-upload__file-item{display:flex;justify-content:space-between;align-items:center;padding:4px;border-bottom:1px solid #bbc7d16b}.doboard_task_widget__file-upload__file-item:last-child{border-bottom:none}.doboard_task_widget__file-upload__file_info{display:inline-flex;align-items:center}.doboard_task_widget__file-upload__file-name{font-weight:700;font-size:.9em}.doboard_task_widget__file-upload__file-item-content{width:100%}.doboard_task_widget__file-upload__file_size{color:#666;font-size:.8em;margin-left:6px}.doboard_task_widget__file-upload__remove-btn{background:#22a475;color:#fff;border:none;border-radius:3px;cursor:pointer}.doboard_task_widget__file-upload__error{display:block;margin:7px 0 0;padding:7px;border-radius:4px;background:#fdd;border:1px solid #cf6868}.doboard_task_widget-show_button{position:fixed;background:#1C7857;color:#FFF;padding:8px 12px;border-radius:4px;font-size:14px;z-index:10000;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);transform:translate(-50%,-100%);margin-top:-8px;white-space:nowrap;border:none;font-family:inherit}@keyframes spin{to{transform:rotate(1turn)}}@media (max-width:480px){.doboard_task_widget{position:fixed;right:0;top:auto;bottom:0;margin:0 20px 20px;box-sizing:border-box;transform:translateZ(0);-moz-transform:translateZ(0);will-change:transform;max-height:90vh}.doboard_task_widget-header{padding:8px}.doboard_task_widget-issue-title{max-width:70px}.doboard_task_widget-container,.doboard_task_widget-container-maximize{width:100%;max-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-content{height:auto;max-height:none;scrollbar-width:none}.doboard_task_widget-content::-webkit-scrollbar{display:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{max-height:80vh}}@supports (-webkit-overflow-scrolling:touch){.doboard_task_widget{position:fixed}}.doboard_task_widget_tasks_list{background-color:#fff;position:sticky;bottom:0;height:38px;display:flex;flex-direction:column-reverse;align-items:center;padding-bottom:8px}#doboard_task_widget-user_menu-logout_button{display:inline-flex;align-items:center}.doboard_task_widget-text_selection{position:relative;display:inline-block}.doboard_task_widget-see-task{cursor:pointer;text-decoration:underline}.doboard_task_widget-text_selection_tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#FFF;color:#000;padding:4px 8px;border-radius:4px;font-size:10px;white-space:nowrap;z-index:9000;border:1px solid #BBC7D1;margin-bottom:8px}.doboard_task_widget-text_selection_tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#FFF}.doboard_task_widget-text_selection_tooltip::before{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#BBC7D1;z-index:-1}.doboard_task_widget-text_selection_tooltip_icon{background-image:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDEwMyAxMDAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDEwMyAxMDA7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtmaWxsOiMxNzcyNTA7fQ0KPC9zdHlsZT4NCjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik01MywwSDB2MTAwaDMwLjJINTNDMTE5LjYsMTAwLDExOS42LDAsNTMsMHogTTMwLjIsMTAwYy0xNi42LDAtMzAtMTMuNC0zMC0zMHMxMy40LTMwLDMwLTMwDQoJYzE2LjYsMCwzMCwxMy40LDMwLDMwUzQ2LjgsMTAwLDMwLjIsMTAweiIvPg0KPC9zdmc+DQo=);background-repeat:no-repeat;width:22px;height:22px;margin:5px 3px}.doboard_task_widget-text_selection_tooltip_element{display:flex;justify-content:space-between}.toggle{position:relative;display:inline-block;width:46px;height:28px}.toggle input{opacity:0;width:0;height:0;position:absolute}.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#bbc7d1;border-radius:24px;transition:.3s}.slider:before{content:"";position:absolute;height:24px;width:24px;left:2px;top:2px;background-color:#fff;border-radius:50%;transition:.3s}input:checked+.slider{background-color:#65d4ac}input:checked+.slider:before{transform:translateX(16px)}.logout_button{font-weight:500;font-size:14px;color:#707A83;cursor:pointer}`;
 /**
  * Return bool if widget is closed in local storage
  * @returns {boolean}
@@ -2814,6 +2853,16 @@ function storageProvidedTaskHasUnreadUpdates(taskId) {
     return storedUnread.includes(taskId.toString());
 }
 
+function storageSaveSpotfixVersion (version) {
+    localStorage.setItem('spotfix_app_version', `${version}`);
+}
+
+function clearLocalstorageOnLogout () {
+    localStorage.removeItem('spotfix_email');
+    localStorage.removeItem('spotfix_session_id');
+    localStorage.removeItem('spotfix_user_id');
+    localStorage.setItem('spotfix_widget_is_closed', '1');
+}
 
 /**
  * File uploader handler for managing file attachments with validation and upload capabilities
@@ -3205,73 +3254,8 @@ class FileUploader {
 
         return results;
     }
-
-     /**
-     * Make a screenshot and add it as a file
-     * @returns {Promise<void>}
-     */
-    async makeScreenshot() {
-        if (!navigator.mediaDevices?.getDisplayMedia) {
-            return null;
-        }
-
-        let stream;
-        try {
-            stream = await navigator.mediaDevices.getDisplayMedia({
-                video: { frameRate: 5 },
-                audio: false
-            });
-        } catch (err) {
-            return null;
-        }
-
-        const video = document.createElement('video');
-        video.srcObject = stream;
-
-        try {
-            await video.play();
-        } catch (err) {
-            return null;
-        }
-
-        await new Promise(r => setTimeout(r, 2000));
-
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-
-        if (!canvas.width || !canvas.height) {
-            stream.getTracks().forEach(t => t.stop());
-            return null;
-        }
-
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        stream.getTracks().forEach(t => t.stop());
-
-        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-        if (!blob) {
-            return null;
-        }
-
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const year = now.getFullYear();
-
-        const fileName = `Screenshot_${hours}:${minutes}_${day}_${month}_${year}.png`;
-
-        const file = new File([blob], fileName, {
-            type: 'image/png',
-            lastModified: Date.now()
-        });
-        this.addFile(file);
-    }
-
 }
+
 class SpotFixTemplatesLoader {
     static getTemplateCode(templateName) {
         const templateMethod = this[templateName];
@@ -3290,10 +3274,21 @@ class SpotFixTemplatesLoader {
 <div class="doboard_task_widget-container">
     <div class="doboard_task_widget-header">
         <div style="display: flex;align-items: center;gap: 8px;">
-            <img src="{{logoDoBoardWhite}}"  alt="">
+            <img src="{{logoDoBoardGreen}}"  alt="">
             <span>All spots </span>
         </div>
-        <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        <div>
+            <span id="addNewTaskButton">
+                <img src="{{iconPlus}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="openUserMenuButton">
+                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="maximizeWidgetContainer">
+                <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        </div>
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-all_issues">
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
@@ -3303,7 +3298,7 @@ class SpotFixTemplatesLoader {
         </div>
         <div class="doboard_task_widget_tasks_list">
             <a rel="nofollow" target="_blank" href="https://doboard.com/spotfix">
-            SpotFix
+             doBoard / SpotFix
             </a>
         </div>
     </div>
@@ -3312,27 +3307,51 @@ class SpotFixTemplatesLoader {
 
     static concrete_issue() {
         return `
-<div class="doboard_task_widget-container">
+<div class="{{contenerClasess}}">
     <div class="doboard_task_widget-header">
         <div class="doboard_task_widget_return_to_all doboard_task_widget_cursor-pointer">
             <img src="{{chevronBack}}" alt="" title="Return to all spots list">
             <span title="Return to all spots list"> All {{issuesCounter}}</span>
         </div>
         <div class="doboard_task_widget-issue-title">{{issueTitle}}</div>
-        <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        <div>
+            <span id="addNewTaskButton">
+                <img src="{{iconPlus}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="openUserMenuButton">
+                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="maximizeWidgetContainer">
+                <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        </div>
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-concrete_issue">
+        <div style="background-color: #D6DDE3; padding: 12px 16px">
+                <a rel="nofollow" href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
+        </div>
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
             <div class="doboard_task_widget-spinner_for_containers"></div>
         </div>
         <div class="doboard_task_widget-concrete_issues-container">
         </div>
         <div class="doboard_task_widget-send_message">
-             <textarea name="doboard_task_widget_message" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
-            <div>
-              <div class="doboard_task_widget-field">
-                <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button doboard_task_widget-send_message_button">Submit</button>
-            </div>
+            <div class="doboard_task_widget-send_message_elements_wrapper">
+                <button type="button" class="doboard_task_widget-send_message_paperclip">
+                    <img src="{{buttonPaperClip}}" alt="Attach a file">
+                    <div class="doboard_task_widget-paperclip-tooltip">
+                        Upload up to 5 JPG, PNG, GIF, PDF, TXT or DOC files (5MB each, 25MB total).
+                    </div>
+                </button>
+    
+                <div class="doboard_task_widget-send_message_input_wrapper">
+                    <textarea name="doboard_task_widget_message" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
+                </div>
+    
+                <button type="button" class="doboard_task_widget-send_message_button">
+                    <img src="{{buttonSendMessage}}" alt="Send message" title="Send message">
+                </button>
             </div>
             <div class="doboard_task_widget__file-upload__wrapper" id="doboard_task_widget__file-upload__wrapper">
                 <div class="doboard_task_widget__file-upload__list-header">Attached files</div>
@@ -3375,17 +3394,25 @@ class SpotFixTemplatesLoader {
 <div class="doboard_task_widget-container">
     <div class="doboard_task_widget-header">
         <div style="display: flex;align-items: center;gap: 8px;">
-            <img src="{{logoDoBoardWhite}}"  alt="">
+            <img src="{{logoDoBoardGreen}}"  alt="">
             <span>Report an issue</span>
         </div>
-        <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        <div>
+            <span id="openUserMenuButton">
+                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="maximizeWidgetContainer">
+                <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+        </div>
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-create_issue">
 
         <div class="doboard_task_widget-element-container">
             <span>
-                If you found issue with <span style="color: #000000;">{{currentDomain}}</span> page, you are in right place. Please use this form to tell us about the issue you’re experiencing.
-                <a href="https://doboard.com" target="_blank">doboard.com</a>
+                Tell us about any issue you’re experiencing on <span style="color: #000000;">{{currentDomain}}</span>. 
+                You’re also welcome to review spelling, grammar, or ask a question related to this page.
             </span>
         </div>
 
@@ -3395,8 +3422,8 @@ class SpotFixTemplatesLoader {
         </div>
 
         <div class="doboard_task_widget-input-container">
-            <label for="doboard_task_widget-description">Description</label>
             <textarea id="doboard_task_widget-description" class="doboard_task_widget-field" name="description" required></textarea>
+            <label for="doboard_task_widget-description">Description</label>
         </div>
 
         <div class="doboard_task_widget-login">
@@ -3468,10 +3495,70 @@ class SpotFixTemplatesLoader {
 `;
     }
 
+    static user_menu() {
+        return `
+<div class="doboard_task_widget-container">
+    <div class="doboard_task_widget-user_menu-header">
+        <div class="doboard_task_widget-user_menu-header-top">
+            <div id="spotfix_back_button" class="doboard_task_widget_cursor-pointer" 
+            style="display: flex;align-items: center;gap: 8px;">
+                <img src="{{chevronBackDark}}" alt="">
+                <span> Back</span>
+            </div>
+            <div>
+                <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center">
+             <img class="doboard_task_widget-user_menu-header-avatar" src="{{avatar}}" alt="">
+             <span style="font-size: 16px; font-weight: 700">{{userName}}</span>
+             <span style="font-size: 12px;">{{email}}</span>
+             <span id="doboard_task_widget-user_menu-signlog_button">
+                 <a style="cursor: pointer" rel="nofollow" target="_blank">Sign up or Log in</a>
+             </span>
+        </div>
+    </div>
+    <div class="doboard_task_widget-content" style="min-height:200px ">
+        <div style="height: 392px">
+        <div style="position: sticky; top: 0">
+            <div class="doboard_task_widget-user_menu-item">
+                <img src="{{iconEye}}" alt="" style="margin-right: 12px">
+                <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
+                    <span style="display: inline-flex; flex-direction: column">
+                        <span style="font-weight: 500; font-size: 14px; color: #252A2F">
+                        Show widget on my screen</span>
+                        <span style="font-size: 10px; color: #40484F">
+                        The widget will be visible again if you select any text on the site</span>
+                    </span>
+                    <label class="toggle" style="margin-left: 8px">
+                      <input id="widget_visibility" type="checkbox">
+                      <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="doboard_task_widget-user_menu-item">
+                <span id="doboard_task_widget-user_menu-logout_button">
+                    <img src="{{iconDoor}}" alt="" style="margin-right: 12px; cursor: pointer">
+                    <span class="logout_button">Log out</span>
+                </span>
+            </div>
+        </div>
+        </div>
+        <div style="padding: 16px; font-size: 13px; position: sticky; bottom: 0">
+            <span>{{spotfixVersion}}</span>
+            <span>Powered by
+            <a rel="nofollow" target="_blank" href="https://doboard.com">
+             doBoard
+            </a></span>
+        </div>
+    </div>
+</div>`;
+    }
+
     static wrap() {
         return `
-<div class="doboard_task_widget-wrap">
-<img src="{{iconSpotWidgetWrapPencil}}" />
+<div class="doboard_task_widget-wrap" style="bottom: {{position}}">
+<img src="{{iconMarker}}" />
 <!--    <img src="{{logoDoBoardWrap}}" alt="Doboard logo">-->
     <div id="doboard_task_widget-task_count" class="hidden"></div>
 </div>`;
@@ -3479,8 +3566,8 @@ class SpotFixTemplatesLoader {
 
     static wrap_review() {
         return `
-<button id="doboard_task_widget_button" class="doboard_task_widget-wrap wrap_review">
-<img src="{{iconSpotWidgetWrapPencil}}" />
+<button id="doboard_task_widget_button" class="doboard_task_widget-wrap wrap_review" style="bottom: {{position}};">
+<img src="{{iconMarker}}" />
 <span id="review_content_button_text">Review content</span>
 </button>`;
     }
@@ -3523,15 +3610,22 @@ class SpotFixSVGLoader {
     static chevronBack() {
         return `
 <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M7 13L1 7L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M7 13L1 7L7 1" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+    }
+
+    static chevronBackDark() {
+        return `
+<svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M7 13L1 7L7 1" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
     }
 
     static buttonCloseScreen() {
         return `
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M18 6L6 18" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6 6L18 18" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M18 6L6 18" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 6L18 18" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
     }
 
@@ -3558,10 +3652,10 @@ class SpotFixSVGLoader {
 </svg>`;
     }
 
-    static logoDoBoardWhite() {
+    static logoDoBoardGreen() {
         return `
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M12.3435 1.87294e-10H0V24H7.04064H12.3435C27.8855 24 27.8855 -7.7417e-05 12.3435 1.87294e-10ZM7.04064 24C3.18002 24 0.0503678 20.7764 0.0503678 16.8C0.0503678 12.8236 3.18002 9.6 7.04064 9.6C10.9012 9.6 14.0309 12.8236 14.0309 16.8C14.0309 20.7764 10.9012 24 7.04064 24Z" fill="white"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M12.3435 1.87294e-10H0V24H7.04064H12.3435C27.8855 24 27.8855 -7.7417e-05 12.3435 1.87294e-10ZM7.04064 24C3.18002 24 0.0503678 20.7764 0.0503678 16.8C0.0503678 12.8236 3.18002 9.6 7.04064 9.6C10.9012 9.6 14.0309 12.8236 14.0309 16.8C14.0309 20.7764 10.9012 24 7.04064 24Z" fill="#1C7857"/>
 </svg>`;
     }
 
@@ -3601,6 +3695,68 @@ class SpotFixSVGLoader {
 <path d="M11.25 5.25H13.5C13.9925 5.25 14.4801 5.347 14.9351 5.53545C15.39 5.72391 15.8034 6.00013 16.1517 6.34835C16.4999 6.69657 16.7761 7.10997 16.9645 7.56494C17.153 8.01991 17.25 8.50754 17.25 9C17.25 9.49246 17.153 9.98009 16.9645 10.4351C16.7761 10.89 16.4999 11.3034 16.1517 11.6517C15.8034 11.9999 15.39 12.2761 14.9351 12.4645C14.4801 12.653 13.9925 12.75 13.5 12.75H11.25M6.75 12.75H4.5C4.00754 12.75 3.51991 12.653 3.06494 12.4645C2.60997 12.2761 2.19657 11.9999 1.84835 11.6517C1.14509 10.9484 0.75 9.99456 0.75 9C0.75 8.00544 1.14509 7.05161 1.84835 6.34835C2.55161 5.64509 3.50544 5.25 4.5 5.25H6.75" stroke="#707A83" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M6 9H12" stroke="#707A83" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
+    }
+
+    static iconEllipsesMore() {
+        return `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 6C12.5523 6 13 5.55228 13 5C13 4.44772 12.5523 4 12 4C11.4477 4 11 4.44772 11 5C11 5.55228 11.4477 6 12 6Z" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 20C12.5523 20 13 19.5523 13 19C13 18.4477 12.5523 18 12 18C11.4477 18 11 18.4477 11 19C11 19.5523 11.4477 20 12 20Z" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+    }
+
+    static iconAvatar() {
+        return `<svg viewBox="0 0 128 128" version="1.1" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="xxlarge">
+    <g>
+        <circle cx="64" cy="64" r="64" fill="#c1c7d0" />
+        <g>
+            <path fill="#fff"
+                d="M103,102.1388 C93.094,111.92 79.3504,118 64.1638,118 C48.8056,118 34.9294,111.768 25,101.7892 L25,95.2 C25,86.8096 31.981,80 40.6,80 L87.4,80 C96.019,80 103,86.8096 103,95.2 L103,102.1388 Z" />
+            <path fill="#fff"
+                d="M63.9961647,24 C51.2938136,24 41,34.2938136 41,46.9961647 C41,59.7061864 51.2938136,70 63.9961647,70 C76.6985159,70 87,59.7061864 87,46.9961647 C87,34.2938136 76.6985159,24 63.9961647,24" />
+        </g>
+    </g>
+</svg>
+`;
+    }
+
+    static iconEye() {
+        return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M16.2194 15.0246C16.2119 17.3608 14.3025 19.2659 11.9713 19.2627C9.62876 19.2596 7.71314 17.3327 7.72876 14.9952C7.74439 12.6571 9.66064 10.7565 11.9888 10.7696C14.3275 10.7827 16.2269 12.6933 16.2194 15.0246Z" fill="#252A2F"/>
+<path d="M5.06499 9.76998C4.65374 9.05685 4.24999 8.36435 3.85312 7.66748C3.67124 7.3481 3.71062 7.00623 3.94249 6.7581C4.16437 6.5206 4.53687 6.44123 4.81999 6.60935C4.96 6.69248 5.08749 6.82748 5.17249 6.9681C5.54249 7.58185 5.89374 8.20685 6.25249 8.82685C6.29124 8.89373 6.33249 8.95873 6.38124 9.03873C7.91124 8.2956 9.52062 7.87935 11.2256 7.76685C11.2256 7.02498 11.2237 6.3006 11.2262 5.57685C11.2275 5.1956 11.4331 4.90873 11.7619 4.81435C12.25 4.67435 12.715 5.02185 12.7212 5.54435C12.7287 6.19185 12.7231 6.83873 12.7231 7.48623C12.7231 7.57123 12.7231 7.6556 12.7231 7.76623C14.4225 7.87873 16.0331 8.28998 17.5725 9.04185C17.6937 8.83248 17.8094 8.63123 17.9256 8.4306C18.2144 7.93185 18.5 7.4306 18.7925 6.93435C19.0269 6.53685 19.465 6.40935 19.8331 6.6231C20.2019 6.83685 20.3137 7.27998 20.0875 7.67935C19.7337 8.3031 19.3719 8.92123 19.0144 9.54248C18.9725 9.6156 18.9337 9.68998 18.8969 9.7581C19.3437 10.1037 19.8069 10.4119 20.2106 10.785C20.9894 11.5037 21.74 12.2537 22.4906 13.0025C22.7912 13.3025 22.77 13.7669 22.4775 14.0531C22.1831 14.3406 21.7362 14.3456 21.4262 14.0437C20.8787 13.5106 20.3506 12.9581 19.8 12.4275C17.8019 10.5012 15.4112 9.42373 12.6444 9.27498C9.33875 9.09748 6.47437 10.1775 4.08812 12.4875C3.57249 12.9862 3.07062 13.4994 2.56437 14.0075C2.35687 14.2156 2.11374 14.3156 1.82187 14.2462C1.26124 14.1144 1.04187 13.4231 1.45249 13.01C2.56687 11.8887 3.62624 10.7037 4.97562 9.84185C5.00124 9.8256 5.02312 9.80435 5.06499 9.76998Z" fill="#252A2F"/>
+</svg>
+`;
+    }
+
+    static iconDoor() {
+        return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M22.9287 10.734C22.882 10.6222 22.8151 10.5204 22.7298 10.4352L19.9807 7.68609C19.6223 7.32859 19.043 7.32859 18.6846 7.68609C18.3262 8.04449 18.3262 8.62474 18.6846 8.98224L19.8698 10.1675H14.7493C14.2424 10.1675 13.8326 10.5781 13.8326 11.0841C13.8326 11.5901 14.2424 12.0008 14.7493 12.0008H19.8698L18.6845 13.186C18.3261 13.5444 18.3261 14.1247 18.6845 14.4822C18.8633 14.6618 19.0979 14.7508 19.3326 14.7508C19.5673 14.7508 19.802 14.6619 19.9807 14.4822L22.7298 11.7331C22.8151 11.6487 22.882 11.547 22.9287 11.4343C23.0213 11.2107 23.0213 10.9577 22.9287 10.734Z" fill="#252A2F"/>
+<path d="M16.5823 13.8333C16.0754 13.8333 15.6656 14.244 15.6656 14.75V19.3333H11.999V4.66665C11.999 4.2624 11.7332 3.9049 11.3454 3.78849L8.16181 2.83334H15.6656V7.41668C15.6656 7.92268 16.0754 8.33333 16.5823 8.33333C17.0892 8.33333 17.4989 7.92268 17.4989 7.41668V1.91669C17.4989 1.41065 17.0892 1 16.5823 1H1.91567C1.88267 1 1.85333 1.01375 1.82127 1.0174C1.77817 1.022 1.73877 1.0293 1.69752 1.0394C1.60127 1.06415 1.51417 1.10175 1.43262 1.15305C1.41247 1.1659 1.38772 1.1668 1.36847 1.18146C1.36108 1.187 1.35833 1.1971 1.35098 1.2026C1.25108 1.2814 1.16768 1.37765 1.10718 1.49225C1.09433 1.517 1.09158 1.5436 1.08152 1.56925C1.05218 1.6389 1.02012 1.70675 1.00912 1.78375C1.00452 1.81125 1.01277 1.8369 1.01187 1.8635C1.01097 1.88185 0.999023 1.89835 0.999023 1.91665V20.25C0.999023 20.6872 1.30793 21.0631 1.73602 21.1483L10.9027 22.9817C10.9623 22.9945 11.0228 23 11.0823 23C11.2922 23 11.4985 22.9276 11.6635 22.7919C11.8752 22.6178 11.999 22.3583 11.999 22.0833V21.1667H16.5823C17.0892 21.1667 17.4989 20.756 17.4989 20.25V14.75C17.4989 14.244 17.0892 13.8333 16.5823 13.8333Z" fill="#252A2F"/>
+</svg>
+`;
+    }
+
+    static iconPlus() {
+        return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M11 4.58398V17.4173" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.58331 11H17.4166" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
+    }
+
+    static iconMaximize() {
+        return `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.75 2.75H19.25V8.25" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.25 19.25H2.75V13.75" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M19.25 2.75L12.8333 9.16667" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M2.75 19.2507L9.16667 12.834" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
+    }
+
+    static iconMarker() {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAMwElEQVR4AeydX2wcRx3Hf3P+m9hx4z9t0lS2U5FGgpSEOAFREKKBSiW0IChqH0AgQEFU0FIeEKgSLzzwEB55AOWhLxQJAaIpghbSVrRvICFVyQMVaqI2thM7se/893x/nLubznd9Y5/vdvf2z+zd7N5Y99vZnZ2dm9/397mZ2d3zXopa8Mcvf+9//PI5btmVc/P8T0922b0t55xlcnxGGIct5fhVu3ImT50CkQLAOTEEnYh/ZLvJnA7S0btK/P/f3bedJ1ZE8PuW8lQRq+PCrBcnOgIQ3uS828owC+UKRAYAgk9XziGg9o0upNYkBNXgF+wLEh3P0x0DgZM64fIjAaBp8GWbAcHchTHxyXcMvixqIJBKqE2VA+A5+NKPhf8uskrT+FulDQSWDEoXSgHwHfyqK8PXniUDQVWMFifKAAgafOmvXwjEvMH2TELWZ1JvCigBIGzwZVP9QCDmDSUzMZTK+U/lEaEBUBV82SA/EJg5gVQteBoKANXBl24YCKQS0aeBAYgq+NJlA4FUIto0EABRB1+6bCCQSkSX+gagVcGXLhsIpBLRpL4AaHXwpcsGAqmE+tQzAO0KvnTZQCCVUJt6AqDdwZcuGwikEsHT+iObAqBL8GXDtyAoyk3X1FwncJXH2ukKAIK/8dYTzrd0rSpavxi+9oy5d6BIdkcAEPz0Xx+p9A8OKXortdUMmxtISgR1BADBxztUSneQaGkGgvBhsQXg9kuff0hWvZ5Oy1Ut0y0IzJwgaHBsAUil2FdlhZVymQrr63JTy3TYmhMYCIIExxYARuzftZVlMxkqZOMAgflmUW3cvKzbAjD2ldcv1h+cTccBAvPNovq4yW2n1BYAq3C565CV1iwMBDViJGTVEYC7v3Zpnvf03lvvpwWB9nMC0xPUx81p2xEAHHDPY6/esoUAcwIDASSKvbkCAO9Wv/jK8s2P/hGru8yaGBoIdmkSxw1XAK5y3rc2S4VyzwgZCOIY3uZtdgRABl9WEXcIyPq3Q+mNc9ppN5AcAcAnv16mOEMw8u73691x3O4kCGwBeHuaP+KkTpwhGJo97+RWQ35SIGhwrC7DFoAKo0fryu3ajCsE3flr4jZybpcvbhudAIEtAIzoDTdhsC+uEOx//3k037MlHQJbAE5NsEteFIojBKzsvQeQGiQZAlsA4DjvpgGkzSyOEOxd/HMztxr2JxUCRwBOH2K5pELQv/xaQ4C9ZCQRAkcAIEiSIYB/QSxpELgCAIEAQXcvDZKHvzgOBx7caiiSJAiaAgDvTxxkG4kbDngZrgU23SHw6pgnAFAZeoIkQcB4+C+7JgECzwAkDQKe6odLoS3uEPgCAGqhJzBzAiixY3GGwDcAcDuRcwI4FsLiCkEgAKATeoLYzglYNA8YiyMEgQGQEMRxOMiNbf/bA9xQanGDIBQAUC6Ow0Fh2PVmJ9wKZXGCIDQAUCpOw0G58YvOcEG5tQsCv44oAQBvGhcIViZ/gea2xOIAgTIAoCggUDEnyK2soDrlttj3MDHGlNfrVqHuECgFAEKomBMAgJVb86hOmZV5Dy3u/4ay+vxUpDMEygGAMOgJwp4ilgpFSl+/TpVSCVWGsmw6TVdGf0MH7gpVTaiDdYUgEgCgFCDwMxzcOP4XHNZgSzduUGZmhsp3/F+7R0+SFhC9e/Qi9YhT/9Z2/g2uaPnLJ5EBAPf9DAeV7iGamXqdeKoPh+4yXqnQ8s2bVo+wMj9PxY2NXfvlBp5lgKBnpqetsmv5fqtO7L9vGMv2m249QaQAQG4/PQHKz37s77Q08WOs2lqpWKT1xUUrwPh019rS7CwBAM45LTzwK5o79qJVxwHNHnOkEwSRA4AI+OkJUD479pj1yV2aeA6bPoxR+v6fW8cW9p20jtsnbvrt6bVWtVqohiCocy0BAI3z2xPgmOzY41YwMTQsHvkl5UY+RyVcyGFbzS71HqSN0UfFp/18tdxrlBv+LA61bFAEf9TTd5ms4i1f6ADBlpItch09gdeJYX2T8kOfoPTh52nuwd/RzMlLVsDnHnyRMpM/ocK+qfridPc+ojGNgy8b3G4IWgoAnAYETqeIe3tpAWXCWEp4dHiMaKBxLhmm2kiPbScEQq5IfbOt3Gk4yG3SPWLM3rhXnK/7vWDXJTwZHyGaEGb7pppntgsCIVt7lEFPYDccrBdoQIBQnhwlwicZM/g9PY1tBCD4lB+8a6scgg8IGkvGJ6cdELQNAIQFENgNB6t56lqqnurvETN4XMEDDLUGQDDO99vAgbrjaLki0dAs3RGnsS27ZtVWABAkDAd2EKzliZarEKBc0g3BX6g+ivHtWaq0CoK2A4DAOkEgeoKOgKA2+NADBgiQNrOw+7UAAE50KgR2wYceGO4yOXFJExsRmjYAwMdOg8At+NADJiCoDgzYUm9aAQD3OgUCL8GHHsIGl3L8XyKN5KUdAPAy6RD4CD7kIE50JpPlX7A2FC+0BAA+JhUCv8GHFpal6B9WqnihLQDwM2kQBA4+xBAm5gPTIlH60hoAeJoUCMIGH1oIm8hyfkCkyl7aAwBP4w6BouBDCirk6T2sqLJYAABn4wqByuBDB3GNeO+bXFw7xYYCiw0A8DVuEKgOPjSAncjRC0hVWKwAgMNxgSCq4EMDzuhbSFVY7ACA07pDEGXw4b9KiyUAEEBXCFoV/LUCPwodwlpsAYDjukHQquDD980KPYE0rMUaADivCwStDD78FoH7NNKwJuoJW0X7j283BK0Mfo3aH65ZD7yaCADgfbsgaFPwcYOo4XcdoYNfSwwAcLzVELQr+PBV2B5hoV+JAgBqtAqCNgcfriqxxAEAVaKGICnBh1aJBACORQVBkoIPnRILAJxTDUHSgg+NEg0AHFQFQRKDD30SDwCcDAuBDsGHH1FYRwAA4YJCkOTgQ5eOAQDO+oVA9+AvbPCz8CuMdRQAEMorBLoHH750p+hnSMNYxwEAsZpBEIfgww/Oaed5OMgIYB0JAHRygmBmmdPlmxUU2WX4X71dGZpszHG+N0xTOhYAiAYIah9SsZLndH2pQotZTnNrOxDoGnz40JenfyINah0NAESTD6lA8KeXd4IOCGbEts7BR/uFfUZY4FfHAwDl0BNkrrA+rNfaxHCK5qJ5cHnt27iue9mZ2eCveilnV8YAUFXlqafY5uBM1zYEJw51WXs2S0TTaWtV3wWjs1c53267n4YaAGrUkhDI4MtdXKxcFxBsFMWKpq/RAq0GaZoBoE41QDA1Tra6LK5v9QblnalC3dHt2xSnhH1LBX7ebwtsHfVbSdLKM8b4qQnGiDd+qtAbzC5tgZDf1MtzXqGfzuf5YT+tMgC4qHVqku1nRH+wK8JF5u01IgwN0xmilRyRDj1DL6f3Oeee4+q5oPC3I19TE+zrxOgBN+dF92sBgJ4BQLjZjIBlXpxZ4BF4mGC61Rt031Keyl6PNQB4UOrUOLuGIUH0Br/1UNy1SEV0HUVxZoFH4OEUU8KC+YXY5Xqsn52ZHM96KW8A8KJStYzoDX5ggcDo19UsZQnOMHC6CUPPoKDigfQGv9WsHgNAM4Vs9k+Ns+cAAh+k/UR0QZiy8wL0AugZMK/A0CLqDvwS09gDoid40q0CA4CbOk32nR5hqwKEp4V1CWO11sNpRAwZ94n0Q3c4HUsxOlOp0DkRFPQe7zSpmhB8QIChoVlZt/3ifQdc97vtNPuCK3B8ki2LIWNOpO99cpK9c3KcvfXxw+yFau9xTMIiTt3wHz6ON3QwNGCegJ7Bb2tYZZP2X/nRS27HmR7ATZ0W7Dt9mM0LGM4KY+K6w5ed3hJzg6KPX85jvEjD135I1J9f5f951vFnswwAToq3IV9cd/hbFYRv2r39/CqRfIy+3X6Zh0/+8NVn5KYrBAaAHZm0WRMg/L4KwvX6RuEx+gChPl9uW8HHJ19myNShJzAASIE0TAUI94th4en6pmEouLFcn0vkGHyq/tlAYACoaqNLUt8OAcGF7k1qeDhkSVzrw1VFWZ5VCltjvsxwSusgMAA4CaVR/okjbGHK5g4lririDGF6oUjlN75EhXVPF/92zQkMABoF2q0pTN6hJNr1rQRWKdL45cetQ7OZtG8IDACWdPFZiMlhv7gmcLva4owMfnWb/EKQ4tlXDvKVi9xYfDQ4NfTygamhl0nY6MinviNjv536gSBFpc357SPNSuwUSPXupTAQmCEgdiFvbHAYCAwAjXrGMicoBAYATcKtohlBIDAAqFBeozr8QmAA0Ch4qpriBwIDgCrVNavHKwQGAM0Cp7I5XiAwAKhUXMO6mkFgANAwaKqb5AaBAUC12prWZ0Hw0LcbWpcizh9uyDUZLVOglW+U6hugkVoIOJ35AAAA//82+rYoAAAABklEQVQDAHW6rCby9TYeAAAAAElFTkSuQmCC" 
+height="100%" width="100%"/></svg>`;
     }
 }
 
