@@ -265,6 +265,49 @@ class CleanTalkWidgetDoboard {
         }
     }
 
+    bindShowLoginFormEvents() {
+        const showLoginButton = document.getElementById('doboard_task_widget-show_login_form');
+        const showPhantomLoginButton = document.getElementById('doboard_task_widget-on_phantom_login_page');
+        const loginButton = document.getElementById('doboard_task_widget-login_button');
+
+        if (showLoginButton) {
+            showLoginButton.addEventListener('click', async () => {
+                const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
+                const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
+                if (loginContainer) {
+                    loginContainer.classList.toggle('doboard_task_widget-hidden');
+                }
+                if (phantomContainer) {
+                    phantomContainer.classList.toggle('doboard_task_widget-hidden');
+                }
+            })
+        }
+        if (showPhantomLoginButton) {
+            showPhantomLoginButton.addEventListener('click', async () => {
+                const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
+                const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
+                if (loginContainer) {
+                    loginContainer.classList.toggle('doboard_task_widget-hidden');
+                }
+                if (phantomContainer) {
+                    phantomContainer.classList.toggle('doboard_task_widget-hidden');
+                }
+            })
+        }
+        if (loginButton) {
+            loginButton.addEventListener('click', async () => {
+                    const userEmailElement = document.getElementById('doboard_task_widget-login_email');
+                    const userPasswordElement = document.getElementById('doboard_task_widget-login_password');
+
+                    await loginUser({
+                        userEmail: userEmailElement.value,
+                        userPassword: userPasswordElement.value
+                    })(this.registrationShowMessage);
+            })
+        }
+
+    }
+
     /**
      * Create widget element
      * @return {HTMLElement} widget element
@@ -390,6 +433,7 @@ class CleanTalkWidgetDoboard {
                 }
                 // bind creation events
                 this.bindCreateTaskEvents();
+                this.bindShowLoginFormEvents();
                 break;
             case 'wrap':
                 await this.getTaskCount();

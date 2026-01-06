@@ -264,7 +264,7 @@
     position: relative;
     margin-bottom: 24px;
 }
-.doboard_task_widget-input-container.hidden {
+.doboard_task_widget-input-container.hidden, .doboard_task_widget-hidden {
     display: none;
 }
 
@@ -341,7 +341,7 @@
 .doboard_task_widget-login .doboard_task_widget-input-container:last-child {
     margin-bottom: 0;
 }
-.doboard_task_widget-login span {
+.doboard_task_widget-login .doboard_task_widget-login-icon {
     display: block;
     position: relative;
     padding-right: 24px;
@@ -350,7 +350,7 @@
 .doboard_task_widget-login.active span {
     margin-bottom: 24px;
 }
-.doboard_task_widget-login span::after {
+.doboard_task_widget-login .doboard_task_widget-login-icon::after {
     position: absolute;
     top: 0;
     right: 4px;
@@ -365,7 +365,7 @@
     border-left: none;
     transition: all 0.2s ease-in-out;
 }
-.doboard_task_widget-login.active span::after {
+.doboard_task_widget-login.active .doboard_task_widget-login-icon::after {
     transform: rotate(-135deg);
     top: 7px;
 }
@@ -1270,4 +1270,7 @@ input:checked + .slider:before {
     color: #707A83;
     cursor: pointer;
 }
-
+.doboard_task_widget-show_login_form {
+    display: inline-block;
+    cursor: pointer;
+}
