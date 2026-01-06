@@ -156,6 +156,17 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname, pag
         data.email = email;
         data.name = nickname;
     }
+
+    if (localStorage.getItem('bot_detector_event_token')) {
+        try {
+            const botDetectorData = JSON.parse(localStorage.getItem('bot_detector_event_token'));
+            if (botDetectorData?.value) {
+                data.bot_detector_event_token = botDetectorData?.value;
+            }
+        } catch (error) {
+            data.bot_detector_event_token = '';
+        }
+    }
     const result = await spotfixApiCall(data, 'user_registration');
     return {
         sessionId: result.session_id,
@@ -1749,6 +1760,20 @@ if( document.readyState !== 'loading' ) {
 function spotFixInit() {
     new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
+    loadBotDetector()
+}
+
+function loadBotDetector() {
+if (document.querySelector('script[src="https://moderate.cleantalk.org/ct-bot-detector-wrapper.js"]') ||
+    document.getElementById('ct-bot-detector-script')) {
+        return;
+    }
+
+    const script = document.createElement('script');
+        script.src = 'https://moderate.cleantalk.org/ct-bot-detector-wrapper.js';
+        script.async = true;
+        script.id = 'ct-bot-detector-script';
+    document.head.appendChild(script);
 }
 
 document.addEventListener('selectionchange', function(e) {
