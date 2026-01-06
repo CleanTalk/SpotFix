@@ -153,9 +153,9 @@ class SpotFixTemplatesLoader {
             <label for="doboard_task_widget-title">Report about</label>
         </div>
 
-        <div class="doboard_task_widget-input-container">
-            <label for="doboard_task_widget-description">Description</label>
-            <textarea id="doboard_task_widget-description" class="doboard_task_widget-field" name="description" required></textarea>
+        <div class="doboard_task_widget-input-container doboard_task_widget-input-container-textarea">
+            <textarea id="doboard_task_widget-description" class="doboard_task_widget-field" name="description" placeholder=" " required></textarea>
+            <label for="doboard_task_widget-description" class="doboard_task_widget-field-textarea-label" >Description</label>
         </div>
 
         <div class="doboard_task_widget-login">

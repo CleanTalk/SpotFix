@@ -1287,3 +1287,25 @@ input:checked + .slider:before {
     cursor: pointer;
 }
 
+.doboard_task_widget-input-container-textarea {
+    position: relative;
+    margin-top: 20px;
+}
+
+.doboard_task_widget-field-textarea-label {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    padding: 0 5px;
+    color: #666;
+    background-color: white;
+    transition: 0.2s ease all;
+    pointer-events: none;
+}
+
+.doboard_task_widget-input-container-textarea .doboard_task_widget-field ~ label {
+    top: -10px;
+    left: 14px;
+    font-size: 10px;
+    color: #252A2F;
+}
