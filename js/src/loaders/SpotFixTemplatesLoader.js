@@ -197,7 +197,7 @@ class SpotFixTemplatesLoader {
                          </i>
                  </div> 
                      
-                 <div class="doboard_task_widget-input-container-login doboard_task_widget-hidden">
+                 <div id="doboard_task_widget-input-container-login" class="doboard_task_widget-input-container-login doboard_task_widget-hidden">
                         <div class="doboard_task_widget-input-container">
                             <input id="doboard_task_widget-login_email" class="doboard_task_widget-field" type="email" name="login_email">
                             <label for="doboard_task_widget-login_email">Email</label>
@@ -210,12 +210,30 @@ class SpotFixTemplatesLoader {
                             <button id="doboard_task_widget-login_button" class="doboard_task_widget-submit_button">Log in</button>
                         </div>
                         <div>
-                            <i><span id="doboard_task_widget-on_phantom_login_page" class="doboard_task_widget-on_phantom_login_page">To phantom login </span></i>
-                        </div> 
+                            <i>
+                                <span id="doboard_task_widget-on_phantom_login_page" class="doboard_task_widget-on_phantom_login_page">To phantom login</span>
+                            </i>
+                       </div>   
+                        <div>  
+                            <i>
+                                <span id="doboard_task_widget-forgot_password" class="doboard_task_widget-forgot_password">Forgot Password?</span>
+                            </i>
+                        </div>        
+
                         <div>
                             <i><span id="doboard_task_widget-login-is-invalid" class="doboard_task_widget-login-is-invalid doboard_task_widget-hidden">Logon or password is invalid </span></i>
                         </div>
                  </div>
+                 <div id="doboard_task_widget-container-login-forgot-password-form" class="doboard_task_widget-forgot_password_form doboard_task_widget-hidden">
+                     <div class="doboard_task_widget-input-container">
+                         <input id="doboard_task_widget-forgot_password_email" class="doboard_task_widget-field" type="email" name="forgot_password_email">
+                         <label for="doboard_task_widget-forgot_password_email">Email</label>
+                     </div>
+                     <div class="doboard_task_widget-field">
+                         <button id="doboard_task_widget-restore_password_button" class="doboard_task_widget-submit_button">Restore password</button>
+                     </div>
+                     <i><span id="doboard_task_widget-forgot_password-black" class="doboard_task_widget-forgot_password">Black</span></i>
+                </div>
             </div>
 
         </div>
@@ -309,6 +327,24 @@ class SpotFixTemplatesLoader {
                     <span class="logout_button">Log out</span>
                 </span>
             </div>
+            
+            <div id="doboard_task_widget-input-container-login" class="doboard_task_widget-input-container-login doboard_task_widget-input-container-login-menu ">
+                <div class="doboard_task_widget-input-container">
+                    <input id="doboard_task_widget-login_email" class="doboard_task_widget-field" type="email" name="login_email">
+                    <label for="doboard_task_widget-login_email">Email</label>
+                </div>
+                <div class="doboard_task_widget-input-container">
+                    <input id="doboard_task_widget-login_password" class="doboard_task_widget-field" type="password" name="login_password">
+                    <label for="doboard_task_widget-login_password">Password</label>
+                </div>
+                <div class="doboard_task_widget-field">
+                    <button id="doboard_task_widget-login_button" class="doboard_task_widget-submit_button">Log in</button>
+                </div>
+                <div>
+                    <i><span id="doboard_task_widget-login-is-invalid" class="doboard_task_widget-login-is-invalid doboard_task_widget-hidden">Logon or password is invalid </span></i>
+                </div>
+             </div>
+            
         </div>
         </div>
         <div style="padding: 16px; font-size: 13px; position: sticky; bottom: 0">

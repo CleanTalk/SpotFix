@@ -347,7 +347,7 @@
     padding-right: 24px;
     cursor: pointer;
 }
-.doboard_task_widget-login.active span {
+.doboard_task_widget-login.active .doboard_task_widget-login-icon {
     margin-bottom: 24px;
 }
 .doboard_task_widget-login .doboard_task_widget-login-icon::after {
@@ -1270,11 +1270,18 @@ input:checked + .slider:before {
     color: #707A83;
     cursor: pointer;
 }
-.doboard_task_widget-show_login_form, .doboard_task_widget-on_phantom_login_page {
+.doboard_task_widget-show_login_form, .doboard_task_widget-on_phantom_login_page, .doboard_task_widget-forgot_password {
     display: inline-block;
     cursor: pointer;
+    color: #2F68B7;
+    margin-bottom: 0;
+
 }
 
 .doboard_task_widget-login-is-invalid {
     color: red;
+}
+
+.doboard_task_widget-input-container-login-menu {
+    margin: 20px;
 }

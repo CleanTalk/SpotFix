@@ -268,7 +268,10 @@ class CleanTalkWidgetDoboard {
     bindShowLoginFormEvents() {
         const showLoginButton = document.getElementById('doboard_task_widget-show_login_form');
         const showPhantomLoginButton = document.getElementById('doboard_task_widget-on_phantom_login_page');
+        const forgotPasswordButton = document.getElementById('doboard_task_widget-forgot_password');
+        const forgotPasswordButtonBlack = document.getElementById('doboard_task_widget-forgot_password-black');
         const loginButton = document.getElementById('doboard_task_widget-login_button');
+        const restorePasswordButton = document.getElementById('doboard_task_widget-restore_password_button');
 
         if (showLoginButton) {
             showLoginButton.addEventListener('click', async () => {
@@ -291,6 +294,31 @@ class CleanTalkWidgetDoboard {
                 }
                 if (phantomContainer) {
                     phantomContainer.classList.toggle('doboard_task_widget-hidden');
+                }
+            })
+        }
+        if (forgotPasswordButton) {
+            forgotPasswordButton.addEventListener('click', async () => {
+                const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
+                const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
+                
+                if (forgotPasswordForm) {
+                    forgotPasswordForm.classList.remove('doboard_task_widget-hidden');
+                }
+                if (loginContainer) {
+                    loginContainer.classList.add('doboard_task_widget-hidden');
+                }
+            })
+
+            forgotPasswordButtonBlack.addEventListener('click', async () => {
+                const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
+                const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
+
+                if (forgotPasswordForm) {
+                    forgotPasswordForm.classList.add('doboard_task_widget-hidden');
+                }
+                if (loginContainer) {
+                    loginContainer.classList.remove('doboard_task_widget-hidden');
                 }
             })
         }
@@ -352,7 +380,33 @@ class CleanTalkWidgetDoboard {
                 }
             })
         }
+        if (restorePasswordButton) {
+            restorePasswordButton.addEventListener('click', async () => {
+                const userEmailElement = document.getElementById('doboard_task_widget-forgot_password_email');
+                const userEmail = userEmailElement.value.trim();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!userEmail) {
+                    userEmailElement.style.borderColor = 'red';
+                    userEmailElement.focus();
+                    userEmailElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                } else if (!emailRegex.test(userEmail)) {
 
+                    userEmailElement.style.borderColor = 'red';
+                    userEmailElement.focus();
+
+                    return;
+                }
+
+                try {
+                    await forgotPassword(userEmail)(this.registrationShowMessage);
+                } catch (error) {
+                    this.registrationShowMessage(error.message, 'error');
+                }
+            })
+        }
     }
 
     /**
@@ -630,6 +684,7 @@ class CleanTalkWidgetDoboard {
                 document.body.appendChild(widgetContainer);
                 setToggleStatus(this);
                 checkLogInOutButtonsVisible();
+                this.bindShowLoginFormEvents();
 
                 break;
         case 'concrete_issue':

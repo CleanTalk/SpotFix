@@ -248,6 +248,20 @@ function loginUser(taskDetails) {
 		});
 }
 
+function forgotPassword(userEmail) {
+		return (showMessageCallback) => forgotPasswordDoboard(userEmail)
+		.then(response => {
+			if (response.sessionId) {
+				showMessageCallback(response.operationMessage, 'notice');
+			} else {
+				throw new Error('Response error');
+			}
+		})
+		.catch(error => {
+			throw error;
+		});
+}
+
 function userUpdate(projectToken, accountId) {
 	const sessionId = localStorage.getItem('spotfix_session_id');
 	const userId = localStorage.getItem('spotfix_user_id');
@@ -300,6 +314,9 @@ function checkLogInOutButtonsVisible (){
 			.getElementById('doboard_task_widget-user_menu-logout_button')
 			?.closest('.doboard_task_widget-user_menu-item');
 			if(el) el.style.display = 'none';
+
+
+
 	} else {
 		const el = document.getElementById('doboard_task_widget-user_menu-signlog_button');
 		if(el) el.style.display = 'none';
