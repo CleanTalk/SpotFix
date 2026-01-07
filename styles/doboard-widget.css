@@ -1270,7 +1270,11 @@ input:checked + .slider:before {
     color: #707A83;
     cursor: pointer;
 }
-.doboard_task_widget-show_login_form {
+.doboard_task_widget-show_login_form, .doboard_task_widget-on_phantom_login_page {
     display: inline-block;
     cursor: pointer;
+}
+
+.doboard_task_widget-login-is-invalid {
+    color: red;
 }

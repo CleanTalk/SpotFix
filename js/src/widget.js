@@ -296,13 +296,60 @@ class CleanTalkWidgetDoboard {
         }
         if (loginButton) {
             loginButton.addEventListener('click', async () => {
-                    const userEmailElement = document.getElementById('doboard_task_widget-login_email');
-                    const userPasswordElement = document.getElementById('doboard_task_widget-login_password');
+                const userEmailElement = document.getElementById('doboard_task_widget-login_email');
+                const userPasswordElement = document.getElementById('doboard_task_widget-login_password');
+                document.querySelector('.doboard_task_widget-login-is-invalid').classList.add('doboard_task_widget-hidden');
 
+                const userEmail = userEmailElement.value.trim();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!userEmail) {
+                    userEmailElement.style.borderColor = 'red';
+                    userEmailElement.focus();
+                    userEmailElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                } else if (!emailRegex.test(userEmail)) {
+                    userEmailElement.style.borderColor = 'red';
+                    userEmailElement.focus();
+                    userEmailElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                }
+
+                const userPassword = userPasswordElement.value;
+                if (!userPassword) {
+                    userPasswordElement.style.borderColor = 'red';
+                    userPasswordElement.focus();
+                    userPasswordElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                } else if (userPassword.length < 6) {
+                    userPasswordElement.style.borderColor = 'red';
+                    userPasswordElement.focus();
+                    userPasswordElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                }
+
+                try {
                     await loginUser({
-                        userEmail: userEmailElement.value,
-                        userPassword: userPasswordElement.value
+                        userEmail: userEmail,
+                        userPassword: userPassword
                     })(this.registrationShowMessage);
+                } catch (error) {
+                    document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
+                }
+                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+                const email = localStorage.getItem('spotfix_email');
+                if (sessionIdExists && email && !email.includes('spotfix_')) {
+                    document.querySelector('.doboard_task_widget-login').classList.add('doboard_task_widget-hidden');
+                } else {
+                    document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
+                }
             })
         }
 

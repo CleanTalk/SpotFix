@@ -210,7 +210,10 @@ class SpotFixTemplatesLoader {
                             <button id="doboard_task_widget-login_button" class="doboard_task_widget-submit_button">Log in</button>
                         </div>
                         <div>
-                            <i><span id="doboard_task_widget-on_phantom_login_page">To phantom login </span></i>
+                            <i><span id="doboard_task_widget-on_phantom_login_page" class="doboard_task_widget-on_phantom_login_page">To phantom login </span></i>
+                        </div> 
+                        <div>
+                            <i><span id="doboard_task_widget-login-is-invalid" class="doboard_task_widget-login-is-invalid doboard_task_widget-hidden">Logon or password is invalid </span></i>
                         </div>
                  </div>
             </div>
