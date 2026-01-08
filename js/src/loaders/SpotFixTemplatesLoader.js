@@ -205,6 +205,7 @@ class SpotFixTemplatesLoader {
                         <div class="doboard_task_widget-input-container">
                             <input id="doboard_task_widget-login_password" class="doboard_task_widget-field" type="password" name="login_password">
                             <label for="doboard_task_widget-login_password">Password</label>
+                            <span class="doboard_task_widget-bottom-eye-icon" id="doboard_task_widget-password-toggle"></span>
                         </div>
                         <div class="doboard_task_widget-field">
                             <button id="doboard_task_widget-login_button" class="doboard_task_widget-submit_button">Log in</button>
@@ -336,6 +337,7 @@ class SpotFixTemplatesLoader {
                 <div class="doboard_task_widget-input-container">
                     <input id="doboard_task_widget-login_password" class="doboard_task_widget-field" type="password" name="login_password">
                     <label for="doboard_task_widget-login_password">Password</label>
+                    <span class="doboard_task_widget-bottom-eye-icon" id="doboard_task_widget-password-toggle"></span>
                 </div>
                 <div class="doboard_task_widget-field">
                     <button id="doboard_task_widget-login_button" class="doboard_task_widget-submit_button">Log in</button>

@@ -380,6 +380,17 @@ class CleanTalkWidgetDoboard {
                 }
             })
         }
+        const passwordToggle = document.getElementById('doboard_task_widget-password-toggle');
+        const passwordInput = document.getElementById('doboard_task_widget-login_password');
+        
+        if (passwordToggle && passwordInput) {
+            passwordToggle.addEventListener('click', function() {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                this.classList.toggle('doboard_task_widget-bottom-eye-off-icon');
+                this.classList.toggle('doboard_task_widget-bottom-eye-icon');
+            });
+        }
         if (restorePasswordButton) {
             restorePasswordButton.addEventListener('click', async () => {
                 const userEmailElement = document.getElementById('doboard_task_widget-forgot_password_email');
@@ -685,6 +696,7 @@ class CleanTalkWidgetDoboard {
                 setToggleStatus(this);
                 checkLogInOutButtonsVisible();
                 this.bindShowLoginFormEvents();
+                this.bindWidgetInputsInteractive();
 
                 break;
         case 'concrete_issue':
