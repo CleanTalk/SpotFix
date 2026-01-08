@@ -222,6 +222,7 @@ const logoutUserDoboard = async (accountId) => {
         const result = await spotfixApiCall(data, 'user_unauthorize', accountId);
         if(result.operation_status === 'SUCCESS') {
             clearLocalstorageOnLogout();
+            checkLogInOutButtonsVisible();
         }
     }
 }
@@ -575,6 +576,7 @@ function loginUser(taskDetails) {
 				localStorage.setItem('spotfix_session_id', response.sessionId);
 				localStorage.setItem('spotfix_user_id', response.userId);
 				localStorage.setItem('spotfix_email', response.email);
+				checkLogInOutButtonsVisible();
 			}  else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
 				if (typeof showMessageCallback === 'function') {
 					showMessageCallback(response.operationMessage, 'notice');
@@ -650,16 +652,20 @@ function setToggleStatus(rootElement){
 
 function checkLogInOutButtonsVisible (){
 	if(!localStorage.getItem('spotfix_session_id')) {
-		const el = document
-			.getElementById('doboard_task_widget-user_menu-logout_button')
-			?.closest('.doboard_task_widget-user_menu-item');
-			if(el) el.style.display = 'none';
-
-
-
-	} else {
-		const el = document.getElementById('doboard_task_widget-user_menu-signlog_button');
+		const el = document.getElementById('doboard_task_widget-user_menu-logout_button')?.closest('.doboard_task_widget-user_menu-item');
 		if(el) el.style.display = 'none';
+
+		const loginContainer = document.getElementById('doboard_task_widget-input-container-login')
+		if(loginContainer) {
+			loginContainer.classList.remove('doboard_task_widget-hidden');
+		}
+	} else {
+		const el = document.getElementById('doboard_task_widget-user_menu-logout_button')?.closest('.doboard_task_widget-user_menu-item');
+		if(el) el.style.display = 'block';
+		const loginContainer = document.getElementById('doboard_task_widget-input-container-login')
+		if(loginContainer) {
+			loginContainer.classList.add('doboard_task_widget-hidden');
+		}
 	}
 }
 
@@ -938,6 +944,17 @@ class CleanTalkWidgetDoboard {
         }
     }
 
+
+    resetLoginForm() {
+        const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
+        const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
+        if (loginContainer) {
+            loginContainer.classList.add('doboard_task_widget-hidden');
+        }
+        if (phantomContainer) {
+            phantomContainer.classList.remove('doboard_task_widget-hidden');
+        }
+    }
     bindShowLoginFormEvents() {
         const showLoginButton = document.getElementById('doboard_task_widget-show_login_form');
         const showPhantomLoginButton = document.getElementById('doboard_task_widget-on_phantom_login_page');
@@ -1598,6 +1615,7 @@ class CleanTalkWidgetDoboard {
 
         document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {
             this.createWidgetElement(this.type_name)
+            this.bindWidgetInputsInteractive();
         }) || '';
 
         return widgetContainer;
@@ -1747,6 +1765,7 @@ class CleanTalkWidgetDoboard {
             await registerUser(taskDetails)(this.registrationShowMessage);
             if ( taskDetails.userPassword ) {
                 await loginUser(taskDetails)(this.registrationShowMessage);
+                checkLogInOutButtonsVisible();
             }
         }
 
@@ -3773,9 +3792,6 @@ class SpotFixTemplatesLoader {
              <img class="doboard_task_widget-user_menu-header-avatar" src="{{avatar}}" alt="">
              <span style="font-size: 16px; font-weight: 700">{{userName}}</span>
              <span style="font-size: 12px;">{{email}}</span>
-             <span id="doboard_task_widget-user_menu-signlog_button">
-                 <a style="cursor: pointer" rel="nofollow" target="_blank">Sign up or Log in</a>
-             </span>
         </div>
     </div>
     <div class="doboard_task_widget-content" style="min-height:200px ">

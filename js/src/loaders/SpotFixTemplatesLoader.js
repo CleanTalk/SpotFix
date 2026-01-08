@@ -299,9 +299,6 @@ class SpotFixTemplatesLoader {
              <img class="doboard_task_widget-user_menu-header-avatar" src="{{avatar}}" alt="">
              <span style="font-size: 16px; font-weight: 700">{{userName}}</span>
              <span style="font-size: 12px;">{{email}}</span>
-             <span id="doboard_task_widget-user_menu-signlog_button">
-                 <a style="cursor: pointer" rel="nofollow" target="_blank">Sign up or Log in</a>
-             </span>
         </div>
     </div>
     <div class="doboard_task_widget-content" style="min-height:200px ">

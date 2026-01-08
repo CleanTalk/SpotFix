@@ -222,6 +222,7 @@ const logoutUserDoboard = async (accountId) => {
         const result = await spotfixApiCall(data, 'user_unauthorize', accountId);
         if(result.operation_status === 'SUCCESS') {
             clearLocalstorageOnLogout();
+            checkLogInOutButtonsVisible();
         }
     }
 }

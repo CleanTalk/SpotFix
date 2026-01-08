@@ -235,6 +235,7 @@ function loginUser(taskDetails) {
 				localStorage.setItem('spotfix_session_id', response.sessionId);
 				localStorage.setItem('spotfix_user_id', response.userId);
 				localStorage.setItem('spotfix_email', response.email);
+				checkLogInOutButtonsVisible();
 			}  else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
 				if (typeof showMessageCallback === 'function') {
 					showMessageCallback(response.operationMessage, 'notice');
@@ -310,16 +311,20 @@ function setToggleStatus(rootElement){
 
 function checkLogInOutButtonsVisible (){
 	if(!localStorage.getItem('spotfix_session_id')) {
-		const el = document
-			.getElementById('doboard_task_widget-user_menu-logout_button')
-			?.closest('.doboard_task_widget-user_menu-item');
-			if(el) el.style.display = 'none';
-
-
-
-	} else {
-		const el = document.getElementById('doboard_task_widget-user_menu-signlog_button');
+		const el = document.getElementById('doboard_task_widget-user_menu-logout_button')?.closest('.doboard_task_widget-user_menu-item');
 		if(el) el.style.display = 'none';
+
+		const loginContainer = document.getElementById('doboard_task_widget-input-container-login')
+		if(loginContainer) {
+			loginContainer.classList.remove('doboard_task_widget-hidden');
+		}
+	} else {
+		const el = document.getElementById('doboard_task_widget-user_menu-logout_button')?.closest('.doboard_task_widget-user_menu-item');
+		if(el) el.style.display = 'block';
+		const loginContainer = document.getElementById('doboard_task_widget-input-container-login')
+		if(loginContainer) {
+			loginContainer.classList.add('doboard_task_widget-hidden');
+		}
 	}
 }
 

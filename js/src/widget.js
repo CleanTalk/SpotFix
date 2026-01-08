@@ -265,6 +265,17 @@ class CleanTalkWidgetDoboard {
         }
     }
 
+
+    resetLoginForm() {
+        const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
+        const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
+        if (loginContainer) {
+            loginContainer.classList.add('doboard_task_widget-hidden');
+        }
+        if (phantomContainer) {
+            phantomContainer.classList.remove('doboard_task_widget-hidden');
+        }
+    }
     bindShowLoginFormEvents() {
         const showLoginButton = document.getElementById('doboard_task_widget-show_login_form');
         const showPhantomLoginButton = document.getElementById('doboard_task_widget-on_phantom_login_page');
@@ -925,6 +936,7 @@ class CleanTalkWidgetDoboard {
 
         document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {
             this.createWidgetElement(this.type_name)
+            this.bindWidgetInputsInteractive();
         }) || '';
 
         return widgetContainer;
@@ -1074,6 +1086,7 @@ class CleanTalkWidgetDoboard {
             await registerUser(taskDetails)(this.registrationShowMessage);
             if ( taskDetails.userPassword ) {
                 await loginUser(taskDetails)(this.registrationShowMessage);
+                checkLogInOutButtonsVisible();
             }
         }
 
