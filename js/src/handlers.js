@@ -318,6 +318,7 @@ function checkLogInOutButtonsVisible (){
 		if(loginContainer) {
 			loginContainer.classList.remove('doboard_task_widget-hidden');
 		}
+		clearUserMenuData();
 	} else {
 		const el = document.getElementById('doboard_task_widget-user_menu-logout_button')?.closest('.doboard_task_widget-user_menu-item');
 		if(el) el.style.display = 'block';
@@ -325,6 +326,25 @@ function checkLogInOutButtonsVisible (){
 		if(loginContainer) {
 			loginContainer.classList.add('doboard_task_widget-hidden');
 		}
+	}
+}
+
+/**
+ * Clear user menu data in menu
+ */
+async function clearUserMenuData() {
+	const userNameElement = document.querySelector('.doboard_task_widget-user_menu-header-user-name');
+	const emailElement = document.querySelector('.doboard_task_widget-user_menu-header-email');
+	const avatarElement = document.querySelector('.doboard_task_widget-user_menu-header-avatar');
+	
+	if (userNameElement) {
+		userNameElement.innerText = 'Guest';
+	}
+	if (emailElement) {
+		emailElement.innerText = '';
+	}
+	if (avatarElement) {
+		avatarElement.src = SpotFixSVGLoader.getAsDataURI('iconAvatar');
 	}
 }
 

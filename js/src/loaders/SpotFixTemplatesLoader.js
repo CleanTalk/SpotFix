@@ -297,8 +297,8 @@ class SpotFixTemplatesLoader {
         </div>
         <div style="display: flex; flex-direction: column; align-items: center">
              <img class="doboard_task_widget-user_menu-header-avatar" src="{{avatar}}" alt="">
-             <span style="font-size: 16px; font-weight: 700">{{userName}}</span>
-             <span style="font-size: 12px;">{{email}}</span>
+             <span class="doboard_task_widget-user_menu-header-user-name" style="font-size: 16px; font-weight: 700">{{userName}}</span>
+             <span class="doboard_task_widget-user_menu-header-email" style="font-size: 12px;">{{email}}</span>
         </div>
     </div>
     <div class="doboard_task_widget-content" style="min-height:200px ">

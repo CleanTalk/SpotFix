@@ -379,13 +379,15 @@ class CleanTalkWidgetDoboard {
                         userEmail: userEmail,
                         userPassword: userPassword
                     })(this.registrationShowMessage);
+                        this.setUserMenuData();
                 } catch (error) {
                     document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
                 }
                 const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
                 const email = localStorage.getItem('spotfix_email');
                 if (sessionIdExists && email && !email.includes('spotfix_')) {
-                    document.querySelector('.doboard_task_widget-login').classList.add('doboard_task_widget-hidden');
+                    const loginEl= document.querySelector('.doboard_task_widget-login');
+                    loginEl?.classList?.add('doboard_task_widget-hidden');
                 } else {
                     document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
                 }
@@ -1275,5 +1277,53 @@ class CleanTalkWidgetDoboard {
         return str;
     }
     return '';
+}
+
+/**
+ * Set user menu data with current user information
+ */
+async setUserMenuData() {
+    const params = this.params;
+
+    // Get user data
+    let userData = null;
+    if (localStorage.getItem('spotfix_session_id')) {
+        try {
+            userData = await getUserDetails(params);
+        } catch (error) {
+            console.error('Error fetching user details:', error);
+        }
+    }
+
+    // Update user menu header
+    const userNameElement = document.querySelector('.doboard_task_widget-user_menu-header span[style*="font-size: 16px"]');
+    const emailElement = document.querySelector('.doboard_task_widget-user_menu-header span[style*="font-size: 12px"]');
+    const avatarElement = document.querySelector('.doboard_task_widget-user_menu-header-avatar');
+
+    if (userNameElement) {
+        if (userData && userData.name) {
+            userNameElement.innerText = userData.name;
+        } else {
+            userNameElement.innerText = 'Guest';
+        }
+    }
+
+    if (emailElement) {
+        if (userData && userData.email) {
+            emailElement.innerText = userData.email;
+        } else {
+            const email = localStorage.getItem('spotfix_email') || '';
+            emailElement.innerText = email.includes('spotfix_') ? '' : email;
+        }
+    }
+
+    if (avatarElement) {
+        if (userData && userData.avatar && userData.avatar.s) {
+            avatarElement.src = userData.avatar.s;
+        } else {
+            // Reset to default avatar or remove src
+            avatarElement.src = '';
+        }
+    }
 }
 }
