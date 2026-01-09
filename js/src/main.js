@@ -9,6 +9,7 @@ if( document.readyState !== 'loading' ) {
 }
 
 function spotFixInit() {
+    spotfixIndexedDB.init();
     new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
     loadBotDetector()

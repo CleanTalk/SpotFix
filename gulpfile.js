@@ -14,6 +14,7 @@ let browserSync = require('browser-sync').create();
 function bundle_src_js() {
     const cssStream = processCSS();
     const jsStream = gulp.src([
+        'js/src/localDB.js',
         'js/src/api.js',
         'js/src/handlers.js',
         'js/src/widget.js',
@@ -53,7 +54,7 @@ function processCSS() {
             const {deleteSync} = await import('del');
             deleteSync('temp');
         })
-        ;
+    ;
 }
 
 gulp.task('compress-js', gulp.series(bundle_src_js, minify_js));
