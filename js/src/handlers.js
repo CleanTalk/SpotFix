@@ -3,6 +3,7 @@ async function confirmUserEmail(emailConfirmationToken, params) {
 	// Save session data to LS
 	localStorage.setItem('spotfix_email', result.email);
 	localStorage.setItem('spotfix_session_id', result.sessionId);
+	await spotfixIndexedDB.init();
 	localStorage.setItem('spotfix_user_id', result.userId);
 
 	// Get pending task from LS
@@ -39,8 +40,10 @@ async function confirmUserEmail(emailConfirmationToken, params) {
 async function getTasksFullDetails(params, tasks, currentActiveTaskId) {
     if (tasks.length > 0) {
         const sessionId = localStorage.getItem('spotfix_session_id');
-        const comments = await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken);
-        const users = await getUserDoboard(sessionId, params.projectToken, params.accountId);
+		await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken);
+        const comments = await spotfixIndexedDB.getAll(TABLE_COMMENTS);
+        await getUserDoboard(sessionId, params.projectToken, params.accountId);
+		const users = await spotfixIndexedDB.getAll(TABLE_USERS);
 		const foundTask = tasks.find(item => +item.taskId === +currentActiveTaskId);
 
         return {
@@ -55,7 +58,8 @@ async function getUserDetails(params) {
 		const sessionId = localStorage.getItem('spotfix_session_id');
 		const currentUserId = localStorage.getItem('spotfix_user_id');
 		if(currentUserId) {
-			const users = await getUserDoboard(sessionId, params.projectToken, params.accountId, currentUserId);
+			await getUserDoboard(sessionId, params.projectToken, params.accountId, currentUserId);
+			const users = await spotfixIndexedDB.getAll(TABLE_USERS);
 			return users[0] || {};
 		}
 }
@@ -83,14 +87,15 @@ async function addTaskComment(params, taskId, commentText) {
 	return await createTaskCommentDoboard(params.accountId, sessionId, taskId, commentText, params.projectToken);
 }
 
-function getUserTasks(params) {
+async function getUserTasks(params) {
 	if (!localStorage.getItem('spotfix_session_id')) {
 		return {};
 	}
 	const projectToken = params.projectToken;
 	const sessionId = localStorage.getItem('spotfix_session_id');
 	const userId = localStorage.getItem('spotfix_user_id');
-	return getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId, userId);
+	await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId, userId);
+	return await spotfixIndexedDB.getAll(TABLE_TASKS, 'userId', userId);
 }
 
 async function getAllTasks(params) {
@@ -99,8 +104,8 @@ async function getAllTasks(params) {
 	}
 	const projectToken = params.projectToken;
 	const sessionId = localStorage.getItem('spotfix_session_id');
-	const tasksData = await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
-
+	await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
+	const tasksData = await spotfixIndexedDB.getAll(TABLE_TASKS);
     // Get only tasks with metadata
 	const filteredTaskData =  tasksData.filter(task => {
         return task.taskMeta;
@@ -204,6 +209,7 @@ function registerUser(taskDetails) {
 				document.getElementById("doboard_task_widget-user_password").focus();
 			} else if (response.sessionId) {
 				localStorage.setItem('spotfix_session_id', response.sessionId);
+				spotfixIndexedDB.init();
 				localStorage.setItem('spotfix_user_id', response.userId);
 				localStorage.setItem('spotfix_email', response.email);
 				userUpdate(projectToken, accountId);
@@ -233,6 +239,7 @@ function loginUser(taskDetails) {
 		.then(response => {
 			if (response.sessionId) {
 				localStorage.setItem('spotfix_session_id', response.sessionId);
+				spotfixIndexedDB.init();
 				localStorage.setItem('spotfix_user_id', response.userId);
 				localStorage.setItem('spotfix_email', response.email);
 			}  else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {

@@ -887,7 +887,8 @@ class CleanTalkWidgetDoboard {
         let tasksCount;
 
         if(tasksCountLS !== 0 && !tasksCountLS){
-            const tasks = await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
+            await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
+            const tasks = await spotfixIndexedDB.getAll(TABLE_TASKS);
             const filteredTasks = tasks.filter(task => {
                 return task.taskMeta;
             });
