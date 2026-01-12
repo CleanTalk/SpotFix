@@ -100,7 +100,7 @@ const userConfirmEmailDoboard = async (emailConfirmationToken) => {
 };
 
 const createTaskDoboard = async (sessionId, taskDetails) => {
-    const accountId = taskDetails.accountId
+    const accountId = taskDetails.accountId;
     const data = {
         session_id: sessionId,
         project_token: taskDetails.projectToken,
@@ -156,6 +156,17 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname, pag
         data.email = email;
         data.name = nickname;
     }
+
+    if (localStorage.getItem('bot_detector_event_token')) {
+        try {
+            const botDetectorData = JSON.parse(localStorage.getItem('bot_detector_event_token'));
+            if (botDetectorData?.value) {
+                data.bot_detector_event_token = botDetectorData?.value;
+            }
+        } catch (error) {
+            data.bot_detector_event_token = '';
+        }
+    }
     const result = await spotfixApiCall(data, 'user_registration');
     return {
         sessionId: result.session_id,
@@ -182,6 +193,20 @@ const loginUserDoboard = async (email, password) => {
         operationMessage: result.operation_message,
         operationStatus: result.operation_status,
         userEmailConfirmed: result.user_email_confirmed,
+    }
+}
+
+const logoutUserDoboard = async (accountId) => {
+    const sessionId = localStorage.getItem('spotfix_session_id');
+    if(sessionId && accountId) {
+        const data = {
+            session_id: sessionId,
+        };
+
+        const result = await spotfixApiCall(data, 'user_unauthorize', accountId);
+        if(result.operation_status === 'SUCCESS') {
+            clearLocalstorageOnLogout();
+        }
     }
 }
 
@@ -230,11 +255,13 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, statu
     }));
 };
 
-const getUserDoboard = async (sessionId, projectToken, accountId) => {
+const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
     const data = {
         session_id: sessionId,
         project_token: projectToken,
     }
+    if (userId) data.user_id = userId;
+
     const result = await spotfixApiCall(data, 'user_get', accountId);
     return result.users;
 
@@ -277,3 +304,20 @@ const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, tim
         success: true
     };
 }
+
+const getReleaseVersion = async () => {
+    try {
+        const res = await fetch('https://api.github.com/repos/CleanTalk/SpotFix/releases');
+        const data = await res.json();
+
+        if (data.length > 0 && data[0].tag_name) {
+            storageSaveSpotfixVersion(data[0].tag_name);
+            return data[0].tag_name;
+        }
+
+        return null;
+    } catch (err) {
+        return null;
+    }
+};
+
