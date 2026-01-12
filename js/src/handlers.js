@@ -234,7 +234,7 @@ function loginUser(taskDetails) {
 			if (response.sessionId) {
 				localStorage.setItem('spotfix_session_id', response.sessionId);
 				localStorage.setItem('spotfix_user_id', response.userId);
-				localStorage.setItem('spotfix_email', response.email);
+				localStorage.setItem('spotfix_email', userEmail);
 			}  else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
 				if (typeof showMessageCallback === 'function') {
 					showMessageCallback(response.operationMessage, 'notice');
