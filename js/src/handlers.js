@@ -252,8 +252,21 @@ function loginUser(taskDetails) {
 function forgotPassword(userEmail) {
 		return (showMessageCallback) => forgotPasswordDoboard(userEmail)
 		.then(response => {
-			if (response.sessionId) {
-				showMessageCallback(response.operationMessage, 'notice');
+			console.log('response ', response)
+			if (response?.operation_status === 'SUCCESS') {
+				showMessageCallback('New password sent to email', 'notice');
+				const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
+				const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
+				const submitButton = document.getElementById('doboard_task_widget-submit_button');
+				if (forgotPasswordForm) {
+					forgotPasswordForm.classList.add('doboard_task_widget-hidden');
+				}
+				if (loginContainer) {
+					loginContainer.classList.remove('doboard_task_widget-hidden');
+					if (submitButton) {
+						submitButton.closest('.doboard_task_widget-field').classList.add('doboard_task_widget-hidden');
+					}
+				}
 			} else {
 				throw new Error('Response error');
 			}

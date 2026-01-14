@@ -200,16 +200,7 @@ const forgotPasswordDoboard = async (email) => {
     const data = {
         email: email
     }
-    const result = await spotfixApiCall(data, 'user_password_reset');
-    return {
-        sessionId: result.session_id,
-        userId: result.user_id,
-        email: result.email,
-        accountExists: result.user_email_confirmed === 1,
-        operationMessage: result.operation_message,
-        operationStatus: result.operation_status,
-        userEmailConfirmed: result.user_email_confirmed,
-    }
+    return await spotfixApiCall(data, 'user_password_reset');
 }
 
 const logoutUserDoboard = async (accountId) => {
