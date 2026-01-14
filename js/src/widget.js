@@ -269,11 +269,16 @@ class CleanTalkWidgetDoboard {
     resetLoginForm() {
         const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
         const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
+        const submitButton = document.getElementById('doboard_task_widget-submit_button');
+
         if (loginContainer) {
             loginContainer.classList.add('doboard_task_widget-hidden');
         }
         if (phantomContainer) {
             phantomContainer.classList.remove('doboard_task_widget-hidden');
+        }
+        if (submitButton) {
+            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
         }
     }
     bindShowLoginFormEvents() {
@@ -288,8 +293,16 @@ class CleanTalkWidgetDoboard {
             showLoginButton.addEventListener('click', async () => {
                 const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
                 const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
+                const submitButton = document.getElementById('doboard_task_widget-submit_button');
                 if (loginContainer) {
                     loginContainer.classList.toggle('doboard_task_widget-hidden');
+                    if (submitButton) {
+                        if (loginContainer.classList.contains('doboard_task_widget-hidden')) {
+                            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
+                        } else {
+                            submitButton.closest('.doboard_task_widget-field').classList.add('doboard_task_widget-hidden');
+                        }
+                    }
                 }
                 if (phantomContainer) {
                     phantomContainer.classList.toggle('doboard_task_widget-hidden');
@@ -300,8 +313,16 @@ class CleanTalkWidgetDoboard {
             showPhantomLoginButton.addEventListener('click', async () => {
                 const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
                 const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
+                const submitButton = document.getElementById('doboard_task_widget-submit_button');
                 if (loginContainer) {
                     loginContainer.classList.toggle('doboard_task_widget-hidden');
+                    if (submitButton) {
+                        if (loginContainer.classList.contains('doboard_task_widget-hidden')) {
+                            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
+                        } else {
+                            submitButton.closest('.doboard_task_widget-field').classList.add('doboard_task_widget-hidden');
+                        }
+                    }
                 }
                 if (phantomContainer) {
                     phantomContainer.classList.toggle('doboard_task_widget-hidden');
@@ -324,12 +345,16 @@ class CleanTalkWidgetDoboard {
             forgotPasswordButtonBlack.addEventListener('click', async () => {
                 const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
                 const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
+                const submitButton = document.getElementById('doboard_task_widget-submit_button');
 
                 if (forgotPasswordForm) {
                     forgotPasswordForm.classList.add('doboard_task_widget-hidden');
                 }
                 if (loginContainer) {
                     loginContainer.classList.remove('doboard_task_widget-hidden');
+                    if (submitButton) {
+                        submitButton.closest('.doboard_task_widget-field').classList.add('doboard_task_widget-hidden');
+                    }
                 }
             })
         }
