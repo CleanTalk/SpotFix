@@ -401,6 +401,36 @@
     cursor: wait;
 }
 
+.doboard_task_widget-login-buttons-wrapper {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.doboard_task_widget-login-buttons-wrapper .doboard_task_widget-submit_button {
+    margin-bottom: 0;
+    width: auto;
+}
+
+.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-on_phantom_login_page,
+.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-forgot_password-black {
+    flex: 1;
+    background: #FFFFFF;
+    border: 1px solid #22A475;
+    color: #22A475;
+}
+
+.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-on_phantom_login_page:hover,
+.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-forgot_password-black:hover {
+    background: #f0fdf4;
+    color: #1C7857;
+}
+
+.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-login_button,
+.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-restore_password_button {
+    flex: 2;
+}
+
 .doboard_task_widget-issue-title {
     max-width: 200px;
     white-space: nowrap;
@@ -1275,7 +1305,10 @@ input:checked + .slider:before {
     cursor: pointer;
     color: #2F68B7;
     margin-bottom: 0;
+}
 
+.doboard_task_widget-forgot_password {
+     margin-bottom: 20px;
 }
 
 .doboard_task_widget-login-is-invalid {
