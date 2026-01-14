@@ -329,6 +329,9 @@ class SpotFixTemplatesLoader {
                     <label for="doboard_task_widget-login_password">Password</label>
                     <span class="doboard_task_widget-bottom-eye-icon" id="doboard_task_widget-password-toggle"></span>
                 </div>
+                <div>
+                        <span id="doboard_task_widget-forgot_password" class="doboard_task_widget-forgot_password">Forgot Password?</span>
+                </div>
                 <div class="doboard_task_widget-field">
                     <button id="doboard_task_widget-login_button" class="doboard_task_widget-submit_button">Log in</button>
                 </div>
@@ -336,6 +339,16 @@ class SpotFixTemplatesLoader {
                     <i><span id="doboard_task_widget-login-is-invalid" class="doboard_task_widget-login-is-invalid doboard_task_widget-hidden">Logon or password is invalid </span></i>
                 </div>
              </div>
+             <div id="doboard_task_widget-container-login-forgot-password-form" class="doboard_task_widget-forgot_password_form doboard_task_widget-forgot_password_form-menu doboard_task_widget-hidden">
+                 <div class="doboard_task_widget-input-container">
+                     <input id="doboard_task_widget-forgot_password_email" class="doboard_task_widget-field" type="email" name="forgot_password_email">
+                     <label for="doboard_task_widget-forgot_password_email">Email</label>
+                 </div>
+                 <div class="doboard_task_widget-login-buttons-wrapper">
+                     <button id="doboard_task_widget-forgot_password-black" class="doboard_task_widget-submit_button">Cansel</button>
+                     <button id="doboard_task_widget-restore_password_button" class="doboard_task_widget-submit_button">Restore password</button>
+                 </div>
+            </div>
             
         </div>
         </div>
@@ -346,6 +359,10 @@ class SpotFixTemplatesLoader {
              doBoard
             </a></span>
         </div>
+        <div class="doboard_task_widget-message-wrapper hidden">
+            <span id="doboard_task_widget-error_message-header"></span>
+        <div id="doboard_task_widget-error_message"></div>
+    </div>
     </div>
 </div>`;
     }

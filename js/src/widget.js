@@ -358,6 +358,34 @@ class CleanTalkWidgetDoboard {
                 }
             })
         }
+        const forgotPasswordButtonMenu = document.querySelector('.doboard_task_widget-input-container-login-menu #doboard_task_widget-forgot_password');
+        if (forgotPasswordButtonMenu) {
+            forgotPasswordButtonMenu.addEventListener('click', async () => {
+                const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
+                const loginContainer = document.querySelector('.doboard_task_widget-input-container-login-menu');
+                
+                if (forgotPasswordForm) {
+                    forgotPasswordForm.classList.remove('doboard_task_widget-hidden');
+                }
+                if (loginContainer) {
+                    loginContainer.classList.add('doboard_task_widget-hidden');
+                }
+            });
+        }
+        const forgotPasswordButtonBlackMenu = document.querySelector('.doboard_task_widget-input-container-login-menu ~ #doboard_task_widget-container-login-forgot-password-form #doboard_task_widget-forgot_password-black');
+        if (forgotPasswordButtonBlackMenu) {
+             forgotPasswordButtonBlackMenu.addEventListener('click', async () => {
+                const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
+                const loginContainer = document.querySelector('.doboard_task_widget-input-container-login-menu');
+
+                if (forgotPasswordForm) {
+                    forgotPasswordForm.classList.add('doboard_task_widget-hidden');
+                }
+                if (loginContainer) {
+                    loginContainer.classList.remove('doboard_task_widget-hidden');
+                }
+            });
+        }
         if (loginButton) {
             loginButton.addEventListener('click', async () => {
                 const userEmailElement = document.getElementById('doboard_task_widget-login_email');
@@ -405,6 +433,12 @@ class CleanTalkWidgetDoboard {
                         userPassword: userPassword
                     })(this.registrationShowMessage);
                         this.setUserMenuData();
+
+                        const submitButton = document.getElementById('doboard_task_widget-submit_button');
+                        if (submitButton) {
+                            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
+                        }
+
                 } catch (error) {
                     document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
                 }
