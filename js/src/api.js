@@ -213,6 +213,7 @@ const logoutUserDoboard = async (projectToken, accountId) => {
 
         if (result.operation_status === 'SUCCESS') {
             await deleteDB();
+            wsSpotfix.close();
             clearLocalstorageOnLogout();
         }
     }

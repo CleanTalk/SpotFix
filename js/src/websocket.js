@@ -1,18 +1,25 @@
 let socket = null;
+let heartbeatInterval = null;
 
 const WS_URL = 'ws://localhost:8080';
 
-export const ws = {
+const wsSpotfix = {
     connect() {
-        if (socket && socket.readyState === WebSocket.OPEN) {
-            // WebSocket already connected
+        if ((socket && socket.readyState === WebSocket.OPEN) || !localStorage.getItem('spotfix_session_id')) {
             return;
         }
 
         socket = new WebSocket(WS_URL);
 
         socket.onopen = () => {
-            // WebSocket connected
+            console.log('WebSocket connected');
+
+            // запускаем heartbeat каждые 30 секунд
+            heartbeatInterval = setInterval(() => {
+                if (socket && socket.readyState === WebSocket.OPEN) {
+                    wsSpotfix.send({ type: 'PING', payload: Date.now() });
+                }
+            }, 30000); // 30 сек
         };
 
         socket.onmessage = (event) => {
@@ -20,17 +27,19 @@ export const ws = {
                 const data = JSON.parse(event.data);
                 console.log('From server:', data);
 
-                // теперь реагируем на разные типы сообщений
                 switch (data.type) {
-                case 'NEW_COMMENT':
-                    // пришёл новый комментарий
-                    console.log('Новый комментарий:', data.payload);
-                    // тут можно обновить список комментариев на странице
+                case 'user':
+                    spotfixIndexedDB.put(TABLE_USERS, data.payload);
                     break;
-
-                case 'NOTIFICATION':
-                    // пришло уведомление
-                    console.log('Нотификация:', data.payload);
+                case 'task':
+                    spotfixIndexedDB.put(TABLE_TASKS, data.payload);
+                    break;
+                case 'comment':
+                    spotfixIndexedDB.put(TABLE_COMMENTS, data.payload);
+                    break;
+                case 'PONG':
+                    // ответ на PING
+                    console.log('Heartbeat OK');
                     break;
 
                 default:
@@ -41,14 +50,20 @@ export const ws = {
             }
         };
 
-
-        socket.onerror = (error) => {
-            console.error('WebSocket error:', error);
-        };
+        socket.onerror = (error) => console.error('WebSocket error:', error);
 
         socket.onclose = () => {
             console.log('WebSocket closed');
             socket = null;
+
+            // останавливаем heartbeat
+            if (heartbeatInterval) {
+                clearInterval(heartbeatInterval);
+                heartbeatInterval = null;
+            }
+
+            // при желании можно переподключить автоматически
+            // setTimeout(ws.connect, 5000);
         };
     },
 
@@ -57,21 +72,21 @@ export const ws = {
             console.warn('WebSocket is not connected');
             return;
         }
-        // data: {
-        //     type: 'PING',
-        //     payload: Date.now()
-        // }
         socket.send(JSON.stringify(data));
     },
 
     close() {
         if (!socket) return;
-
         socket.close();
         socket = null;
+
+        if (heartbeatInterval) {
+            clearInterval(heartbeatInterval);
+            heartbeatInterval = null;
+        }
     },
 };
 
-// window.addEventListener('pagehide', () => {
-//     ws.close();
-// });
+window.addEventListener('pagehide', () => {
+    wsSpotfix.close();
+});
