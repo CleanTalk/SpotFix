@@ -742,7 +742,7 @@ class CleanTalkWidgetDoboard {
         }) || '';
 
         document.querySelector('#doboard_task_widget-user_menu-logout_button')?.addEventListener('click', () => {
-            logoutUserDoboard(this.params.accountId);
+            logoutUserDoboard(this.params.projectToken, this.params.accountId).then(() => {this.hide()});
         }) || '';
 
         document.getElementById('addNewTaskButton')?.addEventListener('click', () => {
