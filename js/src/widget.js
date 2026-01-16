@@ -282,11 +282,15 @@ class CleanTalkWidgetDoboard {
 
         const config = window.SpotfixWidgetConfig;
         const position = {
-            compact: '0vh',
+            extraCompact: '0vh',
+            compact: '5vh',
+            extraShort: '15vh',
             short: '20vh',
-            regular: '45vh',
+            regular: '35vh',
+            extraRegular: '45vh',
             tall: '60vh',
-            extra: '85vh',
+            extraTall: '70vh',
+            extra: '85vh'
         };
 
         switch (type) {
