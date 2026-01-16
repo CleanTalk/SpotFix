@@ -211,7 +211,7 @@ class SpotFixTemplatesLoader {
                                 <span id="doboard_task_widget-forgot_password" class="doboard_task_widget-forgot_password">Forgot Password?</span>
                         </div> 
                         <div class="doboard_task_widget-login-buttons-wrapper">
-                            <button id="doboard_task_widget-on_phantom_login_page" class="doboard_task_widget-submit_button">Cansel</button>
+                            <button id="doboard_task_widget-on_phantom_login_page" class="doboard_task_widget-submit_button">Cancel</button>
                             <button id="doboard_task_widget-login_button" class="doboard_task_widget-submit_button">Log in</button>
                         </div>
                         <div>
@@ -224,7 +224,7 @@ class SpotFixTemplatesLoader {
                          <label for="doboard_task_widget-forgot_password_email">Email</label>
                      </div>
                      <div class="doboard_task_widget-login-buttons-wrapper">
-                         <button id="doboard_task_widget-forgot_password-black" class="doboard_task_widget-submit_button">Cansel</button>
+                         <button id="doboard_task_widget-forgot_password-black" class="doboard_task_widget-submit_button">Cancel</button>
                          <button id="doboard_task_widget-restore_password_button" class="doboard_task_widget-submit_button">Restore password</button>
                      </div>
                 </div>
@@ -345,7 +345,7 @@ class SpotFixTemplatesLoader {
                      <label for="doboard_task_widget-forgot_password_email">Email</label>
                  </div>
                  <div class="doboard_task_widget-login-buttons-wrapper">
-                     <button id="doboard_task_widget-forgot_password-black" class="doboard_task_widget-submit_button">Cansel</button>
+                     <button id="doboard_task_widget-forgot_password-black" class="doboard_task_widget-submit_button">Cancel</button>
                      <button id="doboard_task_widget-restore_password_button" class="doboard_task_widget-submit_button">Restore password</button>
                  </div>
             </div>

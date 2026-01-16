@@ -151,8 +151,9 @@ class CleanTalkWidgetDoboard {
                 let userEmail = '';
                 let userPassword = '';
                 const loginSectionElement = document.querySelector('.doboard_task_widget-login');
+                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
 
-                if ( loginSectionElement && loginSectionElement.classList.contains('active') ) {
+                if ( !sessionIdExists && loginSectionElement && loginSectionElement.classList.contains('active') ) {
                     const userEmailElement = document.getElementById('doboard_task_widget-user_email');
                     const userNameElement = document.getElementById('doboard_task_widget-user_name');
                     const userPasswordElement = document.getElementById('doboard_task_widget-user_password');
@@ -972,7 +973,7 @@ class CleanTalkWidgetDoboard {
         }) || '';
 
         document.querySelector('#doboard_task_widget-user_menu-logout_button')?.addEventListener('click', () => {
-            logoutUserDoboard(this.params.projectToken, this.params.accountId).then(() => {this.hide()});
+            logoutUserDoboard(this.params.projectToken, this.params.accountId);
         }) || '';
 
         document.getElementById('addNewTaskButton')?.addEventListener('click', () => {

@@ -159,7 +159,8 @@
     align-items: center;
     border-bottom: 1px #EBF0F4 solid;
     padding: 0 16px;
-    height: 65px;
+    height: 40px;
+    margin-top: 10px;
 }
 
 .doboard_task_widget-content {
