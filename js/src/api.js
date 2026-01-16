@@ -203,15 +203,21 @@ const forgotPasswordDoboard = async (email) => {
     return await spotfixApiCall(data, 'user_password_reset');
 }
 
-const logoutUserDoboard = async (accountId) => {
+const logoutUserDoboard = async (projectToken, accountId) => {
     const sessionId = localStorage.getItem('spotfix_session_id');
     if(sessionId && accountId) {
         const data = {
             session_id: sessionId,
         };
 
+        const email = localStorage.getItem('spotfix_email') || '';
+
+        if (email && email.includes('spotfix_')) {
+            data.project_token = projectToken;
+        }
+
         const result = await spotfixApiCall(data, 'user_unauthorize', accountId);
-        if(result.operation_status === 'SUCCESS') {
+        if (result.operation_status === 'SUCCESS') {
             clearLocalstorageOnLogout();
             checkLogInOutButtonsVisible();
         }
