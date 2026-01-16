@@ -281,17 +281,6 @@ class CleanTalkWidgetDoboard {
         let templateVariables = {};
 
         const config = window.SpotfixWidgetConfig;
-        const position = {
-            extraCompact: '0vh',
-            compact: '5vh',
-            extraShort: '15vh',
-            short: '20vh',
-            regular: '35vh',
-            extraRegular: '45vh',
-            tall: '60vh',
-            extraTall: '70vh',
-            extra: '85vh'
-        };
 
         switch (type) {
             case 'create_issue':
@@ -313,11 +302,13 @@ class CleanTalkWidgetDoboard {
                 }
 
                 templateName = 'wrap';
-                templateVariables = {position: position[config?.verticalPosition] || position.compact, ...this.srcVariables};
+                templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
+                        ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
                 break;
             case 'wrap_review':
                 templateName = 'wrap_review';
-                templateVariables = {position: position[config?.verticalPosition] || position.compact, ...this.srcVariables};
+                templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
+                        ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
                 break;
             case 'all_issues':
                 templateName = 'all_issues';
