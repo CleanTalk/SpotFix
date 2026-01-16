@@ -15,6 +15,7 @@ function bundle_src_js() {
     const cssStream = processCSS();
     const jsStream = gulp.src([
         'js/src/api.js',
+        'js/src/constants.js',
         'js/src/handlers.js',
         'js/src/widget.js',
         'js/src/main.js',
