@@ -214,6 +214,10 @@ function registerUser(taskDetails) {
 				if (typeof showMessageCallback === 'function') {
 					showMessageCallback(response.operationMessage, 'notice');
 				}
+				const submitButton = document.getElementById('doboard_task_widget-submit_button');
+					submitButton.disabled = true;
+					submitButton.innerText = ksesFilter('Spot not created. Please confirmation email!');
+
 			} else {
 				throw new Error('Session ID not found in response');
 			}
