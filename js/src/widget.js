@@ -317,9 +317,9 @@ class CleanTalkWidgetDoboard {
                 break;
             case 'user_menu':
                 templateName = 'user_menu';
-                const versionFromLS = localStorage.getItem('spotfix_app_version');
+                const version = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
                 templateVariables = {
-                    spotfixVersion: versionFromLS ? 'Spotfix version ' + versionFromLS + '.' : '',
+                    spotfixVersion: version ? 'Spotfix version ' + version + '.' : '',
                     avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
                     iconEye: SpotFixSVGLoader.getAsDataURI('iconEye'),
                     iconDoor: SpotFixSVGLoader.getAsDataURI('iconDoor'),
@@ -519,7 +519,7 @@ class CleanTalkWidgetDoboard {
                 const user = await getUserDetails(this.params);
                 const gitHubAppVersion = await getReleaseVersion();
                 let spotfixVersion = '';
-                const version = localStorage.getItem('spotfix_app_version') || gitHubAppVersion;
+                const version = localStorage.getItem('spotfix_app_version') || gitHubAppVersion || SPOTFIX_VERSION;
                 spotfixVersion = version ? `Spotfix version ${version}.` : '';
 
                 templateVariables.spotfixVersion = spotfixVersion || '';
