@@ -379,7 +379,7 @@
     background: #F9FBFD;
 }
 .doboard_task_widget-submit_button {
-    height: 48px;
+    min-height: 48px;
     width: 100%;
     max-width: 400px;
     margin-bottom: 10px;
