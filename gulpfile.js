@@ -17,6 +17,7 @@ function bundle_src_js() {
         'js/src/localDB.js',
         'js/src/api.js',
         'js/src/websocket.js',
+        'js/src/constants.js',
         'js/src/handlers.js',
         'js/src/widget.js',
         'js/src/main.js',
