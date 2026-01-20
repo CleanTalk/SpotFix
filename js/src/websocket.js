@@ -41,8 +41,11 @@ const wsSpotfix = {
                 case 'users':
                     spotfixIndexedDB.put(TABLE_USERS, data.data);
                     break;
-
                 case 'tasks':
+                    if (data.data.status === 'REMOVED') {
+                        spotfixIndexedDB.delete(TABLE_TASKS, data.data.task_id);
+                        break;
+                    }
                     spotfixIndexedDB.put(TABLE_TASKS, {
                         taskId: data.data.task_id,
                         taskTitle: data.data.name,
@@ -56,6 +59,10 @@ const wsSpotfix = {
                     break;
 
                 case 'comments':
+                    if (data.data.status === 'REMOVED') {
+                        spotfixIndexedDB.delete(TABLE_COMMENTS, data.data.comment_id);
+                        break;
+                    }
                     spotfixIndexedDB.put(TABLE_COMMENTS, {
                         taskId: data.data.task_id,
                         commentId: data.data.comment_id,

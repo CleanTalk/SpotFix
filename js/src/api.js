@@ -240,11 +240,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         taskMeta: task.meta,
         taskStatus: task.status,
     }));
-    if (data.task_id) {
-        await spotfixIndexedDB.put(TABLE_TASKS, tasks);
-    } else {
-        await spotfixIndexedDB.clearPut(TABLE_TASKS, tasks);
-    }
+    await spotfixIndexedDB.clearPut(TABLE_TASKS, tasks);
     storageSaveTasksCount(tasks);
     return tasks;
 }
@@ -266,11 +262,7 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, statu
         status: comment.status,
         issueTitle: comment.task_name,
     }));
-    if (data.comment_id) {
-        await spotfixIndexedDB.put(TABLE_COMMENTS, comments);
-    } else {
-        await spotfixIndexedDB.clearPut(TABLE_COMMENTS, comments);
-    }
+    await spotfixIndexedDB.clearPut(TABLE_COMMENTS, comments);
     return comments;
 };
 
