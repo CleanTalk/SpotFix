@@ -113,6 +113,9 @@ class CleanTalkWidgetDoboard {
             throw new Error('Necessary script params not provided');
 
         }
+        if (params.accountId) {
+            localStorage.setItem('spotfix_company_id', params.accountId);
+        }
         return params;
     }
 

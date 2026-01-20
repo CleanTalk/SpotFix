@@ -4,8 +4,8 @@ async function confirmUserEmail(emailConfirmationToken, params) {
 	// Save session data to LS
 	localStorage.setItem('spotfix_email', result.email);
 	localStorage.setItem('spotfix_session_id', result.sessionId);
-	await spotfixIndexedDB.init();
 	localStorage.setItem('spotfix_user_id', result.userId);
+	await spotfixIndexedDB.init();
 
 	// Get pending task from LS
 	const pendingTaskRaw = localStorage.getItem('spotfix_pending_task');
@@ -61,7 +61,7 @@ async function getUserDetails(params) {
 		if(currentUserId) {
 			await getUserDoboard(sessionId, params.projectToken, params.accountId, currentUserId);
 			const users = await spotfixIndexedDB.getAll(TABLE_USERS);
-			return users[0] || {};
+			return users.find(user => +user.user_id === +currentUserId) || {};
 		}
 }
 
@@ -210,9 +210,9 @@ function registerUser(taskDetails) {
 				document.getElementById("doboard_task_widget-user_password").focus();
 			} else if (response.sessionId) {
 				localStorage.setItem('spotfix_session_id', response.sessionId);
-				spotfixIndexedDB.init();
 				localStorage.setItem('spotfix_user_id', response.userId);
 				localStorage.setItem('spotfix_email', response.email);
+				spotfixIndexedDB.init();
 				userUpdate(projectToken, accountId);
 			} else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
 				if (response.operationMessage == 'Waiting for email confirmation') {
@@ -240,9 +240,9 @@ function loginUser(taskDetails) {
 		.then(response => {
 			if (response.sessionId) {
 				localStorage.setItem('spotfix_session_id', response.sessionId);
-				spotfixIndexedDB.init();
 				localStorage.setItem('spotfix_user_id', response.userId);
 				localStorage.setItem('spotfix_email', userEmail);
+				spotfixIndexedDB.init();
 			}  else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
 				if (typeof showMessageCallback === 'function') {
 					showMessageCallback(response.operationMessage, 'notice');

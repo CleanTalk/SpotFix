@@ -22,6 +22,9 @@ function storageSetWidgetIsClosed(visible) {
     localStorage.setItem('spotfix_widget_is_closed', visible ? '1' : '0');
     if(visible) {
         wsSpotfix.close();
+    } else {
+        wsSpotfix.connect();
+        wsSpotfix.subscribe();
     }
 }
 

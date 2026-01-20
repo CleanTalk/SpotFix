@@ -3,62 +3,91 @@ let heartbeatInterval = null;
 
 const WS_URL = 'wss://ws.doboard.com';
 
+const getSessionId = () => localStorage.getItem('spotfix_session_id');
+
+const buildMessage = (action) => ({
+    channel: `account:${localStorage.getItem('spotfix_company_id')}`,
+    action,
+    account_id: localStorage.getItem('spotfix_company_id'),
+    session_id: getSessionId(),
+});
+
 const wsSpotfix = {
     connect() {
-        if ((socket && socket.readyState === WebSocket.OPEN) || !localStorage.getItem('spotfix_session_id')) {
+        if ((socket && socket.readyState === WebSocket.OPEN) || !getSessionId()) {
             return;
         }
 
         socket = new WebSocket(WS_URL);
 
         socket.onopen = () => {
-            console.log('WebSocket connected');
-
             heartbeatInterval = setInterval(() => {
-                if (socket && socket.readyState === WebSocket.OPEN) {
-                    wsSpotfix.send({ type: 'PING', payload: Date.now() });
+                if (socket?.readyState === WebSocket.OPEN) {
+                    socket.send('heartbeat');
                 }
-            }, 30000);
+            }, 50 * 1000);
+            wsSpotfix.send(buildMessage('SUBSCRIBE'));
         };
 
         socket.onmessage = (event) => {
+            if (event.data === 'heartbeat') {
+                return;
+            }
+
             try {
                 const data = JSON.parse(event.data);
-                console.log('From server:', data);
 
-                switch (event.object) {
-                case 'user':
-                    spotfixIndexedDB.put(TABLE_USERS, data);
+                switch (data.object) {
+                case 'users':
+                    spotfixIndexedDB.put(TABLE_USERS, data.data);
                     break;
-                case 'task':
-                    spotfixIndexedDB.put(TABLE_TASKS, data);
+
+                case 'tasks':
+                    spotfixIndexedDB.put(TABLE_TASKS, {
+                        taskId: data.data.task_id,
+                        taskTitle: data.data.name,
+                        userId: data.data.user_id,
+                        taskLastUpdate: data.data.updated,
+                        taskCreated: data.data.created,
+                        taskCreatorTaskUser: data.data.creator_user_id,
+                        taskMeta: data.data.meta,
+                        taskStatus: data.data.status,
+                    });
                     break;
-                case 'comment':
-                    spotfixIndexedDB.put(TABLE_COMMENTS, data);
-                    break;
-                case 'PONG':
-                    console.log('Heartbeat OK');
+
+                case 'comments':
+                    spotfixIndexedDB.put(TABLE_COMMENTS, {
+                        taskId: data.data.task_id,
+                        commentId: data.data.comment_id,
+                        userId: data.data.user_id,
+                        commentBody: data.data.comment,
+                        commentDate: data.data.updated,
+                        status: data.data.status,
+                        issueTitle: data.data.task_name,
+                    });
                     break;
 
                 default:
-                    console.log('Неизвестный тип сообщения:', data);
+                    break;
                 }
-            } catch (err) {
-                console.warn('Err:', event.data);
+            } catch (e) {
+                console.warn('WS non-JSON message:', event.data);
             }
         };
 
-        socket.onerror = (error) => console.error('WebSocket error:', error);
+        socket.onclose = (e) => {
+            console.warn('WS closed:', e.code, e.reason);
 
-        socket.onclose = () => {
-            console.log('WebSocket closed');
             socket = null;
 
             if (heartbeatInterval) {
                 clearInterval(heartbeatInterval);
                 heartbeatInterval = null;
             }
+        };
 
+        socket.onerror = (e) => {
+            console.error('WS error:', e);
         };
     },
 
@@ -71,18 +100,19 @@ const wsSpotfix = {
     },
 
     close() {
-        if (!socket) return;
-        socket.close();
-        socket = null;
+        wsSpotfix.unsubscribe();
+        socket?.close();
+    },
 
-        if (heartbeatInterval) {
-            clearInterval(heartbeatInterval);
-            heartbeatInterval = null;
+    subscribe() {
+        if (socket?.readyState === WebSocket.OPEN) {
+            wsSpotfix.send(buildMessage('SUBSCRIBE'));
+        }
+    },
+
+    unsubscribe() {
+        if (socket?.readyState === WebSocket.OPEN) {
+            wsSpotfix.send(buildMessage('UNSUBSCRIBE'));
         }
     },
 };
-
-window.addEventListener('pagehide', () => {
-    wsSpotfix.close();
-});
-

@@ -11,6 +11,7 @@ if( document.readyState !== 'loading' ) {
 function spotFixInit() {
     spotfixIndexedDB.init();
     wsSpotfix.connect();
+    wsSpotfix.subscribe();
     new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
     loadBotDetector()
