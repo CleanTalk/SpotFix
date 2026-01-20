@@ -5,7 +5,6 @@ async function confirmUserEmail(emailConfirmationToken, params) {
 	localStorage.setItem('spotfix_email', result.email);
 	localStorage.setItem('spotfix_session_id', result.sessionId);
 	await spotfixIndexedDB.init();
-	wsSpotfix.connect();
 	localStorage.setItem('spotfix_user_id', result.userId);
 
 	// Get pending task from LS
@@ -212,7 +211,6 @@ function registerUser(taskDetails) {
 			} else if (response.sessionId) {
 				localStorage.setItem('spotfix_session_id', response.sessionId);
 				spotfixIndexedDB.init();
-				wsSpotfix.connect();
 				localStorage.setItem('spotfix_user_id', response.userId);
 				localStorage.setItem('spotfix_email', response.email);
 				userUpdate(projectToken, accountId);
@@ -243,7 +241,6 @@ function loginUser(taskDetails) {
 			if (response.sessionId) {
 				localStorage.setItem('spotfix_session_id', response.sessionId);
 				spotfixIndexedDB.init();
-				wsSpotfix.connect();
 				localStorage.setItem('spotfix_user_id', response.userId);
 				localStorage.setItem('spotfix_email', userEmail);
 			}  else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
@@ -294,6 +291,7 @@ function setToggleStatus(rootElement){
 	const clickHandler = () => {
 		const timer = setTimeout(() => {
 			localStorage.setItem('spotfix_widget_is_closed', '1');
+			wsSpotfix.close();
 			rootElement.hide();
 			clearTimeout(timer);
 		}, 300);
