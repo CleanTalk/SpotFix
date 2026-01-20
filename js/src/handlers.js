@@ -206,6 +206,7 @@ function registerUser(taskDetails) {
 				localStorage.setItem('spotfix_session_id', response.sessionId);
 				localStorage.setItem('spotfix_user_id', response.userId);
 				localStorage.setItem('spotfix_email', response.email);
+				localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
 				userUpdate(projectToken, accountId);
 			} else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
 				if (response.operationMessage == 'Waiting for email confirmation') {
@@ -240,6 +241,7 @@ function loginUser(taskDetails) {
 				localStorage.setItem('spotfix_user_id', response.userId);
 				localStorage.setItem('spotfix_email', response.email);
 				localStorage.setItem('spotfix_email', userEmail);
+				localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
 				checkLogInOutButtonsVisible();
             }  else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
 				if (typeof showMessageCallback === 'function') {

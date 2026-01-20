@@ -176,6 +176,7 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname, pag
         operationMessage: result.operation_message,
         operationStatus: result.operation_status,
         userEmailConfirmed: result.user_email_confirmed,
+        accounts: result.accounts,
     };
 };
 
@@ -193,6 +194,7 @@ const loginUserDoboard = async (email, password) => {
         operationMessage: result.operation_message,
         operationStatus: result.operation_status,
         userEmailConfirmed: result.user_email_confirmed,
+        accounts: result.accounts
     }
 }
 
@@ -203,8 +205,13 @@ const forgotPasswordDoboard = async (email) => {
     return await spotfixApiCall(data, 'user_password_reset');
 }
 
-const logoutUserDoboard = async (projectToken, accountId) => {
+
+const logoutUserDoboard = async (projectToken) => {
     const sessionId = localStorage.getItem('spotfix_session_id');
+    const accountsString = localStorage.getItem('spotfix_accounts');
+    const accounts =  accountsString !== 'undefined' ? JSON.parse(accountsString || '[]') : [];
+    const accountId = accounts.length > 0 ? accounts[0].account_id : 1;
+
     if(sessionId && accountId) {
         const data = {
             session_id: sessionId,

@@ -176,6 +176,7 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname, pag
         operationMessage: result.operation_message,
         operationStatus: result.operation_status,
         userEmailConfirmed: result.user_email_confirmed,
+        accounts: result.accounts,
     };
 };
 
@@ -193,6 +194,7 @@ const loginUserDoboard = async (email, password) => {
         operationMessage: result.operation_message,
         operationStatus: result.operation_status,
         userEmailConfirmed: result.user_email_confirmed,
+        accounts: result.accounts
     }
 }
 
@@ -203,8 +205,13 @@ const forgotPasswordDoboard = async (email) => {
     return await spotfixApiCall(data, 'user_password_reset');
 }
 
-const logoutUserDoboard = async (projectToken, accountId) => {
+
+const logoutUserDoboard = async (projectToken) => {
     const sessionId = localStorage.getItem('spotfix_session_id');
+    const accountsString = localStorage.getItem('spotfix_accounts');
+    const accounts =  accountsString !== 'undefined' ? JSON.parse(accountsString || '[]') : [];
+    const accountId = accounts.length > 0 ? accounts[0].account_id : 1;
+
     if(sessionId && accountId) {
         const data = {
             session_id: sessionId,
@@ -544,6 +551,7 @@ function registerUser(taskDetails) {
 				localStorage.setItem('spotfix_session_id', response.sessionId);
 				localStorage.setItem('spotfix_user_id', response.userId);
 				localStorage.setItem('spotfix_email', response.email);
+				localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
 				userUpdate(projectToken, accountId);
 			} else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
 				if (response.operationMessage == 'Waiting for email confirmation') {
@@ -578,6 +586,7 @@ function loginUser(taskDetails) {
 				localStorage.setItem('spotfix_user_id', response.userId);
 				localStorage.setItem('spotfix_email', response.email);
 				localStorage.setItem('spotfix_email', userEmail);
+				localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
 				checkLogInOutButtonsVisible();
             }  else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
 				if (typeof showMessageCallback === 'function') {
@@ -1687,7 +1696,7 @@ class CleanTalkWidgetDoboard {
         }) || '';
 
         document.querySelector('#doboard_task_widget-user_menu-logout_button')?.addEventListener('click', () => {
-            logoutUserDoboard(this.params.projectToken, this.params.accountId);
+            logoutUserDoboard(this.params.projectToken);
         }) || '';
 
         document.getElementById('addNewTaskButton')?.addEventListener('click', () => {
@@ -3241,6 +3250,7 @@ function clearLocalstorageOnLogout () {
     localStorage.removeItem('spotfix_email');
     localStorage.removeItem('spotfix_session_id');
     localStorage.removeItem('spotfix_user_id');
+    localStorage.removeItem('spotfix_accounts');
 }
 
 /**

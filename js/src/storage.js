@@ -183,4 +183,5 @@ function clearLocalstorageOnLogout () {
     localStorage.removeItem('spotfix_email');
     localStorage.removeItem('spotfix_session_id');
     localStorage.removeItem('spotfix_user_id');
+    localStorage.removeItem('spotfix_accounts');
 }
