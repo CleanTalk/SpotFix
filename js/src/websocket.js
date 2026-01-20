@@ -26,15 +26,15 @@ const wsSpotfix = {
                 const data = JSON.parse(event.data);
                 console.log('From server:', data);
 
-                switch (data.type) {
+                switch (event.object) {
                 case 'user':
-                    spotfixIndexedDB.put(TABLE_USERS, data.payload);
+                    spotfixIndexedDB.put(TABLE_USERS, data);
                     break;
                 case 'task':
-                    spotfixIndexedDB.put(TABLE_TASKS, data.payload);
+                    spotfixIndexedDB.put(TABLE_TASKS, data);
                     break;
                 case 'comment':
-                    spotfixIndexedDB.put(TABLE_COMMENTS, data.payload);
+                    spotfixIndexedDB.put(TABLE_COMMENTS, data);
                     break;
                 case 'PONG':
                     console.log('Heartbeat OK');
