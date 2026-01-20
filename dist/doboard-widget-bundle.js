@@ -562,7 +562,7 @@ function registerUser(taskDetails) {
 				}
 				const submitButton = document.getElementById('doboard_task_widget-submit_button');
 					submitButton.disabled = true;
-					submitButton.innerText = ksesFilter('Spot not created. Please confirmation email!');
+					submitButton.innerText = ksesFilter('Confirm email to create spot');
 
 			} else {
 				throw new Error('Session ID not found in response');
