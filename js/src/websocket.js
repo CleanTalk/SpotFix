@@ -1,7 +1,7 @@
 let socket = null;
 let heartbeatInterval = null;
 
-const WS_URL = 'ws://localhost:8080';
+const WS_URL = 'wss://ws.doboard.com';
 
 const wsSpotfix = {
     connect() {
@@ -14,12 +14,11 @@ const wsSpotfix = {
         socket.onopen = () => {
             console.log('WebSocket connected');
 
-            // запускаем heartbeat каждые 30 секунд
             heartbeatInterval = setInterval(() => {
                 if (socket && socket.readyState === WebSocket.OPEN) {
                     wsSpotfix.send({ type: 'PING', payload: Date.now() });
                 }
-            }, 30000); // 30 сек
+            }, 30000);
         };
 
         socket.onmessage = (event) => {
@@ -38,7 +37,6 @@ const wsSpotfix = {
                     spotfixIndexedDB.put(TABLE_COMMENTS, data.payload);
                     break;
                 case 'PONG':
-                    // ответ на PING
                     console.log('Heartbeat OK');
                     break;
 
@@ -46,7 +44,7 @@ const wsSpotfix = {
                     console.log('Неизвестный тип сообщения:', data);
                 }
             } catch (err) {
-                console.warn('Не JSON от сервера:', event.data);
+                console.warn('Err:', event.data);
             }
         };
 
@@ -56,14 +54,11 @@ const wsSpotfix = {
             console.log('WebSocket closed');
             socket = null;
 
-            // останавливаем heartbeat
             if (heartbeatInterval) {
                 clearInterval(heartbeatInterval);
                 heartbeatInterval = null;
             }
 
-            // при желании можно переподключить автоматически
-            // setTimeout(ws.connect, 5000);
         };
     },
 
@@ -90,3 +85,4 @@ const wsSpotfix = {
 window.addEventListener('pagehide', () => {
     wsSpotfix.close();
 });
+
