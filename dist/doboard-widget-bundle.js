@@ -221,7 +221,8 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         session_id: sessionId,
         project_token: projectToken,
         project_id: projectId,
-        task_type: 'PUBLIC'
+        task_type: 'PUBLIC',
+        status: 'ACTIVE,DONE',
     }
     if ( userId ) {
         data.user_id = userId;
