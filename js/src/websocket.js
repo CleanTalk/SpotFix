@@ -10,6 +10,7 @@ const buildMessage = (action) => ({
     action,
     account_id: localStorage.getItem('spotfix_company_id'),
     session_id: getSessionId(),
+    project_token: localStorage.getItem('spotfix_project_token'),
 });
 
 const wsSpotfix = {

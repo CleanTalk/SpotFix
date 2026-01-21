@@ -116,6 +116,9 @@ class CleanTalkWidgetDoboard {
         if (params.accountId) {
             localStorage.setItem('spotfix_company_id', params.accountId);
         }
+        if (params.projectToken) {
+            localStorage.setItem('spotfix_project_token', params.projectToken);
+        }
         return params;
     }
 
