@@ -51,7 +51,7 @@ class CleanTalkWidgetDoboard {
             try {
                 // Confirm email and create task
                 const createdTask = await confirmUserEmail(emailToken, this.params);
-                this.allTasksData = await getAllTasks(this.params);
+                this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
                 // Open task interface
                 this.currentActiveTaskId = createdTask.taskId;
                 type = 'concrete_issue';
@@ -67,7 +67,7 @@ class CleanTalkWidgetDoboard {
             // Load all tasks
             const isWidgetClosed = localStorage.getItem('spotfix_widget_is_closed');
             if((isWidgetClosed && !this.selectedText) || !isWidgetClosed){
-                this.allTasksData = await getAllTasks(this.params);
+                this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
             }
         }
 
@@ -259,7 +259,7 @@ class CleanTalkWidgetDoboard {
                 }
 
                 // refersh tasks list after creation
-                this.allTasksData = await getAllTasks(this.params);
+                this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
                 // save updates
                 storageSaveTasksUpdateData(this.allTasksData);
 
@@ -275,7 +275,7 @@ class CleanTalkWidgetDoboard {
      * Create widget element
      * @return {HTMLElement} widget element
      */
-    async createWidgetElement(type, showOnlyCurrentPage = false) {
+    async createWidgetElement(type, nonRequesting = false, showOnlyCurrentPage = false) {
         const widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
         widgetContainer.className = 'doboard_task_widget';
         widgetContainer.innerHTML = ksesFilter('');
@@ -292,6 +292,8 @@ class CleanTalkWidgetDoboard {
             case 'create_issue':
                 templateName = 'create_issue';
                 this.type_name = templateName;
+                this.socket_type_name = templateName;
+                this.nonRequesting = nonRequesting;
                 templateVariables = {
                     selectedText: this.selectedText,
                     currentDomain: document.location.hostname || '',
@@ -308,21 +310,31 @@ class CleanTalkWidgetDoboard {
                 }
 
                 templateName = 'wrap';
+                this.type_name = templateName;
+                this.socket_type_name = templateName;
+                this.nonRequesting = nonRequesting;
                 templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
                         ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
                 break;
             case 'wrap_review':
                 templateName = 'wrap_review';
+                this.type_name = templateName;
+                this.socket_type_name = templateName;
+                this.nonRequesting = nonRequesting;
                 templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
                         ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
                 break;
             case 'all_issues':
                 templateName = 'all_issues';
                 this.type_name = templateName;
+                this.socket_type_name = templateName;
+                this.nonRequesting = nonRequesting;
                 templateVariables = {...this.srcVariables};
                 break;
             case 'user_menu':
                 templateName = 'user_menu';
+                this.socket_type_name = templateName;
+                this.nonRequesting = nonRequesting;
                 const version = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
                 templateVariables = {
                     spotfixVersion: version ? 'Spotfix version ' + version + '.' : '',
@@ -338,6 +350,8 @@ class CleanTalkWidgetDoboard {
             case 'concrete_issue':
                 templateName = 'concrete_issue';
                 this.type_name = templateName;
+                this.socket_type_name = templateName;
+                this.nonRequesting = nonRequesting;
                 // Update the number of tasks
                 this.savedIssuesQuantityAll = Array.isArray(this.allTasksData) ? this.allTasksData.length : 0;
                 // Calculate the number of issues on the current page
@@ -412,11 +426,9 @@ class CleanTalkWidgetDoboard {
 
                     spotFixRemoveHighlights();
                 let issuesQuantityOnPage = 0;
-                if (!this.allTasksData?.length) {
-                    this.allTasksData = await getAllTasks(this.params);
-                }
+                this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
                 const tasks = this.allTasksData;
-                tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId);
+                tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId, this.nonRequesting);
                 let spotsToBeHighlighted = [];
                 if (tasks.length > 0) {
                     const currentURL = window.location.href;
@@ -522,10 +534,11 @@ class CleanTalkWidgetDoboard {
                 setToggleStatus(this);
                 checkLogInOutButtonsVisible();
 
-                const user = await getUserDetails(this.params);
-                const gitHubAppVersion = await getReleaseVersion();
+                const user = await getUserDetails(this.params, this.nonRequesting);
+                let gitHubAppVersion = '';
+                if(!this.nonRequesting) gitHubAppVersion = await getReleaseVersion();
                 let spotfixVersion = '';
-                const version = localStorage.getItem('spotfix_app_version') || gitHubAppVersion || SPOTFIX_VERSION;
+                const version = gitHubAppVersion || localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
                 spotfixVersion = version ? `Spotfix version ${version}.` : '';
 
                 templateVariables.spotfixVersion = spotfixVersion || '';
@@ -544,17 +557,16 @@ class CleanTalkWidgetDoboard {
                 break;
         case 'concrete_issue':
                 changeSize(container);
-                tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId);
-                const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId);
+                if(this.nonRequesting) this.allTasksData = await spotfixIndexedDB.getAll(TABLE_TASKS);
+                tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId, this.nonRequesting);
+                const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId, this.nonRequesting);
                 // Update issue title in the interface
                 const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
                 if (issueTitleElement) {
                     issueTitleElement.innerText = ksesFilter(taskDetails.issueTitle);
                 }
-
-                templateVariables.issueTitle = taskDetails?.issueTitle;
+                templateVariables.issueTitle = tasksFullDetails.taskName || taskDetails?.issueTitle;
                 templateVariables.issueComments = taskDetails?.issueComments;
-
 
                 // Highlight the task's selected text
                 let nodePath = null;
@@ -770,8 +782,14 @@ class CleanTalkWidgetDoboard {
             this.createWidgetElement(this.type_name)
         }) || '';
 
+        wsSpotfix.onMessage(() => {
+            this.createWidgetElement(this.socket_type_name, true)
+        });
+
         return widgetContainer;
     }
+
+
 
     bindIssuesClick() {
         document.querySelectorAll('.issue-item').forEach(item => {
@@ -887,14 +905,28 @@ class CleanTalkWidgetDoboard {
 
         let tasksCount;
 
-        if(tasksCountLS !== 0 && !tasksCountLS){
-            await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
+        if(tasksCountLS === undefined){
+            if(!this.nonRequesting) {
+                await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
+            }
             const tasks = await spotfixIndexedDB.getAll(TABLE_TASKS);
+            storageSaveTasksCount(tasks);
             const filteredTasks = tasks.filter(task => {
                 return task.taskMeta;
             });
             tasksCount = filteredTasks.length;
-        } else tasksCount = tasksCountLS;
+        } else {
+            if (this.nonRequesting) {
+                const tasks = await spotfixIndexedDB.getAll(TABLE_TASKS);
+                storageSaveTasksCount(tasks);
+                const filteredTasks = tasks.filter(task => {
+                    return task.taskMeta;
+                });
+                tasksCount = filteredTasks.length;
+            } else {
+                tasksCount = tasksCountLS;
+            }
+        }
 
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
         if ( taskCountElement ) {

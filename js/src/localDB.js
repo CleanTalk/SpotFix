@@ -6,9 +6,9 @@ const TABLE_TASKS = 'tasks';
 const TABLE_COMMENTS = 'comments';
 
 const LOCAL_DATA_BASE_TABLE = [
-    { name: TABLE_USERS, keyPath: 'user_id' },
-    { name: TABLE_TASKS, keyPath: 'taskId' },
-    { name: TABLE_COMMENTS, keyPath: 'commentId' },
+    {name: TABLE_USERS, keyPath: 'user_id'},
+    {name: TABLE_TASKS, keyPath: 'taskId'},
+    {name: TABLE_COMMENTS, keyPath: 'commentId'},
 ];
 
 async function openIndexedDB(name, version = indexedDBVersion) {
@@ -37,14 +37,14 @@ async function deleteDB() {
 
 const spotfixIndexedDB = {
     getIndexedDBName: () =>
-        `${INDEXED_DB_NAME}_${localStorage.getItem('spotfix_session_id')}`,
+        `${INDEXED_DB_NAME}_${localStorage.getItem('spotfix_session_id') || localStorage.getItem('spotfix_project_token')}`,
 
     error: (request, error) => {
         console.error('IndexedDB error', request, error);
     },
 
     init: async () => {
-        if (!localStorage.getItem('spotfix_session_id')) return { needInit: false };
+        if (!localStorage.getItem('spotfix_session_id') && !localStorage.getItem('spotfix_project_token')) return {needInit: false};
         const dbName = spotfixIndexedDB.getIndexedDBName();
 
         return new Promise((resolve, reject) => {
@@ -54,23 +54,23 @@ const spotfixIndexedDB = {
                 const db = e.target.result;
                 LOCAL_DATA_BASE_TABLE.forEach((item) => {
                     if (!db.objectStoreNames.contains(item.name)) {
-                        const store = db.createObjectStore(item.name, { keyPath: item.keyPath });
+                        const store = db.createObjectStore(item.name, {keyPath: item.keyPath});
                         if (item.name === TABLE_COMMENTS) store.createIndex('taskId', 'taskId');
                         if (item.name === TABLE_TASKS) store.createIndex('userId', 'userId');
                     }
                 });
-                resolve({ needInit: true });
+                resolve({needInit: true});
             };
 
             request.onsuccess = (e) => {
                 const db = e.target.result;
                 const missingStores = LOCAL_DATA_BASE_TABLE.filter(
-                    (item) => !db.objectStoreNames.contains(item.name)
+                    (item) => !db.objectStoreNames.contains(item.name),
                 );
 
                 if (missingStores.length === 0) {
                     db.close();
-                    resolve({ needInit: false });
+                    resolve({needInit: false});
                 } else {
                     const newVersion = db.version + 1;
                     db.close();
@@ -78,12 +78,12 @@ const spotfixIndexedDB = {
                     upgradeRequest.onupgradeneeded = (e2) => {
                         const db2 = e2.target.result;
                         missingStores.forEach((item) => {
-                            const store = db2.createObjectStore(item.name, { keyPath: item.keyPath });
+                            const store = db2.createObjectStore(item.name, {keyPath: item.keyPath});
                             if (item.name === TABLE_COMMENTS) store.createIndex('taskId', 'taskId');
                             if (item.name === TABLE_TASKS) store.createIndex('userId', 'userId');
                         });
                     };
-                    upgradeRequest.onsuccess = () => resolve({ needInit: true });
+                    upgradeRequest.onsuccess = () => resolve({needInit: true});
                     upgradeRequest.onerror = (err) => reject(err);
                 }
             };
@@ -158,7 +158,7 @@ const spotfixIndexedDB = {
     },
 
     getTable: async (table) => {
-        if (!localStorage.getItem('spotfix_session_id')) return [];
+        if (!localStorage.getItem('spotfix_session_id') && !localStorage.getItem('spotfix_project_token')) return [];
         return spotfixIndexedDB.getAll(table);
     },
 
