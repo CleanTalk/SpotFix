@@ -173,7 +173,7 @@ const spotfixIndexedDB = {
     },
 };
 
-const DOBOARD_API_URL = 'https://api.doboard.com';
+const SPOTFIX_DOBOARD_API_URL = 'https://api.doboard.com';
 
 /**
  * Makes an API call to the DoBoard endpoint with form data
@@ -208,9 +208,9 @@ const spotfixApiCall = async(data, method, accountId = undefined) => {
 
     let endpointUrl;
     if (accountId !== undefined) {
-        endpointUrl = `${DOBOARD_API_URL}/${accountId}/${method}`;
+        endpointUrl = `${SPOTFIX_DOBOARD_API_URL}/${accountId}/${method}`;
     } else {
-        endpointUrl = `${DOBOARD_API_URL}/${method}`;
+        endpointUrl = `${SPOTFIX_DOBOARD_API_URL}/${method}`;
     }
 
     try {
@@ -988,7 +988,6 @@ class CleanTalkWidgetDoboard {
     constructor(selectedData, type) {
         this.selectedData = selectedData || '';
         this.selectedText = selectedData?.selectedText || '';
-        this.init(type);
         this.srcVariables = {
             buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
             iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
@@ -1006,6 +1005,7 @@ class CleanTalkWidgetDoboard {
             iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
         };
         this.fileUploader = new FileUploader(this.escapeHtml);
+        this.init(type);
     }
 
     /**
