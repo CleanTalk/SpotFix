@@ -44,8 +44,14 @@ const spotfixIndexedDB = {
     },
 
     init: async () => {
-        if (!localStorage.getItem('spotfix_session_id') && !localStorage.getItem('spotfix_project_token')) return {needInit: false};
+        const sessionId = localStorage.getItem('spotfix_session_id');
+        const projectToken = localStorage.getItem('spotfix_project_token');
+
+        if (!sessionId && !projectToken) return { needInit: false };
+
         const dbName = spotfixIndexedDB.getIndexedDBName();
+
+        await deleteDB();
 
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, indexedDBVersion);
@@ -54,23 +60,23 @@ const spotfixIndexedDB = {
                 const db = e.target.result;
                 LOCAL_DATA_BASE_TABLE.forEach((item) => {
                     if (!db.objectStoreNames.contains(item.name)) {
-                        const store = db.createObjectStore(item.name, {keyPath: item.keyPath});
+                        const store = db.createObjectStore(item.name, { keyPath: item.keyPath });
                         if (item.name === TABLE_COMMENTS) store.createIndex('taskId', 'taskId');
                         if (item.name === TABLE_TASKS) store.createIndex('userId', 'userId');
                     }
                 });
-                resolve({needInit: true});
+                resolve({ needInit: true });
             };
 
             request.onsuccess = (e) => {
                 const db = e.target.result;
                 const missingStores = LOCAL_DATA_BASE_TABLE.filter(
-                    (item) => !db.objectStoreNames.contains(item.name),
+                    (item) => !db.objectStoreNames.contains(item.name)
                 );
 
                 if (missingStores.length === 0) {
                     db.close();
-                    resolve({needInit: false});
+                    resolve({ needInit: true });
                 } else {
                     const newVersion = db.version + 1;
                     db.close();
@@ -78,12 +84,12 @@ const spotfixIndexedDB = {
                     upgradeRequest.onupgradeneeded = (e2) => {
                         const db2 = e2.target.result;
                         missingStores.forEach((item) => {
-                            const store = db2.createObjectStore(item.name, {keyPath: item.keyPath});
+                            const store = db2.createObjectStore(item.name, { keyPath: item.keyPath });
                             if (item.name === TABLE_COMMENTS) store.createIndex('taskId', 'taskId');
                             if (item.name === TABLE_TASKS) store.createIndex('userId', 'userId');
                         });
                     };
-                    upgradeRequest.onsuccess = () => resolve({needInit: true});
+                    upgradeRequest.onsuccess = () => resolve({ needInit: true });
                     upgradeRequest.onerror = (err) => reject(err);
                 }
             };
