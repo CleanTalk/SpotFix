@@ -210,7 +210,9 @@ const logoutUserDoboard = async (projectToken, accountId) => {
         }
 
         const result = await spotfixApiCall(data, 'user_unauthorize', accountId);
+
         if (result.operation_status === 'SUCCESS') {
+            await deleteDB();
             clearLocalstorageOnLogout();
         }
     }
@@ -231,15 +233,15 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
     const tasks = result.tasks.map(task => ({
         taskId: task.task_id,
         taskTitle: task.name,
+        userId: task.user_id,
         taskLastUpdate: task.updated,
         taskCreated: task.created,
         taskCreatorTaskUser: task.creator_user_id,
         taskMeta: task.meta,
         taskStatus: task.status,
     }));
-
+    await spotfixIndexedDB.clearPut(TABLE_TASKS, tasks);
     storageSaveTasksCount(tasks);
-
     return tasks;
 }
 
@@ -251,7 +253,7 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, statu
         status: status
     }
     const result = await spotfixApiCall(data, 'comment_get', accountId);
-    return result.comments.map(comment => ({
+    const comments = result.comments.map(comment => ({
         taskId: comment.task_id,
         commentId: comment.comment_id,
         userId: comment.user_id,
@@ -260,6 +262,8 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, statu
         status: comment.status,
         issueTitle: comment.task_name,
     }));
+    await spotfixIndexedDB.clearPut(TABLE_COMMENTS, comments);
+    return comments;
 };
 
 const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
@@ -270,6 +274,11 @@ const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
     if (userId) data.user_id = userId;
 
     const result = await spotfixApiCall(data, 'user_get', accountId);
+    if (data.user_id) {
+        await spotfixIndexedDB.put(TABLE_USERS, result.users);
+    } else {
+        await spotfixIndexedDB.clearPut(TABLE_USERS, result.users);
+    }
     return result.users;
 
     // @ToDo Need to handle these two different answers?

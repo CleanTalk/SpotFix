@@ -113,6 +113,12 @@ class CleanTalkWidgetDoboard {
             throw new Error('Necessary script params not provided');
 
         }
+        if (params.accountId) {
+            localStorage.setItem('spotfix_company_id', params.accountId);
+        }
+        if (params.projectToken) {
+            localStorage.setItem('spotfix_project_token', params.projectToken);
+        }
         return params;
     }
 
@@ -882,7 +888,8 @@ class CleanTalkWidgetDoboard {
         let tasksCount;
 
         if(tasksCountLS !== 0 && !tasksCountLS){
-            const tasks = await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
+            await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
+            const tasks = await spotfixIndexedDB.getAll(TABLE_TASKS);
             const filteredTasks = tasks.filter(task => {
                 return task.taskMeta;
             });
