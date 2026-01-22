@@ -6,9 +6,9 @@ const TABLE_TASKS = 'tasks';
 const TABLE_COMMENTS = 'comments';
 
 const LOCAL_DATA_BASE_TABLE = [
-    { name: TABLE_USERS, keyPath: 'user_id' },
-    { name: TABLE_TASKS, keyPath: 'taskId' },
-    { name: TABLE_COMMENTS, keyPath: 'commentId' },
+    {name: TABLE_USERS, keyPath: 'user_id'},
+    {name: TABLE_TASKS, keyPath: 'taskId'},
+    {name: TABLE_COMMENTS, keyPath: 'commentId'},
 ];
 
 async function openIndexedDB(name, version = indexedDBVersion) {
@@ -37,15 +37,22 @@ async function deleteDB() {
 
 const spotfixIndexedDB = {
     getIndexedDBName: () =>
-        `${INDEXED_DB_NAME}_${localStorage.getItem('spotfix_session_id')}`,
+        `${INDEXED_DB_NAME}_${localStorage.getItem('spotfix_session_id') || localStorage.getItem('spotfix_project_token')}`,
 
     error: (request, error) => {
         console.error('IndexedDB error', request, error);
     },
 
     init: async () => {
-        if (!localStorage.getItem('spotfix_session_id')) return { needInit: false };
+        const sessionId = localStorage.getItem('spotfix_session_id');
+        const projectToken = localStorage.getItem('spotfix_project_token');
+
+        if (!sessionId && !projectToken) return { needInit: false };
+
         const dbName = spotfixIndexedDB.getIndexedDBName();
+
+        // Сначала удаляем все старые базы
+        await deleteDB();
 
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, indexedDBVersion);
@@ -70,7 +77,7 @@ const spotfixIndexedDB = {
 
                 if (missingStores.length === 0) {
                     db.close();
-                    resolve({ needInit: false });
+                    resolve({ needInit: true }); // после удаления старых — точно нужно инициализировать
                 } else {
                     const newVersion = db.version + 1;
                     db.close();
@@ -158,7 +165,7 @@ const spotfixIndexedDB = {
     },
 
     getTable: async (table) => {
-        if (!localStorage.getItem('spotfix_session_id')) return [];
+        if (!localStorage.getItem('spotfix_session_id') && !localStorage.getItem('spotfix_project_token')) return [];
         return spotfixIndexedDB.getAll(table);
     },
 
