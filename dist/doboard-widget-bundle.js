@@ -1375,6 +1375,13 @@ class CleanTalkWidgetDoboard {
         }
 
         document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', (e) => {
+            const widgetContainer = e.target.closest('.doboard_task_widget-container');
+            if (widgetContainer && widgetContainer.querySelector('.doboard_task_widget-create_issue')) {
+                // If it Create issue interface - do not close widget
+                storageSetWidgetIsClosed(false);
+            } else {
+                storageSetWidgetIsClosed(true);
+            }
             this.hide();
         }) || '';
 
@@ -1575,7 +1582,6 @@ class CleanTalkWidgetDoboard {
     hide() {
         spotFixRemoveHighlights();
         this.createWidgetElement('wrap');
-
     }
 
     wrapElementWithSpotfixHighlight(element) {
