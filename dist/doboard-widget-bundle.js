@@ -221,7 +221,8 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         session_id: sessionId,
         project_token: projectToken,
         project_id: projectId,
-        task_type: 'PUBLIC'
+        task_type: 'PUBLIC',
+        status: 'ACTIVE,DONE',
     }
     if ( userId ) {
         data.user_id = userId;
@@ -327,6 +328,8 @@ const getReleaseVersion = async () => {
     }
 };
 
+
+const SPOTFIX_VERSION = "1.1.5";
 
 async function confirmUserEmail(emailConfirmationToken, params) {
 	const result = await userConfirmEmailDoboard(emailConfirmationToken);
@@ -664,7 +667,6 @@ class CleanTalkWidgetDoboard {
     constructor(selectedData, type) {
         this.selectedData = selectedData || '';
         this.selectedText = selectedData?.selectedText || '';
-        this.init(type);
         this.srcVariables = {
             buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
             iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
@@ -682,6 +684,7 @@ class CleanTalkWidgetDoboard {
             iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
         };
         this.fileUploader = new FileUploader(this.escapeHtml);
+        this.init(type);
     }
 
     /**
@@ -927,13 +930,6 @@ class CleanTalkWidgetDoboard {
         let templateVariables = {};
 
         const config = window.SpotfixWidgetConfig;
-        const position = {
-            compact: '0vh',
-            short: '20vh',
-            regular: '45vh',
-            tall: '60vh',
-            extra: '85vh',
-        };
 
         switch (type) {
             case 'create_issue':
@@ -955,11 +951,13 @@ class CleanTalkWidgetDoboard {
                 }
 
                 templateName = 'wrap';
-                templateVariables = {position: position[config?.verticalPosition] || position.compact, ...this.srcVariables};
+                templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
+                        ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
                 break;
             case 'wrap_review':
                 templateName = 'wrap_review';
-                templateVariables = {position: position[config?.verticalPosition] || position.compact, ...this.srcVariables};
+                templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
+                        ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
                 break;
             case 'all_issues':
                 templateName = 'all_issues';
@@ -968,9 +966,9 @@ class CleanTalkWidgetDoboard {
                 break;
             case 'user_menu':
                 templateName = 'user_menu';
-                const versionFromLS = localStorage.getItem('spotfix_app_version');
+                const version = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
                 templateVariables = {
-                    spotfixVersion: versionFromLS ? 'Spotfix version ' + versionFromLS + '.' : '',
+                    spotfixVersion: version ? 'Spotfix version ' + version + '.' : '',
                     avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
                     iconEye: SpotFixSVGLoader.getAsDataURI('iconEye'),
                     iconDoor: SpotFixSVGLoader.getAsDataURI('iconDoor'),
@@ -1170,7 +1168,7 @@ class CleanTalkWidgetDoboard {
                 const user = await getUserDetails(this.params);
                 const gitHubAppVersion = await getReleaseVersion();
                 let spotfixVersion = '';
-                const version = localStorage.getItem('spotfix_app_version') || gitHubAppVersion;
+                const version = localStorage.getItem('spotfix_app_version') || gitHubAppVersion || SPOTFIX_VERSION;
                 spotfixVersion = version ? `Spotfix version ${version}.` : '';
 
                 templateVariables.spotfixVersion = spotfixVersion || '';
