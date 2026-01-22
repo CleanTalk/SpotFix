@@ -51,7 +51,6 @@ const spotfixIndexedDB = {
 
         const dbName = spotfixIndexedDB.getIndexedDBName();
 
-        // Сначала удаляем все старые базы
         await deleteDB();
 
         return new Promise((resolve, reject) => {
@@ -77,7 +76,7 @@ const spotfixIndexedDB = {
 
                 if (missingStores.length === 0) {
                     db.close();
-                    resolve({ needInit: true }); // после удаления старых — точно нужно инициализировать
+                    resolve({ needInit: true });
                 } else {
                     const newVersion = db.version + 1;
                     db.close();
