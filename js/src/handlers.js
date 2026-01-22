@@ -209,15 +209,18 @@ function registerUser(taskDetails) {
 				localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
 				userUpdate(projectToken, accountId);
 			} else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
-				if (response.operationMessage == 'Waiting for email confirmation') {
+				if (response.operationMessage === 'Waiting for email confirmation') {
 					response.operationMessage = 'Waiting for an email confirmation. Please check your Inbox.';
+					if (document.getElementById('doboard_task_widget-error_message').innerText === 'Waiting for an email confirmation. Please check your Inbox.') {
+						response.operationMessage = 'Incorrect email address. Please confirm your email to create the spot.';
+					}
 				}
 				if (typeof showMessageCallback === 'function') {
 					showMessageCallback(response.operationMessage, 'notice');
 				}
 				const submitButton = document.getElementById('doboard_task_widget-submit_button');
 					submitButton.disabled = true;
-					submitButton.innerText = ksesFilter('Confirm email to create spot');
+					submitButton.innerText = ksesFilter('Create spot');
 
 			} else {
 				throw new Error('Session ID not found in response');
