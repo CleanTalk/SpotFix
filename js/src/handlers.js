@@ -96,11 +96,9 @@ async function addTaskComment(params, taskId, commentText) {
 }
 
 async function getAllTasks(params, nonRequesting = false) {
-    if (!localStorage.getItem('spotfix_session_id')) {
-        return {};
-    }
+
     const projectToken = params.projectToken;
-    const sessionId = localStorage.getItem('spotfix_session_id');
+    const sessionId = localStorage.getItem('spotfix_session_id') || '';
     if (!nonRequesting) {
         await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
     }

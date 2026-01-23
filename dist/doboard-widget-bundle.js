@@ -753,11 +753,9 @@ async function addTaskComment(params, taskId, commentText) {
 }
 
 async function getAllTasks(params, nonRequesting = false) {
-    if (!localStorage.getItem('spotfix_session_id')) {
-        return {};
-    }
+
     const projectToken = params.projectToken;
-    const sessionId = localStorage.getItem('spotfix_session_id');
+    const sessionId = localStorage.getItem('spotfix_session_id') || '';
     if (!nonRequesting) {
         await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
     }
@@ -1728,6 +1726,13 @@ class CleanTalkWidgetDoboard {
         }
 
         document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', (e) => {
+            const widgetContainer = e.target.closest('.doboard_task_widget-container');
+            if (widgetContainer && widgetContainer.querySelector('.doboard_task_widget-create_issue')) {
+                // If it Create issue interface - do not close widget
+                storageSetWidgetIsClosed(false);
+            } else {
+                storageSetWidgetIsClosed(true);
+            }
             this.hide();
         }) || '';
 
