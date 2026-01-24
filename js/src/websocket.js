@@ -1,6 +1,8 @@
 let socket = null;
 let heartbeatInterval = null;
 let messageCallback = null;
+let lastEventId = null;
+let pendingUpdate = false;
 
 const WS_URL = 'wss://ws.doboard.com';
 
@@ -91,10 +93,20 @@ const wsSpotfix = {
                 return;
             }
 
-            if (['users', 'tasks', 'comments'].includes(data.object)) {
-                await handleIncomingData(data);
+            if (!['users', 'tasks', 'comments'].includes(data.object)) return;
 
-                if (messageCallback) messageCallback();
+            const eventId = data.id ? `${data.object}-${data.id}` : JSON.stringify(data);
+
+            if (eventId === lastEventId) return;
+            lastEventId = eventId;
+
+            await handleIncomingData(data);
+            if (!pendingUpdate) {
+                pendingUpdate = true;
+                setTimeout(() => {
+                    pendingUpdate = false;
+                    if (messageCallback) messageCallback();
+                }, 3000);
             }
         };
 
@@ -135,5 +147,5 @@ const wsSpotfix = {
 
     onMessage(cb) {
         messageCallback = cb;
-    }
+    },
 };

@@ -422,8 +422,11 @@ class CleanTalkWidgetDoboard {
                 });
                 break;
             case 'all_issues':
+                if (this.nonRequesting) {
+                    hideContainersSpinner();
+                } else {
                     changeSize(container);
-
+                }
                     spotFixRemoveHighlights();
                 let issuesQuantityOnPage = 0;
                 this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
@@ -556,14 +559,18 @@ class CleanTalkWidgetDoboard {
 
                 break;
         case 'concrete_issue':
-                changeSize(container);
-                if(this.nonRequesting) this.allTasksData = await spotfixIndexedDB.getAll(TABLE_TASKS);
+                if(this.nonRequesting) {
+                    hideContainersSpinner();
+                    this.allTasksData = await spotfixIndexedDB.getAll(TABLE_TASKS);
+                } else {
+                    changeSize(container);
+                }
                 tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId, this.nonRequesting);
                 const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId, this.nonRequesting);
                 // Update issue title in the interface
                 const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
                 if (issueTitleElement) {
-                    issueTitleElement.innerText = ksesFilter(taskDetails.issueTitle);
+                    issueTitleElement.innerText = ksesFilter(tasksFullDetails.taskName || taskDetails?.issueTitle);
                 }
                 templateVariables.issueTitle = tasksFullDetails.taskName || taskDetails?.issueTitle;
                 templateVariables.issueComments = taskDetails?.issueComments;
@@ -583,11 +590,25 @@ class CleanTalkWidgetDoboard {
             templateVariables.taskPageUrl = meta.pageURL;
             const taskFormattedPageUrl = meta.pageURL.replace(window.location.origin, '');
             templateVariables.taskFormattedPageUrl = taskFormattedPageUrl.length < 2
-                ? meta.pageURL.replace(window.location.protocol + '/', '') : taskFormattedPageUrl;
+                ? meta.pageURL.replace(/^https?:\/\//, '') : taskFormattedPageUrl;
+
+            const issueLinkElement = document.getElementById('spotfix_doboard_task_widget_url');
+            if (issueLinkElement) {
+                issueLinkElement.innerHTML = `<a rel="nofollow" href="${meta.pageURL}">${templateVariables.taskFormattedPageUrl}</a>`;
+            }
+
             templateVariables.contenerClasess = +localStorage.getItem('maximize')
                 ? 'doboard_task_widget-container-maximize doboard_task_widget-container' : 'doboard_task_widget-container'
-            widgetContainer.innerHTML = this.loadTemplate('concrete_issue', templateVariables);
-            document.body.appendChild(widgetContainer);
+            if (this.nonRequesting) {
+                const containerEl = document.getElementById('doboard_task_widget_concrete-container');
+                if (containerEl) {
+                    containerEl.className = templateVariables.contenerClasess;
+                }
+            }
+            if (!this.nonRequesting) {
+                widgetContainer.innerHTML = this.loadTemplate('concrete_issue', templateVariables);
+                document.body.appendChild(widgetContainer);
+            }
 
                     // remove old highlights before adding new ones
                     spotFixRemoveHighlights();
@@ -650,7 +671,14 @@ class CleanTalkWidgetDoboard {
                             },
                         );
                     }
-                    issuesCommentsContainer.innerHTML = daysWrapperHTML;
+                    if (!this.nonRequesting) {
+                        issuesCommentsContainer.innerHTML = daysWrapperHTML;
+                    } else {
+                        if (issuesCommentsContainer.innerHTML !== daysWrapperHTML) {
+                            issuesCommentsContainer.innerHTML = daysWrapperHTML;
+                        }
+                    }
+
                 } else {
                     issuesCommentsContainer.innerHTML = ksesFilter('No comments');
                 }
@@ -675,13 +703,15 @@ class CleanTalkWidgetDoboard {
                 hideContainersSpinner();
 
                 // Scroll to the bottom comments
-                setTimeout(() => {
-                    const contentContainer = document.querySelector('.doboard_task_widget-content');
-                    contentContainer.scrollTo({
-                        top: contentContainer.scrollHeight,
-                        behavior: 'smooth'
-                    });
-                }, 0);
+               if(!this.nonRequesting) {
+                   setTimeout(() => {
+                       const contentContainer = document.querySelector('.doboard_task_widget-content');
+                       contentContainer.scrollTo({
+                           top: contentContainer.scrollHeight,
+                           behavior: 'smooth',
+                       });
+                   }, 0);
+               }
 
                 const sendButton = document.querySelector('.doboard_task_widget-send_message_button');
                 if (sendButton) {
@@ -751,8 +781,6 @@ class CleanTalkWidgetDoboard {
             if (widgetContainer && widgetContainer.querySelector('.doboard_task_widget-create_issue')) {
                 // If it Create issue interface - do not close widget
                 storageSetWidgetIsClosed(false);
-            } else {
-                storageSetWidgetIsClosed(true);
             }
             this.hide();
         }) || '';
@@ -1111,8 +1139,10 @@ class CleanTalkWidgetDoboard {
             }
         }
 
-        widget.style.top = `${top}px`;
-        widget.style.bottom = 'auto';
+        if(widget) {
+            widget.style.top = `${top}px`;
+            widget.style.bottom = 'auto';
+        }
     }
 
     handleScroll() {
