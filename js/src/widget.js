@@ -278,7 +278,10 @@ class CleanTalkWidgetDoboard {
     async createWidgetElement(type, nonRequesting = false, showOnlyCurrentPage = false) {
         const widgetContainer = document.querySelector('.doboard_task_widget') ? document.querySelector('.doboard_task_widget') : document.createElement('div');
         widgetContainer.className = 'doboard_task_widget';
-        widgetContainer.innerHTML = ksesFilter('');
+
+        if(!nonRequesting) {
+            widgetContainer.innerHTML = ksesFilter('');
+        }
         widgetContainer.removeAttribute('style');
 
         let templateName = '';
@@ -374,11 +377,13 @@ class CleanTalkWidgetDoboard {
             default:
                 break;
         }
-        widgetContainer.innerHTML = this.loadTemplate(templateName, templateVariables);
-        document.body.appendChild(widgetContainer);
+        if(!nonRequesting) {
+            widgetContainer.innerHTML = this.loadTemplate(templateName, templateVariables);
+            document.body.appendChild(widgetContainer);
 
-        // remove highlights before any screen called
-        spotFixRemoveHighlights();
+            // remove highlights before any screen called
+            spotFixRemoveHighlights();
+        }
         const container = document.querySelector('.doboard_task_widget-container');
         switch (type) {
             case 'create_issue':
