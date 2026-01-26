@@ -1379,8 +1379,6 @@ class CleanTalkWidgetDoboard {
             if (widgetContainer && widgetContainer.querySelector('.doboard_task_widget-create_issue')) {
                 // If it Create issue interface - do not close widget
                 storageSetWidgetIsClosed(false);
-            } else {
-                storageSetWidgetIsClosed(true);
             }
             this.hide();
         }) || '';
