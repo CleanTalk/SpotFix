@@ -3,6 +3,8 @@ let heartbeatInterval = null;
 let messageCallback = null;
 let lastEventId = null;
 let pendingUpdate = false;
+let reconnectTimer = null;
+let isIntentionalClose = false;
 
 const WS_URL = 'wss://ws.doboard.com';
 
@@ -67,10 +69,16 @@ const handleIncomingData = async (data) => {
 
 const wsSpotfix = {
     connect() {
+        if (reconnectTimer) {
+            clearTimeout(reconnectTimer);
+            reconnectTimer = null;
+        }
+
         if ((socket && socket.readyState === WebSocket.OPEN) || !getSessionId()) {
             return;
         }
 
+        isIntentionalClose = false;
         socket = new WebSocket(WS_URL);
 
         socket.onopen = () => {
@@ -116,6 +124,12 @@ const wsSpotfix = {
                 clearInterval(heartbeatInterval);
                 heartbeatInterval = null;
             }
+
+            if (!isIntentionalClose) {
+                reconnectTimer = setTimeout(() => {
+                    wsSpotfix.connect();
+                }, 2000);
+            }
         };
 
         socket.onerror = (e) => {
@@ -130,6 +144,11 @@ const wsSpotfix = {
     },
 
     close() {
+        isIntentionalClose = true;
+        if (reconnectTimer) {
+            clearTimeout(reconnectTimer);
+            reconnectTimer = null;
+        }
         socket?.close();
     },
 
