@@ -9257,7 +9257,7 @@ class CleanTalkWidgetDoboard {
                     menubar: false,
                     statusbar: false,
                     toolbar_location: 'bottom',
-                    toolbar: 'emoticons bullist numlist bold italic strikethrough underline blockquote',
+                    toolbar: 'screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
                     height: 120,
                     icons: 'my_icon_pack',
                     file_picker_types: 'file image media',
@@ -9274,15 +9274,15 @@ class CleanTalkWidgetDoboard {
                         //
                         //         },
                         //     });
-                        //     editor.ui.registry.addButton('screenshotButton', {
-                        //         icon: 'screenshot',
-                        //         tooltip: 'Screenshot',
-                        //         disabled: true,
-                        //         onAction: (e) => {
-                        //           // fileUploader?.makeScreenshot();
-                        //         },
-                        //     });
-                         }
+                         editor.ui.registry.addButton('screenshotButton', {
+                             icon: 'screenshot',
+                             tooltip: 'In development',
+                             disabled: true,
+                             onAction: (e) => {
+                               // fileUploader?.makeScreenshot();
+                             },
+                         });
+                     }
                     })
                 break;
             case 'wrap':
