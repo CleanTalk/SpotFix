@@ -19,7 +19,7 @@ class SpotFixTemplatesLoader {
             <img src="{{logoDoBoardGreen}}"  alt="">
             <span>All spots </span>
         </div>
-        <div>
+        <div class="doboard_task_widget-header-icons">
             <span id="addNewTaskButton">
                 <img src="{{iconPlus}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
@@ -56,7 +56,7 @@ class SpotFixTemplatesLoader {
             <span title="Return to all spots list"> All {{issuesCounter}}</span>
         </div>
         <div class="doboard_task_widget-issue-title">{{issueTitle}}</div>
-        <div>
+        <div class="doboard_task_widget-header-icons">
             <span id="addNewTaskButton">
                 <img src="{{iconPlus}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
@@ -129,9 +129,9 @@ class SpotFixTemplatesLoader {
             <img src="{{logoDoBoardGreen}}"  alt="">
             <span>Report an issue</span>
         </div>
-        <div>
+        <div class="doboard_task_widget-header-icons">
             <span id="openUserMenuButton">
-                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
+                 <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <span id="maximizeWidgetContainer">
                 <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
