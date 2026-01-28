@@ -168,7 +168,7 @@
 }
 
 .doboard_task_widget-container-maximize .doboard_task_widget-content {
-    max-width: inherit;
+    max-height: inherit;
 }
 
 .doboard_task_widget-element-container {
