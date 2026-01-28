@@ -415,6 +415,9 @@
 .doboard_task_widget-login-buttons-wrapper .doboard_task_widget-submit_button {
     margin-bottom: 0;
     width: auto;
+    min-height: 32px;
+    font-size: 14px;
+    padding: 4px 12px;
 }
 
 .doboard_task_widget-login-buttons-wrapper #doboard_task_widget-on_phantom_login_page,
