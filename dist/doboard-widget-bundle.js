@@ -1,4 +1,179 @@
-const DOBOARD_API_URL = 'https://api.doboard.com';
+const INDEXED_DB_NAME = 'spotfix-localDB';
+const indexedDBVersion = 1;
+
+const TABLE_USERS = 'users';
+const TABLE_TASKS = 'tasks';
+const TABLE_COMMENTS = 'comments';
+
+const LOCAL_DATA_BASE_TABLE = [
+    {name: TABLE_USERS, keyPath: 'user_id'},
+    {name: TABLE_TASKS, keyPath: 'taskId'},
+    {name: TABLE_COMMENTS, keyPath: 'commentId'},
+];
+
+async function openIndexedDB(name, version = indexedDBVersion) {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(name, version);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+        request.onupgradeneeded = (e) => resolve(request.result);
+    });
+}
+
+async function deleteDB() {
+    try {
+        const dbs = await window.indexedDB.databases();
+        for (const db of dbs) {
+            await new Promise((resolve) => {
+                const deleteReq = indexedDB.deleteDatabase(db.name);
+                deleteReq.onsuccess = () => resolve();
+                deleteReq.onerror = () => resolve();
+            });
+        }
+    } catch (err) {
+        console.warn('deleteDB error', err);
+    }
+}
+
+const spotfixIndexedDB = {
+    getIndexedDBName: () =>
+        `${INDEXED_DB_NAME}_${localStorage.getItem('spotfix_session_id') || localStorage.getItem('spotfix_project_token')}`,
+
+    error: (request, error) => {
+        console.error('IndexedDB error', request, error);
+    },
+
+    init: async () => {
+        const sessionId = localStorage.getItem('spotfix_session_id');
+        const projectToken = localStorage.getItem('spotfix_project_token');
+
+        if (!sessionId && !projectToken) return { needInit: false };
+
+        const dbName = spotfixIndexedDB.getIndexedDBName();
+
+        await deleteDB();
+
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(dbName, indexedDBVersion);
+
+            request.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                LOCAL_DATA_BASE_TABLE.forEach((item) => {
+                    if (!db.objectStoreNames.contains(item.name)) {
+                        const store = db.createObjectStore(item.name, { keyPath: item.keyPath });
+                        if (item.name === TABLE_COMMENTS) store.createIndex('taskId', 'taskId');
+                        if (item.name === TABLE_TASKS) store.createIndex('userId', 'userId');
+                    }
+                });
+                resolve({ needInit: true });
+            };
+
+            request.onsuccess = (e) => {
+                const db = e.target.result;
+                const missingStores = LOCAL_DATA_BASE_TABLE.filter(
+                    (item) => !db.objectStoreNames.contains(item.name)
+                );
+
+                if (missingStores.length === 0) {
+                    db.close();
+                    resolve({ needInit: true });
+                } else {
+                    const newVersion = db.version + 1;
+                    db.close();
+                    const upgradeRequest = indexedDB.open(dbName, newVersion);
+                    upgradeRequest.onupgradeneeded = (e2) => {
+                        const db2 = e2.target.result;
+                        missingStores.forEach((item) => {
+                            const store = db2.createObjectStore(item.name, { keyPath: item.keyPath });
+                            if (item.name === TABLE_COMMENTS) store.createIndex('taskId', 'taskId');
+                            if (item.name === TABLE_TASKS) store.createIndex('userId', 'userId');
+                        });
+                    };
+                    upgradeRequest.onsuccess = () => resolve({ needInit: true });
+                    upgradeRequest.onerror = (err) => reject(err);
+                }
+            };
+
+            request.onerror = (err) => reject(err);
+        });
+    },
+
+    withStore: async (table, mode = 'readwrite', callback) => {
+        const dbName = spotfixIndexedDB.getIndexedDBName();
+        const db = await openIndexedDB(dbName, indexedDBVersion);
+        return new Promise((resolve, reject) => {
+            try {
+                const transaction = db.transaction(table, mode);
+                const store = transaction.objectStore(table);
+
+                const result = callback(store);
+
+                transaction.oncomplete = () => {
+                    db.close();
+                    resolve(result);
+                };
+                transaction.onerror = (e) => {
+                    db.close();
+                    reject(e.target.error);
+                };
+            } catch (err) {
+                db.close();
+                reject(err);
+            }
+        });
+    },
+
+    put: async (table, data) => {
+        return spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
+            if (Array.isArray(data)) {
+                data.forEach((item) => store.put(item));
+            } else {
+                store.put(data);
+            }
+        });
+    },
+
+    delete: async (table, key) => {
+        return spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
+            store.delete(key);
+        });
+    },
+
+    clearTable: async (table) => {
+        return spotfixIndexedDB.withStore(table, 'readwrite', (store) => store.clear());
+    },
+
+    clearPut: async (table, data) => {
+        await spotfixIndexedDB.clearTable(table);
+        await spotfixIndexedDB.put(table, data);
+    },
+
+    getAll: async (table, indexName, value) => {
+        return spotfixIndexedDB.withStore(table, 'readonly', (store) => {
+            return new Promise((resolve, reject) => {
+                let request;
+                if (indexName && value !== undefined) {
+                    request = store.index(indexName).getAll(value);
+                } else {
+                    request = store.getAll();
+                }
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        });
+    },
+
+    getTable: async (table) => {
+        if (!localStorage.getItem('spotfix_session_id') && !localStorage.getItem('spotfix_project_token')) return [];
+        return spotfixIndexedDB.getAll(table);
+    },
+
+    deleteTable: async (table, key) => {
+        return spotfixIndexedDB.delete(table, key);
+    },
+};
+
+const SPOTFIX_DOBOARD_API_URL = 'https://api.doboard.com';
 
 /**
  * Makes an API call to the DoBoard endpoint with form data
@@ -33,9 +208,9 @@ const spotfixApiCall = async(data, method, accountId = undefined) => {
 
     let endpointUrl;
     if (accountId !== undefined) {
-        endpointUrl = `${DOBOARD_API_URL}/${accountId}/${method}`;
+        endpointUrl = `${SPOTFIX_DOBOARD_API_URL}/${accountId}/${method}`;
     } else {
-        endpointUrl = `${DOBOARD_API_URL}/${method}`;
+        endpointUrl = `${SPOTFIX_DOBOARD_API_URL}/${method}`;
     }
 
     try {
@@ -176,7 +351,6 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname, pag
         operationMessage: result.operation_message,
         operationStatus: result.operation_status,
         userEmailConfirmed: result.user_email_confirmed,
-        accounts: result.accounts,
     };
 };
 
@@ -194,24 +368,11 @@ const loginUserDoboard = async (email, password) => {
         operationMessage: result.operation_message,
         operationStatus: result.operation_status,
         userEmailConfirmed: result.user_email_confirmed,
-        accounts: result.accounts
     }
 }
 
-const forgotPasswordDoboard = async (email) => {
-    const data = {
-        email: email
-    }
-    return await spotfixApiCall(data, 'user_password_reset');
-}
-
-
-const logoutUserDoboard = async (projectToken) => {
+const logoutUserDoboard = async (projectToken, accountId) => {
     const sessionId = localStorage.getItem('spotfix_session_id');
-    const accountsString = localStorage.getItem('spotfix_accounts');
-    const accounts =  accountsString !== 'undefined' ? JSON.parse(accountsString || '[]') : [];
-    const accountId = accounts.length > 0 ? accounts[0].account_id : 1;
-
     if(sessionId && accountId) {
         const data = {
             session_id: sessionId,
@@ -224,9 +385,10 @@ const logoutUserDoboard = async (projectToken) => {
         }
 
         const result = await spotfixApiCall(data, 'user_unauthorize', accountId);
+
         if (result.operation_status === 'SUCCESS') {
+            await deleteDB();
             clearLocalstorageOnLogout();
-            checkLogInOutButtonsVisible();
         }
     }
 }
@@ -236,7 +398,8 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         session_id: sessionId,
         project_token: projectToken,
         project_id: projectId,
-        task_type: 'PUBLIC'
+        task_type: 'PUBLIC',
+        status: 'ACTIVE,DONE',
     }
     if ( userId ) {
         data.user_id = userId;
@@ -245,15 +408,15 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
     const tasks = result.tasks.map(task => ({
         taskId: task.task_id,
         taskTitle: task.name,
+        userId: task.user_id,
         taskLastUpdate: task.updated,
         taskCreated: task.created,
         taskCreatorTaskUser: task.creator_user_id,
         taskMeta: task.meta,
         taskStatus: task.status,
     }));
-
+    await spotfixIndexedDB.clearPut(TABLE_TASKS, tasks);
     storageSaveTasksCount(tasks);
-
     return tasks;
 }
 
@@ -265,7 +428,7 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, statu
         status: status
     }
     const result = await spotfixApiCall(data, 'comment_get', accountId);
-    return result.comments.map(comment => ({
+    const comments = result.comments.map(comment => ({
         taskId: comment.task_id,
         commentId: comment.comment_id,
         userId: comment.user_id,
@@ -274,6 +437,8 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, statu
         status: comment.status,
         issueTitle: comment.task_name,
     }));
+    await spotfixIndexedDB.clearPut(TABLE_COMMENTS, comments);
+    return comments;
 };
 
 const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
@@ -284,6 +449,11 @@ const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
     if (userId) data.user_id = userId;
 
     const result = await spotfixApiCall(data, 'user_get', accountId);
+    if (data.user_id) {
+        await spotfixIndexedDB.put(TABLE_USERS, result.users);
+    } else {
+        await spotfixIndexedDB.clearPut(TABLE_USERS, result.users);
+    }
     return result.users;
 
     // @ToDo Need to handle these two different answers?
@@ -343,12 +513,143 @@ const getReleaseVersion = async () => {
 };
 
 
+let socket = null;
+let heartbeatInterval = null;
+
+const WS_URL = 'wss://ws.doboard.com';
+
+const getSessionId = () => localStorage.getItem('spotfix_session_id');
+
+const buildMessage = (action) => ({
+    channel: `account:${localStorage.getItem('spotfix_company_id')}`,
+    action,
+    account_id: localStorage.getItem('spotfix_company_id'),
+    session_id: getSessionId(),
+    project_token: localStorage.getItem('spotfix_project_token'),
+});
+
+const wsSpotfix = {
+    connect() {
+        if ((socket && socket.readyState === WebSocket.OPEN) || !getSessionId()) {
+            return;
+        }
+
+        socket = new WebSocket(WS_URL);
+
+        socket.onopen = () => {
+            heartbeatInterval = setInterval(() => {
+                if (socket?.readyState === WebSocket.OPEN) {
+                    socket.send('heartbeat');
+                }
+            }, 50 * 1000);
+            wsSpotfix.send(buildMessage('SUBSCRIBE'));
+        };
+
+        socket.onmessage = (event) => {
+            if (event.data === 'heartbeat') {
+                return;
+            }
+
+            try {
+                const data = JSON.parse(event.data);
+
+                switch (data.object) {
+                case 'users':
+                    spotfixIndexedDB.put(TABLE_USERS, data.data);
+                    break;
+                case 'tasks':
+                    if (data.data.status === 'REMOVED') {
+                        spotfixIndexedDB.delete(TABLE_TASKS, data.data.task_id);
+                        break;
+                    }
+                    spotfixIndexedDB.put(TABLE_TASKS, {
+                        taskId: data.data.task_id,
+                        taskTitle: data.data.name,
+                        userId: data.data.user_id,
+                        taskLastUpdate: data.data.updated,
+                        taskCreated: data.data.created,
+                        taskCreatorTaskUser: data.data.creator_user_id,
+                        taskMeta: data.data.meta,
+                        taskStatus: data.data.status,
+                    });
+                    break;
+
+                case 'comments':
+                    if (data.data.status === 'REMOVED') {
+                        spotfixIndexedDB.delete(TABLE_COMMENTS, data.data.comment_id);
+                        break;
+                    }
+                    spotfixIndexedDB.put(TABLE_COMMENTS, {
+                        taskId: data.data.task_id,
+                        commentId: data.data.comment_id,
+                        userId: data.data.user_id,
+                        commentBody: data.data.comment,
+                        commentDate: data.data.updated,
+                        status: data.data.status,
+                        issueTitle: data.data.task_name,
+                    });
+                    break;
+
+                default:
+                    break;
+                }
+            } catch (e) {
+                console.warn('WS non-JSON message:', event.data);
+            }
+        };
+
+        socket.onclose = (e) => {
+            console.warn('WS closed:', e.code, e.reason);
+
+            socket = null;
+
+            if (heartbeatInterval) {
+                clearInterval(heartbeatInterval);
+                heartbeatInterval = null;
+            }
+        };
+
+        socket.onerror = (e) => {
+            console.error('WS error:', e);
+        };
+    },
+
+    send(data) {
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+            console.warn('WebSocket is not connected');
+            return;
+        }
+        socket.send(JSON.stringify(data));
+    },
+
+    close() {
+        wsSpotfix.unsubscribe();
+        socket?.close();
+    },
+
+    subscribe() {
+        if (socket?.readyState === WebSocket.OPEN) {
+            wsSpotfix.send(buildMessage('SUBSCRIBE'));
+        }
+    },
+
+    unsubscribe() {
+        if (socket?.readyState === WebSocket.OPEN) {
+            wsSpotfix.send(buildMessage('UNSUBSCRIBE'));
+        }
+    },
+};
+
+const SPOTFIX_VERSION = "1.1.5";
+
+
 async function confirmUserEmail(emailConfirmationToken, params) {
 	const result = await userConfirmEmailDoboard(emailConfirmationToken);
 	// Save session data to LS
 	localStorage.setItem('spotfix_email', result.email);
 	localStorage.setItem('spotfix_session_id', result.sessionId);
 	localStorage.setItem('spotfix_user_id', result.userId);
+	await spotfixIndexedDB.init();
 
 	// Get pending task from LS
 	const pendingTaskRaw = localStorage.getItem('spotfix_pending_task');
@@ -384,8 +685,10 @@ async function confirmUserEmail(emailConfirmationToken, params) {
 async function getTasksFullDetails(params, tasks, currentActiveTaskId) {
     if (tasks.length > 0) {
         const sessionId = localStorage.getItem('spotfix_session_id');
-        const comments = await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken);
-        const users = await getUserDoboard(sessionId, params.projectToken, params.accountId);
+		await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken);
+        const comments = await spotfixIndexedDB.getAll(TABLE_COMMENTS);
+        await getUserDoboard(sessionId, params.projectToken, params.accountId);
+		const users = await spotfixIndexedDB.getAll(TABLE_USERS);
 		const foundTask = tasks.find(item => +item.taskId === +currentActiveTaskId);
 
         return {
@@ -400,8 +703,9 @@ async function getUserDetails(params) {
 		const sessionId = localStorage.getItem('spotfix_session_id');
 		const currentUserId = localStorage.getItem('spotfix_user_id');
 		if(currentUserId) {
-			const users = await getUserDoboard(sessionId, params.projectToken, params.accountId, currentUserId);
-			return users[0] || {};
+			await getUserDoboard(sessionId, params.projectToken, params.accountId, currentUserId);
+			const users = await spotfixIndexedDB.getAll(TABLE_USERS);
+			return users.find(user => +user.user_id === +currentUserId) || {};
 		}
 }
 
@@ -428,14 +732,15 @@ async function addTaskComment(params, taskId, commentText) {
 	return await createTaskCommentDoboard(params.accountId, sessionId, taskId, commentText, params.projectToken);
 }
 
-function getUserTasks(params) {
+async function getUserTasks(params) {
 	if (!localStorage.getItem('spotfix_session_id')) {
 		return {};
 	}
 	const projectToken = params.projectToken;
 	const sessionId = localStorage.getItem('spotfix_session_id');
 	const userId = localStorage.getItem('spotfix_user_id');
-	return getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId, userId);
+	await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId, userId);
+	return await spotfixIndexedDB.getAll(TABLE_TASKS, 'userId', userId);
 }
 
 async function getAllTasks(params) {
@@ -444,8 +749,8 @@ async function getAllTasks(params) {
 	}
 	const projectToken = params.projectToken;
 	const sessionId = localStorage.getItem('spotfix_session_id');
-	const tasksData = await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
-
+	await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
+	const tasksData = await spotfixIndexedDB.getAll(TABLE_TASKS);
     // Get only tasks with metadata
 	const filteredTaskData =  tasksData.filter(task => {
         return task.taskMeta;
@@ -551,22 +856,15 @@ function registerUser(taskDetails) {
 				localStorage.setItem('spotfix_session_id', response.sessionId);
 				localStorage.setItem('spotfix_user_id', response.userId);
 				localStorage.setItem('spotfix_email', response.email);
-				localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
+				spotfixIndexedDB.init();
 				userUpdate(projectToken, accountId);
 			} else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
-				if (response.operationMessage === 'Waiting for email confirmation') {
+				if (response.operationMessage == 'Waiting for email confirmation') {
 					response.operationMessage = 'Waiting for an email confirmation. Please check your Inbox.';
-					if (document.getElementById('doboard_task_widget-error_message').innerText === 'Waiting for an email confirmation. Please check your Inbox.') {
-						response.operationMessage = 'Incorrect email address. Please confirm your email to create the spot.';
-					}
 				}
 				if (typeof showMessageCallback === 'function') {
 					showMessageCallback(response.operationMessage, 'notice');
 				}
-				const submitButton = document.getElementById('doboard_task_widget-submit_button');
-					submitButton.disabled = true;
-					submitButton.innerText = ksesFilter('Create spot');
-
 			} else {
 				throw new Error('Session ID not found in response');
 			}
@@ -587,43 +885,14 @@ function loginUser(taskDetails) {
 			if (response.sessionId) {
 				localStorage.setItem('spotfix_session_id', response.sessionId);
 				localStorage.setItem('spotfix_user_id', response.userId);
-				localStorage.setItem('spotfix_email', response.email);
 				localStorage.setItem('spotfix_email', userEmail);
-				localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
-				checkLogInOutButtonsVisible();
-            }  else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
+				spotfixIndexedDB.init();
+			}  else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
 				if (typeof showMessageCallback === 'function') {
 					showMessageCallback(response.operationMessage, 'notice');
 				}
 			} else {
 				throw new Error('Session ID not found in response');
-			}
-		})
-		.catch(error => {
-			throw error;
-		});
-}
-
-function forgotPassword(userEmail) {
-		return (showMessageCallback) => forgotPasswordDoboard(userEmail)
-		.then(response => {
-			console.log('response ', response)
-			if (response?.operation_status === 'SUCCESS') {
-				showMessageCallback('New password sent to email', 'notice');
-				const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
-				const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
-				const submitButton = document.getElementById('doboard_task_widget-submit_button');
-				if (forgotPasswordForm) {
-					forgotPasswordForm.classList.add('doboard_task_widget-hidden');
-				}
-				if (loginContainer) {
-					loginContainer.classList.remove('doboard_task_widget-hidden');
-					if (submitButton) {
-						submitButton.closest('.doboard_task_widget-field').classList.add('doboard_task_widget-hidden');
-					}
-				}
-			} else {
-				throw new Error('Response error');
 			}
 		})
 		.catch(error => {
@@ -666,6 +935,7 @@ function setToggleStatus(rootElement){
 	const clickHandler = () => {
 		const timer = setTimeout(() => {
 			localStorage.setItem('spotfix_widget_is_closed', '1');
+			wsSpotfix.close();
 			rootElement.hide();
 			clearTimeout(timer);
 		}, 300);
@@ -679,40 +949,13 @@ function setToggleStatus(rootElement){
 
 function checkLogInOutButtonsVisible (){
 	if(!localStorage.getItem('spotfix_session_id')) {
-		const el = document.getElementById('doboard_task_widget-user_menu-logout_button')?.closest('.doboard_task_widget-user_menu-item');
-		if(el) el.style.display = 'none';
-
-		const loginContainer = document.getElementById('doboard_task_widget-input-container-login')
-		if(loginContainer) {
-			loginContainer.classList.remove('doboard_task_widget-hidden');
-		}
-		clearUserMenuData();
+		const el = document
+			.getElementById('doboard_task_widget-user_menu-logout_button')
+			?.closest('.doboard_task_widget-user_menu-item');
+			if(el) el.style.display = 'none';
 	} else {
-		const el = document.getElementById('doboard_task_widget-user_menu-logout_button')?.closest('.doboard_task_widget-user_menu-item');
-		if(el) el.style.display = 'block';
-		const loginContainer = document.getElementById('doboard_task_widget-input-container-login')
-		if(loginContainer) {
-			loginContainer.classList.add('doboard_task_widget-hidden');
-		}
-	}
-}
-
-/**
- * Clear user menu data in menu
- */
-async function clearUserMenuData() {
-	const userNameElement = document.querySelector('.doboard_task_widget-user_menu-header-user-name');
-	const emailElement = document.querySelector('.doboard_task_widget-user_menu-header-email');
-	const avatarElement = document.querySelector('.doboard_task_widget-user_menu-header-avatar');
-	
-	if (userNameElement) {
-		userNameElement.innerText = 'Guest';
-	}
-	if (emailElement) {
-		emailElement.innerText = '';
-	}
-	if (avatarElement) {
-		avatarElement.src = SpotFixSVGLoader.getAsDataURI('iconAvatar');
+		const el = document.getElementById('doboard_task_widget-user_menu-signlog_button');
+		if(el) el.style.display = 'none';
 	}
 }
 
@@ -724,6 +967,7 @@ function changeSize(container){
 	}
 }
 
+let spotFixCSS = `.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after{content:"";position:absolute;left:8%;top:100%;transform:translateX(-50%);pointer-events:none;background:0 0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid #545b61;display:block}.doboard_task_widget-send_message_paperclip{position:relative}.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip{display:none;position:absolute;left:0;bottom:0;transform:translateX(-3%) translateY(-43px);background:#545b61;color:#FFF;border:none;border-radius:3px;padding:10px 16px;font-size:13px;line-height:1.4;z-index:100;min-width:220px;max-width:320px;text-align:left;pointer-events:none;text-transform:none}.doboard_task_widget-send_message_paperclip:hover .doboard_task_widget-paperclip-tooltip{display:block}.doboard_task_widget *{font-family:Inter,sans-serif;font-weight:400;font-size:14px;line-height:130%;color:#40484F}.doboard_task_widget-header *{color:#252A2F;margin:0}.doboard_task_widget-header-icons{display:flex}.doboard_task_widget a{text-decoration:underline;color:#2F68B7}.doboard_task_widget a:hover{text-decoration:none}.doboard_task_widget{position:fixed;right:50px;bottom:20px;z-index:9999;vertical-align:middle;transition:top .1s;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}.doboard_task_widget_cursor-pointer{cursor:pointer}.doboard_task_widget-container-maximize{width:80vw!important;max-width:1120px!important;max-height:calc(100vh - 40px);display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-container{width:430px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;-moz-flex-direction:column}@media (max-height:800px){.doboard_task_widget-container,.doboard_task_widget-container-maximize{max-height:calc(60vh - 40px)}}.doboard_task_widget-header{display:flex;height:41px;min-height:41px;padding:0 16px;background-color:#EBF0F4;border-radius:8px 8px 0 0;border:1px solid #BBC7D1;border-bottom:none;justify-content:space-between;align-items:center;color:#FFF}.doboard_task_widget-user_menu-header{display:flex;padding:16px;border:1px solid #BBC7D1;border-bottom-color:#EBF0F4;border-radius:8px 8px 0 0;flex-direction:column;align-items:center;color:#252A2F;background-color:#F3F6F9}.doboard_task_widget-user_menu-header-top{display:flex;height:fit-content;align-items:center;width:100%;justify-content:space-between}.doboard_task_widget-user_menu-header-avatar{max-width:60px;max-height:60px;width:60px;height:60px;border-radius:50%;margin-bottom:4px}.doboard_task_widget-user_menu-item{display:flex;align-items:center;border-bottom:1px #EBF0F4 solid;padding:0 16px;height:65px}.doboard_task_widget-content{flex:1;overflow-y:auto;background:#FFF;border-radius:0 0 8px 8px;border:1px #BBC7D1;border-style:none solid solid;box-shadow:0 4px 15px 8px #CACACA40;scrollbar-width:none;max-height:60vh}.doboard_task_widget-element-container{margin-bottom:30px}.doboard_task_widget-wrap{box-shadow:none;position:fixed;right:-50px;padding:0;cursor:pointer;width:69px;height:52px;border-top-left-radius:4px;border-bottom-left-radius:4px;background-color:rgba(255,255,255,.9);border:1px solid #EBF0F4;display:flex;align-items:center;justify-content:center}.doboard_task_widget-input-container.hidden,.doboard_task_widget-login.hidden,.doboard_task_widget-wrap.hidden,.wrap_review::after{display:none}.doboard_task_widget-wrap img{width:32px;height:32px;transform:scaleX(-1)}.wrap_review{width:164px;min-width:164px;height:54px}.wrap_review img{width:28px;height:28px;transform:scaleX(-1)}.wrap_review:hover{background-color:#fff}@media (max-width:480px){.doboard_task_widget-wrap{right:-20px}}#review_content_button_text{color:#D5991A;margin-left:6px;font-weight:600;font-size:14px;text-transform:none!important}#doboard_task_widget-task_count{position:absolute;top:-12px;right:4px;width:22px;height:22px;opacity:1;background:#ef8b43;border-radius:50%;color:#FFF;text-align:center;line-height:22px}#doboard_task_widget-task_count.hidden{width:0;height:0;opacity:0}.doboard_task_widget-input-container{position:relative;margin-bottom:24px}.doboard_task_widget-input-container .doboard_task_widget-field{padding:0 8px;border-radius:4px;border:1px solid #BBC7D1;outline:0!important;appearance:none;width:100%;height:40px;background:#FFF;color:#000;max-width:-webkit-fill-available;max-width:-moz-available}.doboard_task_widget-field:focus{border-color:#2F68B7}.doboard_task_widget-input-container textarea.doboard_task_widget-field{height:94px;padding-top:11px;padding-bottom:11px}.doboard_task_widget-field+label{color:#252A2F;background:#fff;position:absolute;top:20px;left:8px;transform:translateY(-50%);transition:all .2s ease-in-out}.doboard_task_widget-field.has-value+label,.doboard_task_widget-field:focus+label{font-size:10px;top:0;left:12px;padding:0 4px;z-index:5}.doboard_task_widget-field:focus+label{color:#2F68B7}.doboard_task_widget-login{background:#F9FBFD;border:1px solid #BBC7D1;border-radius:4px;padding:11px 8px 8px;margin-bottom:24px}.doboard_task_widget-login .doboard_task_widget-accordion{height:0;overflow:hidden;opacity:0;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-accordion{height:auto;overflow:visible;opacity:1}.doboard_task_widget-login .doboard_task_widget-input-container:last-child{margin-bottom:0}.doboard_task_widget-login span{display:block;position:relative;padding-right:24px;cursor:pointer}.doboard_task_widget-login.active span{margin-bottom:24px}.doboard_task_widget-login span::after{position:absolute;top:0;right:4px;content:"";display:block;width:10px;height:10px;transform:rotate(45deg);border:2px solid #40484F;border-radius:1px;border-top:none;border-left:none;transition:all .2s ease-in-out}.doboard_task_widget-login.active span::after{transform:rotate(-135deg);top:7px}.doboard_task_widget-login .doboard_task_widget-field+label,.doboard_task_widget-login .doboard_task_widget-input-container .doboard_task_widget-field{background:#F9FBFD}.doboard_task_widget-submit_button{height:48px;width:100%;max-width:400px;margin-bottom:10px;color:#FFF;background:#22A475;border:none;border-radius:6px;font-family:Inter,sans-serif;font-weight:700;font-size:16px;line-height:150%;cursor:pointer;transition:all .2s ease-in-out}.doboard_task_widget-submit_button:hover{background:#1C7857;color:#FFF}.doboard_task_widget-submit_button:disabled{background:rgba(117,148,138,.92);color:#FFF;cursor:wait}.doboard_task_widget-issue-title{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-hidden_element{opacity:0}.doboard_task_widget-message-wrapper{border-radius:4px;padding:8px;margin-bottom:14px;display:grid;justify-items:center}.doboard_task_widget-error_message-wrapper.hidden,.doboard_task_widget-message-wrapper.hidden{display:none}.doboard_task_widget-error_message{background:#fdd;border:1px solid #cf6868}.doboard_task_widget-notice_message{background:#dde9ff;border:1px solid #68a6cf}#doboard_task_widget-error_message-header{font-weight:600}#doboard_task_widget-error_message{text-align:center}.doboard_task_widget-task_row{display:flex;max-height:55px;cursor:pointer;align-items:center;justify-content:space-between;padding:1px 15px}.doboard_task_widget-task_row:last-child{margin-bottom:0}.doboard_task_widget-task-text_bold{font-weight:700}.doboard_task_widget-element_selection,.doboard_task_widget-image_selection,.doboard_task_widget-text_selection,.doboard_task_widget-text_selection.image-highlight>img{background:rgba(208,213,127,.68)}.doboard_task_widget-issues_list_empty{text-align:center;margin:20px 0}.doboard_task_widget-avatar_container{display:flex;height:44px;width:44px;border-radius:50%;background-repeat:no-repeat;background-position:center;background-size:100%}.doboard_task_widget-comment_data_owner .doboard_task_widget-avatar_container{opacity:0}.doboard_task_widget-avatar_placeholder{min-height:44px;min-width:44px;border-radius:50%;font-size:24px;line-height:1.2083333333;padding:0;background:#1C7857;display:inline-grid;align-content:center;justify-content:center}.doboard_task_widget-avatar-initials{color:#FFF;width:inherit;text-align:center}.doboard_task_widget-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover}.doboard_task_widget-description_container{height:55px;width:calc(100% - 44px - 8px);border-bottom:1px solid #EBF0F4;display:block;margin-left:8px}.doboard_task_widget-task_row:last-child .doboard_task_widget-description_container{border-bottom:none}.doboard_task_widget-all_issues{padding-bottom:0}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{overflow:auto;max-height:85vh;display:none}.doboard_task_widget-task_last_message,.doboard_task_widget-task_page_url a,.doboard_task_widget-task_title span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.doboard_task_widget-all_issues-container{scrollbar-width:none;margin-top:10px}.doboard_task_widget-content.doboard_task_widget-concrete_issue{padding:0}.doboard_task_widget-concrete_issues-container{padding:10px 16px 5px}.doboard_task_widget-all_issues-container::-webkit-scrollbar,.doboard_task_widget-all_issues::-webkit-scrollbar,.doboard_task_widget-concrete_issues-container::-webkit-scrollbar,.doboard_task_widget-content::-webkit-scrollbar{width:0}.doboard_task_widget-task_title{font-weight:700;display:flex;justify-content:space-between;align-items:center}.doboard_task_widget-task_title span{font-weight:700;display:inline-block}.doboard_task_widget-task_title-details{display:flex;max-width:calc(100% - 40px);align-items:center}.doboard_task_widget-task_title-unread_block{opacity:0;height:8px;width:8px;background:#f08c43;border-radius:50%;display:inline-block;font-size:8px;font-weight:600;position:relative}.doboard_task_widget-task_title-unread_block.unread{opacity:1}.doboard_task_widget-task_last_message{max-width:85%;height:36px}.doboard_task_widget-task_page_url{max-width:70%;height:36px;display:flex;align-items:center}.doboard_task_widget-task_page_url a{color:#40484F;text-decoration:none;margin-left:8px;max-width:100%}.doboard_task_widget-bottom{display:flex;justify-content:space-between}.doboard_task_widget-bottom-is-fixed{border-radius:10px;background:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkiIGhlaWdodD0iMTkiIHZpZXdCb3g9IjAgMCAxOSAxOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCjxwYXRoIGQ9Ik03LjA4MTE5IDAuMjIzNDM0QzguOTkxNjkgLTAuMjA4MTY3IDEwLjk5MTMgLTAuMDExMjE5NCAxMi43ODA0IDAuNzg1OTM0QzEzLjE1ODQgMC45NTQ2MjQgMTMuMzI4NiAxLjM5ODAzIDEzLjE2MDMgMS43NzYxN0MxMi45OTE3IDIuMTU0MTkgMTIuNTQ4MiAyLjMyNDI0IDEyLjE3MDEgMi4xNTYwNUMxMC42NzY0IDEuNDkwNTIgOS4wMDcyNiAxLjMyNiA3LjQxMjI1IDEuNjg2MzJDNS44MTcxNyAyLjA0NjcxIDQuMzgwOTcgMi45MTI5NiAzLjMxODUgNC4xNTYwNUMyLjI1NjIzIDUuMzk5MDEgMS42MjQ0MSA2Ljk1MjI5IDEuNTE2NzQgOC41ODM3OUMxLjQwOTI0IDEwLjIxNTQgMS44MzE4NCAxMS44MzkgMi43MjE4MiAxMy4yMTA3QzMuNjExNzkgMTQuNTgyMiA0LjkyMTY0IDE1LjYyOTQgNi40NTUyMSAxNi4xOTYxQzcuOTg5MDIgMTYuNzYyNiA5LjY2NTUzIDE2LjgxODkgMTEuMjMzNSAxNi4zNTUzQzEyLjgwMTYgMTUuODkxNiAxNC4xNzgzIDE0LjkzMzUgMTUuMTU3NCAxMy42MjM4QzE2LjEzNjQgMTIuMzE0MiAxNi42NjYxIDEwLjcyMjcgMTYuNjY3MSA5LjA4NzY5TDE4LjE2NzEgOS4wODg2N0MxOC4xNjU4IDExLjA0NzEgMTcuNTMxMiAxMi45NTM2IDE2LjM1ODUgMTQuNTIyM0MxNS4xODU5IDE2LjA5MDcgMTMuNTM3MyAxNy4yMzg0IDExLjY1OTMgMTcuNzkzN0M5Ljc4MTEgMTguMzQ5MSA3Ljc3MjkzIDE4LjI4MiA1LjkzNTY4IDE3LjYwMzNDNC4wOTg1IDE2LjkyNDYgMi41MjkxMiAxNS42NzAxIDEuNDYzMDMgMTQuMDI3MUMwLjM5NzAzNSAxMi4zODQxIC0wLjEwOTEwOSAxMC40Mzk1IDAuMDE5NjY4MyA4LjQ4NTE1QzAuMTQ4NjA3IDYuNTMwOCAwLjkwNjMyMyA0LjY3MDMzIDIuMTc4ODUgMy4xODE0NEMzLjQ1MTM2IDEuNjkyNjggNS4xNzA4OCAwLjY1NTE2MiA3LjA4MTE5IDAuMjIzNDM0WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPHBhdGggZD0iTTE2Ljg4NTkgMS44OTA0M0MxNy4xNzg2IDEuNTk3NTMgMTcuNjUzNCAxLjU5Nzg0IDE3Ljk0NjQgMS44OTA0M0MxOC4yMzkzIDIuMTgzMTYgMTguMjQwMSAyLjY1Nzk2IDE3Ljk0NzQgMi45NTA5N0w5LjYxMzQyIDExLjI5MjhDOS40NzI4MiAxMS40MzMzIDkuMjgxOTYgMTEuNTEyNCA5LjA4MzE1IDExLjUxMjVDOC44ODQzMiAxMS41MTI1IDguNjkzNDggMTEuNDMzMyA4LjU1Mjg3IDExLjI5MjhMNi4wNTI4NyA4Ljc5Mjc3QzUuNzYwMTQgOC40OTk5IDUuNzYwMTEgOC4wMjUwOCA2LjA1Mjg3IDcuNzMyMjJDNi4zNDU3MiA3LjQzOTM3IDYuODIwNTEgNy40Mzk0NiA3LjExMzQyIDcuNzMyMjJMOS4wODIxNyA5LjcwMDk3TDE2Ljg4NTkgMS44OTA0M1oiIGZpbGw9IiMyMkE0NzUiLz4NCjxwYXRoIGQ9Ik0xNy40MTcxIDcuNTcxMDlDMTcuODMxIDcuNTcxNDQgMTguMTY3IDcuOTA3MTYgMTguMTY3MSA4LjMyMTA5VjkuMDg4NjdMMTcuNDE3MSA5LjA4NzY5SDE2LjY2NzFWOC4zMjEwOUMxNi42NjcyIDcuOTA2OTQgMTcuMDAzIDcuNTcxMDkgMTcuNDE3MSA3LjU3MTA5WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPC9zdmc+) 8px center no-repeat #EBFAF4;padding:4px 7px 4px 30px}.doboard_task_widget-bottom-is-fixed-task-block{text-align:center}.doboard_task_widget-bottom-is-fixed-task{background:#F3F6F9;color:#1C7857;display:inline-block;border-radius:10px;padding:5px 8px;margin:0 auto}.doboard_task_widget-task_row-green{background:#EBF0F4}.doboard_task_widget_return_to_all{display:flex;gap:8px;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:wrap}.doboard_task_widget-task_title-last_update_time{font-family:Inter,serif;font-weight:400;font-style:normal;font-size:11px;leading-trim:NONE;line-height:100%}.doboard_task_widget-task_title_public_status_img{opacity:50%;margin-left:5px;scale:90%}.doboard_task_widget-description-textarea{resize:none}.doboard_task_widget-switch_row{display:flex;align-items:center;gap:12px;margin:16px 0;justify-content:space-between}.doboard_task_widget-switch-label{font-weight:600;font-size:16px;height:24px;align-content:center}.doboard_task_widget-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}.doboard_task_widget-switch input{opacity:0;width:0;height:0}.doboard_task_widget-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;border-radius:24px;transition:.2s}.doboard_task_widget-slider:before{position:absolute;content:"";height:20px;width:20px;left:2px;bottom:2px;background-color:#fff;border-radius:50%;transition:.2s}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider{background-color:#65D4AC}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider:before{transform:translateX(20px)}.doboard_task_widget-switch-img{width:24px;height:24px;flex-shrink:0}.doboard_task_widget-switch-center{display:flex;gap:2px;flex-direction:column;-moz-flex-direction:column;flex:1 1 auto;min-width:0}.doboard_task_widget-switch-desc{display:block;font-size:12px;color:#707A83;margin:0;line-height:1.2;max-width:180px;word-break:break-word}.doboard_task_widget-concrete_issue-day_content{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-concrete_issue_day_content-month_day{text-align:center;font-weight:400;font-size:12px;line-height:100%;padding:8px;opacity:.75}.doboard_task_widget-concrete_issue_day_content-messages_wrapper{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-comment_data_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;margin-bottom:15px;align-items:flex-end}.doboard_task_widget-comment_text_container{position:relative;width:calc(100% - 44px - 5px);height:auto;margin-left:5px;background:#F3F6F9;border-radius:16px}.doboard_task_widget-comment_text_container:after{content:"";position:absolute;bottom:0;left:-5px;width:13px;height:19px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAxMyAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAuMTEyNTggMTkuMDMzNEM1LjI5NDg2IDE5LjgyMDEgMTAuNjEwNSAxNy45NzQxIDEyLjI3MTUgMTYuMTcxM0MxMi4yNzE1IDE2LjE3MTMgMTAuOTYyMyAtMi43ODEyNCA1LjA5NTU0IDAuMzQ5MDc5QzUuMDc0NCAxLjYxNDU0IDUuMDk1NTQgNS45OTQ5IDUuMDk1NTQgNi43NDA2OUM1LjA5NTU0IDE3LjA2NjIgLTAuODg0MDEyIDE4LjQ0MDEgMC4xMTI1OCAxOS4wMzM0WiIgZmlsbD0iI0YzRjZGOSIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container{background:#EBFAF4}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container:after{left:auto;right:-5px;height:13px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMyAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjc3NzEgMTIuMzA2NkM3LjMzMTM1IDEzLjA5MzcgMS43NDU0NCAxMS4yNDY5IDAgOS40NDMxOUw3LjM5MTYgMEM3LjM5MTYgMTAuMzMwMyAxMy44MjQ0IDExLjcxMzEgMTIuNzc3MSAxMi4zMDY2WiIgZmlsbD0iI0VCRkFGNCIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_body,.doboard_task_widget-comment_time{position:relative;z-index:1}.doboard_task_widget-comment_body{padding:6px 8px;min-height:30px}.doboard_task_widget-comment_body strong{font-variation-settings:"wght" 700}.doboard_task_widget-comment_body blockquote{margin:0;border-left:3px solid #22a475}.doboard_task_widget-comment_body blockquote p{margin:0 10px}.doboard_task_widget-comment_body details .mce-accordion-body{padding-left:20px}.doboard_task_widget-comment_body details .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg transform='rotate(180 0 0)' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") 0 no-repeat;padding-left:20px}.doboard_task_widget-comment_body .mce-accordion[open] .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") 0 no-repeat}.doboard_task_widget-comment_body details .mce-accordion-summary::marker{content:""}.doboard_task_widget-comment_body pre{border:1px solid #d6dde3;border-left-width:8px;border-radius:4px;padding:13px 16px 14px 12px;white-space:pre-wrap}.doboard_task_widget-comment_time{font-weight:400;font-size:11px;opacity:.8;position:absolute;bottom:6px;right:6px}.doboard_task_widget-comment_body-img-strict{max-width:-webkit-fill-available;height:100px;margin-right:5px}.doboard_task_widget-send_message{padding:14px 10px;border-top:1px solid #BBC7D1;position:sticky;background:#fff;bottom:0;z-index:4}.doboard_task_widget-send_message_elements_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:nowrap;justify-content:space-between;align-items:end}.doboard_task_widget-send_message_elements_wrapper button{height:37px;background:0 0;margin:0}.doboard_task_widget-send_message_elements_wrapper img{margin:0}.doboard_task_widget-send_message_input_wrapper{position:relative;display:inline-grid;align-items:center;justify-items:center;flex-grow:1;padding:0 6px}.doboard_task_widget-send_message_input_wrapper textarea{position:relative;width:100%;height:37px;border:none;outline:0;box-shadow:none;border-radius:24px;background:#F3F6F9;resize:none;margin-bottom:0!important;transition:height .2s ease-in-out;padding:8px;box-sizing:border-box}.doboard_task_widget-send_message_input_wrapper textarea.high{height:170px}.doboard_task_widget-send_message_input_wrapper textarea:focus{background:#F3F6F9;border-color:#007bff;outline:0}.doboard_task_widget-send_message_button,.doboard_task_widget-send_message_paperclip{display:inline-grid;border:none;background:0 0;cursor:pointer;padding:0;align-items:center;margin:0}.doboard_task_widget-send_message_button:hover,.doboard_task_widget-send_message_paperclip:hover rect{fill:#45a049}.doboard_task_widget-send_message_button:active,.doboard_task_widget-send_message_paperclip:active{transform:scale(.98)}.doboard_task_widget-spinner_wrapper_for_containers{display:flex;justify-content:center;align-items:center;min-height:60px;width:100%}.doboard_task_widget-spinner_for_containers{width:40px;height:40px;border-radius:50%;background:conic-gradient(transparent,#1C7857);mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#fff 0);animation:spin 1s linear infinite}.doboard_task_widget-create_issue{padding:10px}.doboard_task_widget__file-upload__wrapper{display:none;border:1px solid #BBC7D1;margin-top:14px;padding:0 10px 10px;border-radius:4px}.doboard_task_widget__file-upload__list-header{text-align:left;font-size:.9em;margin:5px 0;color:#444c529e}.doboard_task_widget__file-upload__file-input-button{display:none}.doboard_task_widget__file-upload__file-list{border:1px solid #ddd;border-radius:5px;padding:6px;max-height:200px;overflow-y:auto;background:#f3f6f9}.doboard_task_widget__file-upload__file-item{display:flex;justify-content:space-between;align-items:center;padding:4px;border-bottom:1px solid #bbc7d16b}.doboard_task_widget__file-upload__file-item:last-child{border-bottom:none}.doboard_task_widget__file-upload__file_info{display:inline-flex;align-items:center}.doboard_task_widget__file-upload__file-name{font-weight:700;font-size:.9em}.doboard_task_widget__file-upload__file-item-content{width:100%}.doboard_task_widget__file-upload__file_size{color:#666;font-size:.8em;margin-left:6px}.doboard_task_widget__file-upload__remove-btn{background:#22a475;color:#fff;border:none;border-radius:3px;cursor:pointer}.doboard_task_widget__file-upload__error{display:block;margin:7px 0 0;padding:7px;border-radius:4px;background:#fdd;border:1px solid #cf6868}.doboard_task_widget-show_button{position:fixed;background:#1C7857;color:#FFF;padding:8px 12px;border-radius:4px;font-size:14px;z-index:10000;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);transform:translate(-50%,-100%);margin-top:-8px;white-space:nowrap;border:none;font-family:inherit}@keyframes spin{to{transform:rotate(1turn)}}@media (max-width:480px){.doboard_task_widget{position:fixed;right:0;top:auto;bottom:0;margin:0 20px 20px;box-sizing:border-box;transform:translateZ(0);-moz-transform:translateZ(0);will-change:transform;max-height:90vh}.doboard_task_widget-header{padding:8px}.doboard_task_widget-issue-title{max-width:70px}.doboard_task_widget-container,.doboard_task_widget-container-maximize{width:100%;max-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-content{height:auto;max-height:none;scrollbar-width:none}.doboard_task_widget-content::-webkit-scrollbar{display:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{max-height:80vh}}@supports (-webkit-overflow-scrolling:touch){.doboard_task_widget{position:fixed}}.doboard_task_widget_tasks_list{background-color:#fff;position:sticky;bottom:0;height:38px;display:flex;flex-direction:column-reverse;align-items:center;padding-bottom:8px}#doboard_task_widget-user_menu-logout_button{display:inline-flex;align-items:center}.doboard_task_widget-text_selection{position:relative;display:inline-block}.doboard_task_widget-see-task{cursor:pointer;text-decoration:underline}.doboard_task_widget-text_selection_tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#FFF;color:#000;padding:4px 8px;border-radius:4px;font-size:10px;white-space:nowrap;z-index:9000;border:1px solid #BBC7D1;margin-bottom:8px}.doboard_task_widget-text_selection_tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#FFF}.doboard_task_widget-text_selection_tooltip::before{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#BBC7D1;z-index:-1}.doboard_task_widget-text_selection_tooltip_icon{background-image:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDEwMyAxMDAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDEwMyAxMDA7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtmaWxsOiMxNzcyNTA7fQ0KPC9zdHlsZT4NCjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik01MywwSDB2MTAwaDMwLjJINTNDMTE5LjYsMTAwLDExOS42LDAsNTMsMHogTTMwLjIsMTAwYy0xNi42LDAtMzAtMTMuNC0zMC0zMHMxMy40LTMwLDMwLTMwDQoJYzE2LjYsMCwzMCwxMy40LDMwLDMwUzQ2LjgsMTAwLDMwLjIsMTAweiIvPg0KPC9zdmc+DQo=);background-repeat:no-repeat;width:22px;height:22px;margin:5px 3px}.doboard_task_widget-text_selection_tooltip_element{display:flex;justify-content:space-between}.toggle{position:relative;display:inline-block;width:46px;height:28px}.toggle input{opacity:0;width:0;height:0;position:absolute}.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#bbc7d1;border-radius:24px;transition:.3s}.slider:before{content:"";position:absolute;height:24px;width:24px;left:2px;top:2px;background-color:#fff;border-radius:50%;transition:.3s}input:checked+.slider{background-color:#65d4ac}input:checked+.slider:before{transform:translateX(16px)}.logout_button{font-weight:500;font-size:14px;color:#707A83;cursor:pointer}`;
 /**
  * Widget class to create a task widget
  */
@@ -744,7 +988,6 @@ class CleanTalkWidgetDoboard {
     constructor(selectedData, type) {
         this.selectedData = selectedData || '';
         this.selectedText = selectedData?.selectedText || '';
-        this.init(type);
         this.srcVariables = {
             buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
             iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
@@ -762,6 +1005,7 @@ class CleanTalkWidgetDoboard {
             iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
         };
         this.fileUploader = new FileUploader(this.escapeHtml);
+        this.init(type);
     }
 
     /**
@@ -839,6 +1083,12 @@ class CleanTalkWidgetDoboard {
             throw new Error('Necessary script params not provided');
 
         }
+        if (params.accountId) {
+            localStorage.setItem('spotfix_company_id', params.accountId);
+        }
+        if (params.projectToken) {
+            localStorage.setItem('spotfix_project_token', params.projectToken);
+        }
         return params;
     }
 
@@ -877,9 +1127,8 @@ class CleanTalkWidgetDoboard {
                 let userEmail = '';
                 let userPassword = '';
                 const loginSectionElement = document.querySelector('.doboard_task_widget-login');
-                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
 
-                if ( !sessionIdExists && loginSectionElement && loginSectionElement.classList.contains('active') ) {
+                if ( loginSectionElement && loginSectionElement.classList.contains('active') ) {
                     const userEmailElement = document.getElementById('doboard_task_widget-user_email');
                     const userNameElement = document.getElementById('doboard_task_widget-user_name');
                     const userPasswordElement = document.getElementById('doboard_task_widget-user_password');
@@ -992,233 +1241,6 @@ class CleanTalkWidgetDoboard {
         }
     }
 
-
-    resetLoginForm() {
-        const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
-        const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
-        const submitButton = document.getElementById('doboard_task_widget-submit_button');
-
-        if (loginContainer) {
-            loginContainer.classList.add('doboard_task_widget-hidden');
-        }
-        if (phantomContainer) {
-            phantomContainer.classList.remove('doboard_task_widget-hidden');
-        }
-        if (submitButton) {
-            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
-        }
-    }
-    bindShowLoginFormEvents() {
-        const showLoginButton = document.getElementById('doboard_task_widget-show_login_form');
-        const showPhantomLoginButton = document.getElementById('doboard_task_widget-on_phantom_login_page');
-        const forgotPasswordButton = document.getElementById('doboard_task_widget-forgot_password');
-        const forgotPasswordButtonBlack = document.getElementById('doboard_task_widget-forgot_password-black');
-        const loginButton = document.getElementById('doboard_task_widget-login_button');
-        const restorePasswordButton = document.getElementById('doboard_task_widget-restore_password_button');
-
-        if (showLoginButton) {
-            showLoginButton.addEventListener('click', async () => {
-                const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
-                const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
-                const submitButton = document.getElementById('doboard_task_widget-submit_button');
-                if (loginContainer) {
-                    loginContainer.classList.toggle('doboard_task_widget-hidden');
-                    if (submitButton) {
-                        if (loginContainer.classList.contains('doboard_task_widget-hidden')) {
-                            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
-                        } else {
-                            submitButton.closest('.doboard_task_widget-field').classList.add('doboard_task_widget-hidden');
-                        }
-                    }
-                }
-                if (phantomContainer) {
-                    phantomContainer.classList.toggle('doboard_task_widget-hidden');
-                }
-            })
-        }
-        if (showPhantomLoginButton) {
-            showPhantomLoginButton.addEventListener('click', async () => {
-                const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
-                const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
-                const submitButton = document.getElementById('doboard_task_widget-submit_button');
-                if (loginContainer) {
-                    loginContainer.classList.toggle('doboard_task_widget-hidden');
-                    if (submitButton) {
-                        if (loginContainer.classList.contains('doboard_task_widget-hidden')) {
-                            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
-                        } else {
-                            submitButton.closest('.doboard_task_widget-field').classList.add('doboard_task_widget-hidden');
-                        }
-                    }
-                }
-                if (phantomContainer) {
-                    phantomContainer.classList.toggle('doboard_task_widget-hidden');
-                }
-            })
-        }
-        if (forgotPasswordButton) {
-            forgotPasswordButton.addEventListener('click', async () => {
-                const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
-                const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
-                
-                if (forgotPasswordForm) {
-                    forgotPasswordForm.classList.remove('doboard_task_widget-hidden');
-                }
-                if (loginContainer) {
-                    loginContainer.classList.add('doboard_task_widget-hidden');
-                }
-            })
-
-            forgotPasswordButtonBlack.addEventListener('click', async () => {
-                const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
-                const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
-                const submitButton = document.getElementById('doboard_task_widget-submit_button');
-
-                if (forgotPasswordForm) {
-                    forgotPasswordForm.classList.add('doboard_task_widget-hidden');
-                }
-                if (loginContainer) {
-                    loginContainer.classList.remove('doboard_task_widget-hidden');
-                    if (submitButton) {
-                        submitButton.closest('.doboard_task_widget-field').classList.add('doboard_task_widget-hidden');
-                    }
-                }
-            })
-        }
-        const forgotPasswordButtonMenu = document.querySelector('.doboard_task_widget-input-container-login-menu #doboard_task_widget-forgot_password');
-        if (forgotPasswordButtonMenu) {
-            forgotPasswordButtonMenu.addEventListener('click', async () => {
-                const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
-                const loginContainer = document.querySelector('.doboard_task_widget-input-container-login-menu');
-                
-                if (forgotPasswordForm) {
-                    forgotPasswordForm.classList.remove('doboard_task_widget-hidden');
-                }
-                if (loginContainer) {
-                    loginContainer.classList.add('doboard_task_widget-hidden');
-                }
-            });
-        }
-        const forgotPasswordButtonBlackMenu = document.querySelector('.doboard_task_widget-input-container-login-menu ~ #doboard_task_widget-container-login-forgot-password-form #doboard_task_widget-forgot_password-black');
-        if (forgotPasswordButtonBlackMenu) {
-             forgotPasswordButtonBlackMenu.addEventListener('click', async () => {
-                const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
-                const loginContainer = document.querySelector('.doboard_task_widget-input-container-login-menu');
-
-                if (forgotPasswordForm) {
-                    forgotPasswordForm.classList.add('doboard_task_widget-hidden');
-                }
-                if (loginContainer) {
-                    loginContainer.classList.remove('doboard_task_widget-hidden');
-                }
-            });
-        }
-        if (loginButton) {
-            loginButton.addEventListener('click', async () => {
-                const userEmailElement = document.getElementById('doboard_task_widget-login_email');
-                const userPasswordElement = document.getElementById('doboard_task_widget-login_password');
-                document.querySelector('.doboard_task_widget-login-is-invalid').classList.add('doboard_task_widget-hidden');
-
-                const userEmail = userEmailElement.value.trim();
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!userEmail) {
-                    userEmailElement.style.borderColor = 'red';
-                    userEmailElement.focus();
-                    userEmailElement.addEventListener('input', function() {
-                        this.style.borderColor = '';
-                    });
-                    return;
-                } else if (!emailRegex.test(userEmail)) {
-                    userEmailElement.style.borderColor = 'red';
-                    userEmailElement.focus();
-                    userEmailElement.addEventListener('input', function() {
-                        this.style.borderColor = '';
-                    });
-                    return;
-                }
-
-                const userPassword = userPasswordElement.value;
-                if (!userPassword) {
-                    userPasswordElement.style.borderColor = 'red';
-                    userPasswordElement.focus();
-                    userPasswordElement.addEventListener('input', function() {
-                        this.style.borderColor = '';
-                    });
-                    return;
-                } else if (userPassword.length < 6) {
-                    userPasswordElement.style.borderColor = 'red';
-                    userPasswordElement.focus();
-                    userPasswordElement.addEventListener('input', function() {
-                        this.style.borderColor = '';
-                    });
-                    return;
-                }
-
-                try {
-                    await loginUser({
-                        userEmail: userEmail,
-                        userPassword: userPassword
-                    })(this.registrationShowMessage);
-                        this.setUserMenuData();
-
-                        const submitButton = document.getElementById('doboard_task_widget-submit_button');
-                        if (submitButton) {
-                            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
-                        }
-
-                } catch (error) {
-                    document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
-                }
-                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
-                const email = localStorage.getItem('spotfix_email');
-                if (sessionIdExists && email && !email.includes('spotfix_')) {
-                    const loginEl= document.querySelector('.doboard_task_widget-login');
-                    loginEl?.classList?.add('doboard_task_widget-hidden');
-                } else {
-                    document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
-                }
-            })
-        }
-        const passwordToggle = document.getElementById('doboard_task_widget-password-toggle');
-        const passwordInput = document.getElementById('doboard_task_widget-login_password');
-        
-        if (passwordToggle && passwordInput) {
-            passwordToggle.addEventListener('click', function() {
-                const isPassword = passwordInput.type === 'password';
-                passwordInput.type = isPassword ? 'text' : 'password';
-                this.classList.toggle('doboard_task_widget-bottom-eye-off-icon');
-                this.classList.toggle('doboard_task_widget-bottom-eye-icon');
-            });
-        }
-        if (restorePasswordButton) {
-            restorePasswordButton.addEventListener('click', async () => {
-                const userEmailElement = document.getElementById('doboard_task_widget-forgot_password_email');
-                const userEmail = userEmailElement.value.trim();
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!userEmail) {
-                    userEmailElement.style.borderColor = 'red';
-                    userEmailElement.focus();
-                    userEmailElement.addEventListener('input', function() {
-                        this.style.borderColor = '';
-                    });
-                    return;
-                } else if (!emailRegex.test(userEmail)) {
-
-                    userEmailElement.style.borderColor = 'red';
-                    userEmailElement.focus();
-
-                    return;
-                }
-
-                try {
-                    await forgotPassword(userEmail)(this.registrationShowMessage);
-                } catch (error) {
-                    this.registrationShowMessage(error.message, 'error');
-                }
-            })
-        }
-    }
-
     /**
      * Create widget element
      * @return {HTMLElement} widget element
@@ -1235,13 +1257,6 @@ class CleanTalkWidgetDoboard {
         let templateVariables = {};
 
         const config = window.SpotfixWidgetConfig;
-        const position = {
-            compact: '0vh',
-            short: '20vh',
-            regular: '45vh',
-            tall: '60vh',
-            extra: '85vh',
-        };
 
         switch (type) {
             case 'create_issue':
@@ -1263,11 +1278,13 @@ class CleanTalkWidgetDoboard {
                 }
 
                 templateName = 'wrap';
-                templateVariables = {position: position[config?.verticalPosition] || position.compact, ...this.srcVariables};
+                templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
+                        ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
                 break;
             case 'wrap_review':
                 templateName = 'wrap_review';
-                templateVariables = {position: position[config?.verticalPosition] || position.compact, ...this.srcVariables};
+                templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
+                        ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
                 break;
             case 'all_issues':
                 templateName = 'all_issues';
@@ -1276,9 +1293,9 @@ class CleanTalkWidgetDoboard {
                 break;
             case 'user_menu':
                 templateName = 'user_menu';
-                const versionFromLS = localStorage.getItem('spotfix_app_version');
+                const version = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
                 templateVariables = {
-                    spotfixVersion: versionFromLS ? 'Spotfix version ' + versionFromLS + '.' : '',
+                    spotfixVersion: version ? 'Spotfix version ' + version + '.' : '',
                     avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
                     iconEye: SpotFixSVGLoader.getAsDataURI('iconEye'),
                     iconDoor: SpotFixSVGLoader.getAsDataURI('iconDoor'),
@@ -1344,7 +1361,6 @@ class CleanTalkWidgetDoboard {
                 }
                 // bind creation events
                 this.bindCreateTaskEvents();
-                this.bindShowLoginFormEvents();
                 break;
             case 'wrap':
                 await this.getTaskCount();
@@ -1479,7 +1495,7 @@ class CleanTalkWidgetDoboard {
                 const user = await getUserDetails(this.params);
                 const gitHubAppVersion = await getReleaseVersion();
                 let spotfixVersion = '';
-                const version = localStorage.getItem('spotfix_app_version') || gitHubAppVersion;
+                const version = localStorage.getItem('spotfix_app_version') || gitHubAppVersion || SPOTFIX_VERSION;
                 spotfixVersion = version ? `Spotfix version ${version}.` : '';
 
                 templateVariables.spotfixVersion = spotfixVersion || '';
@@ -1494,8 +1510,6 @@ class CleanTalkWidgetDoboard {
                 document.body.appendChild(widgetContainer);
                 setToggleStatus(this);
                 checkLogInOutButtonsVisible();
-                this.bindShowLoginFormEvents();
-                this.bindWidgetInputsInteractive();
 
                 break;
         case 'concrete_issue':
@@ -1699,7 +1713,7 @@ class CleanTalkWidgetDoboard {
         }) || '';
 
         document.querySelector('#doboard_task_widget-user_menu-logout_button')?.addEventListener('click', () => {
-            logoutUserDoboard(this.params.projectToken);
+            logoutUserDoboard(this.params.projectToken, this.params.accountId).then(() => {this.hide()});
         }) || '';
 
         document.getElementById('addNewTaskButton')?.addEventListener('click', () => {
@@ -1724,7 +1738,6 @@ class CleanTalkWidgetDoboard {
 
         document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {
             this.createWidgetElement(this.type_name)
-            this.bindWidgetInputsInteractive();
         }) || '';
 
         return widgetContainer;
@@ -1845,7 +1858,8 @@ class CleanTalkWidgetDoboard {
         let tasksCount;
 
         if(tasksCountLS !== 0 && !tasksCountLS){
-            const tasks = await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
+            await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
+            const tasks = await spotfixIndexedDB.getAll(TABLE_TASKS);
             const filteredTasks = tasks.filter(task => {
                 return task.taskMeta;
             });
@@ -1874,7 +1888,6 @@ class CleanTalkWidgetDoboard {
             await registerUser(taskDetails)(this.registrationShowMessage);
             if ( taskDetails.userPassword ) {
                 await loginUser(taskDetails)(this.registrationShowMessage);
-                checkLogInOutButtonsVisible();
             }
         }
 
@@ -2064,54 +2077,6 @@ class CleanTalkWidgetDoboard {
     }
     return '';
 }
-
-/**
- * Set user menu data with current user information
- */
-async setUserMenuData() {
-    const params = this.params;
-
-    // Get user data
-    let userData = null;
-    if (localStorage.getItem('spotfix_session_id')) {
-        try {
-            userData = await getUserDetails(params);
-        } catch (error) {
-            console.error('Error fetching user details:', error);
-        }
-    }
-
-    // Update user menu header
-    const userNameElement = document.querySelector('.doboard_task_widget-user_menu-header span[style*="font-size: 16px"]');
-    const emailElement = document.querySelector('.doboard_task_widget-user_menu-header span[style*="font-size: 12px"]');
-    const avatarElement = document.querySelector('.doboard_task_widget-user_menu-header-avatar');
-
-    if (userNameElement) {
-        if (userData && userData.name) {
-            userNameElement.innerText = userData.name;
-        } else {
-            userNameElement.innerText = 'Guest';
-        }
-    }
-
-    if (emailElement) {
-        if (userData && userData.email) {
-            emailElement.innerText = userData.email;
-        } else {
-            const email = localStorage.getItem('spotfix_email') || '';
-            emailElement.innerText = email.includes('spotfix_') ? '' : email;
-        }
-    }
-
-    if (avatarElement) {
-        if (userData && userData.avatar && userData.avatar.s) {
-            avatarElement.src = userData.avatar.s;
-        } else {
-            // Reset to default avatar or remove src
-            avatarElement.src = '';
-        }
-    }
-}
 }
 
 var spotFixShowDelayTimeout = null;
@@ -2125,6 +2090,9 @@ if( document.readyState !== 'loading' ) {
 }
 
 function spotFixInit() {
+    spotfixIndexedDB.init();
+    wsSpotfix.connect();
+    wsSpotfix.subscribe();
     new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
     loadBotDetector()
@@ -3067,7 +3035,6 @@ function spotFixRetrieveNodeFromPath(path) {
     return node;
 }
 
-let spotFixCSS = `.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after{content:"";position:absolute;left:8%;top:100%;transform:translateX(-50%);pointer-events:none;background:0 0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid #545b61;display:block}.doboard_task_widget-send_message_paperclip{position:relative}.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip{display:none;position:absolute;left:0;bottom:0;transform:translateX(-3%) translateY(-43px);background:#545b61;color:#FFF;border:none;border-radius:3px;padding:10px 16px;font-size:13px;line-height:1.4;z-index:100;min-width:220px;max-width:320px;text-align:left;pointer-events:none;text-transform:none}.doboard_task_widget-send_message_paperclip:hover .doboard_task_widget-paperclip-tooltip{display:block}.doboard_task_widget *{font-family:Inter,sans-serif;font-weight:400;font-size:14px;line-height:130%;color:#40484F}.doboard_task_widget-header *{color:#252A2F;margin:0}.doboard_task_widget-header-icons{display:flex}.doboard_task_widget a{text-decoration:underline;color:#2F68B7}.doboard_task_widget a:hover{text-decoration:none}.doboard_task_widget{position:fixed;right:50px;bottom:20px;z-index:9999;vertical-align:middle;transition:top .1s;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}.doboard_task_widget_cursor-pointer{cursor:pointer}.doboard_task_widget-container-maximize{width:80vw!important;max-width:1120px!important;max-height:calc(100vh - 40px);display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-container{width:430px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;-moz-flex-direction:column}@media (max-height:800px){.doboard_task_widget-container,.doboard_task_widget-container-maximize{max-height:calc(60vh - 40px)}}.doboard_task_widget-header{display:flex;height:41px;min-height:41px;padding:0 16px;background-color:#EBF0F4;border-radius:8px 8px 0 0;border:1px solid #BBC7D1;border-bottom:none;justify-content:space-between;align-items:center;color:#FFF}.doboard_task_widget-user_menu-header{display:flex;padding:16px;border:1px solid #BBC7D1;border-bottom-color:#EBF0F4;border-radius:8px 8px 0 0;flex-direction:column;align-items:center;color:#252A2F;background-color:#F3F6F9}.doboard_task_widget-user_menu-header-top{display:flex;height:fit-content;align-items:center;width:100%;justify-content:space-between}.doboard_task_widget-user_menu-header-avatar{max-width:60px;max-height:60px;width:60px;height:60px;border-radius:50%;margin-bottom:4px}.doboard_task_widget-user_menu-item{display:flex;align-items:center;border-bottom:1px #EBF0F4 solid;padding:0 16px;height:40px;margin-top:10px}.doboard_task_widget-content{flex:1;overflow-y:auto;background:#FFF;border-radius:0 0 8px 8px;border:1px #BBC7D1;border-style:none solid solid;box-shadow:0 4px 15px 8px #CACACA40;scrollbar-width:none;max-height:60vh}.doboard_task_widget-element-container{margin-bottom:30px}.doboard_task_widget-wrap{box-shadow:none;position:fixed;right:-50px;padding:0;cursor:pointer;width:69px;height:52px;border-top-left-radius:4px;border-bottom-left-radius:4px;background-color:rgba(255,255,255,.9);border:1px solid #EBF0F4;display:flex;align-items:center;justify-content:center}.doboard_task_widget-hidden,.doboard_task_widget-input-container.hidden,.doboard_task_widget-login.hidden,.doboard_task_widget-wrap.hidden,.wrap_review::after{display:none}.doboard_task_widget-wrap img{width:32px;height:32px;transform:scaleX(-1)}.wrap_review{width:164px;min-width:164px;height:54px}.wrap_review img{width:28px;height:28px;transform:scaleX(-1)}.wrap_review:hover{background-color:#fff}@media (max-width:480px){.doboard_task_widget-wrap{right:-20px}}#review_content_button_text{color:#D5991A;margin-left:6px;font-weight:600;font-size:14px;text-transform:none!important}#doboard_task_widget-task_count{position:absolute;top:-12px;right:4px;width:22px;height:22px;opacity:1;background:#ef8b43;border-radius:50%;color:#FFF;text-align:center;line-height:22px}#doboard_task_widget-task_count.hidden{width:0;height:0;opacity:0}.doboard_task_widget-input-container{position:relative;margin-bottom:24px}.doboard_task_widget-input-container .doboard_task_widget-field{padding:0 8px;border-radius:4px;border:1px solid #BBC7D1;outline:0!important;appearance:none;width:100%;height:40px;background:#FFF;color:#000;max-width:-webkit-fill-available;max-width:-moz-available}.doboard_task_widget-field:focus{border-color:#2F68B7}.doboard_task_widget-input-container textarea.doboard_task_widget-field{height:94px;padding-top:11px;padding-bottom:11px}.doboard_task_widget-field+label{color:#252A2F;background:#fff;position:absolute;top:20px;left:8px;transform:translateY(-50%);transition:all .2s ease-in-out}.doboard_task_widget-field.has-value+label,.doboard_task_widget-field:focus+label{font-size:10px;top:0;left:12px;padding:0 4px;z-index:5}.doboard_task_widget-field:focus+label{color:#2F68B7}.doboard_task_widget-login{background:#F9FBFD;border:1px solid #BBC7D1;border-radius:4px;padding:11px 8px 8px;margin-bottom:24px}.doboard_task_widget-login .doboard_task_widget-accordion{height:0;overflow:hidden;opacity:0;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-accordion{height:auto;overflow:visible;opacity:1}.doboard_task_widget-login .doboard_task_widget-input-container:last-child{margin-bottom:0}.doboard_task_widget-login .doboard_task_widget-login-icon{display:block;position:relative;padding-right:24px;cursor:pointer}.doboard_task_widget-login.active .doboard_task_widget-login-icon{margin-bottom:24px}.doboard_task_widget-login .doboard_task_widget-login-icon::after{position:absolute;top:0;right:4px;content:"";display:block;width:10px;height:10px;transform:rotate(45deg);border:2px solid #40484F;border-radius:1px;border-top:none;border-left:none;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-login-icon::after{transform:rotate(-135deg);top:7px}.doboard_task_widget-login .doboard_task_widget-field+label,.doboard_task_widget-login .doboard_task_widget-input-container .doboard_task_widget-field{background:#F9FBFD}.doboard_task_widget-submit_button{min-height:48px;width:100%;max-width:400px;margin-bottom:10px;color:#FFF;background:#22A475;border:none;border-radius:6px;font-family:Inter,sans-serif;font-weight:700;font-size:16px;line-height:150%;cursor:pointer;transition:all .2s ease-in-out}.doboard_task_widget-submit_button:hover{background:#1C7857;color:#FFF}.doboard_task_widget-submit_button:disabled{background:rgba(117,148,138,.92);color:#FFF;cursor:wait}.doboard_task_widget-login-buttons-wrapper{display:flex;gap:10px;margin-bottom:10px}.doboard_task_widget-login-buttons-wrapper .doboard_task_widget-submit_button{margin-bottom:0;width:auto}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-forgot_password-black,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-on_phantom_login_page{flex:1;background:#FFF;border:1px solid #22A475;color:#22A475}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-forgot_password-black:hover,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-on_phantom_login_page:hover{background:#f0fdf4;color:#1C7857}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-login_button,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-restore_password_button{flex:2}.doboard_task_widget-issue-title{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-hidden_element{opacity:0}.doboard_task_widget-message-wrapper{border-radius:4px;padding:8px;margin-bottom:14px;display:grid;justify-items:center}.doboard_task_widget-error_message-wrapper.hidden,.doboard_task_widget-message-wrapper.hidden{display:none}.doboard_task_widget-error_message{background:#fdd;border:1px solid #cf6868}.doboard_task_widget-notice_message{background:#dde9ff;border:1px solid #68a6cf}#doboard_task_widget-error_message-header{font-weight:600}#doboard_task_widget-error_message{text-align:center}.doboard_task_widget-task_row{display:flex;max-height:55px;cursor:pointer;align-items:center;justify-content:space-between;padding:1px 15px}.doboard_task_widget-task_row:last-child{margin-bottom:0}.doboard_task_widget-task-text_bold{font-weight:700}.doboard_task_widget-element_selection,.doboard_task_widget-image_selection,.doboard_task_widget-text_selection,.doboard_task_widget-text_selection.image-highlight>img{background:rgba(208,213,127,.68)}.doboard_task_widget-issues_list_empty{text-align:center;margin:20px 0}.doboard_task_widget-avatar_container{display:flex;height:44px;width:44px;border-radius:50%;background-repeat:no-repeat;background-position:center;background-size:100%}.doboard_task_widget-comment_data_owner .doboard_task_widget-avatar_container{opacity:0}.doboard_task_widget-avatar_placeholder{min-height:44px;min-width:44px;border-radius:50%;font-size:24px;line-height:1.2083333333;padding:0;background:#1C7857;display:inline-grid;align-content:center;justify-content:center}.doboard_task_widget-avatar-initials{color:#FFF;width:inherit;text-align:center}.doboard_task_widget-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover}.doboard_task_widget-description_container{height:55px;width:calc(100% - 44px - 8px);border-bottom:1px solid #EBF0F4;display:block;margin-left:8px}.doboard_task_widget-task_row:last-child .doboard_task_widget-description_container{border-bottom:none}.doboard_task_widget-all_issues{padding-bottom:0}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{overflow:auto;max-height:85vh;display:none}.doboard_task_widget-task_last_message,.doboard_task_widget-task_page_url a,.doboard_task_widget-task_title span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.doboard_task_widget-all_issues-container{scrollbar-width:none;margin-top:10px}.doboard_task_widget-content.doboard_task_widget-concrete_issue{padding:0}.doboard_task_widget-concrete_issues-container{padding:10px 16px 5px}.doboard_task_widget-all_issues-container::-webkit-scrollbar,.doboard_task_widget-all_issues::-webkit-scrollbar,.doboard_task_widget-concrete_issues-container::-webkit-scrollbar,.doboard_task_widget-content::-webkit-scrollbar{width:0}.doboard_task_widget-task_title{font-weight:700;display:flex;justify-content:space-between;align-items:center}.doboard_task_widget-task_title span{font-weight:700;display:inline-block}.doboard_task_widget-task_title-details{display:flex;max-width:calc(100% - 40px);align-items:center}.doboard_task_widget-task_title-unread_block{opacity:0;height:8px;width:8px;background:#f08c43;border-radius:50%;display:inline-block;font-size:8px;font-weight:600;position:relative}.doboard_task_widget-task_title-unread_block.unread{opacity:1}.doboard_task_widget-task_last_message{max-width:85%;height:36px}.doboard_task_widget-task_page_url{max-width:70%;height:36px;display:flex;align-items:center}.doboard_task_widget-task_page_url a{color:#40484F;text-decoration:none;margin-left:8px;max-width:100%}.doboard_task_widget-bottom{display:flex;justify-content:space-between}.doboard_task_widget-bottom-is-fixed{border-radius:10px;background:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkiIGhlaWdodD0iMTkiIHZpZXdCb3g9IjAgMCAxOSAxOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCjxwYXRoIGQ9Ik03LjA4MTE5IDAuMjIzNDM0QzguOTkxNjkgLTAuMjA4MTY3IDEwLjk5MTMgLTAuMDExMjE5NCAxMi43ODA0IDAuNzg1OTM0QzEzLjE1ODQgMC45NTQ2MjQgMTMuMzI4NiAxLjM5ODAzIDEzLjE2MDMgMS43NzYxN0MxMi45OTE3IDIuMTU0MTkgMTIuNTQ4MiAyLjMyNDI0IDEyLjE3MDEgMi4xNTYwNUMxMC42NzY0IDEuNDkwNTIgOS4wMDcyNiAxLjMyNiA3LjQxMjI1IDEuNjg2MzJDNS44MTcxNyAyLjA0NjcxIDQuMzgwOTcgMi45MTI5NiAzLjMxODUgNC4xNTYwNUMyLjI1NjIzIDUuMzk5MDEgMS42MjQ0MSA2Ljk1MjI5IDEuNTE2NzQgOC41ODM3OUMxLjQwOTI0IDEwLjIxNTQgMS44MzE4NCAxMS44MzkgMi43MjE4MiAxMy4yMTA3QzMuNjExNzkgMTQuNTgyMiA0LjkyMTY0IDE1LjYyOTQgNi40NTUyMSAxNi4xOTYxQzcuOTg5MDIgMTYuNzYyNiA5LjY2NTUzIDE2LjgxODkgMTEuMjMzNSAxNi4zNTUzQzEyLjgwMTYgMTUuODkxNiAxNC4xNzgzIDE0LjkzMzUgMTUuMTU3NCAxMy42MjM4QzE2LjEzNjQgMTIuMzE0MiAxNi42NjYxIDEwLjcyMjcgMTYuNjY3MSA5LjA4NzY5TDE4LjE2NzEgOS4wODg2N0MxOC4xNjU4IDExLjA0NzEgMTcuNTMxMiAxMi45NTM2IDE2LjM1ODUgMTQuNTIyM0MxNS4xODU5IDE2LjA5MDcgMTMuNTM3MyAxNy4yMzg0IDExLjY1OTMgMTcuNzkzN0M5Ljc4MTEgMTguMzQ5MSA3Ljc3MjkzIDE4LjI4MiA1LjkzNTY4IDE3LjYwMzNDNC4wOTg1IDE2LjkyNDYgMi41MjkxMiAxNS42NzAxIDEuNDYzMDMgMTQuMDI3MUMwLjM5NzAzNSAxMi4zODQxIC0wLjEwOTEwOSAxMC40Mzk1IDAuMDE5NjY4MyA4LjQ4NTE1QzAuMTQ4NjA3IDYuNTMwOCAwLjkwNjMyMyA0LjY3MDMzIDIuMTc4ODUgMy4xODE0NEMzLjQ1MTM2IDEuNjkyNjggNS4xNzA4OCAwLjY1NTE2MiA3LjA4MTE5IDAuMjIzNDM0WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPHBhdGggZD0iTTE2Ljg4NTkgMS44OTA0M0MxNy4xNzg2IDEuNTk3NTMgMTcuNjUzNCAxLjU5Nzg0IDE3Ljk0NjQgMS44OTA0M0MxOC4yMzkzIDIuMTgzMTYgMTguMjQwMSAyLjY1Nzk2IDE3Ljk0NzQgMi45NTA5N0w5LjYxMzQyIDExLjI5MjhDOS40NzI4MiAxMS40MzMzIDkuMjgxOTYgMTEuNTEyNCA5LjA4MzE1IDExLjUxMjVDOC44ODQzMiAxMS41MTI1IDguNjkzNDggMTEuNDMzMyA4LjU1Mjg3IDExLjI5MjhMNi4wNTI4NyA4Ljc5Mjc3QzUuNzYwMTQgOC40OTk5IDUuNzYwMTEgOC4wMjUwOCA2LjA1Mjg3IDcuNzMyMjJDNi4zNDU3MiA3LjQzOTM3IDYuODIwNTEgNy40Mzk0NiA3LjExMzQyIDcuNzMyMjJMOS4wODIxNyA5LjcwMDk3TDE2Ljg4NTkgMS44OTA0M1oiIGZpbGw9IiMyMkE0NzUiLz4NCjxwYXRoIGQ9Ik0xNy40MTcxIDcuNTcxMDlDMTcuODMxIDcuNTcxNDQgMTguMTY3IDcuOTA3MTYgMTguMTY3MSA4LjMyMTA5VjkuMDg4NjdMMTcuNDE3MSA5LjA4NzY5SDE2LjY2NzFWOC4zMjEwOUMxNi42NjcyIDcuOTA2OTQgMTcuMDAzIDcuNTcxMDkgMTcuNDE3MSA3LjU3MTA5WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPC9zdmc+) 8px center no-repeat #EBFAF4;padding:4px 7px 4px 30px}.doboard_task_widget-bottom-is-fixed-task-block{text-align:center}.doboard_task_widget-bottom-is-fixed-task{background:#F3F6F9;color:#1C7857;display:inline-block;border-radius:10px;padding:5px 8px;margin:0 auto}.doboard_task_widget-task_row-green{background:#EBF0F4}.doboard_task_widget_return_to_all{display:flex;gap:8px;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:wrap}.doboard_task_widget-task_title-last_update_time{font-family:Inter,serif;font-weight:400;font-style:normal;font-size:11px;leading-trim:NONE;line-height:100%}.doboard_task_widget-task_title_public_status_img{opacity:50%;margin-left:5px;scale:90%}.doboard_task_widget-description-textarea{resize:none}.doboard_task_widget-switch_row{display:flex;align-items:center;gap:12px;margin:16px 0;justify-content:space-between}.doboard_task_widget-switch-label{font-weight:600;font-size:16px;height:24px;align-content:center}.doboard_task_widget-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}.doboard_task_widget-switch input{opacity:0;width:0;height:0}.doboard_task_widget-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;border-radius:24px;transition:.2s}.doboard_task_widget-slider:before{position:absolute;content:"";height:20px;width:20px;left:2px;bottom:2px;background-color:#fff;border-radius:50%;transition:.2s}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider{background-color:#65D4AC}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider:before{transform:translateX(20px)}.doboard_task_widget-switch-img{width:24px;height:24px;flex-shrink:0}.doboard_task_widget-switch-center{display:flex;gap:2px;flex-direction:column;-moz-flex-direction:column;flex:1 1 auto;min-width:0}.doboard_task_widget-switch-desc{display:block;font-size:12px;color:#707A83;margin:0;line-height:1.2;max-width:180px;word-break:break-word}.doboard_task_widget-concrete_issue-day_content{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-concrete_issue_day_content-month_day{text-align:center;font-weight:400;font-size:12px;line-height:100%;padding:8px;opacity:.75}.doboard_task_widget-concrete_issue_day_content-messages_wrapper{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-comment_data_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;margin-bottom:15px;align-items:flex-end}.doboard_task_widget-comment_text_container{position:relative;width:calc(100% - 44px - 5px);height:auto;margin-left:5px;background:#F3F6F9;border-radius:16px}.doboard_task_widget-comment_text_container:after{content:"";position:absolute;bottom:0;left:-5px;width:13px;height:19px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAxMyAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAuMTEyNTggMTkuMDMzNEM1LjI5NDg2IDE5LjgyMDEgMTAuNjEwNSAxNy45NzQxIDEyLjI3MTUgMTYuMTcxM0MxMi4yNzE1IDE2LjE3MTMgMTAuOTYyMyAtMi43ODEyNCA1LjA5NTU0IDAuMzQ5MDc5QzUuMDc0NCAxLjYxNDU0IDUuMDk1NTQgNS45OTQ5IDUuMDk1NTQgNi43NDA2OUM1LjA5NTU0IDE3LjA2NjIgLTAuODg0MDEyIDE4LjQ0MDEgMC4xMTI1OCAxOS4wMzM0WiIgZmlsbD0iI0YzRjZGOSIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container{background:#EBFAF4}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container:after{left:auto;right:-5px;height:13px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMyAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjc3NzEgMTIuMzA2NkM3LjMzMTM1IDEzLjA5MzcgMS43NDU0NCAxMS4yNDY5IDAgOS40NDMxOUw3LjM5MTYgMEM3LjM5MTYgMTAuMzMwMyAxMy44MjQ0IDExLjcxMzEgMTIuNzc3MSAxMi4zMDY2WiIgZmlsbD0iI0VCRkFGNCIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_body,.doboard_task_widget-comment_time{position:relative;z-index:1}.doboard_task_widget-comment_body{padding:6px 8px;min-height:30px}.doboard_task_widget-comment_body strong{font-variation-settings:"wght" 700}.doboard_task_widget-comment_body blockquote{margin:0;border-left:3px solid #22a475}.doboard_task_widget-comment_body blockquote p{margin:0 10px}.doboard_task_widget-comment_body details .mce-accordion-body{padding-left:20px}.doboard_task_widget-comment_body details .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg transform='rotate(180 0 0)' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") 0 no-repeat;padding-left:20px}.doboard_task_widget-comment_body .mce-accordion[open] .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") 0 no-repeat}.doboard_task_widget-comment_body details .mce-accordion-summary::marker{content:""}.doboard_task_widget-comment_body pre{border:1px solid #d6dde3;border-left-width:8px;border-radius:4px;padding:13px 16px 14px 12px;white-space:pre-wrap}.doboard_task_widget-comment_time{font-weight:400;font-size:11px;opacity:.8;position:absolute;bottom:6px;right:6px}.doboard_task_widget-comment_body-img-strict{max-width:-webkit-fill-available;height:100px;margin-right:5px}.doboard_task_widget-send_message{padding:14px 10px;border-top:1px solid #BBC7D1;position:sticky;background:#fff;bottom:0;z-index:4}.doboard_task_widget-send_message_elements_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:nowrap;justify-content:space-between;align-items:end}.doboard_task_widget-send_message_elements_wrapper button{height:37px;background:0 0;margin:0}.doboard_task_widget-send_message_elements_wrapper img{margin:0}.doboard_task_widget-send_message_input_wrapper{position:relative;display:inline-grid;align-items:center;justify-items:center;flex-grow:1;padding:0 6px}.doboard_task_widget-send_message_input_wrapper textarea{position:relative;width:100%;height:37px;border:none;outline:0;box-shadow:none;border-radius:24px;background:#F3F6F9;resize:none;margin-bottom:0!important;transition:height .2s ease-in-out;padding:8px;box-sizing:border-box}.doboard_task_widget-send_message_input_wrapper textarea.high{height:170px}.doboard_task_widget-send_message_input_wrapper textarea:focus{background:#F3F6F9;border-color:#007bff;outline:0}.doboard_task_widget-send_message_button,.doboard_task_widget-send_message_paperclip{display:inline-grid;border:none;background:0 0;cursor:pointer;padding:0;align-items:center;margin:0}.doboard_task_widget-send_message_button:hover,.doboard_task_widget-send_message_paperclip:hover rect{fill:#45a049}.doboard_task_widget-send_message_button:active,.doboard_task_widget-send_message_paperclip:active{transform:scale(.98)}.doboard_task_widget-spinner_wrapper_for_containers{display:flex;justify-content:center;align-items:center;min-height:60px;width:100%}.doboard_task_widget-spinner_for_containers{width:40px;height:40px;border-radius:50%;background:conic-gradient(transparent,#1C7857);mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#fff 0);animation:spin 1s linear infinite}.doboard_task_widget-create_issue{padding:10px}.doboard_task_widget__file-upload__wrapper{display:none;border:1px solid #BBC7D1;margin-top:14px;padding:0 10px 10px;border-radius:4px}.doboard_task_widget__file-upload__list-header{text-align:left;font-size:.9em;margin:5px 0;color:#444c529e}.doboard_task_widget__file-upload__file-input-button{display:none}.doboard_task_widget__file-upload__file-list{border:1px solid #ddd;border-radius:5px;padding:6px;max-height:200px;overflow-y:auto;background:#f3f6f9}.doboard_task_widget__file-upload__file-item{display:flex;justify-content:space-between;align-items:center;padding:4px;border-bottom:1px solid #bbc7d16b}.doboard_task_widget__file-upload__file-item:last-child{border-bottom:none}.doboard_task_widget__file-upload__file_info{display:inline-flex;align-items:center}.doboard_task_widget__file-upload__file-name{font-weight:700;font-size:.9em}.doboard_task_widget__file-upload__file-item-content{width:100%}.doboard_task_widget__file-upload__file_size{color:#666;font-size:.8em;margin-left:6px}.doboard_task_widget__file-upload__remove-btn{background:#22a475;color:#fff;border:none;border-radius:3px;cursor:pointer}.doboard_task_widget__file-upload__error{display:block;margin:7px 0 0;padding:7px;border-radius:4px;background:#fdd;border:1px solid #cf6868}.doboard_task_widget-show_button{position:fixed;background:#1C7857;color:#FFF;padding:8px 12px;border-radius:4px;font-size:14px;z-index:10000;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);transform:translate(-50%,-100%);margin-top:-8px;white-space:nowrap;border:none;font-family:inherit}@keyframes spin{to{transform:rotate(1turn)}}@media (max-width:480px){.doboard_task_widget{position:fixed;right:0;top:auto;bottom:0;margin:0 20px 20px;box-sizing:border-box;transform:translateZ(0);-moz-transform:translateZ(0);will-change:transform;max-height:90vh}.doboard_task_widget-header{padding:8px}.doboard_task_widget-issue-title{max-width:70px}.doboard_task_widget-container,.doboard_task_widget-container-maximize{width:100%;max-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-content{height:auto;max-height:none;scrollbar-width:none}.doboard_task_widget-content::-webkit-scrollbar{display:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{max-height:80vh}}@supports (-webkit-overflow-scrolling:touch){.doboard_task_widget{position:fixed}}.doboard_task_widget_tasks_list{background-color:#fff;position:sticky;bottom:0;height:38px;display:flex;flex-direction:column-reverse;align-items:center;padding-bottom:8px}#doboard_task_widget-user_menu-logout_button{display:inline-flex;align-items:center}.doboard_task_widget-text_selection{position:relative;display:inline-block}.doboard_task_widget-see-task{cursor:pointer;text-decoration:underline}.doboard_task_widget-text_selection_tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#FFF;color:#000;padding:4px 8px;border-radius:4px;font-size:10px;white-space:nowrap;z-index:9000;border:1px solid #BBC7D1;margin-bottom:8px}.doboard_task_widget-text_selection_tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#FFF}.doboard_task_widget-text_selection_tooltip::before{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#BBC7D1;z-index:-1}.doboard_task_widget-text_selection_tooltip_icon{background-image:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDEwMyAxMDAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDEwMyAxMDA7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtmaWxsOiMxNzcyNTA7fQ0KPC9zdHlsZT4NCjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik01MywwSDB2MTAwaDMwLjJINTNDMTE5LjYsMTAwLDExOS42LDAsNTMsMHogTTMwLjIsMTAwYy0xNi42LDAtMzAtMTMuNC0zMC0zMHMxMy40LTMwLDMwLTMwDQoJYzE2LjYsMCwzMCwxMy40LDMwLDMwUzQ2LjgsMTAwLDMwLjIsMTAweiIvPg0KPC9zdmc+DQo=);background-repeat:no-repeat;width:22px;height:22px;margin:5px 3px}.doboard_task_widget-text_selection_tooltip_element{display:flex;justify-content:space-between}.toggle{position:relative;display:inline-block;width:46px;height:28px}.toggle input{opacity:0;width:0;height:0;position:absolute}.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#bbc7d1;border-radius:24px;transition:.3s}.slider:before{content:"";position:absolute;height:24px;width:24px;left:2px;top:2px;background-color:#fff;border-radius:50%;transition:.3s}input:checked+.slider{background-color:#65d4ac}input:checked+.slider:before{transform:translateX(16px)}.doboard_task_widget-bottom-eye-icon,.doboard_task_widget-bottom-eye-off-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:20px;height:20px;cursor:pointer;border-radius:50%;transition:all .2s ease;z-index:10}.logout_button{font-weight:500;font-size:14px;color:#707A83;cursor:pointer}.doboard_task_widget-forgot_password,.doboard_task_widget-on_phantom_login_page,.doboard_task_widget-show_login_form{display:inline-block;cursor:pointer;color:#2F68B7;margin-bottom:0}.doboard_task_widget-forgot_password{margin-bottom:20px}.doboard_task_widget-login-is-invalid{color:red}.doboard_task_widget-forgot_password_form-menu,.doboard_task_widget-input-container-login-menu{margin:20px}.doboard_task_widget-bottom-eye-icon{background:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgMjAgMjAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDIwIDIwOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8cGF0aCBkPSJNMTAsMTcuNGMtNi4yLDAtOS43LTYuOC05LjgtNy4xYy0wLjEtMC4yLTAuMS0wLjUsMC0wLjdDMC4zLDkuNCwzLjgsMi42LDEwLDIuNmM2LjIsMCw5LjcsNi44LDkuOCw3LjENCgljMC4xLDAuMiwwLjEsMC41LDAsMC43QzE5LjcsMTAuNiwxNi4yLDE3LjQsMTAsMTcuNHogTTEuNywxMGMwLjgsMS4zLDMuNyw1LjksOC4zLDUuOWM0LjYsMCw3LjYtNC42LDguMy01LjkNCgljLTAuOC0xLjMtMy43LTUuOS04LjMtNS45QzUuNCw0LjEsMi40LDguNywxLjcsMTB6IE0xMCwxMy4zYy0xLjgsMC0zLjMtMS41LTMuMy0zLjNTOC4yLDYuOCwxMCw2LjhzMy4zLDEuNSwzLjMsMy4zDQoJUzExLjgsMTMuMywxMCwxMy4zeiBNMTAsOC4zQzksOC4zLDguMyw5LDguMywxMFM5LDExLjgsMTAsMTEuOHMxLjgtMC44LDEuOC0xLjhTMTEsOC4zLDEwLDguM3oiLz4NCjwvc3ZnPg0K) center center no-repeat #fff;background-size:16px 16px}.doboard_task_widget-bottom-eye-off-icon{background:url(data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDIwIDIwIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAyMCAyMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggY2xhc3M9InN0MCIgZD0iTTE2LjgsMTMuMmMwLjEsMC4xLDAuMywwLjIsMC41LDAuMmMwLDAsMCwwLDAsMGMwLjIsMCwwLjQtMC4xLDAuNS0wLjNjMC43LTAuOSwxLjQtMS44LDEuOS0yLjgNCgljMC4xLTAuMiwwLjEtMC41LDAtMC43Yy0wLjEtMC4zLTMuNi03LjEtOS44LTcuMWMwLDAsMCwwLDAsMGMtMC42LDAtMS4zLDAuMS0xLjksMC4yQzcuOCwyLjksNy42LDMuMSw3LjUsMy4zczAsMC41LDAuMiwwLjcNCglMMTYuOCwxMy4yeiBNMTAsNC4xYzQuNiwwLDcuNiw0LjYsOC4zLDUuOWMtMC4zLDAuNS0wLjYsMS0xLDEuNUw5LjksNC4xQzkuOSw0LjEsMTAsNC4xLDEwLDQuMXogTTE5LjcsMTguNmwtNC4yLTQuMkw1LjYsNC41DQoJYzAsMCwwLDAsMCwwTDEuNCwwLjNDMS4xLDAsMC42LDAsMC4zLDAuM1MwLDEuMSwwLjMsMS40TDMuOSw1QzIuNCw2LjMsMS4xLDcuOSwwLjIsOS42Yy0wLjEsMC4yLTAuMSwwLjUsMCwwLjcNCgljMC4xLDAuMywzLjYsNy4xLDkuOSw3LjFjMS43LDAsMy40LTAuNSw0LjktMS41bDMuOCwzLjhjMC4xLDAuMSwwLjMsMC4yLDAuNSwwLjJzMC40LTAuMSwwLjUtMC4yQzIwLDE5LjQsMjAsMTguOSwxOS43LDE4LjZ6DQoJIE04LjMsOS40bDIuMywyLjNjLTAuMiwwLjEtMC40LDAuMS0wLjYsMC4xYy0wLjIsMC0wLjUsMC0wLjctMC4xYy0wLjItMC4xLTAuNC0wLjItMC42LTAuNGMtMC4yLTAuMi0wLjMtMC40LTAuNC0wLjYNCgljLTAuMS0wLjItMC4xLTAuNS0wLjEtMC43QzguMiw5LjgsOC4yLDkuNiw4LjMsOS40eiBNMTAsMTUuOWMtNC42LDAtNy42LTQuNi04LjMtNS45YzAuOS0xLjUsMi0yLjgsMy4zLTMuOWwyLjIsMi4yDQoJQzcuMSw4LjQsNyw4LjYsNyw4LjdDNi44LDkuMSw2LjcsOS42LDYuNywxMGMwLDAuNCwwLjEsMC45LDAuMiwxLjNjMC4yLDAuNCwwLjQsMC44LDAuNywxLjFjMC4zLDAuMywwLjcsMC42LDEuMSwwLjcNCgljMC40LDAuMiwwLjgsMC4yLDEuMywwLjJjMC40LDAsMC45LTAuMSwxLjMtMC4zYzAuMi0wLjEsMC4zLTAuMiwwLjUtMC4zbDIuMSwyLjFDMTIuNiwxNS41LDExLjMsMTUuOSwxMCwxNS45eiIvPg0KPC9zdmc+DQo=) center center no-repeat #fff;background-size:16px 16px;opacity:.5}`;
 /**
  * Return bool if widget is closed in local storage
  * @returns {boolean}
@@ -3090,6 +3057,12 @@ function storageWidgetCloseIsSet() {
  */
 function storageSetWidgetIsClosed(visible) {
     localStorage.setItem('spotfix_widget_is_closed', visible ? '1' : '0');
+    if(visible) {
+        wsSpotfix.close();
+    } else {
+        wsSpotfix.connect();
+        wsSpotfix.subscribe();
+    }
 }
 
 /**
@@ -3253,7 +3226,8 @@ function clearLocalstorageOnLogout () {
     localStorage.removeItem('spotfix_email');
     localStorage.removeItem('spotfix_session_id');
     localStorage.removeItem('spotfix_user_id');
-    localStorage.removeItem('spotfix_accounts');
+    localStorage.setItem('spotfix_widget_is_closed', '1');
+    wsSpotfix.close();
 }
 
 /**
@@ -3820,64 +3794,27 @@ class SpotFixTemplatesLoader {
 
         <div class="doboard_task_widget-login">
 
-            <span  class="doboard_task_widget-login-icon" >If you want to receive notifications by email write here you email contacts.</span>
+            <span>If you want to receive notifications by email write here you email contacts.</span>
 
             <div class="doboard_task_widget-accordion">
-            
-                   <div class="doboard_task_widget-input-container-phantom">
-                        <div class="doboard_task_widget-input-container">
-                            <input id="doboard_task_widget-user_name" class="doboard_task_widget-field" type="text" name="user_name">
-                            <label for="doboard_task_widget-user_name">Nickname</label>
-                        </div>
-        
-                        <div class="doboard_task_widget-input-container">
-                            <input id="doboard_task_widget-user_email" class="doboard_task_widget-field" type="email" name="user_email">
-                            <label for="doboard_task_widget-user_email">Email</label>
-                        </div>
-        
-                        <div class="doboard_task_widget-input-container hidden">
-                            <input id="doboard_task_widget-user_password" class="doboard_task_widget-field" type="password" name="user_password">
-                            <label for="doboard_task_widget-user_password">Password</label>
-                        </div>
-        
-                        <i>Note about DoBoard register and accepting email notifications about tasks have to be here.</i>
-                        </br>
-                        <i>If you are a doBoard user, use same Email and password as at <a href="https://doboard.com" target="_blank" rel="nofollow">doboard.com</a>
-                            on the <span id="doboard_task_widget-show_login_form" class="doboard_task_widget-show_login_form">login page</span>
-                         </i>
-                 </div> 
-                     
-                 <div id="doboard_task_widget-input-container-login" class="doboard_task_widget-input-container-login doboard_task_widget-hidden">
-                        <div class="doboard_task_widget-input-container">
-                            <input id="doboard_task_widget-login_email" class="doboard_task_widget-field" type="email" name="login_email">
-                            <label for="doboard_task_widget-login_email">Email</label>
-                        </div>
-                        <div class="doboard_task_widget-input-container">
-                            <input id="doboard_task_widget-login_password" class="doboard_task_widget-field" type="password" name="login_password">
-                            <label for="doboard_task_widget-login_password">Password</label>
-                            <span class="doboard_task_widget-bottom-eye-icon" id="doboard_task_widget-password-toggle"></span>
-                        </div>
-                        <div>  
-                                <span id="doboard_task_widget-forgot_password" class="doboard_task_widget-forgot_password">Forgot Password?</span>
-                        </div> 
-                        <div class="doboard_task_widget-login-buttons-wrapper">
-                            <button id="doboard_task_widget-on_phantom_login_page" class="doboard_task_widget-submit_button">Cancel</button>
-                            <button id="doboard_task_widget-login_button" class="doboard_task_widget-submit_button">Log in</button>
-                        </div>
-                        <div>
-                            <i><span id="doboard_task_widget-login-is-invalid" class="doboard_task_widget-login-is-invalid doboard_task_widget-hidden">Logon or password is invalid </span></i>
-                        </div>
-                 </div>
-                 <div id="doboard_task_widget-container-login-forgot-password-form" class="doboard_task_widget-forgot_password_form doboard_task_widget-hidden">
-                     <div class="doboard_task_widget-input-container">
-                         <input id="doboard_task_widget-forgot_password_email" class="doboard_task_widget-field" type="email" name="forgot_password_email">
-                         <label for="doboard_task_widget-forgot_password_email">Email</label>
-                     </div>
-                     <div class="doboard_task_widget-login-buttons-wrapper">
-                         <button id="doboard_task_widget-forgot_password-black" class="doboard_task_widget-submit_button">Cancel</button>
-                         <button id="doboard_task_widget-restore_password_button" class="doboard_task_widget-submit_button">Restore password</button>
-                     </div>
+
+                <div class="doboard_task_widget-input-container">
+                    <input id="doboard_task_widget-user_name" class="doboard_task_widget-field" type="text" name="user_name">
+                    <label for="doboard_task_widget-user_name">Nickname</label>
                 </div>
+
+                <div class="doboard_task_widget-input-container">
+                    <input id="doboard_task_widget-user_email" class="doboard_task_widget-field" type="email" name="user_email">
+                    <label for="doboard_task_widget-user_email">Email</label>
+                </div>
+
+                <div class="doboard_task_widget-input-container hidden">
+                    <input id="doboard_task_widget-user_password" class="doboard_task_widget-field" type="password" name="user_password">
+                    <label for="doboard_task_widget-user_password">Password</label>
+                </div>
+
+                <i>Note about DoBoard register and accepting email notifications about tasks have to be here.</i>
+
             </div>
 
         </div>
@@ -3940,8 +3877,11 @@ class SpotFixTemplatesLoader {
         </div>
         <div style="display: flex; flex-direction: column; align-items: center">
              <img class="doboard_task_widget-user_menu-header-avatar" src="{{avatar}}" alt="">
-             <span class="doboard_task_widget-user_menu-header-user-name" style="font-size: 16px; font-weight: 700">{{userName}}</span>
-             <span class="doboard_task_widget-user_menu-header-email" style="font-size: 12px;">{{email}}</span>
+             <span style="font-size: 16px; font-weight: 700">{{userName}}</span>
+             <span style="font-size: 12px;">{{email}}</span>
+             <span id="doboard_task_widget-user_menu-signlog_button">
+                 <a style="cursor: pointer" rel="nofollow" target="_blank">Sign up or Log in</a>
+             </span>
         </div>
     </div>
     <div class="doboard_task_widget-content" style="min-height:200px ">
@@ -3968,38 +3908,6 @@ class SpotFixTemplatesLoader {
                     <span class="logout_button">Log out</span>
                 </span>
             </div>
-            
-            <div id="doboard_task_widget-input-container-login" class="doboard_task_widget-input-container-login doboard_task_widget-input-container-login-menu ">
-                <div class="doboard_task_widget-input-container">
-                    <input id="doboard_task_widget-login_email" class="doboard_task_widget-field" type="email" name="login_email">
-                    <label for="doboard_task_widget-login_email">Email</label>
-                </div>
-                <div class="doboard_task_widget-input-container">
-                    <input id="doboard_task_widget-login_password" class="doboard_task_widget-field" type="password" name="login_password">
-                    <label for="doboard_task_widget-login_password">Password</label>
-                    <span class="doboard_task_widget-bottom-eye-icon" id="doboard_task_widget-password-toggle"></span>
-                </div>
-                <div>
-                        <span id="doboard_task_widget-forgot_password" class="doboard_task_widget-forgot_password">Forgot Password?</span>
-                </div>
-                <div class="doboard_task_widget-field">
-                    <button id="doboard_task_widget-login_button" class="doboard_task_widget-submit_button">Log in</button>
-                </div>
-                <div>
-                    <i><span id="doboard_task_widget-login-is-invalid" class="doboard_task_widget-login-is-invalid doboard_task_widget-hidden">Logon or password is invalid </span></i>
-                </div>
-             </div>
-             <div id="doboard_task_widget-container-login-forgot-password-form" class="doboard_task_widget-forgot_password_form doboard_task_widget-forgot_password_form-menu doboard_task_widget-hidden">
-                 <div class="doboard_task_widget-input-container">
-                     <input id="doboard_task_widget-forgot_password_email" class="doboard_task_widget-field" type="email" name="forgot_password_email">
-                     <label for="doboard_task_widget-forgot_password_email">Email</label>
-                 </div>
-                 <div class="doboard_task_widget-login-buttons-wrapper">
-                     <button id="doboard_task_widget-forgot_password-black" class="doboard_task_widget-submit_button">Cancel</button>
-                     <button id="doboard_task_widget-restore_password_button" class="doboard_task_widget-submit_button">Restore password</button>
-                 </div>
-            </div>
-            
         </div>
         </div>
         <div style="padding: 16px; font-size: 13px; position: sticky; bottom: 0">
@@ -4009,10 +3917,6 @@ class SpotFixTemplatesLoader {
              doBoard
             </a></span>
         </div>
-        <div class="doboard_task_widget-message-wrapper hidden">
-            <span id="doboard_task_widget-error_message-header"></span>
-        <div id="doboard_task_widget-error_message"></div>
-    </div>
     </div>
 </div>`;
     }
