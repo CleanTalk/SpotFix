@@ -167,6 +167,10 @@
     max-height: 60vh;
 }
 
+.doboard_task_widget-container-maximize .doboard_task_widget-content {
+    max-width: inherit;
+}
+
 .doboard_task_widget-element-container {
     margin-bottom: 30px;
 }
@@ -541,9 +545,12 @@
 
 .doboard_task_widget-content.doboard_task_widget-concrete_issue {
     padding: 0;
+    display: flex;
+    flex-direction: column;
 }
 .doboard_task_widget-concrete_issues-container {
     padding: 10px 16px 5px;
+    flex-grow: 1;
 }
 
 .doboard_task_widget-all_issues-container::-webkit-scrollbar,
