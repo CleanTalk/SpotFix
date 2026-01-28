@@ -106,9 +106,15 @@
               max-height: calc(60vh - 40px);
         }
         .doboard_task_widget-container-maximize {
-            max-height: calc(60vh - 40px);
+            max-height: calc(85vh - 40px);
         }
     }
+
+@media (min-height: 801px) {
+    .doboard_task_widget-container-maximize .doboard_task_widget-content {
+        max-height: 75vh;
+    }
+}
 
 .doboard_task_widget-header {
     display: flex;

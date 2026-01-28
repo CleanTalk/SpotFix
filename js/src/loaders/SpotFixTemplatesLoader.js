@@ -39,9 +39,7 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-all_issues-container">
         </div>
         <div class="doboard_task_widget_tasks_list">
-            <a rel="nofollow" target="_blank" href="https://doboard.com/spotfix">
-             doBoard / SpotFix
-            </a>
+            <span>doBoard / SpotFix</span>
         </div>
     </div>
 </div>`;
@@ -71,7 +69,7 @@ class SpotFixTemplatesLoader {
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-concrete_issue">
         <div style="background-color: #D6DDE3; padding: 12px 16px">
-                <a rel="nofollow" href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
+                <a rel="nofollow" style="word-break: break-all" href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
         </div>
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
             <div class="doboard_task_widget-spinner_for_containers"></div>
@@ -164,7 +162,8 @@ class SpotFixTemplatesLoader {
         </div>
 
         <div class="doboard_task_widget-input-container">
-            <textarea id="doboard_task_widget-description" class="doboard_task_widget-field" name="description" required></textarea>
+            <textarea id="doboard_task_widget-description"
+             class="doboard_task_widget-field" name="description" required>{{descriptionText}}</textarea>
             <label for="doboard_task_widget-description">Description</label>
         </div>
 
@@ -228,7 +227,7 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-bottom">
             <div class="doboard_task_widget-task_page_url">
                 <img src="{{iconLinkChain}}" />
-                <a title="The spot is located on this {{taskPageUrl}}" href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
+                   <a title="The spot is located on this {{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
              </div>
                 {{statusFixedHtml}}
         </div>

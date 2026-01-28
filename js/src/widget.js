@@ -18,6 +18,7 @@ class CleanTalkWidgetDoboard {
     constructor(selectedData, type) {
         this.selectedData = selectedData || '';
         this.selectedText = selectedData?.selectedText || '';
+        this.descriptionText = localStorage.getItem('spotfix-description-ls') || '';
         this.srcVariables = {
             buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
             iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
@@ -293,8 +294,9 @@ class CleanTalkWidgetDoboard {
                 templateName = 'create_issue';
                 this.type_name = templateName;
                 templateVariables = {
-                    selectedText: this.selectedText,
+                    selectedText: this.selectedText || localStorage.getItem('spotfix-title-ls') || '',
                     currentDomain: document.location.hostname || '',
+                    descriptionText: this.descriptionText || localStorage.getItem('spotfix-description-ls') || '',
                     buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
                     iconMaximize: SpotFixSVGLoader.getAsDataURI('iconMaximize'),
                     iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
@@ -470,6 +472,7 @@ class CleanTalkWidgetDoboard {
                             const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId)
 
                             const avatarData = getAvatarData(taskFullDetails);
+
                             const listIssuesTemplateVariables = {
                                 taskTitle: taskTitle || '',
                                 taskAuthorAvatarImgSrc: taskFullDetails.taskAuthorAvatarImgSrc,
@@ -479,7 +482,7 @@ class CleanTalkWidgetDoboard {
                                 taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
                                 taskPageUrl: currentPageURL,
                                 iconLinkChain: this.srcVariables.iconLinkChain,
-                                taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
+                                taskFormattedPageUrl: localStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
                                 taskLastUpdate: taskFullDetails.lastMessageTime,
                                 nodePath: this.sanitizeNodePath(taskNodePath),
                                 taskId: taskId,
@@ -756,9 +759,13 @@ class CleanTalkWidgetDoboard {
             if(+localStorage.getItem('maximize') && container.classList.contains('doboard_task_widget-container-maximize')){
                 localStorage.setItem('maximize', '0');
                 container.classList.remove('doboard_task_widget-container-maximize');
+                if(this.type_name === 'all_issues')
+                this.createWidgetElement(this.type_name)
             } else {
                 localStorage.setItem('maximize', '1');
                 container.classList.add('doboard_task_widget-container-maximize');
+                if(this.type_name === 'all_issues')
+                this.createWidgetElement(this.type_name)
             }
         }) || '';
 
@@ -769,6 +776,14 @@ class CleanTalkWidgetDoboard {
         document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {
             this.createWidgetElement(this.type_name)
         }) || '';
+
+        document.getElementById('doboard_task_widget-title')?.addEventListener('change', (e) => {
+            localStorage.setItem('spotfix-title-ls', e.target.value);
+        })
+
+        document.getElementById('doboard_task_widget-description')?.addEventListener('change', (e) => {
+            localStorage.setItem('spotfix-description-ls', e.target.value);
+        })
 
         return widgetContainer;
     }
