@@ -75,12 +75,11 @@ const spotfixApiCall = async(data, method, accountId = undefined) => {
 
     if (responseBody.data.operation_status === 'FAILED') {
         const errorMessage = responseBody.data.operation_message || 'Operation failed without specific message';
-        if(responseBody?.data?.operation_message === 'session_id Unknown'){
-            await deleteDB();
+       if(responseBody?.data?.operation_message === 'session_id Unknown'){
             clearLocalstorageOnLogout();
             checkLogInOutButtonsVisible();
+            await deleteDB();
         }
-
         throw new Error(errorMessage);
     }
 
