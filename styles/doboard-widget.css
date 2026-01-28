@@ -87,7 +87,7 @@
 .doboard_task_widget-container-maximize {
     width: 80vw !important;
     max-width: 1120px !important;
-    max-height: 85vh;
+    max-height: 85vh !important;
     display: flex;
     flex-direction: column;
     -moz-flex-direction: column;
