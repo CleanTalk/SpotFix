@@ -392,6 +392,32 @@ class CleanTalkWidgetDoboard {
                 if (sessionIdExists && email && !email.includes('spotfix_')) {
                     document.querySelector('.doboard_task_widget-login').classList.add('hidden');
                 }
+
+                const descEl = document.querySelector(
+                    '.doboard_task_widget-container-maximize #doboard_task_widget-description'
+                );
+
+                if (descEl) {
+                    const parentEl = descEl.closest('.doboard_task_widget-input-container');
+
+                    if (parentEl) {
+                        let isSmall = false;
+
+                        const ro = new ResizeObserver(([entry]) => {
+                            const height = entry.contentRect.height;
+                            const next = height < 120;
+
+                            if (next === isSmall) return;
+
+                            isSmall = next;
+
+                            descEl.classList.toggle('is-small', isSmall);
+                        });
+
+                        ro.observe(parentEl);
+                    }
+                }
+
                 if (
                     selection.type === 'Range'
                 ) {

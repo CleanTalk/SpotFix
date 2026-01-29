@@ -213,8 +213,8 @@ class SpotFixTemplatesLoader {
     <div class="{{avatarCSSClass}}" style="{{avatarStyle}}">
         <span class="doboard_task_widget-avatar-initials {{initialsClass}}">{{taskAuthorInitials}}</span>
     </div>
-    <div class="doboard_task_widget-description_container">
-        <div class="doboard_task_widget-task_title">
+    <div class="doboard_task_widget-description_container" style="cursor: default">
+        <div class="doboard_task_widget-task_title" style="cursor: pointer">
             <div class="doboard_task_widget-task_title-details">
                 <span class="doboard_task_widget-task_title-text">{{taskTitle}}</span>
                 <div class="doboard_task_widget-task_title_public_status_img">

@@ -85,7 +85,13 @@
 }
 
 .doboard_task_widget-container-maximize #doboard_task_widget-description {
-    height: 30vh;
+    height: 90%;
+    position: absolute;
+}
+
+.doboard_task_widget-container-maximize #doboard_task_widget-description.is-small {
+    position: relative;
+    height: auto;
 }
 
 .doboard_task_widget-container-maximize .doboard_task_widget-field {
