@@ -100,11 +100,8 @@ async function getUserTasks(params) {
 }
 
 async function getAllTasks(params) {
-	if (!localStorage.getItem('spotfix_session_id')) {
-		return {};
-	}
 	const projectToken = params.projectToken;
-	const sessionId = localStorage.getItem('spotfix_session_id');
+	const sessionId = localStorage.getItem('spotfix_session_id') || '';
 	await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
 	const tasksData = await spotfixIndexedDB.getAll(TABLE_TASKS);
     // Get only tasks with metadata
