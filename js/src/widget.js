@@ -386,8 +386,10 @@ class CleanTalkWidgetDoboard {
                     selection.type === 'Range'
                 ) {
                     const selectedData = spotFixGetSelectedData(selection);
-                    spotFixScrollToNodePath(selectedData.nodePath);
-                    this.positionWidgetContainer();
+                    if (selectedData) {
+                        spotFixScrollToNodePath(selectedData.nodePath);
+                        this.positionWidgetContainer();
+                    }
                 }
                 // bind creation events
                 this.bindCreateTaskEvents();
