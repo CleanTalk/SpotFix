@@ -744,11 +744,8 @@ async function getUserTasks(params) {
 }
 
 async function getAllTasks(params) {
-	if (!localStorage.getItem('spotfix_session_id')) {
-		return {};
-	}
 	const projectToken = params.projectToken;
-	const sessionId = localStorage.getItem('spotfix_session_id');
+	const sessionId = localStorage.getItem('spotfix_session_id') || '';
 	await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
 	const tasksData = await spotfixIndexedDB.getAll(TABLE_TASKS);
     // Get only tasks with metadata
@@ -1705,6 +1702,11 @@ class CleanTalkWidgetDoboard {
         }
 
         document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', (e) => {
+            const widgetContainer = e.target.closest('.doboard_task_widget-container');
+            if (widgetContainer && widgetContainer.querySelector('.doboard_task_widget-create_issue')) {
+                // If it Create issue interface - do not close widget
+                storageSetWidgetIsClosed(false);
+            }
             this.hide();
         }) || '';
 
@@ -1906,7 +1908,6 @@ class CleanTalkWidgetDoboard {
     hide() {
         spotFixRemoveHighlights();
         this.createWidgetElement('wrap');
-
     }
 
     wrapElementWithSpotfixHighlight(element) {
