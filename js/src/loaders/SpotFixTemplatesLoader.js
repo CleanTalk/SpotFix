@@ -147,7 +147,7 @@ class SpotFixTemplatesLoader {
             <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
         </div>
     </div>
-    <div class="doboard_task_widget-content doboard_task_widget-create_issue">
+    <div class="doboard_task_widget-content doboard_task_widget-create_issue" style="display: flex; flex-direction: column">
 
         <div class="doboard_task_widget-element-container">
             <span>
@@ -158,13 +158,13 @@ class SpotFixTemplatesLoader {
 
         <div class="doboard_task_widget-input-container">
             <input id="doboard_task_widget-title" class="doboard_task_widget-field" name="title" value="{{selectedText}}" required>
-            <label for="doboard_task_widget-title">Report about</label>
+            <label class="spotfix_placeholder_title" for="doboard_task_widget-title">Report about</label>
         </div>
 
-        <div class="doboard_task_widget-input-container">
+        <div class="doboard_task_widget-input-container" style="flex-grow: 1">
             <textarea id="doboard_task_widget-description"
              class="doboard_task_widget-field" name="description" required>{{descriptionText}}</textarea>
-            <label for="doboard_task_widget-description">Description</label>
+            <label class="spotfix_placeholder_description" for="doboard_task_widget-description">Description</label>
         </div>
 
         <div class="doboard_task_widget-login">

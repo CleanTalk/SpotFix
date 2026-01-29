@@ -84,6 +84,15 @@
     cursor: pointer;
 }
 
+.doboard_task_widget-container-maximize #doboard_task_widget-description {
+    height: 25vh;
+}
+
+.doboard_task_widget-container-maximize .doboard_task_widget-field {
+    display: flex;
+    justify-content: center;
+}
+
 .doboard_task_widget-container-maximize {
     width: 80vw !important;
     max-width: 1120px !important;
@@ -287,7 +296,7 @@
 }
 
 .doboard_task_widget-input-container textarea.doboard_task_widget-field {
-    height: 94px;
+    min-height: 94px;
     padding-top: 11px;
     padding-bottom: 11px;
 }

@@ -381,6 +381,14 @@ class CleanTalkWidgetDoboard {
                 const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
                 const email = localStorage.getItem('spotfix_email');
 
+                if (templateVariables.selectedText) {
+                    document.querySelector('.spotfix_placeholder_title').style.display = 'none';
+                }
+
+                if (templateVariables.descriptionText) {
+                    document.querySelector('.spotfix_placeholder_description').style.display = 'none';
+                }
+
                 if (sessionIdExists && email && !email.includes('spotfix_')) {
                     document.querySelector('.doboard_task_widget-login').classList.add('hidden');
                 }
@@ -779,10 +787,16 @@ class CleanTalkWidgetDoboard {
 
         document.getElementById('doboard_task_widget-title')?.addEventListener('change', (e) => {
             localStorage.setItem('spotfix-title-ls', e.target.value);
+            if (e.target.value.length < 1) {
+                document.querySelector('.spotfix_placeholder_title').style.display = 'block';
+            }
         })
 
         document.getElementById('doboard_task_widget-description')?.addEventListener('change', (e) => {
             localStorage.setItem('spotfix-description-ls', e.target.value);
+            if (e.target.value.length < 1) {
+                document.querySelector('.spotfix_placeholder_description').style.display = 'block';
+            }
         })
 
         return widgetContainer;
@@ -790,21 +804,30 @@ class CleanTalkWidgetDoboard {
 
     bindIssuesClick() {
         document.querySelectorAll('.issue-item').forEach(item => {
-            item.addEventListener('click', async () => {
+            item.addEventListener('click', async (event) => {
+                const titleEl = event.target.closest('.doboard_task_widget-task_title');
+
+                if (!titleEl || !item.contains(titleEl)) {
+                    return;
+                }
+
                 let nodePath = null;
                 try {
                     nodePath = JSON.parse(item.getAttribute('data-node-path'));
                 } catch (error) {
                     nodePath = null;
                 }
+
                 if (nodePath) {
                     spotFixScrollToNodePath(nodePath);
                 }
+
                 this.currentActiveTaskId = item.getAttribute('data-task-id');
                 await this.showOneTask();
             });
         });
     }
+
 
     /**
      * Show one task
