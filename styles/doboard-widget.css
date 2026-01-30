@@ -556,6 +556,7 @@
 .doboard_task_widget-all_issues-container {
     scrollbar-width: none;
     margin-top: 10px;
+    min-height: 60vh;
 }
 
 .doboard_task_widget-content.doboard_task_widget-concrete_issue {
@@ -1131,6 +1132,7 @@
     .doboard_task_widget-container {
         width: 100%;
         max-width: 290px;
+        min-width: 290px;
         margin: 0 auto;
         max-height: 90vh;
     }
@@ -1144,7 +1146,8 @@
 
     .doboard_task_widget-content{
         height: auto;
-        max-height: none;
+        max-height: 100%;
+        min-height: 100%;
         scrollbar-width: none;
     }
 

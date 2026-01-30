@@ -47,7 +47,7 @@ class SpotFixTemplatesLoader {
 
     static concrete_issue() {
         return `
-<div class="{{contenerClasess}}">
+<div id="doboard_task_widget_concrete-container" class="{{contenerClasess}}">
     <div class="doboard_task_widget-header">
         <div class="doboard_task_widget_return_to_all doboard_task_widget_cursor-pointer">
             <img src="{{chevronBack}}" alt="" title="Return to all spots list">
@@ -68,7 +68,7 @@ class SpotFixTemplatesLoader {
         </div>
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-concrete_issue">
-        <div style="background-color: #D6DDE3; padding: 12px 16px">
+        <div id="spotfix_doboard_task_widget_url" style="background-color: #D6DDE3; padding: 12px 16px">
                 <a rel="nofollow" style="word-break: break-all" href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
         </div>
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
