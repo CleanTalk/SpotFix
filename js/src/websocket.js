@@ -1,5 +1,10 @@
 let socket = null;
 let heartbeatInterval = null;
+let messageCallback = null;
+let lastEventId = null;
+let pendingUpdate = false;
+let reconnectTimer = null;
+let isIntentionalClose = false;
 
 const WS_URL = 'wss://ws.doboard.com';
 
@@ -13,12 +18,67 @@ const buildMessage = (action) => ({
     project_token: localStorage.getItem('spotfix_project_token'),
 });
 
+const handleIncomingData = async (data) => {
+    switch (data.object) {
+    case 'users':
+        await spotfixIndexedDB.put(TABLE_USERS, data.data);
+        break;
+
+    case 'tasks':
+        if (data.data.status === 'REMOVED') {
+            await spotfixIndexedDB.delete(TABLE_TASKS, data.data.task_id);
+            const comments = await spotfixIndexedDB.getAll(TABLE_COMMENTS);
+            const filteredComments = comments.filter((comment) => +comment.taskId !== +data.data.task_id);
+            await spotfixIndexedDB.clearPut(TABLE_COMMENTS, filteredComments);
+            break;
+        }
+
+        await spotfixIndexedDB.put(TABLE_TASKS, {
+            taskId: data.data.task_id,
+            taskTitle: data.data.name,
+            userId: data.data.user_id,
+            taskLastUpdate: data.data.updated,
+            taskCreated: data.data.created,
+            taskCreatorTaskUser: data.data.creator_user_id,
+            taskMeta: data.data.meta,
+            taskStatus: data.data.status,
+        });
+        break;
+
+    case 'comments':
+        if (data.data.status === 'REMOVED') {
+            await spotfixIndexedDB.delete(TABLE_COMMENTS, data.data.comment_id);
+            break;
+        }
+        await spotfixIndexedDB.put(TABLE_COMMENTS, {
+            taskId: data.data.task_id,
+            commentId: data.data.comment_id,
+            userId: data.data.user_id,
+            commentBody: data.data.comment,
+            commentDate: data.data.updated,
+            status: data.data.status,
+            issueTitle: data.data.task_name,
+        });
+        break;
+
+    default:
+        break;
+    }
+};
+
+
 const wsSpotfix = {
     connect() {
+        if (reconnectTimer) {
+            clearTimeout(reconnectTimer);
+            reconnectTimer = null;
+        }
+
         if ((socket && socket.readyState === WebSocket.OPEN) || !getSessionId()) {
             return;
         }
 
+        isIntentionalClose = false;
         socket = new WebSocket(WS_URL);
 
         socket.onopen = () => {
@@ -30,67 +90,45 @@ const wsSpotfix = {
             wsSpotfix.send(buildMessage('SUBSCRIBE'));
         };
 
-        socket.onmessage = (event) => {
-            if (event.data === 'heartbeat') {
+        socket.onmessage = async (event) => {
+            if (event.data === 'heartbeat') return;
+
+            let data;
+            try {
+                data = JSON.parse(event.data);
+            } catch {
+                console.warn('WS non-JSON message:', event.data);
                 return;
             }
 
-            try {
-                const data = JSON.parse(event.data);
+            if (!['users', 'tasks', 'comments'].includes(data.object)) return;
 
-                switch (data.object) {
-                case 'users':
-                    spotfixIndexedDB.put(TABLE_USERS, data.data);
-                    break;
-                case 'tasks':
-                    if (data.data.status === 'REMOVED') {
-                        spotfixIndexedDB.delete(TABLE_TASKS, data.data.task_id);
-                        break;
-                    }
-                    spotfixIndexedDB.put(TABLE_TASKS, {
-                        taskId: data.data.task_id,
-                        taskTitle: data.data.name,
-                        userId: data.data.user_id,
-                        taskLastUpdate: data.data.updated,
-                        taskCreated: data.data.created,
-                        taskCreatorTaskUser: data.data.creator_user_id,
-                        taskMeta: data.data.meta,
-                        taskStatus: data.data.status,
-                    });
-                    break;
+            const eventId = data.id ? `${data.object}-${data.id}` : JSON.stringify(data);
 
-                case 'comments':
-                    if (data.data.status === 'REMOVED') {
-                        spotfixIndexedDB.delete(TABLE_COMMENTS, data.data.comment_id);
-                        break;
-                    }
-                    spotfixIndexedDB.put(TABLE_COMMENTS, {
-                        taskId: data.data.task_id,
-                        commentId: data.data.comment_id,
-                        userId: data.data.user_id,
-                        commentBody: data.data.comment,
-                        commentDate: data.data.updated,
-                        status: data.data.status,
-                        issueTitle: data.data.task_name,
-                    });
-                    break;
+            if (eventId === lastEventId) return;
+            lastEventId = eventId;
 
-                default:
-                    break;
-                }
-            } catch (e) {
-                console.warn('WS non-JSON message:', event.data);
+            await handleIncomingData(data);
+            if (!pendingUpdate) {
+                pendingUpdate = true;
+                setTimeout(() => {
+                    pendingUpdate = false;
+                    if (messageCallback) messageCallback();
+                }, 3000);
             }
         };
 
-        socket.onclose = (e) => {
-            console.warn('WS closed:', e.code, e.reason);
-
+        socket.onclose = () => {
             socket = null;
-
             if (heartbeatInterval) {
                 clearInterval(heartbeatInterval);
                 heartbeatInterval = null;
+            }
+
+            if (!isIntentionalClose) {
+                reconnectTimer = setTimeout(() => {
+                    wsSpotfix.connect();
+                }, 2000);
             }
         };
 
@@ -100,15 +138,17 @@ const wsSpotfix = {
     },
 
     send(data) {
-        if (!socket || socket.readyState !== WebSocket.OPEN) {
-            console.warn('WebSocket is not connected');
-            return;
+        if (socket?.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify(data));
         }
-        socket.send(JSON.stringify(data));
     },
 
     close() {
-        wsSpotfix.unsubscribe();
+        isIntentionalClose = true;
+        if (reconnectTimer) {
+            clearTimeout(reconnectTimer);
+            reconnectTimer = null;
+        }
         socket?.close();
     },
 
@@ -122,5 +162,9 @@ const wsSpotfix = {
         if (socket?.readyState === WebSocket.OPEN) {
             wsSpotfix.send(buildMessage('UNSUBSCRIBE'));
         }
+    },
+
+    onMessage(cb) {
+        messageCallback = cb;
     },
 };
