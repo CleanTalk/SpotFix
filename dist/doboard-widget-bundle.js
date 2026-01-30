@@ -1415,7 +1415,7 @@ class CleanTalkWidgetDoboard {
                             }
                         }
                         const currentPageURL = taskData ? taskData.pageURL : '';
-                        const taskNodePath = taskData ? taskData.nodePath : '';
+                        let taskNodePath = ''; // nodePath need for only current page's spots
 
                         // Define publicity details
                         let taskPublicStatusImgSrc = '';
@@ -1432,6 +1432,7 @@ class CleanTalkWidgetDoboard {
 
                         if(currentPageURL === window.location.href){
                             issuesQuantityOnPage++;
+                            taskNodePath = taskData ? taskData.nodePath : '';
                         }
 
                         if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
