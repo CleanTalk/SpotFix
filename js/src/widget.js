@@ -405,8 +405,10 @@ class CleanTalkWidgetDoboard {
                     selection.type === 'Range'
                 ) {
                     const selectedData = spotFixGetSelectedData(selection);
-                    spotFixScrollToNodePath(selectedData.nodePath);
-                    this.positionWidgetContainer();
+                    if (selectedData) {
+                        spotFixScrollToNodePath(selectedData.nodePath);
+                        this.positionWidgetContainer();
+                    }
                 }
                 // bind creation events
                 this.bindCreateTaskEvents();
@@ -466,7 +468,7 @@ class CleanTalkWidgetDoboard {
                             }
                         }
                         const currentPageURL = taskData ? taskData.pageURL : '';
-                        const taskNodePath = taskData ? taskData.nodePath : '';
+                        let taskNodePath = ''; // nodePath need for only current page's spots
 
                         // Define publicity details
                         let taskPublicStatusImgSrc = '';
@@ -483,6 +485,7 @@ class CleanTalkWidgetDoboard {
 
                         if(currentPageURL === window.location.href){
                             issuesQuantityOnPage++;
+                            taskNodePath = taskData ? taskData.nodePath : '';
                         }
 
                         if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
@@ -1013,7 +1016,6 @@ class CleanTalkWidgetDoboard {
     hide() {
         spotFixRemoveHighlights();
         this.createWidgetElement('wrap');
-
     }
 
     wrapElementWithSpotfixHighlight(element) {
