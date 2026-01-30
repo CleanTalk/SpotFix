@@ -6,120 +6,96 @@ const TABLE_TASKS = 'tasks';
 const TABLE_COMMENTS = 'comments';
 
 const LOCAL_DATA_BASE_TABLE = [
-    {name: TABLE_USERS, keyPath: 'user_id'},
-    {name: TABLE_TASKS, keyPath: 'taskId'},
-    {name: TABLE_COMMENTS, keyPath: 'commentId'},
+    { name: TABLE_USERS, keyPath: 'user_id' },
+    { name: TABLE_TASKS, keyPath: 'taskId' },
+    { name: TABLE_COMMENTS, keyPath: 'commentId' },
 ];
 
-async function openIndexedDB(name, version = indexedDBVersion) {
+let dbPromise = null;
+
+function getDBName() {
+    return `${INDEXED_DB_NAME}_${
+        localStorage.getItem('spotfix_session_id') ||
+        localStorage.getItem('spotfix_project_token')
+    }`;
+}
+
+function openIndexedDB(name, version) {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open(name, version);
+
+        request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+
+            LOCAL_DATA_BASE_TABLE.forEach((item) => {
+                if (!db.objectStoreNames.contains(item.name)) {
+                    const store = db.createObjectStore(item.name, {
+                        keyPath: item.keyPath,
+                    });
+
+                    if (item.name === TABLE_COMMENTS) {
+                        store.createIndex('taskId', 'taskId');
+                    }
+                    if (item.name === TABLE_TASKS) {
+                        store.createIndex('userId', 'userId');
+                    }
+                }
+            });
+        };
+
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error);
-        request.onupgradeneeded = (e) => resolve(request.result);
     });
 }
 
-async function deleteDB() {
-    try {
-        const dbs = await window.indexedDB.databases();
-        for (const db of dbs) {
-            await new Promise((resolve) => {
-                const deleteReq = indexedDB.deleteDatabase(db.name);
-                deleteReq.onsuccess = () => resolve();
-                deleteReq.onerror = () => resolve();
-            });
-        }
-    } catch (err) {
-        console.warn('deleteDB error', err);
+function getDB() {
+    if (!dbPromise) {
+        dbPromise = openIndexedDB(getDBName(), indexedDBVersion);
     }
+    return dbPromise;
+}
+
+async function deleteCurrentDB() {
+    const name = getDBName();
+    return new Promise((resolve) => {
+        const req = indexedDB.deleteDatabase(name);
+        req.onsuccess = () => resolve();
+        req.onerror = () => resolve();
+        req.onblocked = () => {
+            console.warn('IndexedDB delete blocked');
+            resolve();
+        };
+    });
 }
 
 const spotfixIndexedDB = {
-    getIndexedDBName: () =>
-        `${INDEXED_DB_NAME}_${localStorage.getItem('spotfix_session_id') || localStorage.getItem('spotfix_project_token')}`,
-
-    error: (request, error) => {
-        console.error('IndexedDB error', request, error);
-    },
-
     init: async () => {
         const sessionId = localStorage.getItem('spotfix_session_id');
         const projectToken = localStorage.getItem('spotfix_project_token');
 
-        if (!sessionId && !projectToken) return { needInit: false };
+        if (!sessionId && !projectToken) {
+            return { needInit: false };
+        }
 
-        const dbName = spotfixIndexedDB.getIndexedDBName();
+        await deleteCurrentDB();
 
-        await deleteDB();
+        dbPromise = null;
 
-        return new Promise((resolve, reject) => {
-            const request = indexedDB.open(dbName, indexedDBVersion);
-
-            request.onupgradeneeded = (e) => {
-                const db = e.target.result;
-                LOCAL_DATA_BASE_TABLE.forEach((item) => {
-                    if (!db.objectStoreNames.contains(item.name)) {
-                        const store = db.createObjectStore(item.name, { keyPath: item.keyPath });
-                        if (item.name === TABLE_COMMENTS) store.createIndex('taskId', 'taskId');
-                        if (item.name === TABLE_TASKS) store.createIndex('userId', 'userId');
-                    }
-                });
-                resolve({ needInit: true });
-            };
-
-            request.onsuccess = (e) => {
-                const db = e.target.result;
-                const missingStores = LOCAL_DATA_BASE_TABLE.filter(
-                    (item) => !db.objectStoreNames.contains(item.name)
-                );
-
-                if (missingStores.length === 0) {
-                    db.close();
-                    resolve({ needInit: true });
-                } else {
-                    const newVersion = db.version + 1;
-                    db.close();
-                    const upgradeRequest = indexedDB.open(dbName, newVersion);
-                    upgradeRequest.onupgradeneeded = (e2) => {
-                        const db2 = e2.target.result;
-                        missingStores.forEach((item) => {
-                            const store = db2.createObjectStore(item.name, { keyPath: item.keyPath });
-                            if (item.name === TABLE_COMMENTS) store.createIndex('taskId', 'taskId');
-                            if (item.name === TABLE_TASKS) store.createIndex('userId', 'userId');
-                        });
-                    };
-                    upgradeRequest.onsuccess = () => resolve({ needInit: true });
-                    upgradeRequest.onerror = (err) => reject(err);
-                }
-            };
-
-            request.onerror = (err) => reject(err);
-        });
+        await getDB();
+        return { needInit: true };
     },
 
     withStore: async (table, mode = 'readwrite', callback) => {
-        const dbName = spotfixIndexedDB.getIndexedDBName();
-        const db = await openIndexedDB(dbName, indexedDBVersion);
+        const db = await getDB();
+
         return new Promise((resolve, reject) => {
-            try {
-                const transaction = db.transaction(table, mode);
-                const store = transaction.objectStore(table);
+            const tx = db.transaction(table, mode);
+            const store = tx.objectStore(table);
 
-                const result = callback(store);
+            const result = callback(store);
 
-                transaction.oncomplete = () => {
-                    db.close();
-                    resolve(result);
-                };
-                transaction.onerror = (e) => {
-                    db.close();
-                    reject(e.target.error);
-                };
-            } catch (err) {
-                db.close();
-                reject(err);
-            }
+            tx.oncomplete = () => resolve(result);
+            tx.onerror = () => reject(tx.error);
         });
     },
 
@@ -140,36 +116,44 @@ const spotfixIndexedDB = {
     },
 
     clearTable: async (table) => {
-        return spotfixIndexedDB.withStore(table, 'readwrite', (store) => store.clear());
+        return spotfixIndexedDB.withStore(table, 'readwrite', (store) =>
+            store.clear()
+        );
     },
 
     clearPut: async (table, data) => {
-        await spotfixIndexedDB.clearTable(table);
-        await spotfixIndexedDB.put(table, data);
+        return spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
+            store.clear();
+            if (Array.isArray(data)) {
+                data.forEach((item) => store.put(item));
+            } else {
+                store.put(data);
+            }
+        });
     },
 
     getAll: async (table, indexName, value) => {
         return spotfixIndexedDB.withStore(table, 'readonly', (store) => {
             return new Promise((resolve, reject) => {
-                let request;
-                if (indexName && value !== undefined) {
-                    request = store.index(indexName).getAll(value);
-                } else {
-                    request = store.getAll();
-                }
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
+                const req =
+                    indexName && value !== undefined
+                        ? store.index(indexName).getAll(value)
+                        : store.getAll();
+
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
             });
         });
     },
 
     getTable: async (table) => {
-        if (!localStorage.getItem('spotfix_session_id') && !localStorage.getItem('spotfix_project_token')) return [];
+        if (
+            !localStorage.getItem('spotfix_session_id') &&
+            !localStorage.getItem('spotfix_project_token')
+        ) {
+            return [];
+        }
         return spotfixIndexedDB.getAll(table);
-    },
-
-    deleteTable: async (table, key) => {
-        return spotfixIndexedDB.delete(table, key);
     },
 };
 
