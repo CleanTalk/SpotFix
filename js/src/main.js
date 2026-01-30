@@ -9,8 +9,25 @@ if( document.readyState !== 'loading' ) {
 }
 
 function spotFixInit() {
+    spotfixIndexedDB.init();
+    wsSpotfix.connect();
+    wsSpotfix.subscribe();
     new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
+    loadBotDetector()
+}
+
+function loadBotDetector() {
+if (document.querySelector('script[src="https://moderate.cleantalk.org/ct-bot-detector-wrapper.js"]') ||
+    document.getElementById('ct-bot-detector-script')) {
+        return;
+    }
+
+    const script = document.createElement('script');
+        script.src = 'https://moderate.cleantalk.org/ct-bot-detector-wrapper.js';
+        script.async = true;
+        script.id = 'ct-bot-detector-script';
+    document.head.appendChild(script);
 }
 
 document.addEventListener('selectionchange', function(e) {

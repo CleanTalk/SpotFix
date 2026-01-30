@@ -1,4 +1,4 @@
-const DOBOARD_API_URL = 'https://api.doboard.com';
+const SPOTFIX_DOBOARD_API_URL = 'https://api.doboard.com';
 
 /**
  * Makes an API call to the DoBoard endpoint with form data
@@ -33,9 +33,9 @@ const spotfixApiCall = async(data, method, accountId = undefined) => {
 
     let endpointUrl;
     if (accountId !== undefined) {
-        endpointUrl = `${DOBOARD_API_URL}/${accountId}/${method}`;
+        endpointUrl = `${SPOTFIX_DOBOARD_API_URL}/${accountId}/${method}`;
     } else {
-        endpointUrl = `${DOBOARD_API_URL}/${method}`;
+        endpointUrl = `${SPOTFIX_DOBOARD_API_URL}/${method}`;
     }
 
     try {
@@ -156,6 +156,17 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname, pag
         data.email = email;
         data.name = nickname;
     }
+
+    if (localStorage.getItem('bot_detector_event_token')) {
+        try {
+            const botDetectorData = JSON.parse(localStorage.getItem('bot_detector_event_token'));
+            if (botDetectorData?.value) {
+                data.bot_detector_event_token = botDetectorData?.value;
+            }
+        } catch (error) {
+            data.bot_detector_event_token = '';
+        }
+    }
     const result = await spotfixApiCall(data, 'user_registration');
     return {
         sessionId: result.session_id,
@@ -185,15 +196,23 @@ const loginUserDoboard = async (email, password) => {
     }
 }
 
-const logoutUserDoboard = async (accountId) => {
+const logoutUserDoboard = async (projectToken, accountId) => {
     const sessionId = localStorage.getItem('spotfix_session_id');
     if(sessionId && accountId) {
         const data = {
             session_id: sessionId,
         };
 
+        const email = localStorage.getItem('spotfix_email') || '';
+
+        if (email && email.includes('spotfix_')) {
+            data.project_token = projectToken;
+        }
+
         const result = await spotfixApiCall(data, 'user_unauthorize', accountId);
-        if(result.operation_status === 'SUCCESS') {
+
+        if (result.operation_status === 'SUCCESS') {
+            await deleteDB();
             clearLocalstorageOnLogout();
         }
     }
@@ -204,7 +223,8 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         session_id: sessionId,
         project_token: projectToken,
         project_id: projectId,
-        task_type: 'PUBLIC'
+        task_type: 'PUBLIC',
+        status: 'ACTIVE,DONE',
     }
     if ( userId ) {
         data.user_id = userId;
@@ -213,15 +233,15 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
     const tasks = result.tasks.map(task => ({
         taskId: task.task_id,
         taskTitle: task.name,
+        userId: task.user_id,
         taskLastUpdate: task.updated,
         taskCreated: task.created,
         taskCreatorTaskUser: task.creator_user_id,
         taskMeta: task.meta,
         taskStatus: task.status,
     }));
-
+    await spotfixIndexedDB.clearPut(TABLE_TASKS, tasks);
     storageSaveTasksCount(tasks);
-
     return tasks;
 }
 
@@ -233,7 +253,7 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, statu
         status: status
     }
     const result = await spotfixApiCall(data, 'comment_get', accountId);
-    return result.comments.map(comment => ({
+    const comments = result.comments.map(comment => ({
         taskId: comment.task_id,
         commentId: comment.comment_id,
         userId: comment.user_id,
@@ -242,6 +262,8 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, statu
         status: comment.status,
         issueTitle: comment.task_name,
     }));
+    await spotfixIndexedDB.clearPut(TABLE_COMMENTS, comments);
+    return comments;
 };
 
 const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
@@ -252,6 +274,11 @@ const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
     if (userId) data.user_id = userId;
 
     const result = await spotfixApiCall(data, 'user_get', accountId);
+    if (data.user_id) {
+        await spotfixIndexedDB.put(TABLE_USERS, result.users);
+    } else {
+        await spotfixIndexedDB.clearPut(TABLE_USERS, result.users);
+    }
     return result.users;
 
     // @ToDo Need to handle these two different answers?
