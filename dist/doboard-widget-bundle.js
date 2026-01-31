@@ -2188,6 +2188,7 @@ var spotFixShowDelayTimeout = null;
 const SPOTFIX_DEBUG = false;
 const SPOTFIX_SHOW_DELAY = 1000;
 
+
 if( document.readyState !== 'loading' ) {
     document.addEventListener('spotFixLoaded', spotFixInit);
 } else {
