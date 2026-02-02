@@ -244,7 +244,7 @@ const spotfixApiCall = async(data, method, accountId = undefined) => {
     throw new Error(`Unknown operation status: ${responseBody.data.operation_status}`);
 }
 
-const userConfirmEmailDoboard = async (emailConfirmationToken) => {
+const spotFixUserConfirmEmailDoboard = async (emailConfirmationToken) => {
     const data = {
         email_confirmation_token: encodeURIComponent(emailConfirmationToken)
     }
@@ -671,8 +671,8 @@ const wsSpotfix = {
 const SPOTFIX_VERSION = "1.1.5";
 
 
-async function confirmUserEmail(emailConfirmationToken, params) {
-    const result = await userConfirmEmailDoboard(emailConfirmationToken);
+async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
+    const result = await spotFixUserConfirmEmailDoboard(emailConfirmationToken);
     // Save session data to LS
     localStorage.setItem('spotfix_email', result.email);
     localStorage.setItem('spotfix_session_id', result.sessionId);
@@ -1044,7 +1044,7 @@ class CleanTalkWidgetDoboard {
         if (emailToken) {
             try {
                 // Confirm email and create task
-                const createdTask = await confirmUserEmail(emailToken, this.params);
+                const createdTask = await spotFixConfirmUserEmail(emailToken, this.params);
                 this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
                 // Open task interface
                 this.currentActiveTaskId = createdTask.taskId;
@@ -1625,10 +1625,10 @@ class CleanTalkWidgetDoboard {
 
                 const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
                 if (!issuesCommentsContainer) return;
-                
+
                 const currentScrollTop = issuesCommentsContainer.scrollTop;
                 const wasAtBottom = currentScrollTop + issuesCommentsContainer.clientHeight >= issuesCommentsContainer.scrollHeight - 10;
-                
+
                 let dayMessagesData = [];
                 const initIssuerID = localStorage.getItem('spotfix_user_id');
                 let userIsIssuer = false;

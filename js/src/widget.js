@@ -50,7 +50,7 @@ class CleanTalkWidgetDoboard {
         if (emailToken) {
             try {
                 // Confirm email and create task
-                const createdTask = await confirmUserEmail(emailToken, this.params);
+                const createdTask = await spotFixConfirmUserEmail(emailToken, this.params);
                 this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
                 // Open task interface
                 this.currentActiveTaskId = createdTask.taskId;
@@ -631,10 +631,10 @@ class CleanTalkWidgetDoboard {
 
                 const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
                 if (!issuesCommentsContainer) return;
-                
+
                 const currentScrollTop = issuesCommentsContainer.scrollTop;
                 const wasAtBottom = currentScrollTop + issuesCommentsContainer.clientHeight >= issuesCommentsContainer.scrollHeight - 10;
-                
+
                 let dayMessagesData = [];
                 const initIssuerID = localStorage.getItem('spotfix_user_id');
                 let userIsIssuer = false;
