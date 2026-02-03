@@ -227,7 +227,9 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-bottom">
             <div class="doboard_task_widget-task_page_url">
                 <img src="{{iconLinkChain}}" />
-                   <a title="The spot is located on this {{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
+                   <a class="spotfix_widget_task_url" title="The spot is located on this {{taskPageUrlFull}}">{{taskPageUrl}}</a>
+                   <a class="spotfix_widget_task_url-short" style="display: none" title="The spot is located on this {{taskPageUrlFull}}">{{taskFormattedPageUrl}}</a>
+                   <a class="spotfix_widget_task_url-full" style="display: none" title="The spot is located on this {{taskPageUrlFull}}">{{taskPageUrlFull}}</a>
              </div>
                 {{statusFixedHtml}}
         </div>

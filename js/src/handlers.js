@@ -44,11 +44,11 @@ async function getTasksFullDetails(params, tasks, currentActiveTaskId, nonReques
         if (!nonRequesting) {
             await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken);
         }
-        const comments = await spotfixIndexedDB.getAll(TABLE_COMMENTS);
+        const comments = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_COMMENTS);
         if (!nonRequesting) {
             await getUserDoboard(sessionId, params.projectToken, params.accountId);
         }
-        const users = await spotfixIndexedDB.getAll(TABLE_USERS);
+        const users = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
         const foundTask = tasks.find((item) => +item.taskId === +currentActiveTaskId);
 
         return {
@@ -67,7 +67,7 @@ async function getUserDetails(params, nonRequesting = false) {
         if (!nonRequesting) {
             await getUserDoboard(sessionId, params.projectToken, params.accountId, currentUserId);
         }
-        const users = await spotfixIndexedDB.getAll(TABLE_USERS);
+        const users = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
         return users.find((user) => +user.user_id === +currentUserId) || {};
     }
 }
@@ -102,7 +102,7 @@ async function getAllTasks(params, nonRequesting = false) {
     if (!nonRequesting) {
         await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
     }
-    const tasksData = await spotfixIndexedDB.getAll(TABLE_TASKS);
+    const tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
     storageSaveTasksCount(tasksData);
     // Get only tasks with metadata
     const filteredTaskData = tasksData.filter((task) => {

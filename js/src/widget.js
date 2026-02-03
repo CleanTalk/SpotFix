@@ -537,9 +537,10 @@ class CleanTalkWidgetDoboard {
                                 taskPublicStatusImgSrc: taskPublicStatusImgSrc,
                                 taskPublicStatusHint: taskPublicStatusHint,
                                 taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
-                                taskPageUrl: currentPageURL,
+                                taskPageUrlFull: currentPageURL,
                                 iconLinkChain: this.srcVariables.iconLinkChain,
-                                taskFormattedPageUrl: localStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
+                                taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
+                                taskPageUrl: localStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
                                 taskLastUpdate: taskFullDetails.lastMessageTime,
                                 nodePath: this.sanitizeNodePath(taskNodePath),
                                 taskId: taskId,
@@ -606,7 +607,7 @@ class CleanTalkWidgetDoboard {
         case 'concrete_issue':
                 if(this.nonRequesting) {
                     hideContainersSpinner();
-                    this.allTasksData = await spotfixIndexedDB.getAll(TABLE_TASKS);
+                    this.allTasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
                 } else {
                     changeSize(container);
                 }
@@ -850,18 +851,43 @@ class CleanTalkWidgetDoboard {
         document.getElementById('maximizeWidgetContainer')?.addEventListener('click', () => {
             const container = document.querySelector('.doboard_task_widget-container');
 
-            if(+localStorage.getItem('maximize') && container.classList.contains('doboard_task_widget-container-maximize')){
+            const isMaximized =
+                +localStorage.getItem('maximize') &&
+                container.classList.contains('doboard_task_widget-container-maximize');
+
+            if (isMaximized) {
                 localStorage.setItem('maximize', '0');
                 container.classList.remove('doboard_task_widget-container-maximize');
-                if(this.type_name === 'all_issues')
-                this.createWidgetElement(this.type_name)
+
+                if (this.type_name === 'all_issues') {
+                    document
+                        .querySelectorAll('.spotfix_widget_task_url-full')
+                        .forEach(el => (el.style.display = 'none'));
+                    document
+                        .querySelectorAll('.spotfix_widget_task_url')
+                        .forEach(el => (el.style.display = 'none'));
+                    document
+                        .querySelectorAll('.spotfix_widget_task_url-short')
+                        .forEach(el => (el.style.display = 'inline'));
+                }
             } else {
                 localStorage.setItem('maximize', '1');
                 container.classList.add('doboard_task_widget-container-maximize');
-                if(this.type_name === 'all_issues')
-                this.createWidgetElement(this.type_name)
+
+                if (this.type_name === 'all_issues') {
+                    document
+                        .querySelectorAll('.spotfix_widget_task_url-full')
+                        .forEach(el => (el.style.display = 'inline'));
+                    document
+                        .querySelectorAll('.spotfix_widget_task_url-short')
+                        .forEach(el => (el.style.display = 'none'));
+                    document
+                        .querySelectorAll('.spotfix_widget_task_url')
+                        .forEach(el => (el.style.display = 'none'));
+                }
             }
-        }) || '';
+        });
+
 
         document.querySelector('#doboard_task_widget-user_menu-signlog_button')?.addEventListener('click', () => {
             spotFixShowWidget();
@@ -1021,7 +1047,7 @@ class CleanTalkWidgetDoboard {
             if(!this.nonRequesting) {
                 await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
             }
-            const tasks = await spotfixIndexedDB.getAll(TABLE_TASKS);
+            const tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
             storageSaveTasksCount(tasks);
             const filteredTasks = tasks.filter(task => {
                 return task.taskMeta;
@@ -1029,7 +1055,7 @@ class CleanTalkWidgetDoboard {
             tasksCount = filteredTasks.length;
         } else {
             if (this.nonRequesting) {
-                const tasks = await spotfixIndexedDB.getAll(TABLE_TASKS);
+                const tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
                 storageSaveTasksCount(tasks);
                 const filteredTasks = tasks.filter(task => {
                     return task.taskMeta;
