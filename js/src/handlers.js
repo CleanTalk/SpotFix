@@ -1,6 +1,6 @@
 
-async function confirmUserEmail(emailConfirmationToken, params) {
-    const result = await userConfirmEmailDoboard(emailConfirmationToken);
+async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
+    const result = await spotFixUserConfirmEmailDoboard(emailConfirmationToken);
     // Save session data to LS
     localStorage.setItem('spotfix_email', result.email);
     localStorage.setItem('spotfix_session_id', result.sessionId);

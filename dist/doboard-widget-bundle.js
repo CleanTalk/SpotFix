@@ -244,7 +244,7 @@ const spotfixApiCall = async(data, method, accountId = undefined) => {
     throw new Error(`Unknown operation status: ${responseBody.data.operation_status}`);
 }
 
-const userConfirmEmailDoboard = async (emailConfirmationToken) => {
+const spotFixUserConfirmEmailDoboard = async (emailConfirmationToken) => {
     const data = {
         email_confirmation_token: encodeURIComponent(emailConfirmationToken)
     }
@@ -677,8 +677,8 @@ const wsSpotfix = {
 const SPOTFIX_VERSION = "1.1.13";
 
 
-async function confirmUserEmail(emailConfirmationToken, params) {
-    const result = await userConfirmEmailDoboard(emailConfirmationToken);
+async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
+    const result = await spotFixUserConfirmEmailDoboard(emailConfirmationToken);
     // Save session data to LS
     localStorage.setItem('spotfix_email', result.email);
     localStorage.setItem('spotfix_session_id', result.sessionId);
@@ -1050,7 +1050,7 @@ class CleanTalkWidgetDoboard {
         if (emailToken) {
             try {
                 // Confirm email and create task
-                const createdTask = await confirmUserEmail(emailToken, this.params);
+                const createdTask = await spotFixConfirmUserEmail(emailToken, this.params);
                 this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
                 // Open task interface
                 this.currentActiveTaskId = createdTask.taskId;
@@ -2283,6 +2283,7 @@ let spotFixCSS = `.doboard_task_widget-send_message_paperclip .doboard_task_widg
 var spotFixShowDelayTimeout = null;
 const SPOTFIX_DEBUG = false;
 const SPOTFIX_SHOW_DELAY = 1000;
+
 
 if( document.readyState !== 'loading' ) {
     document.addEventListener('spotFixLoaded', spotFixInit);
