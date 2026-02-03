@@ -28,7 +28,6 @@ function loadBotDetector() {
     const script = document.createElement('script');
     script.src = 'https://fd.cleantalk.org/ct-bot-detector-wrapper.js';
     script.async = true;
-    script.defer = true;
     script.id = 'ct-bot-detector-script';
     document.head.appendChild(script);
 }
