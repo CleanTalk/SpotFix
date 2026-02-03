@@ -240,7 +240,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         taskMeta: task.meta,
         taskStatus: task.status,
     }));
-    await spotfixIndexedDB.clearPut(TABLE_TASKS, tasks);
+    await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_TASKS, tasks);
     storageSaveTasksCount(tasks);
     return tasks;
 }
@@ -262,7 +262,7 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, statu
         status: comment.status,
         issueTitle: comment.task_name,
     }));
-    await spotfixIndexedDB.clearPut(TABLE_COMMENTS, comments);
+    await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_COMMENTS, comments);
     return comments;
 };
 
@@ -275,9 +275,9 @@ const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
 
     const result = await spotfixApiCall(data, 'user_get', accountId);
     if (data.user_id) {
-        await spotfixIndexedDB.put(TABLE_USERS, result.users);
+        await spotfixIndexedDB.put(SPOTFIX_TABLE_USERS, result.users);
     } else {
-        await spotfixIndexedDB.clearPut(TABLE_USERS, result.users);
+        await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_USERS, result.users);
     }
     return result.users;
 
@@ -323,14 +323,20 @@ const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, tim
 
 const getReleaseVersion = async () => {
     try {
-        const res = await fetch('https://api.github.com/repos/CleanTalk/SpotFix/releases');
-        const data = await res.json();
+        const res = await fetch('https://api.github.com/repos/CleanTalk/SpotFix/tags');
+        let data = await res.json();
 
-        if (data.length > 0 && data[0].tag_name) {
-            storageSaveSpotfixVersion(data[0].tag_name);
-            return data[0].tag_name;
+        if (data.length > 0 && data[0].name) {
+            storageSaveSpotfixVersion(data[0].name);
+            return data[0].name;
+        } else {
+            const res = await fetch('https://api.github.com/repos/CleanTalk/SpotFix/releases');
+            data = await res.json();
+            if (data.length > 0 && data[0].tag_name) {
+                storageSaveSpotfixVersion(data[0].tag_name);
+                return data[0].tag_name;
+            }
         }
-
         return null;
     } catch (err) {
         return null;
