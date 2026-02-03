@@ -90,7 +90,7 @@ const spotfixApiCall = async(data, method, accountId = undefined) => {
     throw new Error(`Unknown operation status: ${responseBody.data.operation_status}`);
 }
 
-const userConfirmEmailDoboard = async (emailConfirmationToken) => {
+const spotFixUserConfirmEmailDoboard = async (emailConfirmationToken) => {
     const data = {
         email_confirmation_token: encodeURIComponent(emailConfirmationToken)
     }
