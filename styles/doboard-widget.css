@@ -1246,6 +1246,7 @@
     position: relative;
     display: inline-block;
     width: 46px;
+    min-width: 46px;
     height: 28px;
 }
 

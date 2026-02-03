@@ -182,7 +182,11 @@ function storageProvidedTaskHasUnreadUpdates(taskId) {
 }
 
 function storageSaveSpotfixVersion (version) {
-    localStorage.setItem('spotfix_app_version', `${version}`);
+    if(version) {
+        localStorage.setItem('spotfix_app_version', `${version}`);
+    } else {
+        localStorage.setItem('spotfix_app_version', '');
+    }
 }
 
 function clearLocalstorageOnLogout () {
