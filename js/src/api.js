@@ -78,7 +78,6 @@ const spotfixApiCall = async(data, method, accountId = undefined) => {
        if(responseBody?.data?.operation_message === 'session_id Unknown'){
             clearLocalstorageOnLogout();
             checkLogInOutButtonsVisible();
-            await deleteDB();
         }
         throw new Error(errorMessage);
     }
@@ -231,7 +230,6 @@ const logoutUserDoboard = async (projectToken) => {
         const result = await spotfixApiCall(data, 'user_unauthorize', accountId);
 
         if (result.operation_status === 'SUCCESS') {
-            await deleteDB();
             clearLocalstorageOnLogout();
             checkLogInOutButtonsVisible();
         }
