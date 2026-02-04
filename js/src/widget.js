@@ -632,10 +632,6 @@ class CleanTalkWidgetDoboard {
                     document.querySelector('.spotfix_placeholder_title').style.display = 'none';
                 }
 
-                if (templateVariables.descriptionText) {
-                    document.querySelector('.spotfix_placeholder_description').style.display = 'none';
-                }
-
                 if (sessionIdExists && email && !email.includes('spotfix_')) {
                     document.querySelector('.doboard_task_widget-login').classList.add('hidden');
                 }

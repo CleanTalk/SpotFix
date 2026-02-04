@@ -203,7 +203,7 @@ class SpotFixTemplatesLoader {
                             <button id="doboard_task_widget-login_button" class="doboard_task_widget-submit_button">Log in</button>
                         </div>
                         <div>
-                            <i><span id="doboard_task_widget-login-is-invalid" class="doboard_task_widget-login-is-invalid doboard_task_widget-hidden">Logon or password is invalid </span></i>
+                            <i><span id="doboard_task_widget-login-is-invalid" class="doboard_task_widget-login-is-invalid doboard_task_widget-hidden">Login or password is invalid </span></i>
                         </div>
                  </div>
                  <div id="doboard_task_widget-container-login-forgot-password-form" class="doboard_task_widget-forgot_password_form doboard_task_widget-hidden">
@@ -329,7 +329,7 @@ class SpotFixTemplatesLoader {
                     <button id="doboard_task_widget-login_button" class="doboard_task_widget-submit_button">Log in</button>
                 </div>
                 <div>
-                    <i><span id="doboard_task_widget-login-is-invalid" class="doboard_task_widget-login-is-invalid doboard_task_widget-hidden">Logon or password is invalid </span></i>
+                    <i><span id="doboard_task_widget-login-is-invalid" class="doboard_task_widget-login-is-invalid doboard_task_widget-hidden">Login or password is invalid </span></i>
                 </div>
              </div>
              <div id="doboard_task_widget-container-login-forgot-password-form" class="doboard_task_widget-forgot_password_form doboard_task_widget-forgot_password_form-menu doboard_task_widget-hidden">
