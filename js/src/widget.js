@@ -847,10 +847,9 @@ class CleanTalkWidgetDoboard {
                 checkLogInOutButtonsVisible();
 
                 const user = await getUserDetails(this.params, this.nonRequesting);
-                let gitHubAppVersion = '';
-                if(!this.nonRequesting) gitHubAppVersion = await getReleaseVersion();
+                if(!this.nonRequesting) await getReleaseVersion();
                 let spotfixVersion = '';
-                const version = gitHubAppVersion || localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+                const version = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
                 spotfixVersion = version ? `Spotfix version ${version}.` : '';
 
                 templateVariables.spotfixVersion = spotfixVersion || '';
