@@ -169,27 +169,64 @@ class SpotFixTemplatesLoader {
 
         <div class="doboard_task_widget-login">
 
-            <span>If you want to receive notifications by email write here you email contacts.</span>
+            <span  class="doboard_task_widget-login-icon" >If you want to receive notifications by email write here you email contacts.</span>
 
             <div class="doboard_task_widget-accordion">
-
-                <div class="doboard_task_widget-input-container">
-                    <input id="doboard_task_widget-user_name" class="doboard_task_widget-field" type="text" name="user_name">
-                    <label for="doboard_task_widget-user_name">Nickname</label>
+            
+                   <div class="doboard_task_widget-input-container-phantom">
+                        <div class="doboard_task_widget-input-container">
+                            <input id="doboard_task_widget-user_name" class="doboard_task_widget-field" type="text" name="user_name">
+                            <label for="doboard_task_widget-user_name">Nickname</label>
+                        </div>
+        
+                        <div class="doboard_task_widget-input-container">
+                            <input id="doboard_task_widget-user_email" class="doboard_task_widget-field" type="email" name="user_email">
+                            <label for="doboard_task_widget-user_email">Email</label>
+                        </div>
+        
+                        <div class="doboard_task_widget-input-container hidden">
+                            <input id="doboard_task_widget-user_password" class="doboard_task_widget-field" type="password" name="user_password">
+                            <label for="doboard_task_widget-user_password">Password</label>
+                        </div>
+        
+                        <i>Note about DoBoard register and accepting email notifications about tasks have to be here.</i>
+                        </br>
+                        <i>If you are a doBoard user, use same Email and password as at <a href="https://doboard.com" target="_blank" rel="nofollow">doboard.com</a>
+                            on the <span id="doboard_task_widget-show_login_form" class="doboard_task_widget-show_login_form">login page</span>
+                         </i>
+                 </div> 
+                     
+                 <div id="doboard_task_widget-input-container-login" class="doboard_task_widget-input-container-login doboard_task_widget-hidden">
+                        <div class="doboard_task_widget-input-container">
+                            <input id="doboard_task_widget-login_email" class="doboard_task_widget-field" type="email" name="login_email">
+                            <label for="doboard_task_widget-login_email">Email</label>
+                        </div>
+                        <div class="doboard_task_widget-input-container">
+                            <input id="doboard_task_widget-login_password" class="doboard_task_widget-field" type="password" name="login_password">
+                            <label for="doboard_task_widget-login_password">Password</label>
+                            <span class="doboard_task_widget-bottom-eye-icon" id="doboard_task_widget-password-toggle"></span>
+                        </div>
+                        <div>  
+                                <span id="doboard_task_widget-forgot_password" class="doboard_task_widget-forgot_password">Forgot Password?</span>
+                        </div> 
+                        <div class="doboard_task_widget-login-buttons-wrapper">
+                            <button id="doboard_task_widget-on_phantom_login_page" class="doboard_task_widget-submit_button">Cancel</button>
+                            <button id="doboard_task_widget-login_button" class="doboard_task_widget-submit_button">Log in</button>
+                        </div>
+                        <div>
+                            <i><span id="doboard_task_widget-login-is-invalid" class="doboard_task_widget-login-is-invalid doboard_task_widget-hidden">Logon or password is invalid </span></i>
+                        </div>
+                 </div>
+                 <div id="doboard_task_widget-container-login-forgot-password-form" class="doboard_task_widget-forgot_password_form doboard_task_widget-hidden">
+                     <div class="doboard_task_widget-input-container">
+                         <input id="doboard_task_widget-forgot_password_email" class="doboard_task_widget-field" type="email" name="forgot_password_email">
+                         <label for="doboard_task_widget-forgot_password_email">Email</label>
+                     </div>
+                     <div class="doboard_task_widget-login-buttons-wrapper">
+                         <button id="doboard_task_widget-forgot_password-black" class="doboard_task_widget-submit_button">Cancel</button>
+                         <button id="doboard_task_widget-restore_password_button" class="doboard_task_widget-submit_button">Restore password</button>
+                     </div>
                 </div>
-
-                <div class="doboard_task_widget-input-container">
-                    <input id="doboard_task_widget-user_email" class="doboard_task_widget-field" type="email" name="user_email">
-                    <label for="doboard_task_widget-user_email">Email</label>
-                </div>
-
-                <div class="doboard_task_widget-input-container hidden">
-                    <input id="doboard_task_widget-user_password" class="doboard_task_widget-field" type="password" name="user_password">
-                    <label for="doboard_task_widget-user_password">Password</label>
-                </div>
-
-                <i>Note about DoBoard register and accepting email notifications about tasks have to be here.</i>
-
             </div>
 
         </div>
@@ -254,11 +291,8 @@ class SpotFixTemplatesLoader {
         </div>
         <div style="display: flex; flex-direction: column; align-items: center">
              <img class="doboard_task_widget-user_menu-header-avatar" src="{{avatar}}" alt="">
-             <span style="font-size: 16px; font-weight: 700">{{userName}}</span>
-             <span style="font-size: 12px;">{{email}}</span>
-             <span id="doboard_task_widget-user_menu-signlog_button">
-                 <a style="cursor: pointer" rel="nofollow" target="_blank">Sign up or Log in</a>
-             </span>
+             <span class="doboard_task_widget-user_menu-header-user-name" style="font-size: 16px; font-weight: 700">{{userName}}</span>
+             <span class="doboard_task_widget-user_menu-header-email" style="font-size: 12px;">{{email}}</span>
         </div>
     </div>
     <div class="doboard_task_widget-content" style="min-height:200px ">
@@ -285,6 +319,38 @@ class SpotFixTemplatesLoader {
                     <span class="logout_button">Log out</span>
                 </span>
             </div>
+            
+            <div id="doboard_task_widget-input-container-login" class="doboard_task_widget-input-container-login doboard_task_widget-input-container-login-menu ">
+                <div class="doboard_task_widget-input-container">
+                    <input id="doboard_task_widget-login_email" class="doboard_task_widget-field" type="email" name="login_email">
+                    <label for="doboard_task_widget-login_email">Email</label>
+                </div>
+                <div class="doboard_task_widget-input-container">
+                    <input id="doboard_task_widget-login_password" class="doboard_task_widget-field" type="password" name="login_password">
+                    <label for="doboard_task_widget-login_password">Password</label>
+                    <span class="doboard_task_widget-bottom-eye-icon" id="doboard_task_widget-password-toggle"></span>
+                </div>
+                <div>
+                        <span id="doboard_task_widget-forgot_password" class="doboard_task_widget-forgot_password">Forgot Password?</span>
+                </div>
+                <div class="doboard_task_widget-field">
+                    <button id="doboard_task_widget-login_button" class="doboard_task_widget-submit_button">Log in</button>
+                </div>
+                <div>
+                    <i><span id="doboard_task_widget-login-is-invalid" class="doboard_task_widget-login-is-invalid doboard_task_widget-hidden">Logon or password is invalid </span></i>
+                </div>
+             </div>
+             <div id="doboard_task_widget-container-login-forgot-password-form" class="doboard_task_widget-forgot_password_form doboard_task_widget-forgot_password_form-menu doboard_task_widget-hidden">
+                 <div class="doboard_task_widget-input-container">
+                     <input id="doboard_task_widget-forgot_password_email" class="doboard_task_widget-field" type="email" name="forgot_password_email">
+                     <label for="doboard_task_widget-forgot_password_email">Email</label>
+                 </div>
+                 <div class="doboard_task_widget-login-buttons-wrapper">
+                     <button id="doboard_task_widget-forgot_password-black" class="doboard_task_widget-submit_button">Cancel</button>
+                     <button id="doboard_task_widget-restore_password_button" class="doboard_task_widget-submit_button">Restore password</button>
+                 </div>
+            </div>
+            
         </div>
         </div>
         <div style="padding: 16px; font-size: 13px; position: sticky; bottom: 0">
@@ -294,6 +360,10 @@ class SpotFixTemplatesLoader {
              doBoard
             </a></span>
         </div>
+        <div class="doboard_task_widget-message-wrapper hidden">
+            <span id="doboard_task_widget-error_message-header"></span>
+        <div id="doboard_task_widget-error_message"></div>
+    </div>
     </div>
 </div>`;
     }

@@ -209,15 +209,22 @@ function registerUser(taskDetails) {
                 localStorage.setItem('spotfix_session_id', response.sessionId);
                 localStorage.setItem('spotfix_user_id', response.userId);
                 localStorage.setItem('spotfix_email', response.email);
+                localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
                 spotfixIndexedDB.init();
                 userUpdate(projectToken, accountId);
             } else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
                 if (response.operationMessage == 'Waiting for email confirmation') {
                     response.operationMessage = 'Waiting for an email confirmation. Please check your Inbox.';
+                	if (document.getElementById('doboard_task_widget-error_message').innerText === 'Waiting for an email confirmation. Please check your Inbox.') {
+						response.operationMessage = 'Incorrect email address. Please confirm your email to create the spot.';
+					}
                 }
                 if (typeof showMessageCallback === 'function') {
                     showMessageCallback(response.operationMessage, 'notice');
                 }
+                    const submitButton = document.getElementById('doboard_task_widget-submit_button');
+					submitButton.disabled = true;
+					submitButton.innerText = ksesFilter('Create spot');
             } else {
                 throw new Error('Session ID not found in response');
             }
@@ -239,6 +246,8 @@ function loginUser(taskDetails) {
                 localStorage.setItem('spotfix_session_id', response.sessionId);
                 localStorage.setItem('spotfix_user_id', response.userId);
                 localStorage.setItem('spotfix_email', userEmail);
+				localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
+				checkLogInOutButtonsVisible();
                 spotfixIndexedDB.init();
             } else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
                 if (typeof showMessageCallback === 'function') {
@@ -251,6 +260,33 @@ function loginUser(taskDetails) {
         .catch((error) => {
             throw error;
         });
+}
+
+function forgotPassword(userEmail) {
+		return (showMessageCallback) => forgotPasswordDoboard(userEmail)
+		.then(response => {
+			console.log('response ', response)
+			if (response?.operation_status === 'SUCCESS') {
+				showMessageCallback('New password sent to email', 'notice');
+				const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
+				const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
+				const submitButton = document.getElementById('doboard_task_widget-submit_button');
+				if (forgotPasswordForm) {
+					forgotPasswordForm.classList.add('doboard_task_widget-hidden');
+				}
+				if (loginContainer) {
+					loginContainer.classList.remove('doboard_task_widget-hidden');
+					if (submitButton) {
+						submitButton.closest('.doboard_task_widget-field').classList.add('doboard_task_widget-hidden');
+					}
+				}
+			} else {
+				throw new Error('Response error');
+			}
+		})
+		.catch(error => {
+			throw error;
+		});
 }
 
 function userUpdate(projectToken, accountId) {
@@ -299,16 +335,43 @@ function setToggleStatus(rootElement) {
     }
 }
 
-function checkLogInOutButtonsVisible() {
-    if (!localStorage.getItem('spotfix_session_id')) {
-        const el = document
-            .getElementById('doboard_task_widget-user_menu-logout_button')
-            ?.closest('.doboard_task_widget-user_menu-item');
-        if (el) el.style.display = 'none';
-    } else {
-        const el = document.getElementById('doboard_task_widget-user_menu-signlog_button');
-        if (el) el.style.display = 'none';
-    }
+function checkLogInOutButtonsVisible (){
+	if(!localStorage.getItem('spotfix_session_id')) {
+		const el = document.getElementById('doboard_task_widget-user_menu-logout_button')?.closest('.doboard_task_widget-user_menu-item');
+		if(el) el.style.display = 'none';
+
+		const loginContainer = document.getElementById('doboard_task_widget-input-container-login')
+		if(loginContainer) {
+			loginContainer.classList.remove('doboard_task_widget-hidden');
+		}
+		clearUserMenuData();
+	} else {
+		const el = document.getElementById('doboard_task_widget-user_menu-logout_button')?.closest('.doboard_task_widget-user_menu-item');
+		if(el) el.style.display = 'block';
+		const loginContainer = document.getElementById('doboard_task_widget-input-container-login')
+		if(loginContainer) {
+			loginContainer.classList.add('doboard_task_widget-hidden');
+		}
+	}
+}
+
+/**
+ * Clear user menu data in menu
+ */
+async function clearUserMenuData() {
+	const userNameElement = document.querySelector('.doboard_task_widget-user_menu-header-user-name');
+	const emailElement = document.querySelector('.doboard_task_widget-user_menu-header-email');
+	const avatarElement = document.querySelector('.doboard_task_widget-user_menu-header-avatar');
+
+	if (userNameElement) {
+		userNameElement.innerText = 'Guest';
+	}
+	if (emailElement) {
+		emailElement.innerText = '';
+	}
+	if (avatarElement) {
+		avatarElement.src = SpotFixSVGLoader.getAsDataURI('iconAvatar');
+	}
 }
 
 function changeSize(container) {
