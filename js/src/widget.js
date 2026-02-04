@@ -18,6 +18,7 @@ class CleanTalkWidgetDoboard {
     constructor(selectedData, type) {
         this.selectedData = selectedData || '';
         this.selectedText = selectedData?.selectedText || '';
+        this.descriptionText = localStorage.getItem('spotfix-description-ls') || '';
         this.srcVariables = {
             buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
             iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
@@ -157,8 +158,9 @@ class CleanTalkWidgetDoboard {
                 let userEmail = '';
                 let userPassword = '';
                 const loginSectionElement = document.querySelector('.doboard_task_widget-login');
+                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
 
-                if ( loginSectionElement && loginSectionElement.classList.contains('active') ) {
+                if ( !sessionIdExists && loginSectionElement && loginSectionElement.classList.contains('active') ) {
                     const userEmailElement = document.getElementById('doboard_task_widget-user_email');
                     const userNameElement = document.getElementById('doboard_task_widget-user_name');
                     const userPasswordElement = document.getElementById('doboard_task_widget-user_password');
@@ -271,6 +273,233 @@ class CleanTalkWidgetDoboard {
         }
     }
 
+
+    resetLoginForm() {
+        const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
+        const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
+        const submitButton = document.getElementById('doboard_task_widget-submit_button');
+
+        if (loginContainer) {
+            loginContainer.classList.add('doboard_task_widget-hidden');
+        }
+        if (phantomContainer) {
+            phantomContainer.classList.remove('doboard_task_widget-hidden');
+        }
+        if (submitButton) {
+            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
+        }
+    }
+    bindShowLoginFormEvents() {
+        const showLoginButton = document.getElementById('doboard_task_widget-show_login_form');
+        const showPhantomLoginButton = document.getElementById('doboard_task_widget-on_phantom_login_page');
+        const forgotPasswordButton = document.getElementById('doboard_task_widget-forgot_password');
+        const forgotPasswordButtonBlack = document.getElementById('doboard_task_widget-forgot_password-black');
+        const loginButton = document.getElementById('doboard_task_widget-login_button');
+        const restorePasswordButton = document.getElementById('doboard_task_widget-restore_password_button');
+
+        if (showLoginButton) {
+            showLoginButton.addEventListener('click', async () => {
+                const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
+                const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
+                const submitButton = document.getElementById('doboard_task_widget-submit_button');
+                if (loginContainer) {
+                    loginContainer.classList.toggle('doboard_task_widget-hidden');
+                    if (submitButton) {
+                        if (loginContainer.classList.contains('doboard_task_widget-hidden')) {
+                            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
+                        } else {
+                            submitButton.closest('.doboard_task_widget-field').classList.add('doboard_task_widget-hidden');
+                        }
+                    }
+                }
+                if (phantomContainer) {
+                    phantomContainer.classList.toggle('doboard_task_widget-hidden');
+                }
+            })
+        }
+        if (showPhantomLoginButton) {
+            showPhantomLoginButton.addEventListener('click', async () => {
+                const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
+                const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
+                const submitButton = document.getElementById('doboard_task_widget-submit_button');
+                if (loginContainer) {
+                    loginContainer.classList.toggle('doboard_task_widget-hidden');
+                    if (submitButton) {
+                        if (loginContainer.classList.contains('doboard_task_widget-hidden')) {
+                            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
+                        } else {
+                            submitButton.closest('.doboard_task_widget-field').classList.add('doboard_task_widget-hidden');
+                        }
+                    }
+                }
+                if (phantomContainer) {
+                    phantomContainer.classList.toggle('doboard_task_widget-hidden');
+                }
+            })
+        }
+        if (forgotPasswordButton) {
+            forgotPasswordButton.addEventListener('click', async () => {
+                const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
+                const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
+
+                if (forgotPasswordForm) {
+                    forgotPasswordForm.classList.remove('doboard_task_widget-hidden');
+                }
+                if (loginContainer) {
+                    loginContainer.classList.add('doboard_task_widget-hidden');
+                }
+            })
+
+            forgotPasswordButtonBlack.addEventListener('click', async () => {
+                const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
+                const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
+                const submitButton = document.getElementById('doboard_task_widget-submit_button');
+
+                if (forgotPasswordForm) {
+                    forgotPasswordForm.classList.add('doboard_task_widget-hidden');
+                }
+                if (loginContainer) {
+                    loginContainer.classList.remove('doboard_task_widget-hidden');
+                    if (submitButton) {
+                        submitButton.closest('.doboard_task_widget-field').classList.add('doboard_task_widget-hidden');
+                    }
+                }
+            })
+        }
+        const forgotPasswordButtonMenu = document.querySelector('.doboard_task_widget-input-container-login-menu #doboard_task_widget-forgot_password');
+        if (forgotPasswordButtonMenu) {
+            forgotPasswordButtonMenu.addEventListener('click', async () => {
+                const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
+                const loginContainer = document.querySelector('.doboard_task_widget-input-container-login-menu');
+
+                if (forgotPasswordForm) {
+                    forgotPasswordForm.classList.remove('doboard_task_widget-hidden');
+                }
+                if (loginContainer) {
+                    loginContainer.classList.add('doboard_task_widget-hidden');
+                }
+            });
+        }
+        const forgotPasswordButtonBlackMenu = document.querySelector('.doboard_task_widget-input-container-login-menu ~ #doboard_task_widget-container-login-forgot-password-form #doboard_task_widget-forgot_password-black');
+        if (forgotPasswordButtonBlackMenu) {
+             forgotPasswordButtonBlackMenu.addEventListener('click', async () => {
+                const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
+                const loginContainer = document.querySelector('.doboard_task_widget-input-container-login-menu');
+
+                if (forgotPasswordForm) {
+                    forgotPasswordForm.classList.add('doboard_task_widget-hidden');
+                }
+                if (loginContainer) {
+                    loginContainer.classList.remove('doboard_task_widget-hidden');
+                }
+            });
+        }
+        if (loginButton) {
+            loginButton.addEventListener('click', async () => {
+                const userEmailElement = document.getElementById('doboard_task_widget-login_email');
+                const userPasswordElement = document.getElementById('doboard_task_widget-login_password');
+                document.querySelector('.doboard_task_widget-login-is-invalid').classList.add('doboard_task_widget-hidden');
+
+                const userEmail = userEmailElement.value.trim();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!userEmail) {
+                    userEmailElement.style.borderColor = 'red';
+                    userEmailElement.focus();
+                    userEmailElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                } else if (!emailRegex.test(userEmail)) {
+                    userEmailElement.style.borderColor = 'red';
+                    userEmailElement.focus();
+                    userEmailElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                }
+
+                const userPassword = userPasswordElement.value;
+                if (!userPassword) {
+                    userPasswordElement.style.borderColor = 'red';
+                    userPasswordElement.focus();
+                    userPasswordElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                } else if (userPassword.length < 6) {
+                    userPasswordElement.style.borderColor = 'red';
+                    userPasswordElement.focus();
+                    userPasswordElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                }
+
+                try {
+                    await loginUser({
+                        userEmail: userEmail,
+                        userPassword: userPassword
+                    })(this.registrationShowMessage);
+                        this.setUserMenuData();
+
+                        const submitButton = document.getElementById('doboard_task_widget-submit_button');
+                        if (submitButton) {
+                            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
+                        }
+
+                } catch (error) {
+                    document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
+                }
+                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+                const email = localStorage.getItem('spotfix_email');
+                if (sessionIdExists && email && !email.includes('spotfix_')) {
+                    const loginEl= document.querySelector('.doboard_task_widget-login');
+                    loginEl?.classList?.add('doboard_task_widget-hidden');
+                } else {
+                    document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
+                }
+            })
+        }
+        const passwordToggle = document.getElementById('doboard_task_widget-password-toggle');
+        const passwordInput = document.getElementById('doboard_task_widget-login_password');
+
+        if (passwordToggle && passwordInput) {
+            passwordToggle.addEventListener('click', function() {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                this.classList.toggle('doboard_task_widget-bottom-eye-off-icon');
+                this.classList.toggle('doboard_task_widget-bottom-eye-icon');
+            });
+        }
+        if (restorePasswordButton) {
+            restorePasswordButton.addEventListener('click', async () => {
+                const userEmailElement = document.getElementById('doboard_task_widget-forgot_password_email');
+                const userEmail = userEmailElement.value.trim();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!userEmail) {
+                    userEmailElement.style.borderColor = 'red';
+                    userEmailElement.focus();
+                    userEmailElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                } else if (!emailRegex.test(userEmail)) {
+
+                    userEmailElement.style.borderColor = 'red';
+                    userEmailElement.focus();
+
+                    return;
+                }
+
+                try {
+                    await forgotPassword(userEmail)(this.registrationShowMessage);
+                } catch (error) {
+                    this.registrationShowMessage(error.message, 'error');
+                }
+            })
+        }
+    }
+
     /**
      * Create widget element
      * @return {HTMLElement} widget element
@@ -298,8 +527,9 @@ class CleanTalkWidgetDoboard {
                 this.socket_type_name = templateName;
                 this.nonRequesting = nonRequesting;
                 templateVariables = {
-                    selectedText: this.selectedText,
+                    selectedText: this.selectedText || localStorage.getItem('spotfix-title-ls') || '',
                     currentDomain: document.location.hostname || '',
+                    descriptionText: this.descriptionText || localStorage.getItem('spotfix-description-ls') || '',
                     buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
                     iconMaximize: SpotFixSVGLoader.getAsDataURI('iconMaximize'),
                     iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
@@ -398,9 +628,43 @@ class CleanTalkWidgetDoboard {
                 const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
                 const email = localStorage.getItem('spotfix_email');
 
+                if (templateVariables.selectedText) {
+                    document.querySelector('.spotfix_placeholder_title').style.display = 'none';
+                }
+
+                if (templateVariables.descriptionText) {
+                    document.querySelector('.spotfix_placeholder_description').style.display = 'none';
+                }
+
                 if (sessionIdExists && email && !email.includes('spotfix_')) {
                     document.querySelector('.doboard_task_widget-login').classList.add('hidden');
                 }
+
+                const descEl = document.querySelector(
+                    '.doboard_task_widget-container-maximize #doboard_task_widget-description'
+                );
+
+                if (descEl) {
+                    const parentEl = descEl.closest('.doboard_task_widget-input-container');
+
+                    if (parentEl) {
+                        let isSmall = false;
+
+                        const ro = new ResizeObserver(([entry]) => {
+                            const height = entry.contentRect.height;
+                            const next = height < 120;
+
+                            if (next === isSmall) return;
+
+                            isSmall = next;
+
+                            descEl.classList.toggle('is-small', isSmall);
+                        });
+
+                        ro.observe(parentEl);
+                    }
+                }
+
                 if (
                     selection.type === 'Range'
                 ) {
@@ -412,6 +676,7 @@ class CleanTalkWidgetDoboard {
                 }
                 // bind creation events
                 this.bindCreateTaskEvents();
+                this.bindShowLoginFormEvents();
 
                 tinymce.init({
                     selector: '#doboard_task_widget-description',
@@ -527,6 +792,7 @@ class CleanTalkWidgetDoboard {
                             const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId)
 
                             const avatarData = getAvatarData(taskFullDetails);
+
                             const listIssuesTemplateVariables = {
                                 taskTitle: taskTitle || '',
                                 taskAuthorAvatarImgSrc: taskFullDetails.taskAuthorAvatarImgSrc,
@@ -534,9 +800,10 @@ class CleanTalkWidgetDoboard {
                                 taskPublicStatusImgSrc: taskPublicStatusImgSrc,
                                 taskPublicStatusHint: taskPublicStatusHint,
                                 taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
-                                taskPageUrl: currentPageURL,
+                                taskPageUrlFull: currentPageURL,
                                 iconLinkChain: this.srcVariables.iconLinkChain,
                                 taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
+                                taskPageUrl: localStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
                                 taskLastUpdate: taskFullDetails.lastMessageTime,
                                 nodePath: this.sanitizeNodePath(taskNodePath),
                                 taskId: taskId,
@@ -598,12 +865,14 @@ class CleanTalkWidgetDoboard {
                 document.body.appendChild(widgetContainer);
                 setToggleStatus(this);
                 checkLogInOutButtonsVisible();
+                this.bindShowLoginFormEvents();
+                this.bindWidgetInputsInteractive();
 
                 break;
         case 'concrete_issue':
                 if(this.nonRequesting) {
                     hideContainersSpinner();
-                    this.allTasksData = await spotfixIndexedDB.getAll(TABLE_TASKS);
+                    this.allTasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
                 } else {
                     changeSize(container);
                 }
@@ -873,7 +1142,7 @@ class CleanTalkWidgetDoboard {
         }) || '';
 
         document.querySelector('#doboard_task_widget-user_menu-logout_button')?.addEventListener('click', () => {
-            logoutUserDoboard(this.params.projectToken, this.params.accountId).then(() => {this.hide()});
+            logoutUserDoboard(this.params.projectToken);
         }) || '';
 
         document.getElementById('addNewTaskButton')?.addEventListener('click', () => {
@@ -883,14 +1152,43 @@ class CleanTalkWidgetDoboard {
         document.getElementById('maximizeWidgetContainer')?.addEventListener('click', () => {
             const container = document.querySelector('.doboard_task_widget-container');
 
-            if(+localStorage.getItem('maximize') && container.classList.contains('doboard_task_widget-container-maximize')){
+            const isMaximized =
+                +localStorage.getItem('maximize') &&
+                container.classList.contains('doboard_task_widget-container-maximize');
+
+            if (isMaximized) {
                 localStorage.setItem('maximize', '0');
                 container.classList.remove('doboard_task_widget-container-maximize');
+
+                if (this.type_name === 'all_issues') {
+                    document
+                        .querySelectorAll('.spotfix_widget_task_url-full')
+                        .forEach(el => (el.style.display = 'none'));
+                    document
+                        .querySelectorAll('.spotfix_widget_task_url')
+                        .forEach(el => (el.style.display = 'none'));
+                    document
+                        .querySelectorAll('.spotfix_widget_task_url-short')
+                        .forEach(el => (el.style.display = 'inline'));
+                }
             } else {
                 localStorage.setItem('maximize', '1');
                 container.classList.add('doboard_task_widget-container-maximize');
+
+                if (this.type_name === 'all_issues') {
+                    document
+                        .querySelectorAll('.spotfix_widget_task_url-full')
+                        .forEach(el => (el.style.display = 'inline'));
+                    document
+                        .querySelectorAll('.spotfix_widget_task_url-short')
+                        .forEach(el => (el.style.display = 'none'));
+                    document
+                        .querySelectorAll('.spotfix_widget_task_url')
+                        .forEach(el => (el.style.display = 'none'));
+                }
             }
-        }) || '';
+        });
+
 
         document.querySelector('#doboard_task_widget-user_menu-signlog_button')?.addEventListener('click', () => {
             spotFixShowWidget();
@@ -898,11 +1196,26 @@ class CleanTalkWidgetDoboard {
 
         document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {
             this.createWidgetElement(this.type_name)
+            this.bindWidgetInputsInteractive();
         }) || '';
 
         wsSpotfix.onMessage(() => {
             this.createWidgetElement(this.socket_type_name, true)
         });
+
+        document.getElementById('doboard_task_widget-title')?.addEventListener('change', (e) => {
+            localStorage.setItem('spotfix-title-ls', e.target.value);
+            if (e.target.value.length < 1) {
+                document.querySelector('.spotfix_placeholder_title').style.display = 'block';
+            }
+        });
+
+        document.getElementById('doboard_task_widget-description')?.addEventListener('change', (e) => {
+            localStorage.setItem('spotfix-description-ls', e.target.value);
+            if (e.target.value.length < 1) {
+                document.querySelector('.spotfix_placeholder_description').style.display = 'block';
+            }
+        })
 
         return widgetContainer;
     }
@@ -911,21 +1224,30 @@ class CleanTalkWidgetDoboard {
 
     bindIssuesClick() {
         document.querySelectorAll('.issue-item').forEach(item => {
-            item.addEventListener('click', async () => {
+            item.addEventListener('click', async (event) => {
+                const titleEl = event.target.closest('.doboard_task_widget-task_title');
+
+                if (!titleEl || !item.contains(titleEl)) {
+                    return;
+                }
+
                 let nodePath = null;
                 try {
                     nodePath = JSON.parse(item.getAttribute('data-node-path'));
                 } catch (error) {
                     nodePath = null;
                 }
+
                 if (nodePath) {
                     spotFixScrollToNodePath(nodePath);
                 }
+
                 this.currentActiveTaskId = item.getAttribute('data-task-id');
                 await this.showOneTask();
             });
         });
     }
+
 
     /**
      * Show one task
@@ -1027,7 +1349,7 @@ class CleanTalkWidgetDoboard {
             if(!this.nonRequesting) {
                 await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
             }
-            const tasks = await spotfixIndexedDB.getAll(TABLE_TASKS);
+            const tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
             storageSaveTasksCount(tasks);
             const filteredTasks = tasks.filter(task => {
                 return task.taskMeta;
@@ -1035,7 +1357,7 @@ class CleanTalkWidgetDoboard {
             tasksCount = filteredTasks.length;
         } else {
             if (this.nonRequesting) {
-                const tasks = await spotfixIndexedDB.getAll(TABLE_TASKS);
+                const tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
                 storageSaveTasksCount(tasks);
                 const filteredTasks = tasks.filter(task => {
                     return task.taskMeta;
@@ -1068,6 +1390,7 @@ class CleanTalkWidgetDoboard {
             await registerUser(taskDetails)(this.registrationShowMessage);
             if ( taskDetails.userPassword ) {
                 await loginUser(taskDetails)(this.registrationShowMessage);
+                checkLogInOutButtonsVisible();
             }
         }
 
@@ -1257,5 +1580,53 @@ class CleanTalkWidgetDoboard {
         return str;
     }
     return '';
+}
+
+/**
+ * Set user menu data with current user information
+ */
+async setUserMenuData() {
+    const params = this.params;
+
+    // Get user data
+    let userData = null;
+    if (localStorage.getItem('spotfix_session_id')) {
+        try {
+            userData = await getUserDetails(params);
+        } catch (error) {
+            console.error('Error fetching user details:', error);
+        }
+    }
+
+    // Update user menu header
+    const userNameElement = document.querySelector('.doboard_task_widget-user_menu-header span[style*="font-size: 16px"]');
+    const emailElement = document.querySelector('.doboard_task_widget-user_menu-header span[style*="font-size: 12px"]');
+    const avatarElement = document.querySelector('.doboard_task_widget-user_menu-header-avatar');
+
+    if (userNameElement) {
+        if (userData && userData.name) {
+            userNameElement.innerText = userData.name;
+        } else {
+            userNameElement.innerText = 'Guest';
+        }
+    }
+
+    if (emailElement) {
+        if (userData && userData.email) {
+            emailElement.innerText = userData.email;
+        } else {
+            const email = localStorage.getItem('spotfix_email') || '';
+            emailElement.innerText = email.includes('spotfix_') ? '' : email;
+        }
+    }
+
+    if (avatarElement) {
+        if (userData && userData.avatar && userData.avatar.s) {
+            avatarElement.src = userData.avatar.s;
+        } else {
+            // Reset to default avatar or remove src
+            avatarElement.src = '';
+        }
+    }
 }
 }

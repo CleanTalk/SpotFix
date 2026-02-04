@@ -75,6 +75,10 @@ const spotfixApiCall = async(data, method, accountId = undefined) => {
 
     if (responseBody.data.operation_status === 'FAILED') {
         const errorMessage = responseBody.data.operation_message || 'Operation failed without specific message';
+       if(responseBody?.data?.operation_message === 'session_id Unknown'){
+            clearLocalstorageOnLogout();
+            checkLogInOutButtonsVisible();
+        }
         throw new Error(errorMessage);
     }
 
@@ -176,6 +180,7 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname, pag
         operationMessage: result.operation_message,
         operationStatus: result.operation_status,
         userEmailConfirmed: result.user_email_confirmed,
+        accounts: result.accounts,
     };
 };
 
@@ -193,11 +198,24 @@ const loginUserDoboard = async (email, password) => {
         operationMessage: result.operation_message,
         operationStatus: result.operation_status,
         userEmailConfirmed: result.user_email_confirmed,
+        accounts: result.accounts
     }
 }
 
-const logoutUserDoboard = async (projectToken, accountId) => {
+const forgotPasswordDoboard = async (email) => {
+    const data = {
+        email: email
+    }
+    return await spotfixApiCall(data, 'user_password_reset');
+}
+
+
+const logoutUserDoboard = async (projectToken) => {
     const sessionId = localStorage.getItem('spotfix_session_id');
+    const accountsString = localStorage.getItem('spotfix_accounts');
+    const accounts =  accountsString !== 'undefined' ? JSON.parse(accountsString || '[]') : [];
+    const accountId = accounts.length > 0 ? accounts[0].account_id : 1;
+
     if(sessionId && accountId) {
         const data = {
             session_id: sessionId,
@@ -212,8 +230,8 @@ const logoutUserDoboard = async (projectToken, accountId) => {
         const result = await spotfixApiCall(data, 'user_unauthorize', accountId);
 
         if (result.operation_status === 'SUCCESS') {
-            await deleteDB();
             clearLocalstorageOnLogout();
+            checkLogInOutButtonsVisible();
         }
     }
 }
@@ -240,7 +258,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         taskMeta: task.meta,
         taskStatus: task.status,
     }));
-    await spotfixIndexedDB.clearPut(TABLE_TASKS, tasks);
+    await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_TASKS, tasks);
     storageSaveTasksCount(tasks);
     return tasks;
 }
@@ -262,7 +280,7 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, statu
         status: comment.status,
         issueTitle: comment.task_name,
     }));
-    await spotfixIndexedDB.clearPut(TABLE_COMMENTS, comments);
+    await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_COMMENTS, comments);
     return comments;
 };
 
@@ -275,9 +293,9 @@ const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
 
     const result = await spotfixApiCall(data, 'user_get', accountId);
     if (data.user_id) {
-        await spotfixIndexedDB.put(TABLE_USERS, result.users);
+        await spotfixIndexedDB.put(SPOTFIX_TABLE_USERS, result.users);
     } else {
-        await spotfixIndexedDB.clearPut(TABLE_USERS, result.users);
+        await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_USERS, result.users);
     }
     return result.users;
 
@@ -323,14 +341,20 @@ const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, tim
 
 const getReleaseVersion = async () => {
     try {
-        const res = await fetch('https://api.github.com/repos/CleanTalk/SpotFix/releases');
-        const data = await res.json();
+        const res = await fetch('https://api.github.com/repos/CleanTalk/SpotFix/tags');
+        let data = await res.json();
 
-        if (data.length > 0 && data[0].tag_name) {
-            storageSaveSpotfixVersion(data[0].tag_name);
-            return data[0].tag_name;
+        if (data.length > 0 && data[0].name) {
+            storageSaveSpotfixVersion(data[0].name);
+            return data[0].name;
+        } else {
+            const res = await fetch('https://api.github.com/repos/CleanTalk/SpotFix/releases');
+            data = await res.json();
+            if (data.length > 0 && data[0].tag_name) {
+                storageSaveSpotfixVersion(data[0].tag_name);
+                return data[0].tag_name;
+            }
         }
-
         return null;
     } catch (err) {
         return null;

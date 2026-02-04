@@ -21,19 +21,19 @@ const buildMessage = (action) => ({
 const handleIncomingData = async (data) => {
     switch (data.object) {
     case 'users':
-        await spotfixIndexedDB.put(TABLE_USERS, data.data);
+        await spotfixIndexedDB.put(SPOTFIX_TABLE_USERS, data.data);
         break;
 
     case 'tasks':
         if (data.data.status === 'REMOVED') {
-            await spotfixIndexedDB.delete(TABLE_TASKS, data.data.task_id);
-            const comments = await spotfixIndexedDB.getAll(TABLE_COMMENTS);
+            await spotfixIndexedDB.delete(SPOTFIX_TABLE_TASKS, data.data.task_id);
+            const comments = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_COMMENTS);
             const filteredComments = comments.filter((comment) => +comment.taskId !== +data.data.task_id);
-            await spotfixIndexedDB.clearPut(TABLE_COMMENTS, filteredComments);
+            await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_COMMENTS, filteredComments);
             break;
         }
 
-        await spotfixIndexedDB.put(TABLE_TASKS, {
+        await spotfixIndexedDB.put(SPOTFIX_TABLE_TASKS, {
             taskId: data.data.task_id,
             taskTitle: data.data.name,
             userId: data.data.user_id,
@@ -47,10 +47,10 @@ const handleIncomingData = async (data) => {
 
     case 'comments':
         if (data.data.status === 'REMOVED') {
-            await spotfixIndexedDB.delete(TABLE_COMMENTS, data.data.comment_id);
+            await spotfixIndexedDB.delete(SPOTFIX_TABLE_COMMENTS, data.data.comment_id);
             break;
         }
-        await spotfixIndexedDB.put(TABLE_COMMENTS, {
+        await spotfixIndexedDB.put(SPOTFIX_TABLE_COMMENTS, {
             taskId: data.data.task_id,
             commentId: data.data.comment_id,
             userId: data.data.user_id,
