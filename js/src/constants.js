@@ -1,1 +1,1 @@
-const SPOTFIX_VERSION = "1.1.5";
+const SPOTFIX_VERSION = "1.1.13";
