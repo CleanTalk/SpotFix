@@ -84,10 +84,26 @@
     cursor: pointer;
 }
 
+.doboard_task_widget-container-maximize #doboard_task_widget-description {
+    height: 90%;
+    position: absolute;
+}
+
+.doboard_task_widget-container-maximize #doboard_task_widget-description.is-small {
+    position: relative;
+    height: auto;
+}
+
+.doboard_task_widget-container-maximize .doboard_task_widget-field {
+    display: flex;
+    justify-content: center;
+}
+
 .doboard_task_widget-container-maximize {
     width: 80vw !important;
     max-width: 1120px !important;
-    max-height: calc(100vh - 40px);
+    max-height: 75vh !important;
+    min-height: 75vh !important;
     display: flex;
     flex-direction: column;
     -moz-flex-direction: column;
@@ -100,15 +116,6 @@
     flex-direction: column;
     -moz-flex-direction: column;
 }
-
-    @media (max-height: 800px) {
-        .doboard_task_widget-container {
-              max-height: calc(60vh - 40px);
-        }
-        .doboard_task_widget-container-maximize {
-            max-height: calc(60vh - 40px);
-        }
-    }
 
 .doboard_task_widget-header {
     display: flex;
@@ -159,7 +166,8 @@
     align-items: center;
     border-bottom: 1px #EBF0F4 solid;
     padding: 0 16px;
-    height: 65px;
+    height: 40px;
+    margin-top: 10px;
 }
 
 .doboard_task_widget-content {
@@ -173,6 +181,10 @@
     box-shadow: 0 4px 15px 8px #CACACA40;
     scrollbar-width: none;
     max-height: 60vh;
+}
+
+.doboard_task_widget-container-maximize .doboard_task_widget-content {
+    max-height: inherit;
 }
 
 .doboard_task_widget-element-container {
@@ -268,7 +280,7 @@
     position: relative;
     margin-bottom: 24px;
 }
-.doboard_task_widget-input-container.hidden {
+.doboard_task_widget-input-container.hidden, .doboard_task_widget-hidden {
     display: none;
 }
 
@@ -291,7 +303,7 @@
 }
 
 .doboard_task_widget-input-container textarea.doboard_task_widget-field {
-    height: 94px;
+    min-height: 94px;
     padding-top: 11px;
     padding-bottom: 11px;
 }
@@ -345,16 +357,16 @@
 .doboard_task_widget-login .doboard_task_widget-input-container:last-child {
     margin-bottom: 0;
 }
-.doboard_task_widget-login span {
+.doboard_task_widget-login .doboard_task_widget-login-icon {
     display: block;
     position: relative;
     padding-right: 24px;
     cursor: pointer;
 }
-.doboard_task_widget-login.active span {
+.doboard_task_widget-login.active .doboard_task_widget-login-icon {
     margin-bottom: 24px;
 }
-.doboard_task_widget-login span::after {
+.doboard_task_widget-login .doboard_task_widget-login-icon::after {
     position: absolute;
     top: 0;
     right: 4px;
@@ -369,7 +381,7 @@
     border-left: none;
     transition: all 0.2s ease-in-out;
 }
-.doboard_task_widget-login.active span::after {
+.doboard_task_widget-login.active .doboard_task_widget-login-icon::after {
     transform: rotate(-135deg);
     top: 7px;
 }
@@ -378,7 +390,7 @@
     background: #F9FBFD;
 }
 .doboard_task_widget-submit_button {
-    height: 48px;
+    min-height: 48px;
     width: 100%;
     max-width: 400px;
     margin-bottom: 10px;
@@ -403,6 +415,39 @@
     background: rgba(117, 148, 138, 0.92);
     color: #FFFFFF;
     cursor: wait;
+}
+
+.doboard_task_widget-login-buttons-wrapper {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.doboard_task_widget-login-buttons-wrapper .doboard_task_widget-submit_button {
+    margin-bottom: 0;
+    width: auto;
+    min-height: 32px;
+    font-size: 14px;
+    padding: 4px 12px;
+}
+
+.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-on_phantom_login_page,
+.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-forgot_password-black {
+    flex: 1;
+    background: #FFFFFF;
+    border: 1px solid #22A475;
+    color: #22A475;
+}
+
+.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-on_phantom_login_page:hover,
+.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-forgot_password-black:hover {
+    background: #f0fdf4;
+    color: #1C7857;
+}
+
+.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-login_button,
+.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-restore_password_button {
+    flex: 2;
 }
 
 .doboard_task_widget-issue-title {
@@ -550,9 +595,12 @@
 
 .doboard_task_widget-content.doboard_task_widget-concrete_issue {
     padding: 0;
+    display: flex;
+    flex-direction: column;
 }
 .doboard_task_widget-concrete_issues-container {
     padding: 10px 16px 5px;
+    flex-grow: 1;
 }
 
 .doboard_task_widget-all_issues-container::-webkit-scrollbar,
@@ -908,12 +956,6 @@
 }
 
 
-.doboard_task_widget-send_message_elements_wrapper button {
-    height: 37px;
-    background: none;
-    margin: 0;
-}
-
 .doboard_task_widget-send_message_elements_wrapper img {
     margin: 0;
 }
@@ -952,7 +994,16 @@
     outline: none;
 }
 
-.doboard_task_widget-send_message_button, .doboard_task_widget-send_message_paperclip {
+.doboard_task_widget-send_message_button {
+    display: inline-grid;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 100%;
+    align-items: center;
+    margin: 20px 0 0 0;
+}
+.doboard_task_widget-send_message_paperclip {
     display: inline-grid;
     border: none;
     background: none;
@@ -1228,6 +1279,19 @@
     justify-content: space-between;
 }
 
+.doboard_task_widget-content .tox .tox-toolbar__group {
+    padding: 0 8px !important;
+}
+
+.doboard_task_widget-content .tox-tinymce {
+    border: 1px solid #BBC7D1;
+    border-radius: 4px;
+}
+
+ .doboard_task_widget-content ul, .doboard_task_widget-content ol {
+    margin: 0 0 0 1em !important;
+}
+
 .toggle {
     position: relative;
     display: inline-block;
@@ -1277,4 +1341,77 @@ input:checked + .slider:before {
     color: #707A83;
     cursor: pointer;
 }
+.doboard_task_widget-show_login_form, .doboard_task_widget-on_phantom_login_page, .doboard_task_widget-forgot_password {
+    display: inline-block;
+    cursor: pointer;
+    color: #2F68B7;
+    margin-bottom: 0;
+}
 
+.doboard_task_widget-forgot_password {
+     margin-bottom: 20px;
+}
+
+.doboard_task_widget-login-is-invalid {
+    color: red;
+}
+
+.doboard_task_widget-input-container-login-menu,
+.doboard_task_widget-forgot_password_form-menu{
+    margin: 20px;
+}
+
+
+.doboard_task_widget-bottom-eye-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background: #fff url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgMjAgMjAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDIwIDIwOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8cGF0aCBkPSJNMTAsMTcuNGMtNi4yLDAtOS43LTYuOC05LjgtNy4xYy0wLjEtMC4yLTAuMS0wLjUsMC0wLjdDMC4zLDkuNCwzLjgsMi42LDEwLDIuNmM2LjIsMCw5LjcsNi44LDkuOCw3LjENCgljMC4xLDAuMiwwLjEsMC41LDAsMC43QzE5LjcsMTAuNiwxNi4yLDE3LjQsMTAsMTcuNHogTTEuNywxMGMwLjgsMS4zLDMuNyw1LjksOC4zLDUuOWM0LjYsMCw3LjYtNC42LDguMy01LjkNCgljLTAuOC0xLjMtMy43LTUuOS04LjMtNS45QzUuNCw0LjEsMi40LDguNywxLjcsMTB6IE0xMCwxMy4zYy0xLjgsMC0zLjMtMS41LTMuMy0zLjNTOC4yLDYuOCwxMCw2LjhzMy4zLDEuNSwzLjMsMy4zDQoJUzExLjgsMTMuMywxMCwxMy4zeiBNMTAsOC4zQzksOC4zLDguMyw5LDguMywxMFM5LDExLjgsMTAsMTEuOHMxLjgtMC44LDEuOC0xLjhTMTEsOC4zLDEwLDguM3oiLz4NCjwvc3ZnPg0K) no-repeat center center;
+    background-size: 16px 16px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.doboard_task_widget-bottom-eye-off-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background: #fff url(data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDIwIDIwIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAyMCAyMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggY2xhc3M9InN0MCIgZD0iTTE2LjgsMTMuMmMwLjEsMC4xLDAuMywwLjIsMC41LDAuMmMwLDAsMCwwLDAsMGMwLjIsMCwwLjQtMC4xLDAuNS0wLjNjMC43LTAuOSwxLjQtMS44LDEuOS0yLjgNCgljMC4xLTAuMiwwLjEtMC41LDAtMC43Yy0wLjEtMC4zLTMuNi03LjEtOS44LTcuMWMwLDAsMCwwLDAsMGMtMC42LDAtMS4zLDAuMS0xLjksMC4yQzcuOCwyLjksNy42LDMuMSw3LjUsMy4zczAsMC41LDAuMiwwLjcNCglMMTYuOCwxMy4yeiBNMTAsNC4xYzQuNiwwLDcuNiw0LjYsOC4zLDUuOWMtMC4zLDAuNS0wLjYsMS0xLDEuNUw5LjksNC4xQzkuOSw0LjEsMTAsNC4xLDEwLDQuMXogTTE5LjcsMTguNmwtNC4yLTQuMkw1LjYsNC41DQoJYzAsMCwwLDAsMCwwTDEuNCwwLjNDMS4xLDAsMC42LDAsMC4zLDAuM1MwLDEuMSwwLjMsMS40TDMuOSw1QzIuNCw2LjMsMS4xLDcuOSwwLjIsOS42Yy0wLjEsMC4yLTAuMSwwLjUsMCwwLjcNCgljMC4xLDAuMywzLjYsNy4xLDkuOSw3LjFjMS43LDAsMy40LTAuNSw0LjktMS41bDMuOCwzLjhjMC4xLDAuMSwwLjMsMC4yLDAuNSwwLjJzMC40LTAuMSwwLjUtMC4yQzIwLDE5LjQsMjAsMTguOSwxOS43LDE4LjZ6DQoJIE04LjMsOS40bDIuMywyLjNjLTAuMiwwLjEtMC40LDAuMS0wLjYsMC4xYy0wLjIsMC0wLjUsMC0wLjctMC4xYy0wLjItMC4xLTAuNC0wLjItMC42LTAuNGMtMC4yLTAuMi0wLjMtMC40LTAuNC0wLjYNCgljLTAuMS0wLjItMC4xLTAuNS0wLjEtMC43QzguMiw5LjgsOC4yLDkuNiw4LjMsOS40eiBNMTAsMTUuOWMtNC42LDAtNy42LTQuNi04LjMtNS45YzAuOS0xLjUsMi0yLjgsMy4zLTMuOWwyLjIsMi4yDQoJQzcuMSw4LjQsNyw4LjYsNyw4LjdDNi44LDkuMSw2LjcsOS42LDYuNywxMGMwLDAuNCwwLjEsMC45LDAuMiwxLjNjMC4yLDAuNCwwLjQsMC44LDAuNywxLjFjMC4zLDAuMywwLjcsMC42LDEuMSwwLjcNCgljMC40LDAuMiwwLjgsMC4yLDEuMywwLjJjMC40LDAsMC45LTAuMSwxLjMtMC4zYzAuMi0wLjEsMC4zLTAuMiwwLjUtMC4zbDIuMSwyLjFDMTIuNiwxNS41LDExLjMsMTUuOSwxMCwxNS45eiIvPg0KPC9zdmc+DQo=) no-repeat center center;
+    background-size: 16px 16px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    opacity: 0.5;
+    z-index: 10;
+
+}
+.doboard_task_widget-input-container-textarea {
+    position: relative;
+    margin-top: 20px;
+}
+
+.doboard_task_widget-field-textarea-label {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    padding: 0 5px;
+    color: #666;
+    background-color: white;
+    transition: 0.2s ease all;
+    pointer-events: none;
+}
+
+.doboard_task_widget-input-container-textarea .doboard_task_widget-field ~ label {
+    top: -10px;
+    left: 14px;
+    font-size: 10px;
+    color: #252A2F;
+}

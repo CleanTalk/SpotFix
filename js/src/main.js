@@ -30,6 +30,22 @@ function loadBotDetector() {
     script.async = true;
     script.id = 'ct-bot-detector-script';
     document.head.appendChild(script);
+    loadTinyMCE();
+}
+
+/**
+ * Downloads TinyMCE script from doboard.com
+ */
+function loadTinyMCE() {
+    const script = document.createElement('script');
+    script.src = 'https://doboard.com/tinymce/tinymce.min.js';
+    script.async = true;
+
+    script.onload = function() {
+       addIconPack();
+    };
+
+    document.head.appendChild(script);
 }
 
 document.addEventListener('selectionchange', function(e) {
