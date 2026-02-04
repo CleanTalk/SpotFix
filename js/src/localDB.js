@@ -1,20 +1,20 @@
-const INDEXED_DB_NAME = 'spotfix-localDB';
-const indexedDBVersion = 1;
+const SPOTFIX_INDEXED_DB_NAME = 'spotfix-localDB';
+const spotfixIndexedDBVersion = 1;
 
-const TABLE_USERS = 'users';
-const TABLE_TASKS = 'tasks';
-const TABLE_COMMENTS = 'comments';
+const SPOTFIX_TABLE_USERS = 'users';
+const SPOTFIX_TABLE_TASKS = 'tasks';
+const SPOTFIX_TABLE_COMMENTS = 'comments';
 
 const LOCAL_DATA_BASE_TABLE = [
-    { name: TABLE_USERS, keyPath: 'user_id' },
-    { name: TABLE_TASKS, keyPath: 'taskId' },
-    { name: TABLE_COMMENTS, keyPath: 'commentId' },
+    { name: SPOTFIX_TABLE_USERS, keyPath: 'user_id' },
+    { name: SPOTFIX_TABLE_TASKS, keyPath: 'taskId' },
+    { name: SPOTFIX_TABLE_COMMENTS, keyPath: 'commentId' },
 ];
 
 let dbPromise = null;
 
 function getDBName() {
-    return `${INDEXED_DB_NAME}_${
+    return `${SPOTFIX_INDEXED_DB_NAME}_${
         localStorage.getItem('spotfix_session_id') ||
         localStorage.getItem('spotfix_project_token')
     }`;
@@ -33,10 +33,10 @@ function openIndexedDB(name, version) {
                         keyPath: item.keyPath,
                     });
 
-                    if (item.name === TABLE_COMMENTS) {
+                    if (item.name === SPOTFIX_TABLE_COMMENTS) {
                         store.createIndex('taskId', 'taskId');
                     }
-                    if (item.name === TABLE_TASKS) {
+                    if (item.name === SPOTFIX_TABLE_TASKS) {
                         store.createIndex('userId', 'userId');
                     }
                 }
@@ -50,7 +50,7 @@ function openIndexedDB(name, version) {
 
 function getDB() {
     if (!dbPromise) {
-        dbPromise = openIndexedDB(getDBName(), indexedDBVersion);
+        dbPromise = openIndexedDB(getDBName(), spotfixIndexedDBVersion);
     }
     return dbPromise;
 }

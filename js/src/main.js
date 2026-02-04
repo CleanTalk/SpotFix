@@ -19,15 +19,32 @@ function spotFixInit() {
 }
 
 function loadBotDetector() {
-if (document.querySelector('script[src="https://moderate.cleantalk.org/ct-bot-detector-wrapper.js"]') ||
-    document.getElementById('ct-bot-detector-script')) {
+
+    const detector = document.querySelectorAll('script[src^="https://fd.cleantalk.org/ct-bot-detector-wrapper.js"]');
+    if (detector.length > 0 || document.getElementById('ct-bot-detector-script')) {
         return;
     }
 
     const script = document.createElement('script');
-        script.src = 'https://moderate.cleantalk.org/ct-bot-detector-wrapper.js';
-        script.async = true;
-        script.id = 'ct-bot-detector-script';
+    script.src = 'https://fd.cleantalk.org/ct-bot-detector-wrapper.js';
+    script.async = true;
+    script.id = 'ct-bot-detector-script';
+    document.head.appendChild(script);
+    loadTinyMCE();
+}
+
+/**
+ * Downloads TinyMCE script from doboard.com
+ */
+function loadTinyMCE() {
+    const script = document.createElement('script');
+    script.src = 'https://doboard.com/tinymce/tinymce.min.js';
+    script.async = true;
+
+    script.onload = function() {
+       addIconPack();
+    };
+
     document.head.appendChild(script);
 }
 

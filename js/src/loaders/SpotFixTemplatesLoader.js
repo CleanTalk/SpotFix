@@ -39,9 +39,7 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-all_issues-container">
         </div>
         <div class="doboard_task_widget_tasks_list">
-            <a rel="nofollow" target="_blank" href="https://doboard.com/spotfix">
-             doBoard / SpotFix
-            </a>
+            <span>doBoard / SpotFix</span>
         </div>
     </div>
 </div>`;
@@ -79,21 +77,11 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-concrete_issues-container">
         </div>
         <div class="doboard_task_widget-send_message">
-            <div class="doboard_task_widget-send_message_elements_wrapper">
-                <button type="button" class="doboard_task_widget-send_message_paperclip">
-                    <img src="{{buttonPaperClip}}" alt="Attach a file">
-                    <div class="doboard_task_widget-paperclip-tooltip">
-                        Upload up to 5 JPG, PNG, GIF, PDF, TXT or DOC files (5MB each, 25MB total).
-                    </div>
-                </button>
-    
-                <div class="doboard_task_widget-send_message_input_wrapper">
-                    <textarea name="doboard_task_widget_message" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
-                </div>
-    
-                <button type="button" class="doboard_task_widget-send_message_button">
-                    <img src="{{buttonSendMessage}}" alt="Send message" title="Send message">
-                </button>
+             <textarea name="doboard_task_widget_message" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
+            <div>
+              <div class="doboard_task_widget-field">
+                <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button doboard_task_widget-send_message_button">Submit</button>
+            </div>
             </div>
             <div class="doboard_task_widget__file-upload__wrapper" id="doboard_task_widget__file-upload__wrapper">
                 <div class="doboard_task_widget__file-upload__list-header">Attached files</div>
@@ -149,7 +137,7 @@ class SpotFixTemplatesLoader {
             <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
         </div>
     </div>
-    <div class="doboard_task_widget-content doboard_task_widget-create_issue">
+    <div class="doboard_task_widget-content doboard_task_widget-create_issue" style="display: flex; flex-direction: column">
 
         <div class="doboard_task_widget-element-container">
             <span>
@@ -160,37 +148,74 @@ class SpotFixTemplatesLoader {
 
         <div class="doboard_task_widget-input-container">
             <input id="doboard_task_widget-title" class="doboard_task_widget-field" name="title" value="{{selectedText}}" required>
-            <label for="doboard_task_widget-title">Report about</label>
+            <label class="spotfix_placeholder_title" for="doboard_task_widget-title">Report about</label>
         </div>
 
-        <div class="doboard_task_widget-input-container">
-            <textarea id="doboard_task_widget-description" class="doboard_task_widget-field" name="description" required></textarea>
-            <label for="doboard_task_widget-description">Description</label>
+        <div class="doboard_task_widget-input-container doboard_task_widget-input-container-textarea">
+            <textarea id="doboard_task_widget-description" class="doboard_task_widget-field" name="description" placeholder=" " required></textarea>
+            <label for="doboard_task_widget-description" class="doboard_task_widget-field-textarea-label" >Description</label>
         </div>
 
         <div class="doboard_task_widget-login">
 
-            <span>If you want to receive notifications by email write here you email contacts.</span>
+            <span  class="doboard_task_widget-login-icon" >If you want to receive notifications by email write here you email contacts.</span>
 
             <div class="doboard_task_widget-accordion">
-
-                <div class="doboard_task_widget-input-container">
-                    <input id="doboard_task_widget-user_name" class="doboard_task_widget-field" type="text" name="user_name">
-                    <label for="doboard_task_widget-user_name">Nickname</label>
+            
+                   <div class="doboard_task_widget-input-container-phantom">
+                        <div class="doboard_task_widget-input-container">
+                            <input id="doboard_task_widget-user_name" class="doboard_task_widget-field" type="text" name="user_name">
+                            <label for="doboard_task_widget-user_name">Nickname</label>
+                        </div>
+        
+                        <div class="doboard_task_widget-input-container">
+                            <input id="doboard_task_widget-user_email" class="doboard_task_widget-field" type="email" name="user_email">
+                            <label for="doboard_task_widget-user_email">Email</label>
+                        </div>
+        
+                        <div class="doboard_task_widget-input-container hidden">
+                            <input id="doboard_task_widget-user_password" class="doboard_task_widget-field" type="password" name="user_password">
+                            <label for="doboard_task_widget-user_password">Password</label>
+                        </div>
+        
+                        <i>Note about DoBoard register and accepting email notifications about tasks have to be here.</i>
+                        </br>
+                        <i>If you are a doBoard user, use same Email and password as at <a href="https://doboard.com" target="_blank" rel="nofollow">doboard.com</a>
+                            on the <span id="doboard_task_widget-show_login_form" class="doboard_task_widget-show_login_form">login page</span>
+                         </i>
+                 </div> 
+                     
+                 <div id="doboard_task_widget-input-container-login" class="doboard_task_widget-input-container-login doboard_task_widget-hidden">
+                        <div class="doboard_task_widget-input-container">
+                            <input id="doboard_task_widget-login_email" class="doboard_task_widget-field" type="email" name="login_email">
+                            <label for="doboard_task_widget-login_email">Email</label>
+                        </div>
+                        <div class="doboard_task_widget-input-container">
+                            <input id="doboard_task_widget-login_password" class="doboard_task_widget-field" type="password" name="login_password">
+                            <label for="doboard_task_widget-login_password">Password</label>
+                            <span class="doboard_task_widget-bottom-eye-icon" id="doboard_task_widget-password-toggle"></span>
+                        </div>
+                        <div>  
+                                <span id="doboard_task_widget-forgot_password" class="doboard_task_widget-forgot_password">Forgot Password?</span>
+                        </div> 
+                        <div class="doboard_task_widget-login-buttons-wrapper">
+                            <button id="doboard_task_widget-on_phantom_login_page" class="doboard_task_widget-submit_button">Cancel</button>
+                            <button id="doboard_task_widget-login_button" class="doboard_task_widget-submit_button">Log in</button>
+                        </div>
+                        <div>
+                            <i><span id="doboard_task_widget-login-is-invalid" class="doboard_task_widget-login-is-invalid doboard_task_widget-hidden">Login or password is invalid </span></i>
+                        </div>
+                 </div>
+                 <div id="doboard_task_widget-container-login-forgot-password-form" class="doboard_task_widget-forgot_password_form doboard_task_widget-hidden">
+                     <div class="doboard_task_widget-input-container">
+                         <input id="doboard_task_widget-forgot_password_email" class="doboard_task_widget-field" type="email" name="forgot_password_email">
+                         <label for="doboard_task_widget-forgot_password_email">Email</label>
+                     </div>
+                     <div class="doboard_task_widget-login-buttons-wrapper">
+                         <button id="doboard_task_widget-forgot_password-black" class="doboard_task_widget-submit_button">Cancel</button>
+                         <button id="doboard_task_widget-restore_password_button" class="doboard_task_widget-submit_button">Restore password</button>
+                     </div>
                 </div>
-
-                <div class="doboard_task_widget-input-container">
-                    <input id="doboard_task_widget-user_email" class="doboard_task_widget-field" type="email" name="user_email">
-                    <label for="doboard_task_widget-user_email">Email</label>
-                </div>
-
-                <div class="doboard_task_widget-input-container hidden">
-                    <input id="doboard_task_widget-user_password" class="doboard_task_widget-field" type="password" name="user_password">
-                    <label for="doboard_task_widget-user_password">Password</label>
-                </div>
-
-                <i>Note about DoBoard register and accepting email notifications about tasks have to be here.</i>
-
             </div>
 
         </div>
@@ -214,8 +239,8 @@ class SpotFixTemplatesLoader {
     <div class="{{avatarCSSClass}}" style="{{avatarStyle}}">
         <span class="doboard_task_widget-avatar-initials {{initialsClass}}">{{taskAuthorInitials}}</span>
     </div>
-    <div class="doboard_task_widget-description_container">
-        <div class="doboard_task_widget-task_title">
+    <div class="doboard_task_widget-description_container" style="cursor: default">
+        <div class="doboard_task_widget-task_title" style="cursor: pointer">
             <div class="doboard_task_widget-task_title-details">
                 <span class="doboard_task_widget-task_title-text">{{taskTitle}}</span>
                 <div class="doboard_task_widget-task_title_public_status_img">
@@ -228,7 +253,9 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-bottom">
             <div class="doboard_task_widget-task_page_url">
                 <img src="{{iconLinkChain}}" />
-                <a title="The spot is located on this {{taskPageUrl}}" href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
+                   <a class="spotfix_widget_task_url" title="The spot is located on this {{taskPageUrlFull}}">{{taskPageUrl}}</a>
+                   <a class="spotfix_widget_task_url-short" style="display: none" title="The spot is located on this {{taskPageUrlFull}}">{{taskFormattedPageUrl}}</a>
+                   <a class="spotfix_widget_task_url-full" style="display: none" title="The spot is located on this {{taskPageUrlFull}}">{{taskPageUrlFull}}</a>
              </div>
                 {{statusFixedHtml}}
         </div>
@@ -284,6 +311,38 @@ class SpotFixTemplatesLoader {
                     <span class="logout_button">Log out</span>
                 </span>
             </div>
+            
+            <div id="doboard_task_widget-input-container-login" class="doboard_task_widget-input-container-login doboard_task_widget-input-container-login-menu ">
+                <div class="doboard_task_widget-input-container">
+                    <input id="doboard_task_widget-login_email" class="doboard_task_widget-field" type="email" name="login_email">
+                    <label for="doboard_task_widget-login_email">Email</label>
+                </div>
+                <div class="doboard_task_widget-input-container">
+                    <input id="doboard_task_widget-login_password" class="doboard_task_widget-field" type="password" name="login_password">
+                    <label for="doboard_task_widget-login_password">Password</label>
+                    <span class="doboard_task_widget-bottom-eye-icon" id="doboard_task_widget-password-toggle"></span>
+                </div>
+                <div>
+                        <span id="doboard_task_widget-forgot_password" class="doboard_task_widget-forgot_password">Forgot Password?</span>
+                </div>
+                <div class="doboard_task_widget-field">
+                    <button id="doboard_task_widget-login_button" class="doboard_task_widget-submit_button">Log in</button>
+                </div>
+                <div>
+                    <i><span id="doboard_task_widget-login-is-invalid" class="doboard_task_widget-login-is-invalid doboard_task_widget-hidden">Login or password is invalid </span></i>
+                </div>
+             </div>
+             <div id="doboard_task_widget-container-login-forgot-password-form" class="doboard_task_widget-forgot_password_form doboard_task_widget-forgot_password_form-menu doboard_task_widget-hidden">
+                 <div class="doboard_task_widget-input-container">
+                     <input id="doboard_task_widget-forgot_password_email" class="doboard_task_widget-field" type="email" name="forgot_password_email">
+                     <label for="doboard_task_widget-forgot_password_email">Email</label>
+                 </div>
+                 <div class="doboard_task_widget-login-buttons-wrapper">
+                     <button id="doboard_task_widget-forgot_password-black" class="doboard_task_widget-submit_button">Cancel</button>
+                     <button id="doboard_task_widget-restore_password_button" class="doboard_task_widget-submit_button">Restore password</button>
+                 </div>
+            </div>
+            
         </div>
         </div>
         <div style="padding: 16px; font-size: 13px; position: sticky; bottom: 0">
@@ -293,6 +352,10 @@ class SpotFixTemplatesLoader {
              doBoard
             </a></span>
         </div>
+        <div class="doboard_task_widget-message-wrapper hidden">
+            <span id="doboard_task_widget-error_message-header"></span>
+        <div id="doboard_task_widget-error_message"></div>
+    </div>
     </div>
 </div>`;
     }
