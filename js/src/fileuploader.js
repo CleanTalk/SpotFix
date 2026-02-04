@@ -388,4 +388,50 @@ class FileUploader {
 
         return results;
     }
+
+     /**
+     * Make a screenshot and add it as a file
+     * @returns {Promise<void>}
+     */
+    async makeScreenshot() {
+        if (typeof html2canvas === 'undefined') {
+            console.error("SpotFix Error: in Screenshot Library");
+            return null;
+        }
+        try {
+            const canvas = await html2canvas(document.body, {
+                useCORS: true,
+                allowTaint: true,
+                logging: false,
+                scale: window.devicePixelRatio || 1
+            });
+
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            if (!blob) return null;
+
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+
+            const fileName = `Screenshot_${hours}-${minutes}_${day}_${month}_${year}.png`;
+            const file = new File([blob], fileName, {
+                type: 'image/png',
+                lastModified: Date.now()
+            });
+
+            if (this.uploaderWrapper && this.uploaderWrapper.style.display !== 'block') {
+                this.uploaderWrapper.style.display = 'block';
+            }
+
+            this.clearError();
+            this.addFile(file);
+
+        } catch (err) {
+            console.error("SpotFix Error: creating screenshot:", err);
+            return null;
+        }
+    }
 }

@@ -193,6 +193,7 @@ function clearLocalstorageOnLogout () {
     localStorage.removeItem('spotfix_email');
     localStorage.removeItem('spotfix_session_id');
     localStorage.removeItem('spotfix_user_id');
+    localStorage.removeItem('spotfix_accounts');
     localStorage.setItem('spotfix_widget_is_closed', '1');
     wsSpotfix.close();
 }

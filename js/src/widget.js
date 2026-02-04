@@ -158,8 +158,9 @@ class CleanTalkWidgetDoboard {
                 let userEmail = '';
                 let userPassword = '';
                 const loginSectionElement = document.querySelector('.doboard_task_widget-login');
+                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
 
-                if ( loginSectionElement && loginSectionElement.classList.contains('active') ) {
+                if ( !sessionIdExists && loginSectionElement && loginSectionElement.classList.contains('active') ) {
                     const userEmailElement = document.getElementById('doboard_task_widget-user_email');
                     const userNameElement = document.getElementById('doboard_task_widget-user_name');
                     const userPasswordElement = document.getElementById('doboard_task_widget-user_password');
@@ -269,6 +270,233 @@ class CleanTalkWidgetDoboard {
                 storageSetWidgetIsClosed(false);
                 hideContainersSpinner(false);
             });
+        }
+    }
+
+
+    resetLoginForm() {
+        const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
+        const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
+        const submitButton = document.getElementById('doboard_task_widget-submit_button');
+
+        if (loginContainer) {
+            loginContainer.classList.add('doboard_task_widget-hidden');
+        }
+        if (phantomContainer) {
+            phantomContainer.classList.remove('doboard_task_widget-hidden');
+        }
+        if (submitButton) {
+            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
+        }
+    }
+    bindShowLoginFormEvents() {
+        const showLoginButton = document.getElementById('doboard_task_widget-show_login_form');
+        const showPhantomLoginButton = document.getElementById('doboard_task_widget-on_phantom_login_page');
+        const forgotPasswordButton = document.getElementById('doboard_task_widget-forgot_password');
+        const forgotPasswordButtonBlack = document.getElementById('doboard_task_widget-forgot_password-black');
+        const loginButton = document.getElementById('doboard_task_widget-login_button');
+        const restorePasswordButton = document.getElementById('doboard_task_widget-restore_password_button');
+
+        if (showLoginButton) {
+            showLoginButton.addEventListener('click', async () => {
+                const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
+                const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
+                const submitButton = document.getElementById('doboard_task_widget-submit_button');
+                if (loginContainer) {
+                    loginContainer.classList.toggle('doboard_task_widget-hidden');
+                    if (submitButton) {
+                        if (loginContainer.classList.contains('doboard_task_widget-hidden')) {
+                            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
+                        } else {
+                            submitButton.closest('.doboard_task_widget-field').classList.add('doboard_task_widget-hidden');
+                        }
+                    }
+                }
+                if (phantomContainer) {
+                    phantomContainer.classList.toggle('doboard_task_widget-hidden');
+                }
+            })
+        }
+        if (showPhantomLoginButton) {
+            showPhantomLoginButton.addEventListener('click', async () => {
+                const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
+                const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
+                const submitButton = document.getElementById('doboard_task_widget-submit_button');
+                if (loginContainer) {
+                    loginContainer.classList.toggle('doboard_task_widget-hidden');
+                    if (submitButton) {
+                        if (loginContainer.classList.contains('doboard_task_widget-hidden')) {
+                            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
+                        } else {
+                            submitButton.closest('.doboard_task_widget-field').classList.add('doboard_task_widget-hidden');
+                        }
+                    }
+                }
+                if (phantomContainer) {
+                    phantomContainer.classList.toggle('doboard_task_widget-hidden');
+                }
+            })
+        }
+        if (forgotPasswordButton) {
+            forgotPasswordButton.addEventListener('click', async () => {
+                const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
+                const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
+
+                if (forgotPasswordForm) {
+                    forgotPasswordForm.classList.remove('doboard_task_widget-hidden');
+                }
+                if (loginContainer) {
+                    loginContainer.classList.add('doboard_task_widget-hidden');
+                }
+            })
+
+            forgotPasswordButtonBlack.addEventListener('click', async () => {
+                const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
+                const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
+                const submitButton = document.getElementById('doboard_task_widget-submit_button');
+
+                if (forgotPasswordForm) {
+                    forgotPasswordForm.classList.add('doboard_task_widget-hidden');
+                }
+                if (loginContainer) {
+                    loginContainer.classList.remove('doboard_task_widget-hidden');
+                    if (submitButton) {
+                        submitButton.closest('.doboard_task_widget-field').classList.add('doboard_task_widget-hidden');
+                    }
+                }
+            })
+        }
+        const forgotPasswordButtonMenu = document.querySelector('.doboard_task_widget-input-container-login-menu #doboard_task_widget-forgot_password');
+        if (forgotPasswordButtonMenu) {
+            forgotPasswordButtonMenu.addEventListener('click', async () => {
+                const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
+                const loginContainer = document.querySelector('.doboard_task_widget-input-container-login-menu');
+
+                if (forgotPasswordForm) {
+                    forgotPasswordForm.classList.remove('doboard_task_widget-hidden');
+                }
+                if (loginContainer) {
+                    loginContainer.classList.add('doboard_task_widget-hidden');
+                }
+            });
+        }
+        const forgotPasswordButtonBlackMenu = document.querySelector('.doboard_task_widget-input-container-login-menu ~ #doboard_task_widget-container-login-forgot-password-form #doboard_task_widget-forgot_password-black');
+        if (forgotPasswordButtonBlackMenu) {
+             forgotPasswordButtonBlackMenu.addEventListener('click', async () => {
+                const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
+                const loginContainer = document.querySelector('.doboard_task_widget-input-container-login-menu');
+
+                if (forgotPasswordForm) {
+                    forgotPasswordForm.classList.add('doboard_task_widget-hidden');
+                }
+                if (loginContainer) {
+                    loginContainer.classList.remove('doboard_task_widget-hidden');
+                }
+            });
+        }
+        if (loginButton) {
+            loginButton.addEventListener('click', async () => {
+                const userEmailElement = document.getElementById('doboard_task_widget-login_email');
+                const userPasswordElement = document.getElementById('doboard_task_widget-login_password');
+                document.querySelector('.doboard_task_widget-login-is-invalid').classList.add('doboard_task_widget-hidden');
+
+                const userEmail = userEmailElement.value.trim();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!userEmail) {
+                    userEmailElement.style.borderColor = 'red';
+                    userEmailElement.focus();
+                    userEmailElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                } else if (!emailRegex.test(userEmail)) {
+                    userEmailElement.style.borderColor = 'red';
+                    userEmailElement.focus();
+                    userEmailElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                }
+
+                const userPassword = userPasswordElement.value;
+                if (!userPassword) {
+                    userPasswordElement.style.borderColor = 'red';
+                    userPasswordElement.focus();
+                    userPasswordElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                } else if (userPassword.length < 6) {
+                    userPasswordElement.style.borderColor = 'red';
+                    userPasswordElement.focus();
+                    userPasswordElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                }
+
+                try {
+                    await loginUser({
+                        userEmail: userEmail,
+                        userPassword: userPassword
+                    })(this.registrationShowMessage);
+                        this.setUserMenuData();
+
+                        const submitButton = document.getElementById('doboard_task_widget-submit_button');
+                        if (submitButton) {
+                            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
+                        }
+
+                } catch (error) {
+                    document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
+                }
+                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+                const email = localStorage.getItem('spotfix_email');
+                if (sessionIdExists && email && !email.includes('spotfix_')) {
+                    const loginEl= document.querySelector('.doboard_task_widget-login');
+                    loginEl?.classList?.add('doboard_task_widget-hidden');
+                } else {
+                    document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
+                }
+            })
+        }
+        const passwordToggle = document.getElementById('doboard_task_widget-password-toggle');
+        const passwordInput = document.getElementById('doboard_task_widget-login_password');
+
+        if (passwordToggle && passwordInput) {
+            passwordToggle.addEventListener('click', function() {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                this.classList.toggle('doboard_task_widget-bottom-eye-off-icon');
+                this.classList.toggle('doboard_task_widget-bottom-eye-icon');
+            });
+        }
+        if (restorePasswordButton) {
+            restorePasswordButton.addEventListener('click', async () => {
+                const userEmailElement = document.getElementById('doboard_task_widget-forgot_password_email');
+                const userEmail = userEmailElement.value.trim();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!userEmail) {
+                    userEmailElement.style.borderColor = 'red';
+                    userEmailElement.focus();
+                    userEmailElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                } else if (!emailRegex.test(userEmail)) {
+
+                    userEmailElement.style.borderColor = 'red';
+                    userEmailElement.focus();
+
+                    return;
+                }
+
+                try {
+                    await forgotPassword(userEmail)(this.registrationShowMessage);
+                } catch (error) {
+                    this.registrationShowMessage(error.message, 'error');
+                }
+            })
         }
     }
 
@@ -448,6 +676,41 @@ class CleanTalkWidgetDoboard {
                 }
                 // bind creation events
                 this.bindCreateTaskEvents();
+                this.bindShowLoginFormEvents();
+
+                tinymce.init({
+                    selector: '#doboard_task_widget-description',
+                    plugins: 'link lists',
+                    menubar: false,
+                    statusbar: false,
+                    toolbar_location: 'bottom',
+                    toolbar: 'screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
+                    height: 120,
+                    icons: 'my_icon_pack',
+                    file_picker_types: 'file image media',
+                    setup: function (editor) {
+                        editor.on('change', function () {
+                            editor.save();
+                        });
+                        // editor.ui.registry.addButton('attachmentButton', {
+                        //     icon: 'paperclip',
+                        //     tooltip: 'Add file',
+                        //         disabled: true,
+                        //         onAction: (e) => {
+                        //          //  fileUploader?.fileInput?.click(e);
+                        //
+                        //         },
+                        //     });
+                         editor.ui.registry.addButton('screenshotButton', {
+                             icon: 'screenshot',
+                             tooltip: 'In development',
+                             disabled: true,
+                             onAction: (e) => {
+                               // fileUploader?.makeScreenshot();
+                             },
+                         });
+                     }
+                    })
                 break;
             case 'wrap':
                 await this.getTaskCount();
@@ -601,6 +864,8 @@ class CleanTalkWidgetDoboard {
                 document.body.appendChild(widgetContainer);
                 setToggleStatus(this);
                 checkLogInOutButtonsVisible();
+                this.bindShowLoginFormEvents();
+                this.bindWidgetInputsInteractive();
 
                 break;
         case 'concrete_issue':
@@ -747,7 +1012,43 @@ class CleanTalkWidgetDoboard {
                     }
                     textarea.addEventListener('input', handleTextareaChange)
                     textarea.addEventListener('change', handleTextareaChange)
-                }
+
+                    const fileUploader = this.fileUploader;
+
+                    tinymce.init({
+                        selector: '.doboard_task_widget-send_message_input',
+                        plugins: 'link lists',
+                        menubar: false,
+                        statusbar: false,
+                        toolbar_location: 'bottom',
+                        toolbar: 'attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
+                        height: 120,
+                        icons: 'my_icon_pack',
+                        file_picker_types: 'file image media',
+                        setup: function (editor) {
+                            editor.on('change', function () {
+                                editor.save();
+                            });
+                            editor.ui.registry.addButton('attachmentButton', {
+                                icon: 'paperclip',
+                                tooltip: 'Add file',
+                                    disabled: true,
+                                    onAction: (e) => {
+                                       fileUploader?.fileInput?.click(e);
+
+                                    },
+                                });
+                                editor.ui.registry.addButton('screenshotButton', {
+                                    icon: 'screenshot',
+                                    tooltip: 'Screenshot',
+                                    disabled: true,
+                                    onAction: (e) => {
+                                       fileUploader?.makeScreenshot();
+                                    },
+                                });
+                            }
+                        });
+                    }
 
                 // Hide spinner preloader
                 hideContainersSpinner();
@@ -840,7 +1141,7 @@ class CleanTalkWidgetDoboard {
         }) || '';
 
         document.querySelector('#doboard_task_widget-user_menu-logout_button')?.addEventListener('click', () => {
-            logoutUserDoboard(this.params.projectToken, this.params.accountId).then(() => {this.hide()});
+            logoutUserDoboard(this.params.projectToken);
         }) || '';
 
         document.getElementById('addNewTaskButton')?.addEventListener('click', () => {
@@ -894,6 +1195,7 @@ class CleanTalkWidgetDoboard {
 
         document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {
             this.createWidgetElement(this.type_name)
+            this.bindWidgetInputsInteractive();
         }) || '';
 
         wsSpotfix.onMessage(() => {
@@ -1087,6 +1389,7 @@ class CleanTalkWidgetDoboard {
             await registerUser(taskDetails)(this.registrationShowMessage);
             if ( taskDetails.userPassword ) {
                 await loginUser(taskDetails)(this.registrationShowMessage);
+                checkLogInOutButtonsVisible();
             }
         }
 
@@ -1276,5 +1579,53 @@ class CleanTalkWidgetDoboard {
         return str;
     }
     return '';
+}
+
+/**
+ * Set user menu data with current user information
+ */
+async setUserMenuData() {
+    const params = this.params;
+
+    // Get user data
+    let userData = null;
+    if (localStorage.getItem('spotfix_session_id')) {
+        try {
+            userData = await getUserDetails(params);
+        } catch (error) {
+            console.error('Error fetching user details:', error);
+        }
+    }
+
+    // Update user menu header
+    const userNameElement = document.querySelector('.doboard_task_widget-user_menu-header span[style*="font-size: 16px"]');
+    const emailElement = document.querySelector('.doboard_task_widget-user_menu-header span[style*="font-size: 12px"]');
+    const avatarElement = document.querySelector('.doboard_task_widget-user_menu-header-avatar');
+
+    if (userNameElement) {
+        if (userData && userData.name) {
+            userNameElement.innerText = userData.name;
+        } else {
+            userNameElement.innerText = 'Guest';
+        }
+    }
+
+    if (emailElement) {
+        if (userData && userData.email) {
+            emailElement.innerText = userData.email;
+        } else {
+            const email = localStorage.getItem('spotfix_email') || '';
+            emailElement.innerText = email.includes('spotfix_') ? '' : email;
+        }
+    }
+
+    if (avatarElement) {
+        if (userData && userData.avatar && userData.avatar.s) {
+            avatarElement.src = userData.avatar.s;
+        } else {
+            // Reset to default avatar or remove src
+            avatarElement.src = '';
+        }
+    }
 }
 }
