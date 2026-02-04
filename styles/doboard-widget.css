@@ -956,12 +956,6 @@
 }
 
 
-.doboard_task_widget-send_message_elements_wrapper button {
-    height: 37px;
-    background: none;
-    margin: 0;
-}
-
 .doboard_task_widget-send_message_elements_wrapper img {
     margin: 0;
 }
@@ -1000,7 +994,16 @@
     outline: none;
 }
 
-.doboard_task_widget-send_message_button, .doboard_task_widget-send_message_paperclip {
+.doboard_task_widget-send_message_button {
+    display: inline-grid;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 100%;
+    align-items: center;
+    margin: 20px 0 0 0;
+}
+.doboard_task_widget-send_message_paperclip {
     display: inline-grid;
     border: none;
     background: none;
@@ -1276,6 +1279,19 @@
     justify-content: space-between;
 }
 
+.doboard_task_widget-content .tox .tox-toolbar__group {
+    padding: 0 8px !important;
+}
+
+.doboard_task_widget-content .tox-tinymce {
+    border: 1px solid #BBC7D1;
+    border-radius: 4px;
+}
+
+ .doboard_task_widget-content ul, .doboard_task_widget-content ol {
+    margin: 0 0 0 1em !important;
+}
+
 .toggle {
     position: relative;
     display: inline-block;
@@ -1376,4 +1392,26 @@ input:checked + .slider:before {
     opacity: 0.5;
     z-index: 10;
 
+}
+.doboard_task_widget-input-container-textarea {
+    position: relative;
+    margin-top: 20px;
+}
+
+.doboard_task_widget-field-textarea-label {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    padding: 0 5px;
+    color: #666;
+    background-color: white;
+    transition: 0.2s ease all;
+    pointer-events: none;
+}
+
+.doboard_task_widget-input-container-textarea .doboard_task_widget-field ~ label {
+    top: -10px;
+    left: 14px;
+    font-size: 10px;
+    color: #252A2F;
 }

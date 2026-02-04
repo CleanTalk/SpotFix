@@ -341,7 +341,7 @@ class CleanTalkWidgetDoboard {
             forgotPasswordButton.addEventListener('click', async () => {
                 const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
                 const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
-                
+
                 if (forgotPasswordForm) {
                     forgotPasswordForm.classList.remove('doboard_task_widget-hidden');
                 }
@@ -371,7 +371,7 @@ class CleanTalkWidgetDoboard {
             forgotPasswordButtonMenu.addEventListener('click', async () => {
                 const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
                 const loginContainer = document.querySelector('.doboard_task_widget-input-container-login-menu');
-                
+
                 if (forgotPasswordForm) {
                     forgotPasswordForm.classList.remove('doboard_task_widget-hidden');
                 }
@@ -462,7 +462,7 @@ class CleanTalkWidgetDoboard {
         }
         const passwordToggle = document.getElementById('doboard_task_widget-password-toggle');
         const passwordInput = document.getElementById('doboard_task_widget-login_password');
-        
+
         if (passwordToggle && passwordInput) {
             passwordToggle.addEventListener('click', function() {
                 const isPassword = passwordInput.type === 'password';
@@ -677,6 +677,40 @@ class CleanTalkWidgetDoboard {
                 // bind creation events
                 this.bindCreateTaskEvents();
                 this.bindShowLoginFormEvents();
+
+                tinymce.init({
+                    selector: '#doboard_task_widget-description',
+                    plugins: 'link lists',
+                    menubar: false,
+                    statusbar: false,
+                    toolbar_location: 'bottom',
+                    toolbar: 'screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
+                    height: 120,
+                    icons: 'my_icon_pack',
+                    file_picker_types: 'file image media',
+                    setup: function (editor) {
+                        editor.on('change', function () {
+                            editor.save();
+                        });
+                        // editor.ui.registry.addButton('attachmentButton', {
+                        //     icon: 'paperclip',
+                        //     tooltip: 'Add file',
+                        //         disabled: true,
+                        //         onAction: (e) => {
+                        //          //  fileUploader?.fileInput?.click(e);
+                        //
+                        //         },
+                        //     });
+                         editor.ui.registry.addButton('screenshotButton', {
+                             icon: 'screenshot',
+                             tooltip: 'In development',
+                             disabled: true,
+                             onAction: (e) => {
+                               // fileUploader?.makeScreenshot();
+                             },
+                         });
+                     }
+                    })
                 break;
             case 'wrap':
                 await this.getTaskCount();
@@ -979,7 +1013,43 @@ class CleanTalkWidgetDoboard {
                     }
                     textarea.addEventListener('input', handleTextareaChange)
                     textarea.addEventListener('change', handleTextareaChange)
-                }
+
+                    const fileUploader = this.fileUploader;
+
+                    tinymce.init({
+                        selector: '.doboard_task_widget-send_message_input',
+                        plugins: 'link lists',
+                        menubar: false,
+                        statusbar: false,
+                        toolbar_location: 'bottom',
+                        toolbar: 'attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
+                        height: 120,
+                        icons: 'my_icon_pack',
+                        file_picker_types: 'file image media',
+                        setup: function (editor) {
+                            editor.on('change', function () {
+                                editor.save();
+                            });
+                            editor.ui.registry.addButton('attachmentButton', {
+                                icon: 'paperclip',
+                                tooltip: 'Add file',
+                                    disabled: true,
+                                    onAction: (e) => {
+                                       fileUploader?.fileInput?.click(e);
+
+                                    },
+                                });
+                                editor.ui.registry.addButton('screenshotButton', {
+                                    icon: 'screenshot',
+                                    tooltip: 'Screenshot',
+                                    disabled: true,
+                                    onAction: (e) => {
+                                       fileUploader?.makeScreenshot();
+                                    },
+                                });
+                            }
+                        });
+                    }
 
                 // Hide spinner preloader
                 hideContainersSpinner();

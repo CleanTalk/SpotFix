@@ -77,21 +77,11 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-concrete_issues-container">
         </div>
         <div class="doboard_task_widget-send_message">
-            <div class="doboard_task_widget-send_message_elements_wrapper">
-                <button type="button" class="doboard_task_widget-send_message_paperclip">
-                    <img src="{{buttonPaperClip}}" alt="Attach a file">
-                    <div class="doboard_task_widget-paperclip-tooltip">
-                        Upload up to 5 JPG, PNG, GIF, PDF, TXT or DOC files (5MB each, 25MB total).
-                    </div>
-                </button>
-    
-                <div class="doboard_task_widget-send_message_input_wrapper">
-                    <textarea name="doboard_task_widget_message" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
-                </div>
-    
-                <button type="button" class="doboard_task_widget-send_message_button">
-                    <img src="{{buttonSendMessage}}" alt="Send message" title="Send message">
-                </button>
+             <textarea name="doboard_task_widget_message" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
+            <div>
+              <div class="doboard_task_widget-field">
+                <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button doboard_task_widget-send_message_button">Submit</button>
+            </div>
             </div>
             <div class="doboard_task_widget__file-upload__wrapper" id="doboard_task_widget__file-upload__wrapper">
                 <div class="doboard_task_widget__file-upload__list-header">Attached files</div>
@@ -161,10 +151,9 @@ class SpotFixTemplatesLoader {
             <label class="spotfix_placeholder_title" for="doboard_task_widget-title">Report about</label>
         </div>
 
-        <div class="doboard_task_widget-input-container" style="flex-grow: 1">
-            <textarea id="doboard_task_widget-description"
-             class="doboard_task_widget-field" name="description" required>{{descriptionText}}</textarea>
-            <label class="spotfix_placeholder_description" for="doboard_task_widget-description">Description</label>
+        <div class="doboard_task_widget-input-container doboard_task_widget-input-container-textarea">
+            <textarea id="doboard_task_widget-description" class="doboard_task_widget-field" name="description" placeholder=" " required></textarea>
+            <label for="doboard_task_widget-description" class="doboard_task_widget-field-textarea-label" >Description</label>
         </div>
 
         <div class="doboard_task_widget-login">
@@ -291,8 +280,11 @@ class SpotFixTemplatesLoader {
         </div>
         <div style="display: flex; flex-direction: column; align-items: center">
              <img class="doboard_task_widget-user_menu-header-avatar" src="{{avatar}}" alt="">
-             <span class="doboard_task_widget-user_menu-header-user-name" style="font-size: 16px; font-weight: 700">{{userName}}</span>
-             <span class="doboard_task_widget-user_menu-header-email" style="font-size: 12px;">{{email}}</span>
+             <span style="font-size: 16px; font-weight: 700">{{userName}}</span>
+             <span style="font-size: 12px;">{{email}}</span>
+             <span id="doboard_task_widget-user_menu-signlog_button">
+                 <a style="cursor: pointer" rel="nofollow" target="_blank">Sign up or Log in</a>
+             </span>
         </div>
     </div>
     <div class="doboard_task_widget-content" style="min-height:200px ">
