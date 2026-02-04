@@ -10613,7 +10613,8 @@ function spotFixInit() {
     wsSpotfix.subscribe();
     new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
-    loadBotDetector()
+    loadBotDetector();
+    loadTinyMCE();
 }
 
 function loadBotDetector() {
@@ -10628,7 +10629,6 @@ function loadBotDetector() {
     script.async = true;
     script.id = 'ct-bot-detector-script';
     document.head.appendChild(script);
-    loadTinyMCE();
 }
 
 /**
