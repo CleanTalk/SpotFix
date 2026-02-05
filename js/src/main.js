@@ -20,7 +20,7 @@ function spotFixInit() {
 
 function loadBotDetector() {
 
-    const detector = document.querySelectorAll('script[src^="https://fd.cleantalk.org/ct-bot-detector-wrapper.js"]');
+    const detector = document.querySelectorAll('script[src*="fd.cleantalk.org/ct-bot-detector-wrapper.js"]');
     if (detector.length > 0 || document.getElementById('ct-bot-detector-script')) {
         return;
     }
@@ -37,15 +37,23 @@ function loadBotDetector() {
  * Downloads TinyMCE script from doboard.com
  */
 function loadTinyMCE() {
-    const script = document.createElement('script');
-    script.src = 'https://doboard.com/tinymce/tinymce.min.js';
-    script.async = true;
+    return new Promise((resolve) => {
+        const existingTinyMCE_temp = window.tinymce;
+        window.tinymce = null;
+        const script = document.createElement('script');
+        script.src = 'https://doboard.com/tinymce/tinymce.min.js';
+        script.async = true;
 
-    script.onload = function() {
-       addIconPack();
-    };
-
-    document.head.appendChild(script);
+        script.onload = function () {
+            window.SpotFixTinyMCE = window.tinymce;
+            if (existingTinyMCE_temp) {
+                window.tinymce = existingTinyMCE_temp;
+            }
+            addIconPack();
+        };
+        resolve(window.SpotFixTinyMCE);
+        document.head.appendChild(script);
+    });
 }
 
 document.addEventListener('selectionchange', function(e) {
