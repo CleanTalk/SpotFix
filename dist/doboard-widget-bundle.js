@@ -8619,6 +8619,7 @@ async function handleCreateTask(sessionId, taskDetails) {
         const result = await createTaskDoboard(sessionId, taskDetails);
         if (result && result.taskId && taskDetails.taskDescription) {
             const sign = `<br><br><br><em>The spot has been posted at the following URL <a href="${window.location.href}"><span class="task-link task-link--done">${window.location.href}</span></a></em>`;
+            localStorage.setItem('spotfix-description', '');
             await addTaskComment({
                 projectToken: taskDetails.projectToken,
                 accountId: taskDetails.accountId,
@@ -8925,8 +8926,8 @@ function changeSize(container) {
 }
 function addIconPack() {
 
-	if (tinymce?.IconManager) {
-		tinymce.IconManager.add("my_icon_pack", {
+	if (SpotFixTinyMCE?.IconManager) {
+		SpotFixTinyMCE.IconManager.add("icon_pack_SpotFix", {
 			icons: {
 				'paperclip': '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">\n' +
 					'<path d="M14.4648 0.522461C15.6367 0.522493 16.7612 0.987773 17.5898 1.81641C18.4185 2.64507 18.8838 3.76952 18.8838 4.94141C18.8837 6.11309 18.4183 7.23685 17.5898 8.06543L9.15625 16.4902C8.6717 16.9747 8.01428 17.247 7.3291 17.2471C6.64372 17.2471 5.98563 16.9749 5.50098 16.4902C5.01634 16.0056 4.74414 15.3475 4.74414 14.6621C4.74422 13.9769 5.01652 13.3195 5.50098 12.835L13.2842 5.06152C13.5771 4.76897 14.052 4.7688 14.3447 5.06152C14.6374 5.35457 14.6377 5.83034 14.3447 6.12305L6.5625 13.8955C6.35922 14.0988 6.24422 14.3746 6.24414 14.6621C6.24414 14.9497 6.35916 15.2254 6.5625 15.4287C6.76585 15.632 7.04154 15.7471 7.3291 15.7471C7.61656 15.747 7.89243 15.632 8.0957 15.4287L16.5293 7.00488L16.7227 6.79102C17.1482 6.27169 17.3837 5.61868 17.3838 4.94141C17.3838 4.16735 17.0766 3.42431 16.5293 2.87695C15.982 2.32963 15.2389 2.02249 14.4648 2.02246C13.691 2.02253 12.9486 2.32984 12.4014 2.87695L3.97754 11.3018C3.08624 12.1931 2.58504 13.4016 2.58496 14.6621C2.58496 15.9227 3.08617 17.1321 3.97754 18.0234C4.86885 18.9146 6.0775 19.415 7.33789 19.415C8.59844 19.415 9.80788 18.9148 10.6992 18.0234L19.123 9.59961C19.4159 9.30678 19.8907 9.30674 20.1836 9.59961C20.4763 9.8925 20.4764 10.3673 20.1836 10.6602L11.7598 19.084C10.5871 20.2566 8.99626 20.915 7.33789 20.915C5.67955 20.915 4.08866 20.2566 2.91602 19.084C1.74348 17.9113 1.08496 16.3204 1.08496 14.6621C1.08504 13.004 1.74366 11.4138 2.91602 10.2412L11.3408 1.81641C12.1694 0.987987 13.2932 0.52253 14.4648 0.522461Z" fill="#707A83"/>\n' +
@@ -9658,7 +9659,13 @@ class CleanTalkWidgetDoboard {
                 this.bindCreateTaskEvents();
                 this.bindShowLoginFormEvents();
 
-                tinymce.init({
+                if (tinymce.get('doboard_task_widget-description')) {
+                    tinymce.remove('#doboard_task_widget-description');
+                }
+
+                const savedDescription = localStorage.getItem('spotfix-description') || '';
+
+                SpotFixTinyMCE.init({
                     selector: '#doboard_task_widget-description',
                     plugins: 'link lists',
                     menubar: false,
@@ -9666,11 +9673,19 @@ class CleanTalkWidgetDoboard {
                     toolbar_location: 'bottom',
                     toolbar: 'screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
                     height: 120,
-                    icons: 'my_icon_pack',
+                    icons: 'icon_pack_SpotFix',
                     file_picker_types: 'file image media',
                     setup: function (editor) {
+                        editor.on('init', function() {
+                            if (savedDescription) {
+                                editor.setContent(savedDescription);
+                                editor.save();
+                            }
+                        });
                         editor.on('change', function () {
                             editor.save();
+                            const content = editor.getContent();
+                            localStorage.setItem('spotfix-description', content);
                         });
                         // editor.ui.registry.addButton('attachmentButton', {
                         //     icon: 'paperclip',
@@ -9995,15 +10010,19 @@ class CleanTalkWidgetDoboard {
 
                     const fileUploader = this.fileUploader;
 
-                    tinymce.init({
-                        selector: '.doboard_task_widget-send_message_input',
+                    if (tinymce.get('doboard_task_widget-send_message_input_SpotFix')) {
+                        tinymce.remove('#doboard_task_widget-send_message_input_SpotFix');
+                    }
+
+                    SpotFixTinyMCE.init({
+                        selector: '#doboard_task_widget-send_message_input_SpotFix',
                         plugins: 'link lists',
                         menubar: false,
                         statusbar: false,
                         toolbar_location: 'bottom',
                         toolbar: 'attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
                         height: 120,
-                        icons: 'my_icon_pack',
+                        icons: 'icon_pack_SpotFix',
                         file_picker_types: 'file image media',
                         setup: function (editor) {
                             editor.on('change', function () {
@@ -10188,13 +10207,6 @@ class CleanTalkWidgetDoboard {
                 document.querySelector('.spotfix_placeholder_title').style.display = 'block';
             }
         });
-
-        document.getElementById('doboard_task_widget-description')?.addEventListener('change', (e) => {
-            localStorage.setItem('spotfix-description-ls', e.target.value);
-            if (e.target.value.length < 1) {
-                document.querySelector('.spotfix_placeholder_description').style.display = 'block';
-            }
-        })
 
         return widgetContainer;
     }
@@ -10627,12 +10639,13 @@ function spotFixInit() {
     wsSpotfix.subscribe();
     new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
-    loadBotDetector()
+    loadBotDetector();
+    loadTinyMCE();
 }
 
 function loadBotDetector() {
 
-    const detector = document.querySelectorAll('script[src^="https://fd.cleantalk.org/ct-bot-detector-wrapper.js"]');
+    const detector = document.querySelectorAll('script[src*="fd.cleantalk.org/ct-bot-detector-wrapper.js"]');
     if (detector.length > 0 || document.getElementById('ct-bot-detector-script')) {
         return;
     }
@@ -10642,22 +10655,29 @@ function loadBotDetector() {
     script.async = true;
     script.id = 'ct-bot-detector-script';
     document.head.appendChild(script);
-    loadTinyMCE();
 }
 
 /**
  * Downloads TinyMCE script from doboard.com
  */
 function loadTinyMCE() {
-    const script = document.createElement('script');
-    script.src = 'https://doboard.com/tinymce/tinymce.min.js';
-    script.async = true;
+    return new Promise((resolve) => {
+        const existingTinyMCE_temp = window.tinymce;
+        window.tinymce = null;
+        const script = document.createElement('script');
+        script.src = 'https://doboard.com/tinymce/tinymce.min.js';
+        script.async = true;
 
-    script.onload = function() {
-       addIconPack();
-    };
-
-    document.head.appendChild(script);
+        script.onload = function () {
+            window.SpotFixTinyMCE = window.tinymce;
+            if (existingTinyMCE_temp) {
+                window.tinymce = existingTinyMCE_temp;
+            }
+            addIconPack();
+        };
+        resolve(window.SpotFixTinyMCE);
+        document.head.appendChild(script);
+    });
 }
 
 document.addEventListener('selectionchange', function(e) {
@@ -12300,7 +12320,7 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-concrete_issues-container">
         </div>
         <div class="doboard_task_widget-send_message">
-             <textarea name="doboard_task_widget_message" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
+             <textarea name="doboard_task_widget_message" id="doboard_task_widget-send_message_input_SpotFix" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
             <div>
               <div class="doboard_task_widget-field">
                 <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button doboard_task_widget-send_message_button">Submit</button>
