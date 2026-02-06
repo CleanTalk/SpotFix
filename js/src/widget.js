@@ -674,7 +674,13 @@ class CleanTalkWidgetDoboard {
                 this.bindCreateTaskEvents();
                 this.bindShowLoginFormEvents();
 
-                tinymce.init({
+                if (tinymce.get('doboard_task_widget-description')) {
+                    tinymce.remove('#doboard_task_widget-description');
+                }
+
+                const savedDescription = localStorage.getItem('spotfix-description') || '';
+
+                SpotFixTinyMCE.init({
                     selector: '#doboard_task_widget-description',
                     plugins: 'link lists',
                     menubar: false,
@@ -682,11 +688,19 @@ class CleanTalkWidgetDoboard {
                     toolbar_location: 'bottom',
                     toolbar: 'screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
                     height: 120,
-                    icons: 'my_icon_pack',
+                    icons: 'icon_pack_SpotFix',
                     file_picker_types: 'file image media',
                     setup: function (editor) {
+                        editor.on('init', function() {
+                            if (savedDescription) {
+                                editor.setContent(savedDescription);
+                                editor.save();
+                            }
+                        });
                         editor.on('change', function () {
                             editor.save();
+                            const content = editor.getContent();
+                            localStorage.setItem('spotfix-description', content);
                         });
                         // editor.ui.registry.addButton('attachmentButton', {
                         //     icon: 'paperclip',
@@ -1011,15 +1025,19 @@ class CleanTalkWidgetDoboard {
 
                     const fileUploader = this.fileUploader;
 
-                    tinymce.init({
-                        selector: '.doboard_task_widget-send_message_input',
+                    if (tinymce.get('doboard_task_widget-send_message_input_SpotFix')) {
+                        tinymce.remove('#doboard_task_widget-send_message_input_SpotFix');
+                    }
+
+                    SpotFixTinyMCE.init({
+                        selector: '#doboard_task_widget-send_message_input_SpotFix',
                         plugins: 'link lists',
                         menubar: false,
                         statusbar: false,
                         toolbar_location: 'bottom',
                         toolbar: 'attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
                         height: 120,
-                        icons: 'my_icon_pack',
+                        icons: 'icon_pack_SpotFix',
                         file_picker_types: 'file image media',
                         setup: function (editor) {
                             editor.on('change', function () {
@@ -1204,13 +1222,6 @@ class CleanTalkWidgetDoboard {
                 document.querySelector('.spotfix_placeholder_title').style.display = 'block';
             }
         });
-
-        document.getElementById('doboard_task_widget-description')?.addEventListener('change', (e) => {
-            localStorage.setItem('spotfix-description-ls', e.target.value);
-            if (e.target.value.length < 1) {
-                document.querySelector('.spotfix_placeholder_description').style.display = 'block';
-            }
-        })
 
         return widgetContainer;
     }
