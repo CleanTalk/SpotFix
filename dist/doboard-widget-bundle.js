@@ -10067,7 +10067,12 @@ class CleanTalkWidgetDoboard {
                 if (sendButton) {
                     this.fileUploader.init();
                     let widgetClass = this;
-                    sendButton.addEventListener('click', async (e) => {
+
+                    if (this._sendButtonClickHandler) {
+                        sendButton.removeEventListener('click', this._sendButtonClickHandler);
+                    }
+
+                    const clickHandler = async (e) => {
                         e.preventDefault();
 
                         const sendMessageContainer = sendButton.closest('.doboard_task_widget-send_message');
@@ -10104,7 +10109,10 @@ class CleanTalkWidgetDoboard {
 
                         input.disabled = false;
                         sendButton.disabled = false;
-                    });
+                    };
+                    this._sendButtonClickHandler = clickHandler;
+
+                    sendButton.addEventListener('click', clickHandler);
                 }
 
                 break;
