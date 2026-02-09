@@ -11,13 +11,22 @@ const LOCAL_DATA_BASE_TABLE = [
     { name: SPOTFIX_TABLE_COMMENTS, keyPath: 'commentId' },
 ];
 
+const SPOTFIX_LAST_DB_KEY = 'spotfix_last_db_key';
+
 let dbPromise = null;
 
-function getDBName() {
-    return `${SPOTFIX_INDEXED_DB_NAME}_${
-        localStorage.getItem('spotfix_session_id') ||
-        localStorage.getItem('spotfix_project_token')
-    }`;
+function getSpotfixDBKey() {
+    const sessionId = localStorage.getItem('spotfix_session_id');
+    const projectToken = localStorage.getItem('spotfix_project_token');
+
+    if (sessionId) return `session:${sessionId}`;
+    if (projectToken) return `project:${projectToken}`;
+
+    return null;
+}
+
+function getDBNameByKey(dbKey) {
+    return `${SPOTFIX_INDEXED_DB_NAME}_${dbKey}`;
 }
 
 function openIndexedDB(name, version) {
@@ -50,43 +59,51 @@ function openIndexedDB(name, version) {
 
 function getDB() {
     if (!dbPromise) {
-        dbPromise = openIndexedDB(getDBName(), spotfixIndexedDBVersion);
+        const dbKey = getSpotfixDBKey();
+        if (!dbKey) return null;
+
+        dbPromise = openIndexedDB(
+            getDBNameByKey(dbKey),
+            spotfixIndexedDBVersion
+        );
     }
     return dbPromise;
 }
 
-async function deleteCurrentDB() {
-    const name = getDBName();
+async function deleteDBByKey(dbKey) {
     return new Promise((resolve) => {
-        const req = indexedDB.deleteDatabase(name);
+        const req = indexedDB.deleteDatabase(getDBNameByKey(dbKey));
         req.onsuccess = () => resolve();
         req.onerror = () => resolve();
-        req.onblocked = () => {
-            console.warn('IndexedDB delete blocked');
-            resolve();
-        };
+        req.onblocked = () => resolve();
     });
 }
 
 const spotfixIndexedDB = {
     init: async () => {
-        const sessionId = localStorage.getItem('spotfix_session_id');
-        const projectToken = localStorage.getItem('spotfix_project_token');
+        const currentKey = getSpotfixDBKey();
 
-        if (!sessionId && !projectToken) {
+        if (!currentKey) {
             return { needInit: false };
         }
 
-        await deleteCurrentDB();
+        const lastKey = localStorage.getItem(SPOTFIX_LAST_DB_KEY);
+
+        if (lastKey && lastKey !== currentKey) {
+            await deleteDBByKey(lastKey);
+        }
+
+        localStorage.setItem(SPOTFIX_LAST_DB_KEY, currentKey);
 
         dbPromise = null;
-
         await getDB();
+
         return { needInit: true };
     },
 
     withStore: async (table, mode = 'readwrite', callback) => {
         const db = await getDB();
+        if (!db) return;
 
         return new Promise((resolve, reject) => {
             const tx = db.transaction(table, mode);
@@ -147,10 +164,7 @@ const spotfixIndexedDB = {
     },
 
     getTable: async (table) => {
-        if (
-            !localStorage.getItem('spotfix_session_id') &&
-            !localStorage.getItem('spotfix_project_token')
-        ) {
+        if (!getSpotfixDBKey()) {
             return [];
         }
         return spotfixIndexedDB.getAll(table);
