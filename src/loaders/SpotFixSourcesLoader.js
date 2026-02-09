@@ -5,14 +5,8 @@ export class SpotFixSourcesLoader {
         this.loadAll();
     }
 
-    /*getCSSCode() {
-        // global gulp wrapper var
-        return spotFixCSS;
-    }*/
-
     loadAll() {
         this.loadFonts();
-        //this.loadCSS();
     };
 
     loadFonts() {
@@ -31,12 +25,5 @@ export class SpotFixSourcesLoader {
         fontLink.rel = 'stylesheet';
         fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap';
         document.head.appendChild(fontLink);
-    }
-
-    loadCSS() {
-        const style = document.createElement('style');
-        style.setAttribute('id', 'spotfix_css');
-        style.textContent = this.getCSSCode();
-        document.head.appendChild(style);
     }
 }

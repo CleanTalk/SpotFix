@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = [
-    // Development сборка
+    // Development build
     {
         mode: 'development',
         entry: './src/index.js',
@@ -34,7 +34,7 @@ module.exports = [
             ]
         }
     },
-    // Production сборка
+    // Production build
     {
         mode: 'production',
         entry: './src/index.js',
