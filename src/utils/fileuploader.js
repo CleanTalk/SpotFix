@@ -1,7 +1,10 @@
+import {attachmentAddDoboard} from "../network/api";
+import {ksesFilter} from "../core/main";
+
 /**
  * File uploader handler for managing file attachments with validation and upload capabilities
  */
-class FileUploader {
+export class FileUploader {
     /**
      * Create a new FileUploader instance
      * @param {function} escapeHtmlHandler - Function to escape HTML strings for security

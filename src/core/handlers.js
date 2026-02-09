@@ -1,5 +1,15 @@
+import {
+    createTaskCommentDoboard, createTaskDoboard, forgotPasswordDoboard,
+    getTasksCommentsDoboard, getTasksDoboard, getUserDoboard,
+    loginUserDoboard, registerUserDoboard, spotFixUserConfirmEmailDoboard, userUpdateDoboard
+} from "../network/api";
+import {SPOTFIX_TABLE_COMMENTS, SPOTFIX_TABLE_TASKS, SPOTFIX_TABLE_USERS, spotfixIndexedDB} from "../storage/localDB";
+import {storageSaveTasksCount} from "../storage/storage";
+import {ksesFilter} from "./main";
+import {wsSpotfix} from "../network/websocket";
+import {SpotFixSVGLoader} from "../loaders/SpotFixSVGLoader";
 
-async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
+export async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
     const result = await spotFixUserConfirmEmailDoboard(emailConfirmationToken);
     // Save session data to LS
     localStorage.setItem('spotfix_email', result.email);
@@ -38,7 +48,7 @@ async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
     return createdTask;
 }
 
-async function getTasksFullDetails(params, tasks, currentActiveTaskId, nonRequesting = false) {
+export async function getTasksFullDetails(params, tasks, currentActiveTaskId, nonRequesting = false) {
     if (tasks.length > 0) {
         const sessionId = localStorage.getItem('spotfix_session_id');
         if (!nonRequesting) {
@@ -60,7 +70,7 @@ async function getTasksFullDetails(params, tasks, currentActiveTaskId, nonReques
     }
 }
 
-async function getUserDetails(params, nonRequesting = false) {
+export async function getUserDetails(params, nonRequesting = false) {
     const sessionId = localStorage.getItem('spotfix_session_id');
     const currentUserId = localStorage.getItem('spotfix_user_id');
     if (currentUserId) {
@@ -72,7 +82,7 @@ async function getUserDetails(params, nonRequesting = false) {
     }
 }
 
-async function handleCreateTask(sessionId, taskDetails) {
+export async function handleCreateTask(sessionId, taskDetails) {
     try {
         const result = await createTaskDoboard(sessionId, taskDetails);
         if (result && result.taskId && taskDetails.taskDescription) {
@@ -89,14 +99,14 @@ async function handleCreateTask(sessionId, taskDetails) {
     }
 }
 
-async function addTaskComment(params, taskId, commentText) {
+export async function addTaskComment(params, taskId, commentText) {
     const sessionId = localStorage.getItem('spotfix_session_id');
     if (!sessionId) throw new Error('No session');
     if (!params.projectToken || !params.accountId) throw new Error('Missing params');
     return await createTaskCommentDoboard(params.accountId, sessionId, taskId, commentText, params.projectToken);
 }
 
-async function getAllTasks(params, nonRequesting = false) {
+export async function getAllTasks(params, nonRequesting = false) {
 
     const projectToken = params.projectToken;
     const sessionId = localStorage.getItem('spotfix_session_id') || '';
@@ -113,7 +123,7 @@ async function getAllTasks(params, nonRequesting = false) {
     return filteredTaskData;
 }
 
-function formatDate(dateStr) {
+export function spotFixFormatDate(dateStr) {
 	 const months = [
 	 	'January', 'February', 'March', 'April', 'May', 'June',
 	 	'July', 'August', 'September', 'October', 'November', 'December',
@@ -143,34 +153,12 @@ function formatDate(dateStr) {
 	 return {date, time};
 }
 
-function getTaskAuthorDetails(params, taskId) {
-    const sessionId = localStorage.getItem('spotfix_session_id');
-    const mockUsersData =
-		[
-		    {
-		        'taskId': '1',
-		        'taskAuthorAvatarImgSrc': 'https://s3.eu-central-1.amazonaws.com/cleantalk-ctask-atts/accounts/1/avatars/081a1b65d20fe318/m.jpg',
-		        'taskAuthorName': 'Test All Issues Single Author Name',
-		    },
-		];
-
-    const defaultData =
-		{
-		    'taskId': null,
-		    'taskAuthorAvatarImgSrc': null,
-		    'taskAuthorName': 'Task Author',
-		};
-
-    const data = mockUsersData.find((element) => element.taskId === taskId);
-    return data === undefined ? defaultData : data;
-}
-
-function getIssuesCounterString(onPageSpotsCount, totalSpotsCount) {
+export function getIssuesCounterString(onPageSpotsCount, totalSpotsCount) {
     return ` (${onPageSpotsCount}/${totalSpotsCount})`;
 }
 
 // Get the author's avatar
-function getAvatarSrc(author) {
+export function getAvatarSrc(author) {
     if (author && author.avatar) {
         if (typeof author.avatar === 'object' && author.avatar.m) {
             return author.avatar.m;
@@ -182,7 +170,7 @@ function getAvatarSrc(author) {
 }
 
 // Get the author's name
-function getAuthorName(author) {
+export function getAuthorName(author) {
     if (author) {
         if (author.name && author.name.trim().length > 0) {
             return author.name;
@@ -193,7 +181,7 @@ function getAuthorName(author) {
     return 'Unknown Author';
 }
 
-function registerUser(taskDetails) {
+export function registerUser(taskDetails) {
     const userEmail = taskDetails.userEmail;
     const userName = taskDetails.userName;
     const projectToken = taskDetails.projectToken;
@@ -214,7 +202,7 @@ function registerUser(taskDetails) {
                 spotfixIndexedDB.init();
                 userUpdate(projectToken, accountId);
             } else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
-                if (response.operationMessage == 'Waiting for email confirmation') {
+                if (response.operationMessage === 'Waiting for email confirmation') {
                     response.operationMessage = 'Waiting for an email confirmation. Please check your Inbox.';
                 	if (document.getElementById('doboard_task_widget-error_message').innerText === 'Waiting for an email confirmation. Please check your Inbox.') {
 						response.operationMessage = 'Incorrect email address. Please confirm your email to create the spot.';
@@ -237,7 +225,7 @@ function registerUser(taskDetails) {
     return resultRegisterUser;
 }
 
-function loginUser(taskDetails) {
+export function loginUser(taskDetails) {
     const userEmail = taskDetails.userEmail;
     const userPassword = taskDetails.userPassword;
 
@@ -263,7 +251,7 @@ function loginUser(taskDetails) {
         });
 }
 
-function forgotPassword(userEmail) {
+export function forgotPassword(userEmail) {
 		return (showMessageCallback) => forgotPasswordDoboard(userEmail)
 		.then(response => {
 			console.log('response ', response)
@@ -298,7 +286,7 @@ function userUpdate(projectToken, accountId) {
     return userUpdateDoboard(projectToken, accountId, sessionId, userId, timezone);
 }
 
-function spotFixSplitUrl(url) {
+export function spotFixSplitUrl(url) {
     try {
         if (!url || url.trim() === '') {
             return '';
@@ -320,7 +308,7 @@ function spotFixSplitUrl(url) {
     }
 }
 
-function setToggleStatus(rootElement) {
+export function setToggleStatus(rootElement) {
     const clickHandler = () => {
         const timer = setTimeout(() => {
             localStorage.setItem('spotfix_widget_is_closed', '1');
@@ -336,7 +324,7 @@ function setToggleStatus(rootElement) {
     }
 }
 
-function checkLogInOutButtonsVisible (){
+export function checkLogInOutButtonsVisible (){
 	if(!localStorage.getItem('spotfix_session_id')) {
 		const el = document.getElementById('doboard_task_widget-user_menu-logout_button')?.closest('.doboard_task_widget-user_menu-item');
 		if(el) el.style.display = 'none';
@@ -375,14 +363,14 @@ async function clearUserMenuData() {
 	}
 }
 
-function changeSize(container) {
+export function changeSize(container) {
     if (container && +localStorage.getItem('maximize')) {
         container.classList.add('doboard_task_widget-container-maximize');
     } else if (container) {
         container.classList.remove('doboard_task_widget-container-maximize');
     }
 }
-function addIconPack() {
+export function addIconPack() {
 
 	if (SpotFixTinyMCE?.IconManager) {
 		SpotFixTinyMCE.IconManager.add("icon_pack_SpotFix", {

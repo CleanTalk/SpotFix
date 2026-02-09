@@ -1,3 +1,5 @@
+import {ksesFilter, spotFixDebugLog} from "../core/main";
+
 /**
  * SELECTION will be grouped into three types:
  * 1 - Simple text within a single tag
@@ -49,7 +51,7 @@ function spotFixGetSelectionType(selection) {
  * @param {Selection} selection - The DOM Selection object
  * @returns {Object|null} Selection data with text, positions, URL and node path OR null (nothing)
  */
-function spotFixGetSelectedData(selection) {
+export function spotFixGetSelectedData(selection) {
     // Prechecks:
     // Selection not provided
     if (!selection) {spotFixDebugLog('`spotFixGetSelectedData` skip by `Selection not provided`'); return null;  }
@@ -136,7 +138,7 @@ function spotFixGetSelectedData(selection) {
  * @param {[object]} spotsToBeHighlighted
  * @param widgetInstance
  */
-function spotFixHighlightElements(spotsToBeHighlighted, widgetInstance) {
+export function spotFixHighlightElements(spotsToBeHighlighted, widgetInstance) {
 
     if (spotsToBeHighlighted.length === 0) return;
 
@@ -151,7 +153,7 @@ function spotFixHighlightElements(spotsToBeHighlighted, widgetInstance) {
         }
 
         // nodePath validating: is valid indexes list
-        if (!this.spotFixIsValidNodePath(spot.nodePath)) {
+        if (!spotFixIsValidNodePath(spot.nodePath)) {
             spotFixDebugLog('Invalid nodePath format: ' + spot.nodePath);
             return;
         }
@@ -194,15 +196,15 @@ function spotFixHighlightElements(spotsToBeHighlighted, widgetInstance) {
         // MAIN LOGIC: highlight for the different types
         switch (selectionType) {
             case 'image':
-                this.spotFixHighlightImageElement(element);
+                spotFixHighlightImageElement(element);
                 break;
 
             case 'element':
-                this.spotFixHighlightNestedElement(element);
+                spotFixHighlightNestedElement(element);
                 break;
 
             case 'text':
-                this.spotFixHighlightTextInElement(element, spots, widgetInstance);
+                spotFixHighlightTextInElement(element, spots, widgetInstance);
                 break;
 
             default:
@@ -332,7 +334,7 @@ function spotFixHighlightTextInElement(element, spots,widgetInstance) {
  * @param {array} path - The path to the element
  * @return {boolean} - True if the element was found and scrolled to, false otherwise
  */
-function spotFixScrollToNodePath(path) {
+export function spotFixScrollToNodePath(path) {
     const node = spotFixRetrieveNodeFromPath(path);
     if (node && node.scrollIntoView) {
         node.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -341,7 +343,7 @@ function spotFixScrollToNodePath(path) {
     return false;
 }
 
-function spotFixRemoveHighlights() {
+export function spotFixRemoveHighlights() {
     const textSelectionclassName = 'doboard_task_widget-text_selection';
     const spans = document.querySelectorAll('.' + textSelectionclassName);
     const affectedParents = new Set(); // Track unique parents

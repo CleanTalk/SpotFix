@@ -1,4 +1,4 @@
-class SpotFixTemplatesLoader {
+export class SpotFixTemplatesLoader {
     static getTemplateCode(templateName) {
         const templateMethod = this[templateName];
 

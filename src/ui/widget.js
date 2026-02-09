@@ -1,7 +1,45 @@
+import {SpotFixSVGLoader} from "../loaders/SpotFixSVGLoader";
+import {FileUploader} from "../utils/fileuploader";
+import {
+    addTaskComment,
+    changeSize, checkLogInOutButtonsVisible,
+    forgotPassword,
+    getAllTasks,
+    getIssuesCounterString, getTasksFullDetails, getUserDetails, handleCreateTask,
+    loginUser, registerUser, setToggleStatus,
+    spotFixConfirmUserEmail, spotFixSplitUrl
+} from "../core/handlers";
+import {
+    storageGetUserIsDefined, storageGetWidgetIsClosed, storageProvidedTaskHasUnreadUpdates,
+    storageRemoveUnreadUpdateForTaskID, storageSaveTasksCount,
+    storageSaveTasksUpdateData,
+    storageSetWidgetIsClosed,
+    storageTasksHasUnreadUpdates,
+    storageWidgetCloseIsSet
+} from "../storage/storage";
+import {
+    checkIfTasksHasSiteOwnerUpdates, getAvatarData,
+    getTaskFullDetails,
+    hideContainersSpinner,
+    ksesFilter,
+    spotFixOpenWidget, spotFixShowWidget
+} from "../core/main";
+import {
+    spotFixGetSelectedData,
+    spotFixHighlightElements,
+    spotFixRemoveHighlights,
+    spotFixScrollToNodePath
+} from "../utils/selections";
+import {getReleaseVersion, getTasksDoboard, logoutUserDoboard} from "../network/api";
+import {SPOTFIX_VERSION} from "../core/constants";
+import {SPOTFIX_TABLE_TASKS, spotfixIndexedDB} from "../storage/localDB";
+import {SpotFixTemplatesLoader} from "../loaders/SpotFixTemplatesLoader";
+import {wsSpotfix} from "../network/websocket";
+
 /**
  * Widget class to create a task widget
  */
-class CleanTalkWidgetDoboard {
+export class CleanTalkWidgetDoboard {
     selectedText = '';
     selectedData = {};
     widgetElement = null;
@@ -518,6 +556,7 @@ class CleanTalkWidgetDoboard {
 
         let templateVariables = {};
 
+        // @ToDo is window.SpotfixWidgetConfig defined?
         const config = window.SpotfixWidgetConfig;
 
         switch (type) {
@@ -1008,7 +1047,7 @@ class CleanTalkWidgetDoboard {
                     issuesCommentsContainer.innerHTML = ksesFilter('No comments');
                 }
 
-                // textarea (new comment) behaviour
+                // textarea (new comment) behavior
                 const textarea = document.querySelector('.doboard_task_widget-send_message_input');
                 if (textarea) {
                     function handleTextareaChange() {
@@ -1458,7 +1497,7 @@ class CleanTalkWidgetDoboard {
     }
 
     bindWidgetInputsInteractive() {
-        // Customising placeholders
+        // Customizing placeholders
         const inputs = document.querySelectorAll('.doboard_task_widget-field');
         inputs.forEach(input => {
             if (input.value) {
@@ -1480,7 +1519,7 @@ class CleanTalkWidgetDoboard {
             });
         });
 
-        // Customising accordion dropdown
+        // Customizing accordion dropdown
         const accordionController = document.querySelector('.doboard_task_widget-login span');
         if ( accordionController ) {
             const context = this;

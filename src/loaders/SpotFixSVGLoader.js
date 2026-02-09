@@ -1,4 +1,4 @@
-class SpotFixSVGLoader {
+export class SpotFixSVGLoader {
     static loadSVG(svgName) {
         const svgMethod = this[svgName];
 

@@ -1,9 +1,9 @@
 const SPOTFIX_INDEXED_DB_NAME = 'spotfix-localDB';
 const spotfixIndexedDBVersion = 1;
 
-const SPOTFIX_TABLE_USERS = 'users';
-const SPOTFIX_TABLE_TASKS = 'tasks';
-const SPOTFIX_TABLE_COMMENTS = 'comments';
+export const SPOTFIX_TABLE_USERS = 'users';
+export const SPOTFIX_TABLE_TASKS = 'tasks';
+export const SPOTFIX_TABLE_COMMENTS = 'comments';
 
 const LOCAL_DATA_BASE_TABLE = [
     { name: SPOTFIX_TABLE_USERS, keyPath: 'user_id' },
@@ -79,7 +79,7 @@ async function deleteDBByKey(dbKey) {
     });
 }
 
-const spotfixIndexedDB = {
+export const spotfixIndexedDB = {
     init: async () => {
         const currentKey = getSpotfixDBKey();
 

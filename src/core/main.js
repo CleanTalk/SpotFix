@@ -1,15 +1,16 @@
+import {CleanTalkWidgetDoboard} from "../ui/widget";
+import {SPOTFIX_SELECTION_OPEN_DELAY, SPOTFIX_DEBUG} from "./constants";
+import {spotfixIndexedDB} from "../storage/localDB";
+import {wsSpotfix} from "../network/websocket";
+import {SpotFixSourcesLoader} from "../loaders/SpotFixSourcesLoader";
+import '../../styles/doboard-widget.css';
+import {spotFixGetSelectedData} from "../utils/selections";
+import {addIconPack, getAuthorName, getAvatarSrc, getTasksFullDetails, spotFixFormatDate} from "./handlers";
+import {storageAddUnreadUpdateForTaskID, storageCheckTaskUpdate} from "../storage/storage";
+
 var spotFixShowDelayTimeout = null;
-const SPOTFIX_DEBUG = false;
-const SPOTFIX_SHOW_DELAY = 1000;
 
-
-if( document.readyState !== 'loading' ) {
-    document.addEventListener('spotFixLoaded', spotFixInit);
-} else {
-    document.addEventListener('DOMContentLoaded', spotFixInit);
-}
-
-function spotFixInit() {
+export function spotFixInit() {
     spotfixIndexedDB.init();
     wsSpotfix.connect();
     wsSpotfix.subscribe();
@@ -17,6 +18,46 @@ function spotFixInit() {
     new CleanTalkWidgetDoboard({}, 'wrap');
     loadBotDetector();
     loadTinyMCE();
+}
+
+export function spotFixSelectionOpen(event) {
+    // Do not run widget for non-document events (i.e. inputs focused)
+
+    if (event.target !== document) {
+        return;
+    }
+
+    const isWrapReviewWidgetExists = !!(document.getElementsByClassName('wrap_review')[0]);
+    const sel = document.getSelection();
+
+    if ((!sel || sel.toString() === "") && isWrapReviewWidgetExists) {
+        new CleanTalkWidgetDoboard({}, 'wrap')
+        return;
+    }
+
+    if (spotFixShowDelayTimeout) {
+        clearTimeout(spotFixShowDelayTimeout);
+    }
+
+    spotFixShowDelayTimeout = setTimeout(() => {
+        const selection = window.getSelection();
+        if (
+            selection.type === 'Range'
+        ) {
+            // Check if selection is inside the widget
+            let anchorNode = selection.anchorNode;
+            let focusNode = selection.focusNode;
+            if (spotFixIsInsideWidget(anchorNode) || spotFixIsInsideWidget(focusNode)) {
+                return;
+            }
+            const selectedData = spotFixGetSelectedData(selection);
+
+            if ( selectedData ) {
+                // spotFixOpenWidget(selectedData, 'create_issue');
+                spotFixOpenWidget(selectedData, 'wrap_review');
+            }
+        }
+    }, SPOTFIX_SELECTION_OPEN_DELAY);
 }
 
 function loadBotDetector() {
@@ -56,51 +97,10 @@ function loadTinyMCE() {
     });
 }
 
-document.addEventListener('selectionchange', function(e) {
-    // Do not run widget for non-document events (i.e. inputs focused)
-
-    if (e.target !== document) {
-        return;
-    }
-
-    const isWrapReviewWidgetExists = !!(document.getElementsByClassName('wrap_review')[0]);
-    const sel = document.getSelection();
-
-    if ((!sel || sel.toString() === "") && isWrapReviewWidgetExists) {
-        new CleanTalkWidgetDoboard({}, 'wrap')
-        return;
-    }
-
-    if (spotFixShowDelayTimeout) {
-        clearTimeout(spotFixShowDelayTimeout);
-    }
-
-    spotFixShowDelayTimeout = setTimeout(() => {
-        const selection = window.getSelection();
-        if (
-            selection.type === 'Range'
-        ) {
-            // Check if selection is inside the widget
-            let anchorNode = selection.anchorNode;
-            let focusNode = selection.focusNode;
-            if (spotFixIsInsideWidget(anchorNode) || spotFixIsInsideWidget(focusNode)) {
-                return;
-            }
-            const selectedData = spotFixGetSelectedData(selection);
-
-             if ( selectedData ) {
-                // spotFixOpenWidget(selectedData, 'create_issue');
-                spotFixOpenWidget(selectedData, 'wrap_review');
-            }
-        }
-    }, SPOTFIX_SHOW_DELAY);
-});
-
-
 /**
  * Shows the spot fix widget.
  */
-function spotFixShowWidget() {
+export function spotFixShowWidget() {
     new CleanTalkWidgetDoboard(null, 'create_issue');
 }
 
@@ -126,7 +126,7 @@ function spotFixIsInsideWidget(node) {
  * @param {*} selectedData
  * @param {*} type
  */
-function spotFixOpenWidget(selectedData, type) {
+export function spotFixOpenWidget(selectedData, type) {
     if (selectedData) {
         new CleanTalkWidgetDoboard(selectedData, type);
     }
@@ -137,13 +137,13 @@ function spotFixOpenWidget(selectedData, type) {
  *
  * @param {string} message
  */
-function spotFixDebugLog(message) {
+export function spotFixDebugLog(message) {
     if ( SPOTFIX_DEBUG ) {
         console.log(message);
     }
 }
 
-function hideContainersSpinner() {
+export function hideContainersSpinner() {
     const spinners = document.getElementsByClassName('doboard_task_widget-spinner_wrapper_for_containers');
     if (spinners.length > 0) {
         for (let i = 0; i < spinners.length ; i++) {
@@ -161,7 +161,7 @@ function hideContainersSpinner() {
     }
 }
 
-function getTaskFullDetails(tasksDetails, taskId) {
+export function getTaskFullDetails(tasksDetails, taskId) {
     const comments = tasksDetails.comments.filter(comment => {
         return comment?.taskId?.toString() === taskId?.toString()
     });
@@ -176,7 +176,7 @@ function getTaskFullDetails(tasksDetails, taskId) {
     // Format date
     let date = '', time = '';
     if (lastComment) {
-        const dt = formatDate(lastComment.commentDate);
+        const dt = spotFixFormatDate(lastComment.commentDate);
         date = dt.date;
         time = dt.time;
     }
@@ -196,7 +196,7 @@ function getTaskFullDetails(tasksDetails, taskId) {
                 return new Date(a.commentDate) - new Date(b.commentDate);
             })
             .map(comment => {
-                const {date, time} = formatDate(comment.commentDate);
+                const {date, time} = spotFixFormatDate(comment.commentDate);
                 let author = null;
                 if (users && users.length > 0) {
                     author = users.find(u => String(u.user_id) === String(comment.userId));
@@ -213,11 +213,11 @@ function getTaskFullDetails(tasksDetails, taskId) {
     };
 }
 
-function getAvatarData(authorDetails) {
+export function getAvatarData(authorDetails) {
     let avatarStyle;
     let avatarCSSClass;
     let taskAuthorInitials =
-        authorDetails.taskAuthorName && authorDetails.taskAuthorName != 'Anonymous'
+        authorDetails.taskAuthorName && authorDetails.taskAuthorName !== 'Anonymous'
             ? authorDetails.taskAuthorName.trim().charAt(0).toUpperCase()
             : null;
     let initialsClass = 'doboard_task_widget-avatar-initials';
@@ -275,7 +275,7 @@ function isAnyTaskUpdated(allTasksData) {
  * Check if any of the tasks has updates from site owner (not from the current user and not anonymous)
  * @returns {Promise<boolean>}
  */
-async function checkIfTasksHasSiteOwnerUpdates(allTasksData, params) {
+export async function checkIfTasksHasSiteOwnerUpdates(allTasksData, params) {
     const updatedTaskIDs = isAnyTaskUpdated(allTasksData);
     let result = false;
     if (!updatedTaskIDs) {
@@ -302,21 +302,12 @@ async function checkIfTasksHasSiteOwnerUpdates(allTasksData, params) {
 }
 
 /**
- * Check if the selection is correct - do not allow to select all page, or several different nesting nodes, or something else
- * @param selection
- * @return {boolean}
- */
-function isSelectionCorrect(selection) {
-    return true;
-}
-
-/**
  * Sanitize HTML
  * @param {*} html
  * @param {*} options
  * @returns
  */
-function ksesFilter(html, options = false) {
+export function ksesFilter(html, options = false) {
     let allowedTags = {
         a: true,
         b: true,
@@ -338,8 +329,6 @@ function ksesFilter(html, options = false) {
         label: true,
         textarea: true,
         button: true,
-        blockquote: true,
-        pre: true,
         details: true,
         summary: true,
     };

@@ -1,8 +1,10 @@
+import {wsSpotfix} from "../network/websocket";
+
 /**
  * Return bool if widget is closed in local storage
  * @returns {boolean}
  */
-function storageGetWidgetIsClosed() {
+export function storageGetWidgetIsClosed() {
     return localStorage.getItem('spotfix_widget_is_closed') === '1';
 }
 
@@ -10,7 +12,7 @@ function storageGetWidgetIsClosed() {
  * Return bool if widget closed state is defined in local storage
  * @returns {boolean}
  */
-function storageWidgetCloseIsSet() {
+export function storageWidgetCloseIsSet() {
     return localStorage.getItem('spotfix_widget_is_closed') !== null;
 }
 
@@ -18,7 +20,7 @@ function storageWidgetCloseIsSet() {
  * Save widget closed state
  * @param visible
  */
-function storageSetWidgetIsClosed(visible) {
+export function storageSetWidgetIsClosed(visible) {
     localStorage.setItem('spotfix_widget_is_closed', visible ? '1' : '0');
     if(visible) {
         wsSpotfix.close();
@@ -32,7 +34,7 @@ function storageSetWidgetIsClosed(visible) {
  * Return bool if user is defined in local storage
  * @returns {boolean}
  */
-function storageGetUserIsDefined() {
+export function storageGetUserIsDefined() {
     return localStorage.getItem('spotfix_user_id') !== null;
 }
 
@@ -40,7 +42,7 @@ function storageGetUserIsDefined() {
  * Save data for updates check
  * @param tasks
  */
-function storageSaveTasksUpdateData(tasks) {
+export function storageSaveTasksUpdateData(tasks) {
     if (!tasks || !Array.isArray(tasks)) {
         return;
     }
@@ -64,7 +66,7 @@ function storageSaveTasksUpdateData(tasks) {
     localStorage.setItem('spotfix_task_updates', JSON.stringify(storedTasks));
 }
 
-function storageSaveTasksCount(tasks) {
+export function storageSaveTasksCount(tasks) {
     if (!tasks || !Array.isArray(tasks)) {
         return;
     }
@@ -82,7 +84,7 @@ function storageSaveTasksCount(tasks) {
  * @param currentLastUpdate
  * @returns {boolean|null}
  */
-function storageCheckTaskUpdate(taskId, currentLastUpdate) {
+export function storageCheckTaskUpdate(taskId, currentLastUpdate) {
     if (!taskId || !currentLastUpdate) {
         return null;
     }
@@ -108,7 +110,7 @@ function storageCheckTaskUpdate(taskId, currentLastUpdate) {
  * Add unread update for a specific task
  * @param taskId
  */
-function storageAddUnreadUpdateForTaskID(taskId) {
+export function storageAddUnreadUpdateForTaskID(taskId) {
     if (!taskId) {
         return;
     }
@@ -131,7 +133,7 @@ function storageAddUnreadUpdateForTaskID(taskId) {
  * Remove unread update for a specific task
  * @param taskId
  */
-function storageRemoveUnreadUpdateForTaskID(taskId) {
+export function storageRemoveUnreadUpdateForTaskID(taskId) {
     if (!taskId) {
         return;
     }
@@ -150,7 +152,7 @@ function storageRemoveUnreadUpdateForTaskID(taskId) {
  * Check if there are any unread updates
  * @returns {boolean}
  */
-function storageTasksHasUnreadUpdates() {
+export function storageTasksHasUnreadUpdates() {
     let storedUnread = [];
     try {
         storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
@@ -166,7 +168,7 @@ function storageTasksHasUnreadUpdates() {
  * @param taskId
  * @returns {boolean}
  */
-function storageProvidedTaskHasUnreadUpdates(taskId) {
+export function storageProvidedTaskHasUnreadUpdates(taskId) {
     if (!taskId) {
         return false;
     }
@@ -181,7 +183,7 @@ function storageProvidedTaskHasUnreadUpdates(taskId) {
     return storedUnread.includes(taskId.toString());
 }
 
-function storageSaveSpotfixVersion (version) {
+export function storageSaveSpotfixVersion (version) {
     if(version) {
         localStorage.setItem('spotfix_app_version', `${version}`);
     } else {
@@ -189,7 +191,7 @@ function storageSaveSpotfixVersion (version) {
     }
 }
 
-function clearLocalstorageOnLogout () {
+export function clearLocalstorageOnLogout () {
     localStorage.removeItem('spotfix_email');
     localStorage.removeItem('spotfix_session_id');
     localStorage.removeItem('spotfix_user_id');

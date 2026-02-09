@@ -67,7 +67,7 @@ const handleIncomingData = async (data) => {
 };
 
 
-const wsSpotfix = {
+export const wsSpotfix = {
     connect() {
         if (reconnectTimer) {
             clearTimeout(reconnectTimer);

@@ -1,17 +1,18 @@
-class SpotFixSourcesLoader {
+
+export class SpotFixSourcesLoader {
 
     constructor() {
         this.loadAll();
     }
 
-    getCSSCode() {
+    /*getCSSCode() {
         // global gulp wrapper var
         return spotFixCSS;
-    }
+    }*/
 
     loadAll() {
         this.loadFonts();
-        this.loadCSS();
+        //this.loadCSS();
     };
 
     loadFonts() {

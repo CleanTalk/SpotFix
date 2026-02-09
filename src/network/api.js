@@ -1,3 +1,7 @@
+import {checkLogInOutButtonsVisible} from "../core/handlers";
+import {clearLocalstorageOnLogout, storageSaveSpotfixVersion, storageSaveTasksCount} from "../storage/storage";
+import {SPOTFIX_TABLE_COMMENTS, SPOTFIX_TABLE_TASKS, SPOTFIX_TABLE_USERS, spotfixIndexedDB} from "../storage/localDB";
+
 const SPOTFIX_DOBOARD_API_URL = 'https://api.doboard.com';
 
 /**
@@ -89,7 +93,7 @@ const spotfixApiCall = async(data, method, accountId = undefined) => {
     throw new Error(`Unknown operation status: ${responseBody.data.operation_status}`);
 }
 
-const spotFixUserConfirmEmailDoboard = async (emailConfirmationToken) => {
+export const spotFixUserConfirmEmailDoboard = async (emailConfirmationToken) => {
     const data = {
         email_confirmation_token: encodeURIComponent(emailConfirmationToken)
     }
@@ -103,7 +107,7 @@ const spotFixUserConfirmEmailDoboard = async (emailConfirmationToken) => {
     };
 };
 
-const createTaskDoboard = async (sessionId, taskDetails) => {
+export const createTaskDoboard = async (sessionId, taskDetails) => {
     const accountId = taskDetails.accountId;
     const data = {
         session_id: sessionId,
@@ -121,7 +125,7 @@ const createTaskDoboard = async (sessionId, taskDetails) => {
     }
 };
 
-const createTaskCommentDoboard = async (accountId, sessionId, taskId, comment, projectToken, status = 'ACTIVE') => {
+export const createTaskCommentDoboard = async (accountId, sessionId, taskId, comment, projectToken, status = 'ACTIVE') => {
     const data = {
         session_id: sessionId,
         project_token: projectToken,
@@ -135,7 +139,7 @@ const createTaskCommentDoboard = async (accountId, sessionId, taskId, comment, p
     };
 };
 
-const attachmentAddDoboard = async (fileData) => {
+export const attachmentAddDoboard = async (fileData) => {
     const accountId = fileData.params.accountId;
     const data = {
         session_id: fileData.sessionId,
@@ -150,7 +154,7 @@ const attachmentAddDoboard = async (fileData) => {
     // @ToDo need to handle result?
 };
 
-const registerUserDoboard = async (projectToken, accountId, email, nickname, pageURL) => {
+export const registerUserDoboard = async (projectToken, accountId, email, nickname, pageURL) => {
     let data = {
         project_token: projectToken,
         account_id: accountId,
@@ -184,7 +188,7 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname, pag
     };
 };
 
-const loginUserDoboard = async (email, password) => {
+export const loginUserDoboard = async (email, password) => {
     const data = {
         email: email,
         password: password,
@@ -202,7 +206,7 @@ const loginUserDoboard = async (email, password) => {
     }
 }
 
-const forgotPasswordDoboard = async (email) => {
+export const forgotPasswordDoboard = async (email) => {
     const data = {
         email: email
     }
@@ -210,7 +214,7 @@ const forgotPasswordDoboard = async (email) => {
 }
 
 
-const logoutUserDoboard = async (projectToken) => {
+export const logoutUserDoboard = async (projectToken) => {
     const sessionId = localStorage.getItem('spotfix_session_id');
     const accountsString = localStorage.getItem('spotfix_accounts');
     const accounts =  accountsString !== 'undefined' ? JSON.parse(accountsString || '[]') : [];
@@ -236,7 +240,7 @@ const logoutUserDoboard = async (projectToken) => {
     }
 }
 
-const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, userId) => {
+export const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, userId) => {
     const data = {
         session_id: sessionId,
         project_token: projectToken,
@@ -264,7 +268,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
 }
 
 
-const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, status = 'ACTIVE') => {
+export const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, status = 'ACTIVE') => {
     const data = {
         session_id: sessionId,
         project_token: projectToken,
@@ -284,7 +288,7 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, statu
     return comments;
 };
 
-const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
+export const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
     const data = {
         session_id: sessionId,
         project_token: projectToken,
@@ -298,35 +302,9 @@ const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
         await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_USERS, result.users);
     }
     return result.users;
-
-    // @ToDo Need to handle these two different answers?
-    /*// Format 1: users inside data
-    if (responseBody.data && responseBody.data.operation_status) {
-        if (responseBody.data.operation_status === 'FAILED') {
-            throw new Error(responseBody.data.operation_message);
-        }
-        if (responseBody.data.operation_status === 'SUCCESS') {
-            if (Array.isArray(responseBody.data.users)) {
-                return responseBody.data.users;
-            }
-            return [];
-        }
-    }
-    // Format 2: users at the top level
-    if (responseBody.operation_status) {
-        if (responseBody.operation_status === 'FAILED') {
-            throw new Error(responseBody.operation_message);
-        }
-        if (responseBody.operation_status === 'SUCCESS') {
-            if (Array.isArray(responseBody.users)) {
-                return responseBody.users;
-            }
-            return [];
-        }
-    }*/
 };
 
-const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, timezone) => {
+export const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, timezone) => {
     const data = {
         session_id: sessionId,
         project_token: projectToken,
@@ -339,7 +317,7 @@ const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, tim
     };
 }
 
-const getReleaseVersion = async () => {
+export const getReleaseVersion = async () => {
     try {
         const res = await fetch('https://api.github.com/repos/CleanTalk/SpotFix/tags');
         let data = await res.json();
