@@ -5,7 +5,10 @@ async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
     localStorage.setItem('spotfix_email', result.email);
     localStorage.setItem('spotfix_session_id', result.sessionId);
     localStorage.setItem('spotfix_user_id', result.userId);
+    localStorage.setItem('spotfix_widget_is_closed', '0');
     await spotfixIndexedDB.init();
+    wsSpotfix.connect();
+    wsSpotfix.subscribe();
 
     // Get pending task from LS
     const pendingTaskRaw = localStorage.getItem('spotfix_pending_task');
@@ -77,7 +80,6 @@ async function handleCreateTask(sessionId, taskDetails) {
         const result = await createTaskDoboard(sessionId, taskDetails);
         if (result && result.taskId && taskDetails.taskDescription) {
             const sign = `<br><br><br><em>The spot has been posted at the following URL <a href="${window.location.href}"><span class="task-link task-link--done">${window.location.href}</span></a></em>`;
-            localStorage.setItem('spotfix-description', '');
             await addTaskComment({
                 projectToken: taskDetails.projectToken,
                 accountId: taskDetails.accountId,
@@ -212,6 +214,9 @@ function registerUser(taskDetails) {
                 localStorage.setItem('spotfix_email', response.email);
                 localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
                 spotfixIndexedDB.init();
+                localStorage.setItem('spotfix_widget_is_closed', '0');
+                wsSpotfix.connect();
+                wsSpotfix.subscribe();
                 userUpdate(projectToken, accountId);
             } else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
                 if (response.operationMessage == 'Waiting for email confirmation') {
@@ -249,7 +254,10 @@ function loginUser(taskDetails) {
                 localStorage.setItem('spotfix_email', userEmail);
 				localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
 				checkLogInOutButtonsVisible();
+                localStorage.setItem('spotfix_widget_is_closed', '0');
                 spotfixIndexedDB.init();
+                wsSpotfix.connect();
+                wsSpotfix.subscribe();
             } else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
                 if (typeof showMessageCallback === 'function') {
                     showMessageCallback(response.operationMessage, 'notice');
