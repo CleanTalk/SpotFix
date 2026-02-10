@@ -84,19 +84,13 @@
     cursor: pointer;
 }
 
-.doboard_task_widget-container-maximize #doboard_task_widget-description {
-    height: 90%;
-    position: absolute;
-}
-
-.doboard_task_widget-container-maximize #doboard_task_widget-description.is-small {
-    position: relative;
-    height: auto;
-}
-
 .doboard_task_widget-container-maximize .doboard_task_widget-field {
     display: flex;
     justify-content: center;
+}
+
+.doboard_task_widget-input-container-textarea .tox-tinymce {
+    position: absolute;
 }
 
 .doboard_task_widget-container-maximize {
