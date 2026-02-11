@@ -264,11 +264,12 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
 }
 
 
-const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, status = 'ACTIVE') => {
+const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, currentActiveTaskId, status = 'ACTIVE') => {
     const data = {
         session_id: sessionId,
         project_token: projectToken,
-        status: status
+        status: status,
+        task_id: currentActiveTaskId
     }
     const result = await spotfixApiCall(data, 'comment_get', accountId);
     const comments = result.comments.map(comment => ({

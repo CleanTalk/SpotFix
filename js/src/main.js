@@ -150,6 +150,13 @@ function hideContainersSpinner() {
             spinners[i].style.display = 'none';
         }
     }
+
+    const taskWidgetUrl = document.getElementsByClassName('spotfix_doboard_task_widget_url');
+    if (taskWidgetUrl.length > 0) {
+        for (let i = 0; i < taskWidgetUrl.length ; i++) {
+            taskWidgetUrl[i].style.display = 'block';
+        }
+    }
     const containerClassesToShow = ['doboard_task_widget-all_issues-container', 'doboard_task_widget-concrete_issues-container'];
     for (let i = 0; i < containerClassesToShow.length ; i++) {
         const containers = document.getElementsByClassName(containerClassesToShow[i]);
