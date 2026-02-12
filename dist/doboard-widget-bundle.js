@@ -10681,13 +10681,30 @@ function loadTinyMCE() {
         script.async = true;
 
         script.onload = function () {
-            window.SpotFixTinyMCE = window.tinymce;
+            try {
+                window.SpotFixTinyMCE = window.tinymce;
+                if (existingTinyMCE_temp) {
+                    window.tinymce = existingTinyMCE_temp;
+                }
+                addIconPack();
+                resolve(window.SpotFixTinyMCE);
+            } catch (error) {
+                if (existingTinyMCE_temp) {
+                    window.tinymce = existingTinyMCE_temp;
+                }
+                console.error('Error loading TinyMCE:', error);
+                resolve(null);
+            }
+        };
+
+        script.onerror = function () {
             if (existingTinyMCE_temp) {
                 window.tinymce = existingTinyMCE_temp;
             }
-            addIconPack();
+            console.error('Failed to load TinyMCE script');
+            resolve(null);
         };
-        resolve(window.SpotFixTinyMCE);
+
         document.head.appendChild(script);
     });
 }
