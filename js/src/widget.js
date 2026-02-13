@@ -649,8 +649,8 @@ class CleanTalkWidgetDoboard {
                 this.bindCreateTaskEvents();
                 this.bindShowLoginFormEvents();
 
-                if (tinymce.get('doboard_task_widget-description')) {
-                    tinymce.remove('#doboard_task_widget-description');
+                if (SpotFixTinyMCE.get('doboard_task_widget-description')) {
+                    SpotFixTinyMCE.remove('#doboard_task_widget-description');
                 }
 
                 const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
@@ -664,7 +664,6 @@ class CleanTalkWidgetDoboard {
                     height: '100%',
                     width: '100%',
                     toolbar: 'screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
-                    icons: 'icon_pack_SpotFix',
                     file_picker_types: 'file image media',
                     setup: function (editor) {
                         editor.on('init', function() {
@@ -1006,8 +1005,8 @@ class CleanTalkWidgetDoboard {
 
                     const fileUploader = this.fileUploader;
 
-                    if (tinymce.get('doboard_task_widget-send_message_input_SpotFix')) {
-                        tinymce.remove('#doboard_task_widget-send_message_input_SpotFix');
+                    if (SpotFixTinyMCE.get('doboard_task_widget-send_message_input_SpotFix')) {
+                        SpotFixTinyMCE.remove('#doboard_task_widget-send_message_input_SpotFix');
                     }
 
                     SpotFixTinyMCE.init({
@@ -1018,7 +1017,6 @@ class CleanTalkWidgetDoboard {
                         toolbar_location: 'bottom',
                         toolbar: 'attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
                         height: 120,
-                        icons: 'icon_pack_SpotFix',
                         file_picker_types: 'file image media',
                         setup: function (editor) {
                             editor.on('change', function () {

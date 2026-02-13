@@ -15,6 +15,12 @@ function bundle_src_js() {
     const cssStream = processCSS();
     const jsStream = gulp.src([
         'js/src/lib/html2canvas.js',
+        'js/src/lib/tinymce/tinymce.min.js',
+        'js/src/lib/tinymce/theme.min.js',
+        'js/src/lib/tinymce/model.min.js',
+        'js/src/lib/tinymce/icons.min.js',
+        'js/src/lib/tinymce/link.plugin.min.js',
+        'js/src/lib/tinymce/lists.plugin.min.js',
         'js/src/localDB.js',
         'js/src/api.js',
         'js/src/websocket.js',

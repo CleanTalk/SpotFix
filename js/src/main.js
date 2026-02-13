@@ -37,40 +37,7 @@ function loadBotDetector() {
  * Downloads TinyMCE script from doboard.com
  */
 function loadTinyMCE() {
-    return new Promise((resolve) => {
-        const existingTinyMCE_temp = window.tinymce;
-        window.tinymce = null;
-        const script = document.createElement('script');
-        script.src = 'https://doboard.com/tinymce/tinymce.min.js';
-        script.async = true;
-
-        script.onload = function () {
-            try {
-                window.SpotFixTinyMCE = window.tinymce;
-                if (existingTinyMCE_temp) {
-                    window.tinymce = existingTinyMCE_temp;
-                }
-                addIconPack();
-                resolve(window.SpotFixTinyMCE);
-            } catch (error) {
-                if (existingTinyMCE_temp) {
-                    window.tinymce = existingTinyMCE_temp;
-                }
-                console.error('Error loading TinyMCE:', error);
-                resolve(null);
-            }
-        };
-
-        script.onerror = function () {
-            if (existingTinyMCE_temp) {
-                window.tinymce = existingTinyMCE_temp;
-            }
-            console.error('Failed to load TinyMCE script');
-            resolve(null);
-        };
-
-        document.head.appendChild(script);
-    });
+    window.SpotFixTinyMCE = window.tinymce;
 }
 
 document.addEventListener('selectionchange', function(e) {
