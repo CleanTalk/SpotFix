@@ -1420,8 +1420,9 @@ input:checked + .slider:before {
 
 /* Attachments styles */
 .doboard_task_widget-comment_attachments {
-    padding: 4px 8px 0;
+    padding: 8px 8px 30px 8px;
     display: flex;
+    flex-direction: column;
     flex-wrap: nowrap;
     overflow-x: auto;
     gap: 6px;
@@ -1444,6 +1445,9 @@ input:checked + .slider:before {
 }
 
 .doboard_task_widget-attachment_item {
+    display: flex;
+}
+.doboard_task_widget-attachment_url {
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -1479,8 +1483,4 @@ input:checked + .slider:before {
     overflow: hidden;
     text-overflow: ellipsis;
     color: #40484F;
-}
-
-.doboard_task_widget-comment_data_owner .doboard_task_widget-attachment_item {
-    background: rgba(255, 255, 255, 0.8);
 }
