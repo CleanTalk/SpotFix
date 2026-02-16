@@ -68,7 +68,7 @@ class SpotFixTemplatesLoader {
         </div>
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-concrete_issue">
-        <div id="spotfix_doboard_task_widget_url" style="background-color: #D6DDE3; padding: 12px 16px">
+        <div id="spotfix_doboard_task_widget_url" class="spotfix_doboard_task_widget_url">
                 <a rel="nofollow" style="word-break: break-all" href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
         </div>
         <div class="doboard_task_widget-spinner_wrapper_for_containers">

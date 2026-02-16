@@ -1023,6 +1023,12 @@
     width: 100%;
 }
 
+.spotfix_doboard_task_widget_url {
+    background-color: #D6DDE3;
+    padding: 12px 16px;
+    display: none;
+}
+
 .doboard_task_widget-spinner_for_containers {
     width: 40px;
     height: 40px;

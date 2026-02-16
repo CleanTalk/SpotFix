@@ -45,8 +45,8 @@ async function getTasksFullDetails(params, tasks, currentActiveTaskId, nonReques
     if (tasks.length > 0) {
         const sessionId = localStorage.getItem('spotfix_session_id');
         if (!nonRequesting) {
-            await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken);
             await getTasksAttachmenDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
+            await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
         }
         const comments = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_COMMENTS);
         const attachments = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_ATTACHMENT);
