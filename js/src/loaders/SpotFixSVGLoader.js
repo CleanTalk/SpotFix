@@ -184,13 +184,19 @@ height="100%" width="100%"/></svg>`;
  * @param {string} filename - The filename to check
  * @return {string} - Data URI of the appropriate icon
  */
-static getAttachmentIcon(filename) {
-    return SpotFixSVGLoader.getAsDataURI('iconAttachmentDefault')
+static getAttachmentIcon(filename, fileUrl, thumbnailUrl) {
     if (!filename) {
         return SpotFixSVGLoader.getAsDataURI('iconAttachmentDefault');
     }
 
     const ext = filename.split('.').pop().toLowerCase();
+
+    // Image files - return thumbnail or full image URL
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg', 'ico'];
+    if (imageExtensions.includes(ext)) {
+        // Return thumbnail URL if available, otherwise full image URL
+        return thumbnailUrl || fileUrl;
+    }
 
     // Text files
     const txtExtensions = ['txt', 'md', 'rtf', 'log', 'csv'];
@@ -219,6 +225,7 @@ static getAttachmentIcon(filename) {
     // Default icon for all other files
     return SpotFixSVGLoader.getAsDataURI('iconAttachmentDefault');
 }
+
 
     static iconAttachmentDefault() {
         return `<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">

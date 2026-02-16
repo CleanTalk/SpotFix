@@ -944,7 +944,7 @@ class CleanTalkWidgetDoboard {
                             for (const att of comment.commentAttachments) {
                                 const attFilename = att.filename || att.URL?.split('/').pop() || 'File';
                                 const attUrl = att.URL || '#';
-                                const attIcon = SpotFixSVGLoader.getAttachmentIcon(attFilename);
+                                const attIcon = SpotFixSVGLoader.getAttachmentIcon(attFilename, attUrl, att.URL_thumbnail);
                                 attachmentsHTML += this.loadTemplate('concrete_issue_attachment', {
                                     attachmentUrl: attUrl,
                                     attachmentFilename: attFilename,
