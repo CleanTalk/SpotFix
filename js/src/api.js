@@ -295,9 +295,11 @@ const getTasksAttachmenDoboard = async (sessionId, accountId, projectToken, curr
     const attachment = result.attachments.map((item, index) => ({
         attachmentId: item.attachment_id || `att_${item.task_id}_${index}_${Date.now()}`,
         taskId: item.task_id,
+        commentId: item.comment_id,
         attachmentOrder: item.attachment_order,
         URL_thumbnail: item.URL_thumbnail,
         URL: item.URL,
+        filename: item.filename,
     }));
     await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_ATTACHMENT, attachment);
     return attachment;

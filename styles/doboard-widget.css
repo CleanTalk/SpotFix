@@ -1410,3 +1410,71 @@ input:checked + .slider:before {
     font-size: 10px;
     color: #252A2F;
 }
+
+
+/* Attachments styles */
+.doboard_task_widget-comment_attachments {
+    padding: 4px 8px 0;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px;
+    scrollbar-width: thin;
+    scrollbar-color: #BBC7D1 transparent;
+    margin-bottom: 2px;
+}
+
+.doboard_task_widget-comment_attachments::-webkit-scrollbar {
+    height: 4px;
+}
+
+.doboard_task_widget-comment_attachments::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.doboard_task_widget-comment_attachments::-webkit-scrollbar-thumb {
+    background-color: #BBC7D1;
+    border-radius: 2px;
+}
+
+.doboard_task_widget-attachment_item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+    text-decoration: none;
+    color: #40484F !important;
+    font-size: 11px;
+    transition: background-color 0.2s ease;
+    border: 1px solid #BBC7D1;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.doboard_task_widget-attachment_item:hover {
+    background: rgba(255, 255, 255, 1);
+    text-decoration: none;
+}
+
+.doboard_task_widget-attachment_icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+}
+
+.doboard_task_widget-attachment_filename {
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #40484F;
+}
+
+.doboard_task_widget-comment_data_owner .doboard_task_widget-attachment_item {
+    background: rgba(255, 255, 255, 0.8);
+}

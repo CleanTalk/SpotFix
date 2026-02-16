@@ -183,6 +183,7 @@ function getTaskFullDetails(tasksDetails, taskId) {
         return comment?.taskId?.toString() === taskId?.toString()
     });
     const users = tasksDetails.users;
+    const attachments = tasksDetails.attachments || [];
     // Last comment
     let lastComment = comments.length > 0 ? comments[0] : null;
     // Author of the last comment
@@ -218,6 +219,11 @@ function getTaskFullDetails(tasksDetails, taskId) {
                 if (users && users.length > 0) {
                     author = users.find(u => String(u.user_id) === String(comment.userId));
                 }
+                // Get attachments for this comment
+                const commentAttachments = attachments
+                    .filter(att => String(att.commentId) === String(comment.commentId))
+                    .sort((a, b) => (a.attachmentOrder || 0) - (b.attachmentOrder || 0));
+                
                 return {
                     commentAuthorAvatarSrc: getAvatarSrc(author),
                     commentAuthorName: getAuthorName(author),
@@ -225,6 +231,7 @@ function getTaskFullDetails(tasksDetails, taskId) {
                     commentDate: date,
                     commentTime: time,
                     commentUserId: comment.userId || 'Unknown User',
+                    commentAttachments: commentAttachments,
                 };
             })
     };

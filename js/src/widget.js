@@ -939,11 +939,24 @@ class CleanTalkWidgetDoboard {
                             taskAuthorAvatarImgSrc: comment.commentAuthorAvatarSrc,
                             taskAuthorName: comment.commentAuthorName,
                         });
+                        let attachmentsHTML = '';
+                        if (comment.commentAttachments && comment.commentAttachments.length > 0) {
+                            for (const att of comment.commentAttachments) {
+                                const attFilename = att.filename || att.URL?.split('/').pop() || 'File';
+                                const attUrl = att.URL || '#';
+                                attachmentsHTML += this.loadTemplate('concrete_issue_attachment', {
+                                    attachmentUrl: attUrl,
+                                    attachmentFilename: attFilename,
+                                });
+                            }
+                        }
+                        
                         const commentData = {
                             commentAuthorName: comment.commentAuthorName,
                             commentBody: comment.commentBody,
                             commentDate: comment.commentDate,
                             commentTime: comment.commentTime,
+                            commentAttachments: attachmentsHTML,
                             issueTitle: templateVariables.issueTitle,
                             avatarCSSClass: avatarData.avatarCSSClass,
                             avatarStyle: avatarData.avatarStyle,
