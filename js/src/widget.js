@@ -24,6 +24,7 @@ class CleanTalkWidgetDoboard {
             iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
             iconPlus: SpotFixSVGLoader.getAsDataURI('iconPlus'),
             iconMaximize: SpotFixSVGLoader.getAsDataURI('iconMaximize'),
+            iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
             chevronBack: SpotFixSVGLoader.getAsDataURI('chevronBack'),
             buttonPaperClip: SpotFixSVGLoader.getAsDataURI('buttonPaperClip'),
             buttonSendMessage: SpotFixSVGLoader.getAsDataURI('buttonSendMessage'),
@@ -532,6 +533,7 @@ class CleanTalkWidgetDoboard {
                     descriptionText: this.descriptionText || localStorage.getItem('spotfix-description-ls') || '',
                     buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
                     iconMaximize: SpotFixSVGLoader.getAsDataURI('iconMaximize'),
+                    iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
                     iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
                     ...this.srcVariables
                 };
@@ -663,7 +665,7 @@ class CleanTalkWidgetDoboard {
                     toolbar_location: 'bottom',
                     height: '100%',
                     width: '100%',
-                    toolbar: 'screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
+                    toolbar: 'attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
                     icons: 'icon_pack_SpotFix',
                     file_picker_types: 'file image media',
                     setup: function (editor) {
@@ -681,23 +683,22 @@ class CleanTalkWidgetDoboard {
                             const content = editor.getContent();
                             localStorage.setItem('spotfix-description-ls', content);
                         });
-                        // editor.ui.registry.addButton('attachmentButton', {
-                        //     icon: 'paperclip',
-                        //     tooltip: 'Add file',
-                        //         disabled: true,
-                        //         onAction: (e) => {
-                        //          //  fileUploader?.fileInput?.click(e);
-                        //
-                        //         },
-                        //     });
-                         editor.ui.registry.addButton('screenshotButton', {
-                             icon: 'screenshot',
-                             tooltip: 'In development',
-                             disabled: true,
-                             onAction: (e) => {
-                               // fileUploader?.makeScreenshot();
-                             },
-                         });
+                        editor.ui.registry.addButton('attachmentButton', {
+                            icon: 'paperclip',
+                            tooltip: 'In development',
+                            disabled: true,
+                            onAction: (e) => {
+                                // fileUploader?.fileInput?.click(e);
+                            },
+                        });
+                        editor.ui.registry.addButton('screenshotButton', {
+                            icon: 'screenshot',
+                            tooltip: 'In development',
+                            disabled: true,
+                            onAction: (e) => {
+                                // fileUploader?.makeScreenshot();
+                            },
+                        });
                      }
                     })
 
@@ -874,7 +875,7 @@ class CleanTalkWidgetDoboard {
                 }
                 templateVariables.issueTitle = tasksFullDetails.taskName || taskDetails?.issueTitle;
                 templateVariables.issueComments = taskDetails?.issueComments;
-
+                templateVariables.amountOfComments = `${taskDetails?.issueComments.length || 0} messages`;
                 // Highlight the task's selected text
                 let nodePath = null;
                     const currentTaskData = this.allTasksData.find((element) => String(element.taskId) === String(taskDetails.taskId));
@@ -1045,7 +1046,6 @@ class CleanTalkWidgetDoboard {
                             editor.ui.registry.addButton('attachmentButton', {
                                 icon: 'paperclip',
                                 tooltip: 'Add file',
-                                    disabled: true,
                                     onAction: (e) => {
                                        fileUploader?.fileInput?.click(e);
 
@@ -1054,7 +1054,6 @@ class CleanTalkWidgetDoboard {
                             editor.ui.registry.addButton('screenshotButton', {
                                 icon: 'screenshot',
                                 tooltip: 'Screenshot',
-                                disabled: true,
                                 onAction: (e) => {
                                    fileUploader?.makeScreenshot();
                                 },

@@ -58,6 +58,19 @@
 
 .doboard_task_widget-header-icons {
     display: flex;
+    gap: 12px;
+}
+
+.doboard_task_widget-close_btn {
+    transform: translateY(-2px);
+}
+
+#openUserMenuButton {
+    transform: scale(0.85);
+}
+
+#maximizeWidgetContainer {
+    transform: scale(0.8);
 }
 
 .doboard_task_widget a {
@@ -86,7 +99,8 @@
 
 .doboard_task_widget-container-maximize .doboard_task_widget-field {
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
 }
 
 .doboard_task_widget-input-container-textarea .tox-tinymce {
@@ -113,11 +127,10 @@
 
 .doboard_task_widget-header {
     display: flex;
-    height: 41px;
     min-height: 41px;
     padding: 0px 16px;
     /*background: #1C7857;*/
-    background-color: #EBF0F4;
+    background-color: #F3F6F9;
     border-radius: 8px 8px 0 0;
     border: 1px solid #BBC7D1;
     border-bottom: none;
@@ -160,7 +173,7 @@
     align-items: center;
     border-bottom: 1px #EBF0F4 solid;
     padding: 0 16px;
-    height: 40px;
+    height: 52px;
     margin-top: 10px;
 }
 
@@ -182,8 +195,15 @@
 }
 
 .doboard_task_widget-element-container {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
+
+.doboard_task_widget-element-container span {
+    color: #707A83;
+    font-size: 12px;
+    font-weight: 400;
+}
+
 
 /*** `WRAP` INTERFACE ***/
 
@@ -272,7 +292,7 @@
 
 .doboard_task_widget-input-container {
     position: relative;
-    margin-bottom: 24px;
+    margin-bottom: 6px;
 }
 .doboard_task_widget-input-container.hidden, .doboard_task_widget-hidden {
     display: none;
@@ -388,20 +408,20 @@
     width: 100%;
     max-width: 400px;
     margin-bottom: 10px;
-    color: #FFFFFF;
-    background: #22A475;
-    border: none;
     border-radius: 6px;
     font-family: Inter, sans-serif;
-    font-weight: 700;
     font-size: 16px;
     line-height: 150%;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+    background: transparent;
+    border: 1px solid #22A475;
+    color: #22A475;
+    font-weight: 600;
 }
 
 .doboard_task_widget-submit_button:hover {
-    background: #1C7857;
+    background: #22A475;
     color: #FFFFFF;
 }
 
@@ -445,10 +465,20 @@
 }
 
 .doboard_task_widget-issue-title {
+    display: inline-flex;
+    flex-direction: column;
+    transform: translateY(-2px);
     max-width: 200px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.doboard_task_widget-issue-title > :last-child {
+    color: #707A83;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 400;
 }
 
 .doboard_task_widget-hidden_element {
@@ -1300,7 +1330,7 @@
     display: inline-block;
     width: 46px;
     min-width: 46px;
-    height: 28px;
+    height: 20px;
 }
 
 .toggle input {
@@ -1314,29 +1344,34 @@
     position: absolute;
     cursor: pointer;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #bbc7d1;
+    background-color: #D6DDE3;
     border-radius: 24px;
     transition: 0.3s;
+    height: 14px;
+    width: 37px;
 }
 
 .slider:before {
     content: "";
     position: absolute;
-    height: 24px;
-    width: 24px;
-    left: 2px;
-    top: 2px;
-    background-color: white;
+    height: 20px;
+    width: 20px;
+    top: -3px;
+    left: -2px;
+    background-color: #FFFFFF;
     border-radius: 50%;
     transition: 0.3s;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.21);
 }
 
 input:checked + .slider {
-    background-color: #65d4ac;
+    background-color: #65D4AC80;
 }
 
 input:checked + .slider:before {
-    transform: translateX(16px);
+    transform: translateX(20px);
+    box-shadow: none;
+    background-color: #65D4AC;
 }
 
 .logout_button {
@@ -1420,8 +1455,15 @@ input:checked + .slider:before {
     color: #252A2F;
 }
 
-.tox-tinymce .tox-toolbar__group {
+.doboard_task_widget-concrete_issue .tox-tinymce .tox-toolbar__group {
     display: inline-flex !important;
     width: 100% !important;
     justify-content: space-evenly;
+}
+
+.doboard_task_widget-container-maximize .doboard_task_widget-concrete_issue .tox-tinymce .tox-toolbar__group  > :last-child {
+    flex-grow: 1;
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 8px;
 }

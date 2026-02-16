@@ -23,11 +23,11 @@ class SpotFixTemplatesLoader {
             <span id="addNewTaskButton">
                 <img src="{{iconPlus}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
-            <span id="openUserMenuButton">
-                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
-            </span>
             <span id="maximizeWidgetContainer">
                 <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="openUserMenuButton">
+                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
         </div>
@@ -48,18 +48,21 @@ class SpotFixTemplatesLoader {
     static concrete_issue() {
         return `
 <div id="doboard_task_widget_concrete-container" class="{{contenerClasess}}">
-    <div class="doboard_task_widget-header">
+    <div class="doboard_task_widget-header" style="height: 42px; padding-top: 10px; align-items: flex-start">
         <div class="doboard_task_widget_return_to_all doboard_task_widget_cursor-pointer">
             <img src="{{chevronBack}}" alt="" title="Return to all spots list">
             <span title="Return to all spots list"> All {{issuesCounter}}</span>
         </div>
-        <div class="doboard_task_widget-issue-title">{{issueTitle}}</div>
+        <div class="doboard_task_widget-issue-title">
+            <span>{{issueTitle}}</span>
+            <span>{{amountOfComments}}</span>
+        </div>
         <div class="doboard_task_widget-header-icons">
-            <span id="openUserMenuButton">
-                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
-            </span>
             <span id="maximizeWidgetContainer">
                 <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="openUserMenuButton">
+                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
         </div>
@@ -125,11 +128,11 @@ class SpotFixTemplatesLoader {
             <span>Report an issue</span>
         </div>
         <div class="doboard_task_widget-header-icons">
-            <span id="openUserMenuButton">
-                 <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
-            </span>
             <span id="maximizeWidgetContainer">
                 <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="openUserMenuButton">
+                 <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
         </div>
@@ -138,7 +141,7 @@ class SpotFixTemplatesLoader {
 
         <div class="doboard_task_widget-element-container">
             <span>
-                Tell us about any issue you’re experiencing on <span style="color: #000000;">{{currentDomain}}</span>. 
+                Tell us about any issue you’re experiencing on <span style="text-decoration: underline">{{currentDomain}}</span>. 
                 You’re also welcome to review spelling, grammar, or ask a question related to this page.
             </span>
         </div>
@@ -153,7 +156,7 @@ class SpotFixTemplatesLoader {
             <label for="doboard_task_widget-description" class="doboard_task_widget-field-textarea-label" >Description</label>
         </div>
 
-        <div class="doboard_task_widget-login">
+        <div class="doboard_task_widget-login" style="margin-top: 16px">
 
             <span  class="doboard_task_widget-login-icon" >If you want to receive notifications by email write here you email contacts.</span>
 
@@ -218,7 +221,19 @@ class SpotFixTemplatesLoader {
         </div>
 
         <div class="doboard_task_widget-field">
-            <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button">Submit</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; min-width: 270px; max-width: 420px">
+              <div style="display: flex; align-items: center">
+                  <img src="{{iconPublic}}" alt="">
+                  <span style="color: #252A2F; margin-left: 6px;">Public
+                  <span style="color: #707A83; font-size: 12px; margin-left: 6px;">(your message will be public to all visitors)</span>
+                  </span>
+              </div>      
+              <label class="toggle" style="margin-left: 8px; top: 4px">
+                  <input id="spotfix-widget-create-task-visibility" type="checkbox">
+                  <span class="slider"></span>
+              </label>
+            </div>
+            <button id="doboard_task_widget-submit_button" style="min-width: 270px" class="doboard_task_widget-submit_button">Send report</button>
         </div>
 
         <div class="doboard_task_widget-message-wrapper hidden">
@@ -291,7 +306,7 @@ class SpotFixTemplatesLoader {
                 <img src="{{iconEye}}" alt="" style="margin-right: 12px">
                 <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
                     <span style="display: inline-flex; flex-direction: column">
-                        <span style="font-weight: 500; font-size: 14px; color: #252A2F">
+                        <span style="font-weight: 500; font-size: 14px; color: #252A2F; margin-bottom: 4px">
                         Show widget on my screen</span>
                         <span style="font-size: 10px; color: #40484F">
                         The widget will be visible again if you select any text on the site</span>
