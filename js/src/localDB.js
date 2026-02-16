@@ -1,14 +1,16 @@
 const SPOTFIX_INDEXED_DB_NAME = 'spotfix-localDB';
-const spotfixIndexedDBVersion = 1;
+const spotfixIndexedDBVersion = 2; // Увеличено для добавления таблицы attachment
 
 const SPOTFIX_TABLE_USERS = 'users';
 const SPOTFIX_TABLE_TASKS = 'tasks';
 const SPOTFIX_TABLE_COMMENTS = 'comments';
+const SPOTFIX_TABLE_ATTACHMENT = 'attachment';
 
 const LOCAL_DATA_BASE_TABLE = [
     { name: SPOTFIX_TABLE_USERS, keyPath: 'user_id' },
     { name: SPOTFIX_TABLE_TASKS, keyPath: 'taskId' },
     { name: SPOTFIX_TABLE_COMMENTS, keyPath: 'commentId' },
+    { name: SPOTFIX_TABLE_ATTACHMENT, keyPath: 'attachmentId' },
 ];
 
 const SPOTFIX_LAST_DB_KEY = 'spotfix_last_db_key';
