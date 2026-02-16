@@ -944,11 +944,16 @@ class CleanTalkWidgetDoboard {
                             for (const att of comment.commentAttachments) {
                                 const attFilename = att.filename || att.URL?.split('/').pop() || 'File';
                                 const attUrl = att.URL || '#';
-                                const attIcon = SpotFixSVGLoader.getAttachmentIcon(attFilename, attUrl, att.URL_thumbnail);
+                                const attThumbnailUrl = att.URL_thumbnail || att.URL || '#';
+                                const attIcon = SpotFixSVGLoader.getAttachmentIcon(attFilename, attUrl, attThumbnailUrl);
+                                const attIsImage = this.isImageFile(attFilename);
+                                const attClass = attIsImage ? 'image-attachment' : '';
                                 attachmentsHTML += this.loadTemplate('concrete_issue_attachment', {
                                     attachmentUrl: attUrl,
                                     attachmentFilename: attFilename,
                                     attachmentIcon: attIcon,
+                                    attachmentClass: attClass,
+                                    attachmentIsImage: attIsImage ? 'true' : 'false',
                                 });
                             }
                         }
@@ -999,6 +1004,9 @@ class CleanTalkWidgetDoboard {
                             issuesCommentsContainer.innerHTML = daysWrapperHTML;
                         }
                     }
+                    
+                    // Bind click events to image attachments for lightbox
+                    this.bindImageAttachmentClicks();
 
                 } else {
                     issuesCommentsContainer.innerHTML = ksesFilter('No comments');
@@ -1603,6 +1611,97 @@ class CleanTalkWidgetDoboard {
         return str;
     }
     return '';
+}
+
+/**
+ * Check if file is an image based on extension
+ * @param {string} filename - The filename to check
+ * @return {boolean}
+ */
+isImageFile(filename) {
+    if (!filename) return false;
+    const ext = filename.split('.').pop().toLowerCase();
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg', 'ico'];
+    return imageExtensions.includes(ext);
+}
+
+/**
+ * Show image in lightbox
+ * @param {string} imageUrl - The image URL to show
+ * @param {string} imageAlt - The image alt text
+ */
+showImageLightbox(imageUrl, imageAlt = '') {
+    // Remove existing lightbox if any
+    this.hideImageLightbox();
+    
+    // Create lightbox
+    const lightboxHTML = this.loadTemplate('imageLightbox', {
+        imageUrl: imageUrl,
+        imageAlt: imageAlt || 'Image'
+    });
+    
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = lightboxHTML;
+    const lightbox = tempDiv.firstElementChild;
+    
+    document.body.appendChild(lightbox);
+    
+    // Force reflow then add active class for animation
+    lightbox.offsetHeight;
+    lightbox.classList.add('active');
+    
+    // Bind close events
+    const closeBtn = lightbox.querySelector('.doboard_task_widget-lightbox-close');
+    const overlay = lightbox.querySelector('.doboard_task_widget-lightbox-overlay');
+    
+    const closeHandler = () => this.hideImageLightbox();
+    
+    if (closeBtn) closeBtn.addEventListener('click', closeHandler);
+    if (overlay) overlay.addEventListener('click', closeHandler);
+    
+    // Close on Escape key
+    const escHandler = (e) => {
+        if (e.key === 'Escape') {
+            this.hideImageLightbox();
+            document.removeEventListener('keydown', escHandler);
+        }
+    };
+    document.addEventListener('keydown', escHandler);
+}
+
+/**
+ * Hide image lightbox
+ */
+hideImageLightbox() {
+    const lightbox = document.getElementById('doboard_task_widget-lightbox');
+    if (lightbox) {
+        lightbox.classList.remove('active');
+        setTimeout(() => {
+            lightbox.remove();
+        }, 300);
+    }
+}
+
+/**
+ * Bind click events to image attachments for lightbox
+ */
+bindImageAttachmentClicks() {
+    const imageAttachments = document.querySelectorAll('.doboard_task_widget-attachment_item.image-attachment');
+    imageAttachments.forEach(item => {
+        // Remove any existing click listener by cloning the element
+        const newItem = item.cloneNode(true);
+        item.parentNode.replaceChild(newItem, item);
+        
+        newItem.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const imageUrl = newItem.getAttribute('data-attachment-url');
+            const imageAlt = newItem.querySelector('.doboard_task_widget-attachment_filename')?.textContent || 'Image';
+            if (imageUrl) {
+                this.showImageLightbox(imageUrl, imageAlt);
+            }
+        });
+    });
 }
 
 /**
