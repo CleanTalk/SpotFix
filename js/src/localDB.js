@@ -1,5 +1,5 @@
 const SPOTFIX_INDEXED_DB_NAME = 'spotfix-localDB';
-const spotfixIndexedDBVersion = 2; // Увеличено для добавления таблицы attachment
+const spotfixIndexedDBVersion = 2;
 
 const SPOTFIX_TABLE_USERS = 'users';
 const SPOTFIX_TABLE_TASKS = 'tasks';
