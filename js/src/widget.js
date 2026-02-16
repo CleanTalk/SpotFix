@@ -1010,13 +1010,18 @@ class CleanTalkWidgetDoboard {
                         tinymce.remove('#doboard_task_widget-send_message_input_SpotFix');
                     }
 
+                    const mainThis = this;
+
                     SpotFixTinyMCE.init({
                         selector: '#doboard_task_widget-send_message_input_SpotFix',
                         plugins: 'link lists',
                         menubar: false,
+                        placeholder: 'Write a message...',
+                        content_style: `body[data-mce-placeholder]:not(.mce-content-body:not([data-mce-placeholder]))::before {
+                                color: #707A83 !important;}`,
                         statusbar: false,
                         toolbar_location: 'bottom',
-                        toolbar: 'attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
+                        toolbar: 'attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote sendCommentButton',
                         height: 120,
                         icons: 'icon_pack_SpotFix',
                         file_picker_types: 'file image media',
@@ -1046,14 +1051,21 @@ class CleanTalkWidgetDoboard {
 
                                     },
                                 });
-                                editor.ui.registry.addButton('screenshotButton', {
-                                    icon: 'screenshot',
-                                    tooltip: 'Screenshot',
-                                    disabled: true,
-                                    onAction: (e) => {
-                                       fileUploader?.makeScreenshot();
-                                    },
+                            editor.ui.registry.addButton('screenshotButton', {
+                                icon: 'screenshot',
+                                tooltip: 'Screenshot',
+                                disabled: true,
+                                onAction: (e) => {
+                                   fileUploader?.makeScreenshot();
+                                },
                                 });
+                            editor.ui.registry.addButton('sendCommentButton', {
+                                icon: 'sendComment',
+                                tooltip: 'Send comment',
+                                onAction: (e) => {
+                                    clickHandler(mainThis, editor);
+                                },
+                            });
                             }
                         });
                     }
@@ -1073,22 +1085,16 @@ class CleanTalkWidgetDoboard {
                 hideContainersSpinner();
 
                 const sendButton = document.querySelector('.doboard_task_widget-send_message_button');
-                if (sendButton) {
                     this.fileUploader.init();
-                    let widgetClass = this;
 
-                    if (this._sendButtonClickHandler) {
-                        sendButton.removeEventListener('click', this._sendButtonClickHandler);
-                    }
+                    async function clickHandler(mainThis, editor)  {
 
-                    const clickHandler = async (e) => {
-                        e.preventDefault();
+                        const sendMessageContainer = sendButton?.closest('.doboard_task_widget-send_message');
+                        const input = sendMessageContainer?.querySelector('.doboard_task_widget-send_message_input');
 
-                        const sendMessageContainer = sendButton.closest('.doboard_task_widget-send_message');
-                        const input = sendMessageContainer.querySelector('.doboard_task_widget-send_message_input');
+                        const commentText =  editor?.getContent({ format: 'html' })?.trim();
 
-                        const commentText = input.value.trim();
-                        if (!commentText) return;
+                            if (!commentText) return;
 
                         // Add other fields handling here
 
@@ -1098,31 +1104,31 @@ class CleanTalkWidgetDoboard {
                         let newCommentResponse = null;
 
                         try {
-                            newCommentResponse = await addTaskComment(this.params, this.currentActiveTaskId, commentText);
+                            newCommentResponse = await addTaskComment(mainThis.params, mainThis.currentActiveTaskId, commentText);
                             input.value = '';
-                            await this.createWidgetElement('concrete_issue');
+                            await mainThis.createWidgetElement('concrete_issue');
                             hideContainersSpinner(false);
                         } catch (err) {
-                            alert('Error when adding a comment: ' + err.message);
+                            alert('Error when adding a comment: ' + err?.message);
                         }
 
-                        if (widgetClass.fileUploader.hasFiles() && newCommentResponse !== null && newCommentResponse.hasOwnProperty('commentId')) {
+                        if (mainThis && mainThis?.fileUploader?.hasFiles() && newCommentResponse !== null && newCommentResponse?.hasOwnProperty('commentId')) {
                             const sessionId = localStorage.getItem('spotfix_session_id');
-                            const attachmentsSendResult = await widgetClass.fileUploader.sendAttachmentsForComment(widgetClass.params, sessionId, newCommentResponse.commentId);
+                            const attachmentsSendResult = await mainThis?.fileUploader?.sendAttachmentsForComment(mainThis?.params, sessionId, newCommentResponse?.commentId);
                             if (!attachmentsSendResult.success) {
-                                widgetClass.fileUploader.showError('Some files where no sent, see details in the console.');
+                                mainThis?.fileUploader?.showError('Some files where no sent, see details in the console.');
                                 const toConsole = JSON.stringify(attachmentsSendResult);
                                 console.log(toConsole);
                             }
                         }
 
                         input.disabled = false;
-                        sendButton.disabled = false;
-                    };
-                    this._sendButtonClickHandler = clickHandler;
 
-                    sendButton.addEventListener('click', clickHandler);
-                }
+                    };
+                    // this._sendButtonClickHandler = clickHandler;
+                    //
+                    // sendButton.addEventListener('click', clickHandler);
+
 
                 break;
 

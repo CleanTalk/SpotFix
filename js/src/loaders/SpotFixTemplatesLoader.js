@@ -55,9 +55,6 @@ class SpotFixTemplatesLoader {
         </div>
         <div class="doboard_task_widget-issue-title">{{issueTitle}}</div>
         <div class="doboard_task_widget-header-icons">
-            <span id="addNewTaskButton">
-                <img src="{{iconPlus}}"  alt="" class="doboard_task_widget_cursor-pointer">
-            </span>
             <span id="openUserMenuButton">
                 <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
@@ -76,12 +73,12 @@ class SpotFixTemplatesLoader {
         </div>
         <div class="doboard_task_widget-concrete_issues-container">
         </div>
-        <div class="doboard_task_widget-send_message">
+        <div class="doboard_task_widget-send_message doboard_task_widget-spotfix-editor">
              <textarea name="doboard_task_widget_message" id="doboard_task_widget-send_message_input_SpotFix" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
-            <div>
-              <div class="doboard_task_widget-field">
-                <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button doboard_task_widget-send_message_button">Submit</button>
-            </div>
+<!--            <div>-->
+<!--              <div class="doboard_task_widget-field">-->
+<!--                <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button doboard_task_widget-send_message_button">Submit</button>-->
+<!--            </div>-->
             </div>
             <div class="doboard_task_widget__file-upload__wrapper" id="doboard_task_widget__file-upload__wrapper">
                 <div class="doboard_task_widget__file-upload__list-header">Attached files</div>

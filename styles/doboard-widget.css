@@ -931,7 +931,6 @@
 /** SENDING NEW COMMENT **/
 
 .doboard_task_widget-send_message {
-    padding: 14px 10px;
     border-top: 1px solid #BBC7D1;
     position: sticky;
     background: white;
@@ -1283,6 +1282,10 @@
     padding: 0 8px !important;
 }
 
+.doboard_task_widget-spotfix-editor .tox-tinymce {
+    border: none !important;
+}
+
 .doboard_task_widget-content .tox-tinymce {
     border: 1px solid #BBC7D1;
     border-radius: 4px;
@@ -1415,4 +1418,10 @@ input:checked + .slider:before {
     left: 14px;
     font-size: 10px;
     color: #252A2F;
+}
+
+.tox-tinymce .tox-toolbar__group {
+    display: inline-flex !important;
+    width: 100% !important;
+    justify-content: space-evenly;
 }
