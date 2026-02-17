@@ -1559,7 +1559,7 @@ input:checked + .slider:before {
     right: 20px;
     width: 40px;
     height: 40px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.8);
     border: none;
     border-radius: 50%;
     cursor: pointer;
@@ -1571,7 +1571,7 @@ input:checked + .slider:before {
 }
 
 .doboard_task_widget-lightbox-close:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.6);
 }
 
 .doboard_task_widget-lightbox-close img {

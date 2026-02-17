@@ -44,7 +44,7 @@ async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
 async function getTasksFullDetails(params, tasks, currentActiveTaskId, nonRequesting = false) {
     if (tasks.length > 0) {
         const sessionId = localStorage.getItem('spotfix_session_id');
-        if (!nonRequesting) {
+        if (!nonRequesting && currentActiveTaskId && +currentActiveTaskId !== 0) {
             await getTasksAttachmenDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
             await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
         }
