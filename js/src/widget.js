@@ -1637,7 +1637,8 @@ showImageLightbox(imageUrl, imageAlt = '') {
     // Create lightbox
     const lightboxHTML = this.loadTemplate('imageLightbox', {
         imageUrl: imageUrl,
-        imageAlt: imageAlt || 'Image'
+        imageAlt: imageAlt || 'Image',
+        buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen')
     });
     
     const tempDiv = document.createElement('div');
