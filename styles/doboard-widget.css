@@ -1489,10 +1489,8 @@ input:checked + .slider:before {
     cursor: pointer;
 }
 
-/* Non-image attachments should not be clickable */
 .doboard_task_widget-attachment_item:not(.image-attachment) {
-    cursor: default;
-   // pointer-events: none;
+    cursor: pointer;
 }
 
 .doboard_task_widget-attachment_item.image-attachment img {

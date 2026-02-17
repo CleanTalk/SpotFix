@@ -1684,25 +1684,42 @@ hideImageLightbox() {
 }
 
 /**
- * Bind click events to image attachments for lightbox
+ * Bind click events to attachments - images show lightbox, other files download
  */
 bindImageAttachmentClicks() {
-    const imageAttachments = document.querySelectorAll('.doboard_task_widget-attachment_item.image-attachment');
-    imageAttachments.forEach(item => {
-        // Remove any existing click listener by cloning the element
+    const allAttachments = document.querySelectorAll('.doboard_task_widget-attachment_item');
+    allAttachments.forEach(item => {
         const newItem = item.cloneNode(true);
         item.parentNode.replaceChild(newItem, item);
         
         newItem.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            const imageUrl = newItem.getAttribute('data-attachment-url');
-            const imageAlt = newItem.querySelector('.doboard_task_widget-attachment_filename')?.textContent || 'Image';
-            if (imageUrl) {
-                this.showImageLightbox(imageUrl, imageAlt);
+            const fileUrl = newItem.getAttribute('data-attachment-url');
+            const fileName = newItem.querySelector('.doboard_task_widget-attachment_filename')?.textContent || 'file';
+            const isImage = newItem.classList.contains('image-attachment');
+            
+            if (isImage && fileUrl) {
+                this.showImageLightbox(fileUrl, fileName);
+            } else if (fileUrl) {
+                this.downloadFile(fileUrl, fileName);
             }
         });
     });
+}
+
+/**
+ * Download a file
+ * @param {string} fileUrl - The file URL to download
+ * @param {string} fileName - The file name
+ */
+downloadFile(fileUrl, fileName) {
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 /**

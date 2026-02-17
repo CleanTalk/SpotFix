@@ -399,28 +399,7 @@ function ksesFilter(html, options = false) {
             const tag = node.tagName.toLowerCase();
 
             if (options) {
-                if (allowedTags[tag]) {
-                    // Special handling for images in 'concrete_issue_day_content' template (wrap img in link always)
-                    if (tag === 'img' && options.template === 'concrete_issue_day_content' && options.imgFilter) {
-                        const src = node.getAttribute('src') || '';
-                        const alt = node.getAttribute('alt') || '[image]';
-                        const link = doc.createElement('a');
-                        link.href = src;
-                        link.target = '_blank';
-                        link.className = 'doboard_task_widget-img-link';
-                        const img = doc.createElement('img');
-                        img.src = src;
-                        img.alt = alt;
-                        img.className = 'doboard_task_widget-comment_body-img-strict';
-                        link.appendChild(img);
-                        node.parentNode.insertBefore(link, node);
-                        node.remove();
-                        return;
-                    }
-                }
-
                 if (!allowedTags[tag]) {
-                    // Special handling for images in 'list_issues' template
                     if (tag === 'img' && options.template === 'list_issues' && options.imgFilter) {
                         const src = node.getAttribute('src') || '';
                         const alt = node.getAttribute('alt') || '[image]';
@@ -435,7 +414,6 @@ function ksesFilter(html, options = false) {
                 }
             }
 
-            // Remove disallowed attributes
             [...node.attributes].forEach(attr => {
                 const attrName = attr.name.toLowerCase();
                 if (!allowedAttrs[tag]?.includes(attrName) ||
@@ -445,7 +423,6 @@ function ksesFilter(html, options = false) {
                 }
             });
         }
-        // Recursively clean children
         [...node.childNodes].forEach(clean);
     }
     [...doc.body.childNodes].forEach(clean);
