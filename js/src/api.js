@@ -147,6 +147,7 @@ const attachmentAddDoboard = async (fileData) => {
         attachment_order: fileData.attachmentOrder
     }
     const result = await spotfixApiCall(data, 'attachment_add', accountId);
+    //await getTasksCommentsDoboard(fileData.sessionId, params.accountId, params.projectToken, currentActiveTaskId);
     // @ToDo need to handle result?
 };
 

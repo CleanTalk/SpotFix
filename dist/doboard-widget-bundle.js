@@ -8153,6 +8153,7 @@ const attachmentAddDoboard = async (fileData) => {
         attachment_order: fileData.attachmentOrder
     }
     const result = await spotfixApiCall(data, 'attachment_add', accountId);
+    //await getTasksCommentsDoboard(fileData.sessionId, params.accountId, params.projectToken, currentActiveTaskId);
     // @ToDo need to handle result?
 };
 
@@ -10144,21 +10145,24 @@ class CleanTalkWidgetDoboard {
                         try {
                             newCommentResponse = await addTaskComment(this.params, this.currentActiveTaskId, commentText);
                             input.value = '';
+
+                            if (widgetClass.fileUploader.hasFiles() && newCommentResponse !== null && newCommentResponse.hasOwnProperty('commentId')) {
+                                const sessionId = localStorage.getItem('spotfix_session_id');
+                                const attachmentsSendResult = await widgetClass.fileUploader.sendAttachmentsForComment(widgetClass.params, sessionId, newCommentResponse.commentId);
+                                if (!attachmentsSendResult.success) {
+                                    widgetClass.fileUploader.showError('Some files where no sent, see details in the console.');
+                                    const toConsole = JSON.stringify(attachmentsSendResult);
+                                    console.log(toConsole);
+                                }
+                            }
+
                             await this.createWidgetElement('concrete_issue');
                             hideContainersSpinner(false);
                         } catch (err) {
                             alert('Error when adding a comment: ' + err.message);
                         }
 
-                        if (widgetClass.fileUploader.hasFiles() && newCommentResponse !== null && newCommentResponse.hasOwnProperty('commentId')) {
-                            const sessionId = localStorage.getItem('spotfix_session_id');
-                            const attachmentsSendResult = await widgetClass.fileUploader.sendAttachmentsForComment(widgetClass.params, sessionId, newCommentResponse.commentId);
-                            if (!attachmentsSendResult.success) {
-                                widgetClass.fileUploader.showError('Some files where no sent, see details in the console.');
-                                const toConsole = JSON.stringify(attachmentsSendResult);
-                                console.log(toConsole);
-                            }
-                        }
+
 
                         input.disabled = false;
                         sendButton.disabled = false;
@@ -12004,7 +12008,7 @@ class FileUploader {
         this.maxFiles = 5;
 
         /** @type {string[]} Allowed MIME types for files */
-        this.allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain', 'application/msword'];
+        this.allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
 
         /** @type {function} HTML escaping function for XSS protection */
         this.escapeHtmlHandler = escapeHtmlHandler;
@@ -13038,7 +13042,7 @@ static getAttachmentIcon(filename, fileUrl, thumbnailUrl) {
     }
 
     // Document files
-    const docExtensions = ['doc', 'docx', 'pdf', 'odt', 'xls', 'xlsx', 'ppt', 'pptx'];
+    const docExtensions = ['doc', 'docx', 'pdf', 'odt', 'ppt', 'pptx'];
     if (docExtensions.includes(ext)) {
         return SpotFixSVGLoader.getAsDataURI('iconAttachmentDoc');
     }
@@ -13050,7 +13054,7 @@ static getAttachmentIcon(filename, fileUrl, thumbnailUrl) {
     }
 
     // XML/HTML files
-    const xmlExtensions = ['xml', 'html', 'htm', 'xhtml', 'svg', 'css', 'scss', 'sass', 'less'];
+    const xmlExtensions = ['xml', 'xls', 'xlsx', 'html', 'htm', 'xhtml', 'svg', 'css', 'scss', 'sass', 'less'];
     if (xmlExtensions.includes(ext)) {
         return SpotFixSVGLoader.getAsDataURI('iconAttachmentXml');
     }

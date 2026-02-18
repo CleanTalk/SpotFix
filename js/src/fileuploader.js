@@ -20,7 +20,7 @@ class FileUploader {
         this.maxFiles = 5;
 
         /** @type {string[]} Allowed MIME types for files */
-        this.allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain', 'application/msword'];
+        this.allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
 
         /** @type {function} HTML escaping function for XSS protection */
         this.escapeHtmlHandler = escapeHtmlHandler;

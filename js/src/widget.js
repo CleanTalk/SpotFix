@@ -1123,21 +1123,24 @@ class CleanTalkWidgetDoboard {
                         try {
                             newCommentResponse = await addTaskComment(this.params, this.currentActiveTaskId, commentText);
                             input.value = '';
+
+                            if (widgetClass.fileUploader.hasFiles() && newCommentResponse !== null && newCommentResponse.hasOwnProperty('commentId')) {
+                                const sessionId = localStorage.getItem('spotfix_session_id');
+                                const attachmentsSendResult = await widgetClass.fileUploader.sendAttachmentsForComment(widgetClass.params, sessionId, newCommentResponse.commentId);
+                                if (!attachmentsSendResult.success) {
+                                    widgetClass.fileUploader.showError('Some files where no sent, see details in the console.');
+                                    const toConsole = JSON.stringify(attachmentsSendResult);
+                                    console.log(toConsole);
+                                }
+                            }
+
                             await this.createWidgetElement('concrete_issue');
                             hideContainersSpinner(false);
                         } catch (err) {
                             alert('Error when adding a comment: ' + err.message);
                         }
 
-                        if (widgetClass.fileUploader.hasFiles() && newCommentResponse !== null && newCommentResponse.hasOwnProperty('commentId')) {
-                            const sessionId = localStorage.getItem('spotfix_session_id');
-                            const attachmentsSendResult = await widgetClass.fileUploader.sendAttachmentsForComment(widgetClass.params, sessionId, newCommentResponse.commentId);
-                            if (!attachmentsSendResult.success) {
-                                widgetClass.fileUploader.showError('Some files where no sent, see details in the console.');
-                                const toConsole = JSON.stringify(attachmentsSendResult);
-                                console.log(toConsole);
-                            }
-                        }
+
 
                         input.disabled = false;
                         sendButton.disabled = false;

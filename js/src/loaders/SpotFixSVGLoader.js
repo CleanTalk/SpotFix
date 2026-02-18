@@ -205,7 +205,7 @@ static getAttachmentIcon(filename, fileUrl, thumbnailUrl) {
     }
 
     // Document files
-    const docExtensions = ['doc', 'docx', 'pdf', 'odt', 'xls', 'xlsx', 'ppt', 'pptx'];
+    const docExtensions = ['doc', 'docx', 'pdf', 'odt', 'ppt', 'pptx'];
     if (docExtensions.includes(ext)) {
         return SpotFixSVGLoader.getAsDataURI('iconAttachmentDoc');
     }
@@ -217,7 +217,7 @@ static getAttachmentIcon(filename, fileUrl, thumbnailUrl) {
     }
 
     // XML/HTML files
-    const xmlExtensions = ['xml', 'html', 'htm', 'xhtml', 'svg', 'css', 'scss', 'sass', 'less'];
+    const xmlExtensions = ['xml', 'xls', 'xlsx', 'html', 'htm', 'xhtml', 'svg', 'css', 'scss', 'sass', 'less'];
     if (xmlExtensions.includes(ext)) {
         return SpotFixSVGLoader.getAsDataURI('iconAttachmentXml');
     }
