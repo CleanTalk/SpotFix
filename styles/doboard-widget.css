@@ -1470,12 +1470,20 @@ input:checked + .slider:before {
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background-color: #D6DDE3;
-    /*background-color: #F08C43;*/
     color: white;
     font-weight: 400;
     font-size: 11px;
     display: inline-flex;
     justify-content: center;
     align-items: center;
+}
+
+.doboard_task_widget-visibility-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-width: 270px;
+    max-width: 420px;
+    margin-top: 4px;
+    margin-bottom: 4px
 }

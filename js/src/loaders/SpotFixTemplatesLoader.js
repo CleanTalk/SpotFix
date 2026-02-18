@@ -221,7 +221,7 @@ class SpotFixTemplatesLoader {
         </div>
 
         <div class="doboard_task_widget-field">
-            <div style="display: flex; justify-content: space-between; align-items: center; min-width: 270px; max-width: 420px">
+            <div class="doboard_task_widget-visibility-toggle">
               <div style="display: flex; align-items: center">
                   <img src="{{iconPublic}}" alt="">
                   <span style="color: #252A2F; margin-left: 6px;">Public

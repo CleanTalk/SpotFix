@@ -732,7 +732,9 @@ class CleanTalkWidgetDoboard {
                     spotFixRemoveHighlights();
                 let issuesQuantityOnPage = 0;
                 const sessionId = localStorage.getItem('spotfix_session_id');
-                getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId)
+
+                const notifications = await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
+
                 this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
                 const tasks = this.allTasksData;
                 tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId, this.nonRequesting);
@@ -790,7 +792,7 @@ class CleanTalkWidgetDoboard {
                             const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId)
 
                             const avatarData = getAvatarData(taskFullDetails);
-
+                            const hasUpdates = !!(notifications.find(item => +item.task_id === elTask.taskId));
                             const listIssuesTemplateVariables = {
                                 taskTitle: taskTitle || '',
                                 taskAuthorAvatarImgSrc: taskFullDetails.taskAuthorAvatarImgSrc,
@@ -814,7 +816,9 @@ class CleanTalkWidgetDoboard {
                                 classUnread: '',
                                 elementBgCSSClass: elTask.taskStatus !== 'DONE' ? '' : 'doboard_task_widget-task_row-green',
                                 statusFixedHtml: elTask.taskStatus !== 'DONE' ? '' : this.loadTemplate('fixedHtml'),
-                                amountOfComments: elTask.taskStatus === 'DONE' ? '' : `<span class="doboard_task_widget-commentsIndicator">${elTask.commentsCount}</span>`,
+                                amountOfComments: elTask.taskStatus === 'DONE' ? ''
+                                    : `<span style="background-color: ${hasUpdates ? '#F08C43' : '#D6DDE3'}" 
+                                        class="doboard_task_widget-commentsIndicator">${elTask.commentsCount}</span>`,
                             };
 
                             const taskOwnerReplyIsUnread = storageProvidedTaskHasUnreadUpdates(taskFullDetails.taskId);

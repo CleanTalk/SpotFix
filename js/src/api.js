@@ -374,21 +374,18 @@ const getNotificationsDoboard = async (projectToken, sessionId, accountId) => {
         };
 
         const result = await spotfixApiCall(data, 'notification_get', accountId);
-        console.log(result);
-        // const tasks = result.tasks.map(task => ({
-        //     taskId: task.task_id,
-        //     taskTitle: task.name,
-        //     userId: task.user_id,
-        //     task_type: task.task_type,
-        //     commentsCount: task.comments_count,
-        //     taskLastUpdate: task.updated,
-        //     taskCreated: task.created,
-        //     taskCreatorTaskUser: task.creator_user_id,
-        //     taskMeta: task.meta,
-        //     taskStatus: task.status,
-        // }));
-        // await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_TASKS, tasks);
-        // storageSaveTasksCount(tasks);
-        // return tasks;
+        return result.notifications;
+    }
+};
+
+const updateNotificationsDoboard = async (projectToken, sessionId, accountId) => {
+    if (sessionId) {
+        const data = {
+            session_id: sessionId,
+            project_token: projectToken,
+            status: 'READ',
+        };
+
+        await spotfixApiCall(data, 'notification_update', accountId);
     }
 };
