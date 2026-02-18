@@ -355,7 +355,7 @@ function checkLogInOutButtonsVisible() {
         clearUserMenuData();
     } else {
         const el = document.getElementById('doboard_task_widget-user_menu-logout_button')?.closest('.doboard_task_widget-user_menu-item');
-        if (el) el.style.display = 'block';
+        if (el) el.style.display = 'flex';
         const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
         if (loginContainer) {
             loginContainer.classList.add('doboard_task_widget-hidden');
@@ -448,4 +448,14 @@ function addIconPack() {
             },
         });
     }
+}
+
+function formatToDotMonthDate(dateString) {
+    const date = new Date(dateString.replace(' ', 'T'));
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('en-GB', { month: 'short' });
+    const year = date.getFullYear();
+
+    return `${day}.${month}.${year}`;
 }

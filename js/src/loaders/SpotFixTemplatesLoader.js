@@ -254,13 +254,14 @@ class SpotFixTemplatesLoader {
     <div class="doboard_task_widget-description_container" style="cursor: default">
         <div class="doboard_task_widget-task_title" style="cursor: pointer">
             <div class="doboard_task_widget-task_title-details">
-                <span class="doboard_task_widget-task_title-text">{{taskTitle}}</span>
+                    <span class="doboard_task_widget-task_title-text">{{taskTitle}}</span>
+                    <img src="{{iconOfVisibility}}" alt="">
                 <div class="doboard_task_widget-task_title_public_status_img">
                     <img src="{{taskPublicStatusImgSrc}}" alt="" title="{{taskPublicStatusHint}}">
                 </div>
                 <span class="doboard_task_widget-task_title-unread_block {{classUnread}}"></span>
             </div>
-<!--            <div class="doboard_task_widget-task_title-last_update_time">{{taskLastUpdate}}</div>-->
+            <div class="doboard_task_widget-task_title-last_update_time">{{taskLastUpdate}}</div>
         </div>
         <div class="doboard_task_widget-bottom">
             <div class="doboard_task_widget-task_page_url">
@@ -270,6 +271,7 @@ class SpotFixTemplatesLoader {
                    <a class="spotfix_widget_task_url-full" style="display: none" title="The spot is located on this {{taskPageUrlFull}}">{{taskPageUrlFull}}</a>
              </div>
                 {{statusFixedHtml}}
+                {{amountOfComments}}
         </div>
     </div>
 </div>

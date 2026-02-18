@@ -529,7 +529,7 @@
     cursor: pointer;
     align-items: center;
     justify-content: space-between;
-    padding: 1px 15px;
+    padding: 6px 15px;
 }
 .doboard_task_widget-task_row:last-child {
     margin-bottom: 0;
@@ -700,6 +700,7 @@
 .doboard_task_widget-bottom {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .doboard_task_widget-bottom-is-fixed {
@@ -1461,9 +1462,20 @@ input:checked + .slider:before {
     justify-content: space-evenly;
 }
 
-.doboard_task_widget-container-maximize .doboard_task_widget-concrete_issue .tox-tinymce .tox-toolbar__group  > :last-child {
-    flex-grow: 1;
-    display: flex;
-    justify-content: flex-end;
-    padding-right: 8px;
+.doboard_task_widget-task_title-text {
+    margin-right: 6px;
+}
+
+.doboard_task_widget-commentsIndicator {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background-color: #D6DDE3;
+    /*background-color: #F08C43;*/
+    color: white;
+    font-weight: 400;
+    font-size: 11px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
 }

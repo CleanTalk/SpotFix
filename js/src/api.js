@@ -7,9 +7,9 @@ const SPOTFIX_DOBOARD_API_URL = 'https://api.doboard.com';
  * @param {string} method - The API method to call
  * @param {string|number} accountId - Optional account ID for the endpoint
  *
- * @returns {Promise<Object>} The response data when operation_status is 'SUCCESS'
+ * @return {Promise<Object>} The response data when operation_status is 'SUCCESS'
  */
-const spotfixApiCall = async(data, method, accountId = undefined) => {
+const spotfixApiCall = async (data, method, accountId = undefined) => {
     if (!data || typeof data !== 'object') {
         throw new Error('Data must be a valid object');
     }
@@ -75,7 +75,7 @@ const spotfixApiCall = async(data, method, accountId = undefined) => {
 
     if (responseBody.data.operation_status === 'FAILED') {
         const errorMessage = responseBody.data.operation_message || 'Operation failed without specific message';
-       if(responseBody?.data?.operation_message === 'session_id Unknown'){
+        if (responseBody?.data?.operation_message === 'session_id Unknown') {
             clearLocalstorageOnLogout();
             checkLogInOutButtonsVisible();
         }
@@ -87,19 +87,19 @@ const spotfixApiCall = async(data, method, accountId = undefined) => {
     }
 
     throw new Error(`Unknown operation status: ${responseBody.data.operation_status}`);
-}
+};
 
 const spotFixUserConfirmEmailDoboard = async (emailConfirmationToken) => {
     const data = {
-        email_confirmation_token: encodeURIComponent(emailConfirmationToken)
-    }
+        email_confirmation_token: encodeURIComponent(emailConfirmationToken),
+    };
     const result = await spotfixApiCall(data, 'user_confirm_email');
     return {
         sessionId: result.session_id,
         userId: result.user_id,
         email: result.email,
         accounts: result.accounts,
-        operationStatus: result.operation_status
+        operationStatus: result.operation_status,
     };
 };
 
@@ -113,12 +113,12 @@ const createTaskDoboard = async (sessionId, taskDetails) => {
         name: taskDetails.taskTitle,
         comment: taskDetails.taskDescription,
         meta: taskDetails.taskMeta,
-        task_type: 'PUBLIC'
-    }
+        task_type: taskDetails.task_type,
+    };
     const result = await spotfixApiCall(data, 'task_add', accountId);
     return {
         taskId: result.task_id,
-    }
+    };
 };
 
 const createTaskCommentDoboard = async (accountId, sessionId, taskId, comment, projectToken, status = 'ACTIVE') => {
@@ -127,8 +127,8 @@ const createTaskCommentDoboard = async (accountId, sessionId, taskId, comment, p
         project_token: projectToken,
         task_id: taskId,
         comment: comment,
-        status: status
-    }
+        status: status,
+    };
     const result = await spotfixApiCall(data, 'comment_add', accountId);
     return {
         commentId: result.comment_id,
@@ -144,8 +144,8 @@ const attachmentAddDoboard = async (fileData) => {
         comment_id: fileData.commentId,
         filename: fileData.fileName,
         file: fileData.fileBinary,
-        attachment_order: fileData.attachmentOrder
-    }
+        attachment_order: fileData.attachmentOrder,
+    };
     const result = await spotfixApiCall(data, 'attachment_add', accountId);
     // @ToDo need to handle result?
 };
@@ -155,7 +155,7 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname, pag
         project_token: projectToken,
         account_id: accountId,
         confirmation_url: email,
-    }
+    };
     if (email && nickname) {
         data.email = email;
         data.name = nickname;
@@ -188,7 +188,7 @@ const loginUserDoboard = async (email, password) => {
     const data = {
         email: email,
         password: password,
-    }
+    };
     const result = await spotfixApiCall(data, 'user_authorize');
     return {
         sessionId: result.session_id,
@@ -198,25 +198,25 @@ const loginUserDoboard = async (email, password) => {
         operationMessage: result.operation_message,
         operationStatus: result.operation_status,
         userEmailConfirmed: result.user_email_confirmed,
-        accounts: result.accounts
-    }
-}
+        accounts: result.accounts,
+    };
+};
 
 const forgotPasswordDoboard = async (email) => {
     const data = {
-        email: email
-    }
+        email: email,
+    };
     return await spotfixApiCall(data, 'user_password_reset');
-}
+};
 
 
 const logoutUserDoboard = async (projectToken) => {
     const sessionId = localStorage.getItem('spotfix_session_id');
     const accountsString = localStorage.getItem('spotfix_accounts');
-    const accounts =  accountsString !== 'undefined' ? JSON.parse(accountsString || '[]') : [];
+    const accounts = accountsString !== 'undefined' ? JSON.parse(accountsString || '[]') : [];
     const accountId = accounts.length > 0 ? accounts[0].account_id : 1;
 
-    if(sessionId && accountId) {
+    if (sessionId && accountId) {
         const data = {
             session_id: sessionId,
         };
@@ -234,24 +234,25 @@ const logoutUserDoboard = async (projectToken) => {
             checkLogInOutButtonsVisible();
         }
     }
-}
+};
 
 const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, userId) => {
     const data = {
         session_id: sessionId,
         project_token: projectToken,
         project_id: projectId,
-        task_type: 'PUBLIC',
         status: 'ACTIVE,DONE',
-    }
+    };
     if ( userId ) {
         data.user_id = userId;
     }
     const result = await spotfixApiCall(data, 'task_get', accountId);
-    const tasks = result.tasks.map(task => ({
+    const tasks = result.tasks.map((task) => ({
         taskId: task.task_id,
         taskTitle: task.name,
         userId: task.user_id,
+        task_type: task.task_type,
+        commentsCount: task.comments_count,
         taskLastUpdate: task.updated,
         taskCreated: task.created,
         taskCreatorTaskUser: task.creator_user_id,
@@ -261,7 +262,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
     await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_TASKS, tasks);
     storageSaveTasksCount(tasks);
     return tasks;
-}
+};
 
 
 const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, currentActiveTaskId, status = 'ACTIVE') => {
@@ -269,10 +270,12 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, curre
         session_id: sessionId,
         project_token: projectToken,
         status: status,
-        task_id: currentActiveTaskId
-    }
+    };
+
+    if (currentActiveTaskId) data.task_id = currentActiveTaskId;
+
     const result = await spotfixApiCall(data, 'comment_get', accountId);
-    const comments = result.comments.map(comment => ({
+    const comments = result.comments.map((comment) => ({
         taskId: comment.task_id,
         commentId: comment.comment_id,
         userId: comment.user_id,
@@ -289,7 +292,7 @@ const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
     const data = {
         session_id: sessionId,
         project_token: projectToken,
-    }
+    };
     if (userId) data.user_id = userId;
 
     const result = await spotfixApiCall(data, 'user_get', accountId);
@@ -301,7 +304,7 @@ const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
     return result.users;
 
     // @ToDo Need to handle these two different answers?
-    /*// Format 1: users inside data
+    /* // Format 1: users inside data
     if (responseBody.data && responseBody.data.operation_status) {
         if (responseBody.data.operation_status === 'FAILED') {
             throw new Error(responseBody.data.operation_message);
@@ -332,13 +335,13 @@ const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, tim
         session_id: sessionId,
         project_token: projectToken,
         user_id: userId,
-        timestamp: timezone
-    }
+        timestamp: timezone,
+    };
     await spotfixApiCall(data, 'user_update', accountId);
     return {
-        success: true
+        success: true,
     };
-}
+};
 
 const getReleaseVersion = async () => {
     try {
@@ -362,3 +365,30 @@ const getReleaseVersion = async () => {
     }
 };
 
+const getNotificationsDoboard = async (projectToken, sessionId, accountId) => {
+    if (sessionId) {
+        const data = {
+            session_id: sessionId,
+            project_token: projectToken,
+            status: 'DELIVERED',
+        };
+
+        const result = await spotfixApiCall(data, 'notification_get', accountId);
+        console.log(result);
+        // const tasks = result.tasks.map(task => ({
+        //     taskId: task.task_id,
+        //     taskTitle: task.name,
+        //     userId: task.user_id,
+        //     task_type: task.task_type,
+        //     commentsCount: task.comments_count,
+        //     taskLastUpdate: task.updated,
+        //     taskCreated: task.created,
+        //     taskCreatorTaskUser: task.creator_user_id,
+        //     taskMeta: task.meta,
+        //     taskStatus: task.status,
+        // }));
+        // await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_TASKS, tasks);
+        // storageSaveTasksCount(tasks);
+        // return tasks;
+    }
+};
