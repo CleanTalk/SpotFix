@@ -54,7 +54,7 @@ class SpotFixTemplatesLoader {
             <span title="Return to all spots list"> All {{issuesCounter}}</span>
         </div>
         <div class="doboard_task_widget-issue-title">
-            <span>{{issueTitle}}</span>
+            <span style="text-align: center">{{issueTitle}}</span>
             <span>{{amountOfComments}}</span>
         </div>
         <div class="doboard_task_widget-header-icons">
@@ -392,7 +392,7 @@ class SpotFixTemplatesLoader {
     }
 
     static fixedHtml() {
-        return `<p><span class="doboard_task_widget-bottom-is-fixed">Finished</span></p>`;
+        return `<p style="margin: 0"><span class="doboard_task_widget-bottom-is-fixed">Finished</span></p>`;
     }
     static fixedTaskHtml() {
         return `<p class="doboard_task_widget-bottom-is-fixed-task-block"><span class="doboard_task_widget-bottom-is-fixed-task">This issue already fixed</span></p>`;

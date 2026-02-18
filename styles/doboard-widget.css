@@ -525,11 +525,11 @@
 
 .doboard_task_widget-task_row {
     display: flex;
-    max-height: 55px;
+    max-height: 67px;
     cursor: pointer;
     align-items: center;
     justify-content: space-between;
-    padding: 6px 15px;
+    padding: 4px 15px;
 }
 .doboard_task_widget-task_row:last-child {
     margin-bottom: 0;
@@ -652,7 +652,7 @@
 
 .doboard_task_widget-task_title-details {
     display: flex;
-    max-width: calc(100% - 40px);
+    max-width: calc(100% - 65px);
     align-items: center;
 }
 
@@ -682,9 +682,9 @@
 
 .doboard_task_widget-task_page_url {
     max-width: 70%;
-    height: 36px;
+    height: 30px;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
 }
 
 .doboard_task_widget-task_page_url a {
@@ -700,7 +700,7 @@
 .doboard_task_widget-bottom {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
 }
 
 .doboard_task_widget-bottom-is-fixed {
