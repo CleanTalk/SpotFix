@@ -205,7 +205,12 @@ static getAttachmentIcon(filename, fileUrl, thumbnailUrl) {
     }
 
     // Document files
-    const docExtensions = ['doc', 'docx', 'pdf', 'odt', 'ppt', 'pptx'];
+    const pdfExtensions = ['pdf', 'ppt', 'pptx'];
+    if (pdfExtensions.includes(ext)) {
+        return SpotFixSVGLoader.getAsDataURI('iconAttachmentPdf');
+    }
+    // Document files
+    const docExtensions = ['doc', 'docx', 'odt'];
     if (docExtensions.includes(ext)) {
         return SpotFixSVGLoader.getAsDataURI('iconAttachmentDoc');
     }
