@@ -61,6 +61,27 @@ const handleIncomingData = async (data) => {
         });
         break;
 
+    case 'attachments':
+        if (data.data.status === 'REMOVED') {
+            await spotfixIndexedDB.delete(SPOTFIX_TABLE_ATTACHMENT, data.data.attachment_id);
+            break;
+        }
+        await spotfixIndexedDB.put(SPOTFIX_TABLE_ATTACHMENT, {
+            attachmentId: data.data.attachment_id,
+            taskId: data.data.task_id,
+            commentId: data.data.comment_id,
+            userId: data.data.user_id,
+            filename: data.data.filename,
+            url: data.data.URL,
+            urlThumbnail: data.data.URL_thumbnail,
+            mimeType: data.data.mime_content_type,
+            fileSize: data.data.file_size,
+            attachmentOrder: data.data.attachment_order,
+            created: data.data.created,
+            updated: data.data.updated,
+        });
+        break;
+
     default:
         break;
     }
@@ -101,7 +122,7 @@ const wsSpotfix = {
                 return;
             }
 
-            if (!['users', 'tasks', 'comments'].includes(data.object)) return;
+            if (!['users', 'tasks', 'comments', 'attachments'].includes(data.object)) return;
 
             const eventId = data.id ? `${data.object}-${data.id}` : JSON.stringify(data);
 
