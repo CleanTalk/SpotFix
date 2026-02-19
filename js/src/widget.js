@@ -849,7 +849,6 @@ class CleanTalkWidgetDoboard {
         case 'user_menu':
 
                 setToggleStatus(this);
-                checkLogInOutButtonsVisible();
 
                 const user = await getUserDetails(this.params, this.nonRequesting);
                 if(!this.nonRequesting) await getReleaseVersion();
@@ -866,6 +865,7 @@ class CleanTalkWidgetDoboard {
                 }
 
                 widgetContainer.innerHTML = this.loadTemplate('user_menu', templateVariables);
+
                 document.body.appendChild(widgetContainer);
                 setToggleStatus(this);
                 checkLogInOutButtonsVisible();
@@ -1237,7 +1237,8 @@ class CleanTalkWidgetDoboard {
 
 
         document.querySelector('#doboard_task_widget-user_menu-signlog_button')?.addEventListener('click', () => {
-            spotFixShowWidget();
+            const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
+            if(loginContainer) loginContainer.style.display = 'block';
         }) || '';
 
         document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {

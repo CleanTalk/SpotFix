@@ -294,16 +294,16 @@ class SpotFixTemplatesLoader {
         </div>
         <div style="display: flex; flex-direction: column; align-items: center">
              <img class="doboard_task_widget-user_menu-header-avatar" src="{{avatar}}" alt="">
-             <span style="font-size: 16px; font-weight: 700">{{userName}}</span>
-             <span style="font-size: 12px;">{{email}}</span>
-             <span id="doboard_task_widget-user_menu-signlog_button">
+             <span id="spotfix_user-menu_name" style="font-size: 16px; font-weight: 700">{{userName}}</span>
+             <span id="spotfix_user-menu_email" style="font-size: 12px;">{{email}}</span>
+             <span id="doboard_task_widget-user_menu-signlog_button" style="display: none">
                  <a style="cursor: pointer" rel="nofollow" target="_blank">Sign up or Log in</a>
              </span>
         </div>
     </div>
     <div class="doboard_task_widget-content" style="min-height:200px ">
         <div style="height: 392px">
-        <div style="position: sticky; top: 0">
+        <div style="position: sticky; top: 0; margin-top: 8px">
             <div class="doboard_task_widget-user_menu-item">
                 <img src="{{iconEye}}" alt="" style="margin-right: 12px">
                 <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
@@ -319,14 +319,15 @@ class SpotFixTemplatesLoader {
                     </label>
                 </div>
             </div>
-            <div class="doboard_task_widget-user_menu-item">
+            <div class="doboard_task_widget-user_menu-item" style="display: none">
                 <span id="doboard_task_widget-user_menu-logout_button">
                     <img src="{{iconDoor}}" alt="" style="margin-right: 12px; cursor: pointer">
                     <span class="logout_button">Log out</span>
                 </span>
             </div>
             
-            <div id="doboard_task_widget-input-container-login" class="doboard_task_widget-input-container-login doboard_task_widget-input-container-login-menu ">
+            <div id="doboard_task_widget-input-container-login" style="display: none"
+            class="doboard_task_widget-input-container-login doboard_task_widget-input-container-login-menu ">
                 <div class="doboard_task_widget-input-container">
                     <input id="doboard_task_widget-login_email" class="doboard_task_widget-field" type="email" name="login_email">
                     <label for="doboard_task_widget-login_email">Email</label>
@@ -359,7 +360,7 @@ class SpotFixTemplatesLoader {
             
         </div>
         </div>
-        <div style="padding: 16px; font-size: 13px; position: sticky; bottom: 0">
+        <div style="padding: 16px; font-size: 13px; position: sticky; bottom: 0; margin-top: 12px">
             <span>{{spotfixVersion}}</span>
             <span>Powered by
             <a rel="nofollow" target="_blank" href="https://doboard.com">

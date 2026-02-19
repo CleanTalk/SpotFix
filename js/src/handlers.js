@@ -344,22 +344,24 @@ function setToggleStatus(rootElement) {
 }
 
 function checkLogInOutButtonsVisible() {
-    if (!localStorage.getItem('spotfix_session_id')) {
-        const el = document.getElementById('doboard_task_widget-user_menu-logout_button')?.closest('.doboard_task_widget-user_menu-item');
-        if (el) el.style.display = 'none';
+    const signInLogInButton = document.getElementById('doboard_task_widget-user_menu-signlog_button');
 
+    if (localStorage.getItem('spotfix_session_id')) {
+        if (signInLogInButton) signInLogInButton.style.display = 'none';
         const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
-        if (loginContainer) {
-            loginContainer.classList.remove('doboard_task_widget-hidden');
-        }
-        clearUserMenuData();
+        if (loginContainer) loginContainer.style.display = 'none';
+        const logoutButton = document.getElementById('doboard_task_widget-user_menu-logout_button');
+        if (logoutButton) logoutButton.closest('.doboard_task_widget-user_menu-item').style.display = 'flex';
     } else {
-        const el = document.getElementById('doboard_task_widget-user_menu-logout_button')?.closest('.doboard_task_widget-user_menu-item');
-        if (el) el.style.display = 'flex';
-        const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
-        if (loginContainer) {
-            loginContainer.classList.add('doboard_task_widget-hidden');
-        }
+        if (signInLogInButton) signInLogInButton.style.display = 'inline-block';
+        const logoutButton = document.getElementById('doboard_task_widget-user_menu-logout_button');
+        if (logoutButton) logoutButton.closest('.doboard_task_widget-user_menu-item').style.display = 'none';
+        const name = document.getElementById('spotfix_user-menu_name');
+        if (name) name.innerText = 'Guest';
+        const email = document.getElementById('spotfix_user-menu_email');
+        if (email) email.innerText = '';
+        const avatarElement = document.querySelector('.doboard_task_widget-user_menu-header-avatar');
+        if (avatarElement) avatarElement.src = SpotFixSVGLoader.getAsDataURI('iconAvatar');
     }
 }
 
