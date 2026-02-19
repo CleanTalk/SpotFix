@@ -17,7 +17,7 @@ class SpotFixTemplatesLoader {
     <div class="doboard_task_widget-header">
         <div style="display: flex;align-items: center;gap: 8px;">
             <img src="{{logoDoBoardGreen}}"  alt="">
-            <span>All spots </span>
+            <span title="Number of spots on the page and total">All spots </span>
         </div>
         <div class="doboard_task_widget-header-icons">
             <span id="addNewTaskButton">
@@ -36,7 +36,7 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
             <div class="doboard_task_widget-spinner_for_containers"></div>
         </div>
-        <div class="doboard_task_widget-all_issues-container">
+        <div class="doboard_task_widget-all_issues-container" style="margin-top: 0px">
         </div>
         <div class="doboard_task_widget_tasks_list">
             <span>doBoard / SpotFix</span>
@@ -151,14 +151,14 @@ class SpotFixTemplatesLoader {
             <label class="spotfix_placeholder_title" for="doboard_task_widget-title">Report about</label>
         </div>
 
-        <div class="doboard_task_widget-input-container doboard_task_widget-input-container-textarea" style="flex-grow: 1; min-height: 120px">
+        <div class="doboard_task_widget-input-container doboard_task_widget-input-container-textarea" style="flex-grow: 1; min-height: 200px">
             <textarea id="doboard_task_widget-description" class="doboard_task_widget-field" name="description" placeholder=" " required></textarea>
             <label for="doboard_task_widget-description" class="doboard_task_widget-field-textarea-label" >Description</label>
         </div>
 
-        <div class="doboard_task_widget-login" style="margin-top: 16px">
+        <div class="doboard_task_widget-login" style="margin-top: 12px; margin-bottom: 4px">
 
-            <span  class="doboard_task_widget-login-icon" >If you want to receive notifications by email write here you email contacts.</span>
+            <span  class="doboard_task_widget-login-icon" >Sign up here to receive notifications.</span>
 
             <div class="doboard_task_widget-accordion">
             
@@ -220,7 +220,7 @@ class SpotFixTemplatesLoader {
 
         </div>
 
-        <div class="doboard_task_widget-field">
+        <div class="doboard_task_widget-field" style="margin-top: 8px">
             <div class="doboard_task_widget-visibility-toggle">
               <div style="display: flex; align-items: center">
                   <img src="{{iconPublic}}" alt="">

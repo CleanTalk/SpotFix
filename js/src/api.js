@@ -378,11 +378,13 @@ const getNotificationsDoboard = async (projectToken, sessionId, accountId) => {
     }
 };
 
-const updateNotificationsDoboard = async (projectToken, sessionId, accountId) => {
+const updateNotificationsDoboard = async (taskId, projectToken, accountId) => {
+    const sessionId = localStorage.getItem('spotfix_session_id');
     if (sessionId) {
         const data = {
             session_id: sessionId,
             project_token: projectToken,
+            task_id: taskId,
             status: 'READ',
         };
 

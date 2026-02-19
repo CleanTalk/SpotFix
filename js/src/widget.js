@@ -880,6 +880,9 @@ class CleanTalkWidgetDoboard {
                 } else {
                     changeSize(container);
                 }
+                if(!this.nonRequesting && this.currentActiveTaskId) {
+                    updateNotificationsDoboard(this.currentActiveTaskId, this.params.projectToken, this.params.accountId)
+                }
                 tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId, this.nonRequesting);
                 const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId, this.nonRequesting);
                 // Update issue title in the interface
@@ -1030,15 +1033,19 @@ class CleanTalkWidgetDoboard {
 
                     SpotFixTinyMCE.init({
                         selector: '#doboard_task_widget-send_message_input_SpotFix',
-                        plugins: 'link lists',
+                        plugins: 'link lists autoresize',
                         menubar: false,
                         placeholder: 'Write a message...',
                         content_style: `body[data-mce-placeholder]:not(.mce-content-body:not([data-mce-placeholder]))::before {
-                                color: #707A83 !important;}`,
+                        color: #707A83 !important;}
+                        body {background-color: #F3F6F9;}`,
                         statusbar: false,
                         toolbar_location: 'bottom',
                         toolbar: 'attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote sendCommentButton',
-                        height: 120,
+                        min_height: 100,
+                        max_height: 200,
+                        autoresize_bottom_margin: 0,
+                        resize: false,
                         icons: 'icon_pack_SpotFix',
                         file_picker_types: 'file image media',
                         setup: function (editor) {
@@ -1098,11 +1105,11 @@ class CleanTalkWidgetDoboard {
                 // Hide spinner preloader
                 hideContainersSpinner();
 
-                const sendButton = document.querySelector('.doboard_task_widget-send_message_button');
+
                     this.fileUploader.init();
 
                     async function clickHandler(mainThis, editor)  {
-
+                        const sendButton = document.querySelector('.doboard_task_widget-send_message_button');
                         const sendMessageContainer = sendButton?.closest('.doboard_task_widget-send_message');
                         const input = sendMessageContainer?.querySelector('.doboard_task_widget-send_message_input');
 
@@ -1111,15 +1118,14 @@ class CleanTalkWidgetDoboard {
                             if (!commentText) return;
 
                         // Add other fields handling here
-
-                        input.disabled = true;
-                        sendButton.disabled = true;
+                        if(input) input.disabled = true;
+                        if(sendButton) sendButton.disabled = true;
 
                         let newCommentResponse = null;
 
                         try {
                             newCommentResponse = await addTaskComment(mainThis.params, mainThis.currentActiveTaskId, commentText);
-                            input.value = '';
+                            if(input) input.value = '';
                             await mainThis.createWidgetElement('concrete_issue');
                             hideContainersSpinner(false);
                         } catch (err) {
@@ -1136,7 +1142,7 @@ class CleanTalkWidgetDoboard {
                             }
                         }
 
-                        input.disabled = false;
+                        if(input) input.disabled = false;
 
                     };
                     // this._sendButtonClickHandler = clickHandler;

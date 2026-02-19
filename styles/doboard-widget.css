@@ -195,7 +195,7 @@
 }
 
 .doboard_task_widget-element-container {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .doboard_task_widget-element-container span {
@@ -346,11 +346,9 @@
 }
 
 .doboard_task_widget-login {
-    background: #F9FBFD;
     border: 1px solid #BBC7D1;
     border-radius: 4px;
     padding: 11px 8px 8px 8px;
-    margin-bottom: 24px;
 }
 
 .doboard_task_widget-login.hidden {
@@ -368,6 +366,11 @@
     overflow: visible;
     opacity: 1;
 }
+
+.doboard_task_widget-accordion i {
+    font-size: 12px;
+}
+
 .doboard_task_widget-login .doboard_task_widget-input-container:last-child {
     margin-bottom: 0;
 }
@@ -529,7 +532,9 @@
     cursor: pointer;
     align-items: center;
     justify-content: space-between;
-    padding: 4px 15px;
+    padding: 0px 15px;
+    margin-bottom: 4px;
+    margin-top: 4px;
 }
 .doboard_task_widget-task_row:last-child {
     margin-bottom: 0;
@@ -596,6 +601,8 @@
     border-bottom: 1px solid #EBF0F4;
     display: block;
     margin-left: 8px;
+    padding-bottom: 6px;
+    padding-top: 4px;
 }
 .doboard_task_widget-task_row:last-child .doboard_task_widget-description_container {
     border-bottom: none;
@@ -724,6 +731,10 @@
 
 .doboard_task_widget-task_row-green {
     background: #EBF0F4;
+}
+
+.doboard_task_widget-task_row-green .doboard_task_widget-description_container {
+    border-bottom: 1px solid #e5e5e5;
 }
 
 .doboard_task_widget_return_to_all {
@@ -1435,7 +1446,7 @@ input:checked + .slider:before {
 }
 .doboard_task_widget-input-container-textarea {
     position: relative;
-    margin-top: 20px;
+    margin-top: 16px;
 }
 
 .doboard_task_widget-field-textarea-label {
@@ -1485,5 +1496,6 @@ input:checked + .slider:before {
     min-width: 270px;
     max-width: 420px;
     margin-top: 4px;
-    margin-bottom: 16px
+    margin-bottom: 4px
 }
+
