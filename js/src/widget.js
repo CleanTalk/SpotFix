@@ -792,7 +792,7 @@ class CleanTalkWidgetDoboard {
                             const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId)
 
                             const avatarData = getAvatarData(taskFullDetails);
-                            const hasUpdates = !!(notifications.find(item => +item.task_id === elTask.taskId));
+                            const hasUpdates = !!(notifications?.find(item => +item?.task_id === elTask?.taskId));
                             const listIssuesTemplateVariables = {
                                 taskTitle: taskTitle || '',
                                 taskAuthorAvatarImgSrc: taskFullDetails.taskAuthorAvatarImgSrc,

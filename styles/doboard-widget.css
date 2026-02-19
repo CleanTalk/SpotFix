@@ -1485,5 +1485,5 @@ input:checked + .slider:before {
     min-width: 270px;
     max-width: 420px;
     margin-top: 4px;
-    margin-bottom: 4px
+    margin-bottom: 12px
 }
