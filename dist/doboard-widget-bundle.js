@@ -8940,21 +8940,6 @@ function checkLogInOutButtonsVisible() {
 /**
  * Clear user menu data in menu
  */
-async function clearUserMenuData() {
-    const userNameElement = document.querySelector('.doboard_task_widget-user_menu-header-user-name');
-    const emailElement = document.querySelector('.doboard_task_widget-user_menu-header-email');
-    const avatarElement = document.querySelector('.doboard_task_widget-user_menu-header-avatar');
-
-    if (userNameElement) {
-        userNameElement.innerText = 'Guest';
-    }
-    if (emailElement) {
-        emailElement.innerText = '';
-    }
-    if (avatarElement) {
-        avatarElement.src = SpotFixSVGLoader.getAsDataURI('iconAvatar');
-    }
-}
 
 function changeSize(container) {
     if (container && +localStorage.getItem('maximize')) {
