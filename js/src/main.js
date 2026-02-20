@@ -202,7 +202,6 @@ function getTaskFullDetails(tasksDetails, taskId) {
     if (lastComment) {
         const dt = formatDate(lastComment.commentDate);
         date = dt.date;
-        // time = dt.time;
     }
     // Get the avatar and the name through separate functions
     let avatarSrc = getAvatarSrc(author);
@@ -213,7 +212,6 @@ function getTaskFullDetails(tasksDetails, taskId) {
         taskAuthorAvatarImgSrc: avatarSrc,
         taskAuthorName: authorName,
         lastMessageText: lastComment ? lastComment.commentBody : 'No messages yet',
-        // lastMessageTime: time,
         issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
         issueComments: comments
             .sort((a, b) => {

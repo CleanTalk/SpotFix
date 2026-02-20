@@ -10896,7 +10896,6 @@ function getTaskFullDetails(tasksDetails, taskId) {
     if (lastComment) {
         const dt = formatDate(lastComment.commentDate);
         date = dt.date;
-        // time = dt.time;
     }
     // Get the avatar and the name through separate functions
     let avatarSrc = getAvatarSrc(author);
@@ -10907,7 +10906,6 @@ function getTaskFullDetails(tasksDetails, taskId) {
         taskAuthorAvatarImgSrc: avatarSrc,
         taskAuthorName: authorName,
         lastMessageText: lastComment ? lastComment.commentBody : 'No messages yet',
-        // lastMessageTime: time,
         issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
         issueComments: comments
             .sort((a, b) => {
@@ -12415,10 +12413,6 @@ class SpotFixTemplatesLoader {
         </div>
         <div class="doboard_task_widget-send_message doboard_task_widget-spotfix-editor">
              <textarea name="doboard_task_widget_message" id="doboard_task_widget-send_message_input_SpotFix" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
-<!--            <div>-->
-<!--              <div class="doboard_task_widget-field">-->
-<!--                <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button doboard_task_widget-send_message_button">Submit</button>-->
-<!--            </div>-->
             </div>
             <div class="doboard_task_widget__file-upload__wrapper" id="doboard_task_widget__file-upload__wrapper">
                 <div class="doboard_task_widget__file-upload__list-header">Attached files</div>
