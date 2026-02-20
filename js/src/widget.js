@@ -4,6 +4,7 @@
 class CleanTalkWidgetDoboard {
     selectedText = '';
     selectedData = {};
+    new_task_type = 'PUBLIC';
     widgetElement = null;
     params = {};
     currentActiveTaskId = 0;
@@ -24,6 +25,9 @@ class CleanTalkWidgetDoboard {
             iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
             iconPlus: SpotFixSVGLoader.getAsDataURI('iconPlus'),
             iconMaximize: SpotFixSVGLoader.getAsDataURI('iconMaximize'),
+            iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
+            iconPublicSmall: SpotFixSVGLoader.getAsDataURI('iconPublicSmall'),
+            iconLockSmall: SpotFixSVGLoader.getAsDataURI('iconLockSmall'),
             chevronBack: SpotFixSVGLoader.getAsDataURI('chevronBack'),
             buttonPaperClip: SpotFixSVGLoader.getAsDataURI('buttonPaperClip'),
             buttonSendMessage: SpotFixSVGLoader.getAsDataURI('buttonSendMessage'),
@@ -217,6 +221,7 @@ class CleanTalkWidgetDoboard {
                     taskDescription: taskDescription,
                     //typeSend: typeSend,
                     selectedData: this.selectedData,
+                    task_type: this.new_task_type,
                     projectToken: this.params.projectToken,
                     projectId: this.params.projectId,
                     accountId: this.params.accountId,
@@ -532,6 +537,7 @@ class CleanTalkWidgetDoboard {
                     descriptionText: this.descriptionText || localStorage.getItem('spotfix-description-ls') || '',
                     buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
                     iconMaximize: SpotFixSVGLoader.getAsDataURI('iconMaximize'),
+                    iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
                     iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
                     ...this.srcVariables
                 };
@@ -617,6 +623,7 @@ class CleanTalkWidgetDoboard {
         const container = document.querySelector('.doboard_task_widget-container');
         switch (type) {
             case 'create_issue':
+                document.getElementById('spotfix-widget-create-task-visibility').checked = this.new_task_type === 'PUBLIC';
 
                 if(container && +localStorage.getItem('maximize')){
                     container.classList.add('doboard_task_widget-container-maximize');
@@ -649,8 +656,8 @@ class CleanTalkWidgetDoboard {
                 this.bindCreateTaskEvents();
                 this.bindShowLoginFormEvents();
 
-                if (tinymce.get('doboard_task_widget-description')) {
-                    tinymce.remove('#doboard_task_widget-description');
+                if (tinymce?.get('doboard_task_widget-description')) {
+                    tinymce?.remove('#doboard_task_widget-description');
                 }
 
                 const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
@@ -663,7 +670,7 @@ class CleanTalkWidgetDoboard {
                     toolbar_location: 'bottom',
                     height: '100%',
                     width: '100%',
-                    toolbar: 'screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
+                    toolbar: 'attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
                     icons: 'icon_pack_SpotFix',
                     file_picker_types: 'file image media',
                     setup: function (editor) {
@@ -681,23 +688,22 @@ class CleanTalkWidgetDoboard {
                             const content = editor.getContent();
                             localStorage.setItem('spotfix-description-ls', content);
                         });
-                        // editor.ui.registry.addButton('attachmentButton', {
-                        //     icon: 'paperclip',
-                        //     tooltip: 'Add file',
-                        //         disabled: true,
-                        //         onAction: (e) => {
-                        //          //  fileUploader?.fileInput?.click(e);
-                        //
-                        //         },
-                        //     });
-                         editor.ui.registry.addButton('screenshotButton', {
-                             icon: 'screenshot',
-                             tooltip: 'In development',
-                             disabled: true,
-                             onAction: (e) => {
-                               // fileUploader?.makeScreenshot();
-                             },
-                         });
+                        editor.ui.registry.addButton('attachmentButton', {
+                            icon: 'paperclip',
+                            tooltip: 'In development',
+                            disabled: true,
+                            onAction: (e) => {
+                                // fileUploader?.fileInput?.click(e);
+                            },
+                        });
+                        editor.ui.registry.addButton('screenshotButton', {
+                            icon: 'screenshot',
+                            tooltip: 'In development',
+                            disabled: true,
+                            onAction: (e) => {
+                                // fileUploader?.makeScreenshot();
+                            },
+                        });
                      }
                     })
 
@@ -725,6 +731,10 @@ class CleanTalkWidgetDoboard {
                 }
                     spotFixRemoveHighlights();
                 let issuesQuantityOnPage = 0;
+                const sessionId = localStorage.getItem('spotfix_session_id');
+
+                const notifications = await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
+
                 this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
                 const tasks = this.allTasksData;
                 tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId, this.nonRequesting);
@@ -782,7 +792,7 @@ class CleanTalkWidgetDoboard {
                             const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId)
 
                             const avatarData = getAvatarData(taskFullDetails);
-
+                            const hasUpdates = !!(notifications?.find(item => +item?.task_id === elTask?.taskId));
                             const listIssuesTemplateVariables = {
                                 taskTitle: taskTitle || '',
                                 taskAuthorAvatarImgSrc: taskFullDetails.taskAuthorAvatarImgSrc,
@@ -791,10 +801,12 @@ class CleanTalkWidgetDoboard {
                                 taskPublicStatusHint: taskPublicStatusHint,
                                 taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
                                 taskPageUrlFull: currentPageURL,
+                                iconOfVisibility: elTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicSmall : this.srcVariables.iconLockSmall,
                                 iconLinkChain: this.srcVariables.iconLinkChain,
                                 taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
                                 taskPageUrl: localStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
-                                taskLastUpdate: taskFullDetails.lastMessageTime,
+                                // taskLastUpdate: taskFullDetails.lastMessageTime,
+                                taskLastUpdate: formatToDotMonthDate(elTask.taskLastUpdate),
                                 nodePath: this.sanitizeNodePath(taskNodePath),
                                 taskId: taskId,
                                 avatarCSSClass: avatarData.avatarCSSClass,
@@ -804,6 +816,9 @@ class CleanTalkWidgetDoboard {
                                 classUnread: '',
                                 elementBgCSSClass: elTask.taskStatus !== 'DONE' ? '' : 'doboard_task_widget-task_row-green',
                                 statusFixedHtml: elTask.taskStatus !== 'DONE' ? '' : this.loadTemplate('fixedHtml'),
+                                amountOfComments: elTask.taskStatus === 'DONE' ? ''
+                                    : `<span style="background-color: ${hasUpdates ? '#F08C43' : '#D6DDE3'}" 
+                                        class="doboard_task_widget-commentsIndicator">${elTask.commentsCount}</span>`,
                             };
 
                             const taskOwnerReplyIsUnread = storageProvidedTaskHasUnreadUpdates(taskFullDetails.taskId);
@@ -834,7 +849,6 @@ class CleanTalkWidgetDoboard {
         case 'user_menu':
 
                 setToggleStatus(this);
-                checkLogInOutButtonsVisible();
 
                 const user = await getUserDetails(this.params, this.nonRequesting);
                 if(!this.nonRequesting) await getReleaseVersion();
@@ -851,6 +865,7 @@ class CleanTalkWidgetDoboard {
                 }
 
                 widgetContainer.innerHTML = this.loadTemplate('user_menu', templateVariables);
+
                 document.body.appendChild(widgetContainer);
                 setToggleStatus(this);
                 checkLogInOutButtonsVisible();
@@ -865,6 +880,9 @@ class CleanTalkWidgetDoboard {
                 } else {
                     changeSize(container);
                 }
+                if(!this.nonRequesting && this.currentActiveTaskId) {
+                    updateNotificationsDoboard(this.currentActiveTaskId, this.params.projectToken, this.params.accountId)
+                }
                 tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId, this.nonRequesting);
                 const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId, this.nonRequesting);
                 // Update issue title in the interface
@@ -872,9 +890,10 @@ class CleanTalkWidgetDoboard {
                 if (issueTitleElement) {
                     issueTitleElement.innerText = ksesFilter(tasksFullDetails.taskName || taskDetails?.issueTitle);
                 }
+
                 templateVariables.issueTitle = tasksFullDetails.taskName || taskDetails?.issueTitle;
                 templateVariables.issueComments = taskDetails?.issueComments;
-
+                templateVariables.amountOfComments = `${taskDetails?.issueComments.length || 0} messages`;
                 // Highlight the task's selected text
                 let nodePath = null;
                     const currentTaskData = this.allTasksData.find((element) => String(element.taskId) === String(taskDetails.taskId));
@@ -1006,18 +1025,27 @@ class CleanTalkWidgetDoboard {
 
                     const fileUploader = this.fileUploader;
 
-                    if (tinymce.get('doboard_task_widget-send_message_input_SpotFix')) {
-                        tinymce.remove('#doboard_task_widget-send_message_input_SpotFix');
+                    if (tinymce?.get('doboard_task_widget-send_message_input_SpotFix')) {
+                        tinymce?.remove('#doboard_task_widget-send_message_input_SpotFix');
                     }
+
+                    const mainThis = this;
 
                     SpotFixTinyMCE.init({
                         selector: '#doboard_task_widget-send_message_input_SpotFix',
-                        plugins: 'link lists',
+                        plugins: 'link lists autoresize',
                         menubar: false,
+                        placeholder: 'Write a message...',
+                        content_style: `body[data-mce-placeholder]:not(.mce-content-body:not([data-mce-placeholder]))::before {
+                        color: #707A83 !important;}
+                        body {background-color: #F3F6F9;}`,
                         statusbar: false,
                         toolbar_location: 'bottom',
-                        toolbar: 'attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
-                        height: 120,
+                        toolbar: 'attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote sendCommentButton',
+                        min_height: 100,
+                        max_height: 200,
+                        autoresize_bottom_margin: 0,
+                        resize: false,
                         icons: 'icon_pack_SpotFix',
                         file_picker_types: 'file image media',
                         setup: function (editor) {
@@ -1040,20 +1068,25 @@ class CleanTalkWidgetDoboard {
                             editor.ui.registry.addButton('attachmentButton', {
                                 icon: 'paperclip',
                                 tooltip: 'Add file',
-                                    disabled: true,
                                     onAction: (e) => {
                                        fileUploader?.fileInput?.click(e);
 
                                     },
                                 });
-                                editor.ui.registry.addButton('screenshotButton', {
-                                    icon: 'screenshot',
-                                    tooltip: 'Screenshot',
-                                    disabled: true,
-                                    onAction: (e) => {
-                                       fileUploader?.makeScreenshot();
-                                    },
+                            editor.ui.registry.addButton('screenshotButton', {
+                                icon: 'screenshot',
+                                tooltip: 'Screenshot',
+                                onAction: (e) => {
+                                   fileUploader?.makeScreenshot();
+                                },
                                 });
+                            editor.ui.registry.addButton('sendCommentButton', {
+                                icon: 'sendComment',
+                                tooltip: 'Send comment',
+                                onAction: (e) => {
+                                    clickHandler(mainThis, editor);
+                                },
+                            });
                             }
                         });
                     }
@@ -1072,57 +1105,50 @@ class CleanTalkWidgetDoboard {
                 // Hide spinner preloader
                 hideContainersSpinner();
 
-                const sendButton = document.querySelector('.doboard_task_widget-send_message_button');
-                if (sendButton) {
+
                     this.fileUploader.init();
-                    let widgetClass = this;
 
-                    if (this._sendButtonClickHandler) {
-                        sendButton.removeEventListener('click', this._sendButtonClickHandler);
-                    }
+                    async function clickHandler(mainThis, editor)  {
+                        const sendButton = document.querySelector('.doboard_task_widget-send_message_button');
+                        const sendMessageContainer = sendButton?.closest('.doboard_task_widget-send_message');
+                        const input = sendMessageContainer?.querySelector('.doboard_task_widget-send_message_input');
 
-                    const clickHandler = async (e) => {
-                        e.preventDefault();
+                        const commentText =  editor?.getContent({ format: 'html' })?.trim();
 
-                        const sendMessageContainer = sendButton.closest('.doboard_task_widget-send_message');
-                        const input = sendMessageContainer.querySelector('.doboard_task_widget-send_message_input');
-
-                        const commentText = input.value.trim();
-                        if (!commentText) return;
+                            if (!commentText) return;
 
                         // Add other fields handling here
-
-                        input.disabled = true;
-                        sendButton.disabled = true;
+                        if(input) input.disabled = true;
+                        if(sendButton) sendButton.disabled = true;
 
                         let newCommentResponse = null;
 
                         try {
-                            newCommentResponse = await addTaskComment(this.params, this.currentActiveTaskId, commentText);
-                            input.value = '';
-                            await this.createWidgetElement('concrete_issue');
+                            newCommentResponse = await addTaskComment(mainThis.params, mainThis.currentActiveTaskId, commentText);
+                            if(input) input.value = '';
+                            await mainThis.createWidgetElement('concrete_issue');
                             hideContainersSpinner(false);
                         } catch (err) {
-                            alert('Error when adding a comment: ' + err.message);
+                            alert('Error when adding a comment: ' + err?.message);
                         }
 
-                        if (widgetClass.fileUploader.hasFiles() && newCommentResponse !== null && newCommentResponse.hasOwnProperty('commentId')) {
+                        if (mainThis && mainThis?.fileUploader?.hasFiles() && newCommentResponse !== null && newCommentResponse?.hasOwnProperty('commentId')) {
                             const sessionId = localStorage.getItem('spotfix_session_id');
-                            const attachmentsSendResult = await widgetClass.fileUploader.sendAttachmentsForComment(widgetClass.params, sessionId, newCommentResponse.commentId);
+                            const attachmentsSendResult = await mainThis?.fileUploader?.sendAttachmentsForComment(mainThis?.params, sessionId, newCommentResponse?.commentId);
                             if (!attachmentsSendResult.success) {
-                                widgetClass.fileUploader.showError('Some files where no sent, see details in the console.');
+                                mainThis?.fileUploader?.showError('Some files where no sent, see details in the console.');
                                 const toConsole = JSON.stringify(attachmentsSendResult);
                                 console.log(toConsole);
                             }
                         }
 
-                        input.disabled = false;
-                        sendButton.disabled = false;
-                    };
-                    this._sendButtonClickHandler = clickHandler;
+                        if(input) input.disabled = false;
 
-                    sendButton.addEventListener('click', clickHandler);
-                }
+                    };
+                    // this._sendButtonClickHandler = clickHandler;
+                    //
+                    // sendButton.addEventListener('click', clickHandler);
+
 
                 break;
 
@@ -1154,6 +1180,10 @@ class CleanTalkWidgetDoboard {
 
         document.querySelector('#openUserMenuButton')?.addEventListener('click', () => {
             this.createWidgetElement('user_menu')
+        }) || '';
+
+        document.getElementById('spotfix-widget-create-task-visibility')?.addEventListener('change', () => {
+            this.new_task_type = this.new_task_type === 'PUBLIC' ? 'REGULAR' : 'PUBLIC';
         }) || '';
 
         document.querySelector('#doboard_task_widget-user_menu-logout_button')?.addEventListener('click', () => {
@@ -1201,12 +1231,14 @@ class CleanTalkWidgetDoboard {
                         .querySelectorAll('.spotfix_widget_task_url')
                         .forEach(el => (el.style.display = 'none'));
                 }
+
             }
         });
 
 
         document.querySelector('#doboard_task_widget-user_menu-signlog_button')?.addEventListener('click', () => {
-            spotFixShowWidget();
+            const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
+            if(loginContainer) loginContainer.style.display = 'block';
         }) || '';
 
         document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {
