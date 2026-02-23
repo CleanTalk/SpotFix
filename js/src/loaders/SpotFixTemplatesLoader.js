@@ -17,17 +17,17 @@ class SpotFixTemplatesLoader {
     <div class="doboard_task_widget-header">
         <div style="display: flex;align-items: center;gap: 8px;">
             <img src="{{logoDoBoardGreen}}"  alt="">
-            <span>All spots </span>
+            <span title="Number of spots on the page and total">All spots </span>
         </div>
         <div class="doboard_task_widget-header-icons">
             <span id="addNewTaskButton">
                 <img src="{{iconPlus}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
-            <span id="openUserMenuButton">
-                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
-            </span>
             <span id="maximizeWidgetContainer">
                 <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="openUserMenuButton">
+                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
         </div>
@@ -36,7 +36,7 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
             <div class="doboard_task_widget-spinner_for_containers"></div>
         </div>
-        <div class="doboard_task_widget-all_issues-container">
+        <div class="doboard_task_widget-all_issues-container" style="margin-top: 0px">
         </div>
         <div class="doboard_task_widget_tasks_list">
             <span>doBoard / SpotFix</span>
@@ -48,21 +48,21 @@ class SpotFixTemplatesLoader {
     static concrete_issue() {
         return `
 <div id="doboard_task_widget_concrete-container" class="{{contenerClasess}}">
-    <div class="doboard_task_widget-header">
+    <div class="doboard_task_widget-header" style="height: 42px; padding-top: 10px; align-items: flex-start">
         <div class="doboard_task_widget_return_to_all doboard_task_widget_cursor-pointer">
             <img src="{{chevronBack}}" alt="" title="Return to all spots list">
             <span title="Return to all spots list"> All {{issuesCounter}}</span>
         </div>
-        <div class="doboard_task_widget-issue-title">{{issueTitle}}</div>
+        <div class="doboard_task_widget-issue-title">
+            <span style="text-align: center">{{issueTitle}}</span>
+            <span>{{amountOfComments}}</span>
+        </div>
         <div class="doboard_task_widget-header-icons">
-            <span id="addNewTaskButton">
-                <img src="{{iconPlus}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            <span id="maximizeWidgetContainer">
+                <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <span id="openUserMenuButton">
                 <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
-            </span>
-            <span id="maximizeWidgetContainer">
-                <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
         </div>
@@ -76,12 +76,8 @@ class SpotFixTemplatesLoader {
         </div>
         <div class="doboard_task_widget-concrete_issues-container">
         </div>
-        <div class="doboard_task_widget-send_message">
+        <div class="doboard_task_widget-send_message doboard_task_widget-spotfix-editor">
              <textarea name="doboard_task_widget_message" id="doboard_task_widget-send_message_input_SpotFix" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
-            <div>
-              <div class="doboard_task_widget-field">
-                <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button doboard_task_widget-send_message_button">Submit</button>
-            </div>
             </div>
             <div class="doboard_task_widget__file-upload__wrapper" id="doboard_task_widget__file-upload__wrapper">
                 <div class="doboard_task_widget__file-upload__list-header">Attached files</div>
@@ -128,11 +124,11 @@ class SpotFixTemplatesLoader {
             <span>Report an issue</span>
         </div>
         <div class="doboard_task_widget-header-icons">
-            <span id="openUserMenuButton">
-                 <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
-            </span>
             <span id="maximizeWidgetContainer">
                 <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
+            <span id="openUserMenuButton">
+                 <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
         </div>
@@ -141,7 +137,7 @@ class SpotFixTemplatesLoader {
 
         <div class="doboard_task_widget-element-container">
             <span>
-                Tell us about any issue you’re experiencing on <span style="color: #000000;">{{currentDomain}}</span>. 
+                Tell us about any issue you’re experiencing on <span style="text-decoration: underline">{{currentDomain}}</span>. 
                 You’re also welcome to review spelling, grammar, or ask a question related to this page.
             </span>
         </div>
@@ -151,14 +147,14 @@ class SpotFixTemplatesLoader {
             <label class="spotfix_placeholder_title" for="doboard_task_widget-title">Report about</label>
         </div>
 
-        <div class="doboard_task_widget-input-container doboard_task_widget-input-container-textarea" style="flex-grow: 1; min-height: 120px">
+        <div class="doboard_task_widget-input-container doboard_task_widget-input-container-textarea" style="flex-grow: 1; min-height: 200px">
             <textarea id="doboard_task_widget-description" class="doboard_task_widget-field" name="description" placeholder=" " required></textarea>
             <label for="doboard_task_widget-description" class="doboard_task_widget-field-textarea-label" >Description</label>
         </div>
 
-        <div class="doboard_task_widget-login">
+        <div class="doboard_task_widget-login" style="margin-top: 12px; margin-bottom: 4px">
 
-            <span  class="doboard_task_widget-login-icon" >If you want to receive notifications by email write here you email contacts.</span>
+            <span  class="doboard_task_widget-login-icon" >Sign up here to receive notifications.</span>
 
             <div class="doboard_task_widget-accordion">
             
@@ -220,8 +216,20 @@ class SpotFixTemplatesLoader {
 
         </div>
 
-        <div class="doboard_task_widget-field">
-            <button id="doboard_task_widget-submit_button" class="doboard_task_widget-submit_button">Submit</button>
+        <div class="doboard_task_widget-field" style="margin-top: 8px">
+            <div class="doboard_task_widget-visibility-toggle">
+              <div style="display: flex; align-items: center">
+                  <img src="{{iconPublic}}" alt="">
+                  <span style="color: #252A2F; margin-left: 6px;">Public
+                  <span style="color: #707A83; font-size: 12px; margin-left: 6px;">(your message will be public to all visitors)</span>
+                  </span>
+              </div>      
+              <label class="toggle" style="margin-left: 8px; top: 4px">
+                  <input id="spotfix-widget-create-task-visibility" type="checkbox">
+                  <span class="slider"></span>
+              </label>
+            </div>
+            <button id="doboard_task_widget-submit_button" style="min-width: 270px" class="doboard_task_widget-submit_button">Send report</button>
         </div>
 
         <div class="doboard_task_widget-message-wrapper hidden">
@@ -242,13 +250,14 @@ class SpotFixTemplatesLoader {
     <div class="doboard_task_widget-description_container" style="cursor: default">
         <div class="doboard_task_widget-task_title" style="cursor: pointer">
             <div class="doboard_task_widget-task_title-details">
-                <span class="doboard_task_widget-task_title-text">{{taskTitle}}</span>
+                    <span class="doboard_task_widget-task_title-text">{{taskTitle}}</span>
+                    <img src="{{iconOfVisibility}}" alt="">
                 <div class="doboard_task_widget-task_title_public_status_img">
                     <img src="{{taskPublicStatusImgSrc}}" alt="" title="{{taskPublicStatusHint}}">
                 </div>
                 <span class="doboard_task_widget-task_title-unread_block {{classUnread}}"></span>
             </div>
-<!--            <div class="doboard_task_widget-task_title-last_update_time">{{taskLastUpdate}}</div>-->
+            <div class="doboard_task_widget-task_title-last_update_time">{{taskLastUpdate}}</div>
         </div>
         <div class="doboard_task_widget-bottom">
             <div class="doboard_task_widget-task_page_url">
@@ -258,6 +267,7 @@ class SpotFixTemplatesLoader {
                    <a class="spotfix_widget_task_url-full" style="display: none" title="The spot is located on this {{taskPageUrlFull}}">{{taskPageUrlFull}}</a>
              </div>
                 {{statusFixedHtml}}
+                {{amountOfComments}}
         </div>
     </div>
 </div>
@@ -280,21 +290,21 @@ class SpotFixTemplatesLoader {
         </div>
         <div style="display: flex; flex-direction: column; align-items: center">
              <img class="doboard_task_widget-user_menu-header-avatar" src="{{avatar}}" alt="">
-             <span style="font-size: 16px; font-weight: 700">{{userName}}</span>
-             <span style="font-size: 12px;">{{email}}</span>
-             <span id="doboard_task_widget-user_menu-signlog_button">
+             <span id="spotfix_user-menu_name" style="font-size: 16px; font-weight: 700">{{userName}}</span>
+             <span id="spotfix_user-menu_email" style="font-size: 12px;">{{email}}</span>
+             <span id="doboard_task_widget-user_menu-signlog_button" style="display: none">
                  <a style="cursor: pointer" rel="nofollow" target="_blank">Sign up or Log in</a>
              </span>
         </div>
     </div>
     <div class="doboard_task_widget-content" style="min-height:200px ">
         <div style="height: 392px">
-        <div style="position: sticky; top: 0">
+        <div style="position: sticky; top: 0; margin-top: 8px">
             <div class="doboard_task_widget-user_menu-item">
                 <img src="{{iconEye}}" alt="" style="margin-right: 12px">
                 <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
                     <span style="display: inline-flex; flex-direction: column">
-                        <span style="font-weight: 500; font-size: 14px; color: #252A2F">
+                        <span style="font-weight: 500; font-size: 14px; color: #252A2F; margin-bottom: 4px">
                         Show widget on my screen</span>
                         <span style="font-size: 10px; color: #40484F">
                         The widget will be visible again if you select any text on the site</span>
@@ -305,14 +315,15 @@ class SpotFixTemplatesLoader {
                     </label>
                 </div>
             </div>
-            <div class="doboard_task_widget-user_menu-item">
+            <div class="doboard_task_widget-user_menu-item" style="display: none">
                 <span id="doboard_task_widget-user_menu-logout_button">
                     <img src="{{iconDoor}}" alt="" style="margin-right: 12px; cursor: pointer">
                     <span class="logout_button">Log out</span>
                 </span>
             </div>
             
-            <div id="doboard_task_widget-input-container-login" class="doboard_task_widget-input-container-login doboard_task_widget-input-container-login-menu ">
+            <div id="doboard_task_widget-input-container-login" style="display: none"
+            class="doboard_task_widget-input-container-login doboard_task_widget-input-container-login-menu ">
                 <div class="doboard_task_widget-input-container">
                     <input id="doboard_task_widget-login_email" class="doboard_task_widget-field" type="email" name="login_email">
                     <label for="doboard_task_widget-login_email">Email</label>
@@ -345,7 +356,7 @@ class SpotFixTemplatesLoader {
             
         </div>
         </div>
-        <div style="padding: 16px; font-size: 13px; position: sticky; bottom: 0">
+        <div style="padding: 16px; font-size: 13px; position: sticky; bottom: 0; margin-top: 12px">
             <span>{{spotfixVersion}}</span>
             <span>Powered by
             <a rel="nofollow" target="_blank" href="https://doboard.com">
@@ -378,7 +389,7 @@ class SpotFixTemplatesLoader {
     }
 
     static fixedHtml() {
-        return `<p><span class="doboard_task_widget-bottom-is-fixed">Finished</span></p>`;
+        return `<p style="margin: 0"><span class="doboard_task_widget-bottom-is-fixed">Finished</span></p>`;
     }
     static fixedTaskHtml() {
         return `<p class="doboard_task_widget-bottom-is-fixed-task-block"><span class="doboard_task_widget-bottom-is-fixed-task">This issue already fixed</span></p>`;
