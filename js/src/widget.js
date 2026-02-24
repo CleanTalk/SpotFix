@@ -38,6 +38,10 @@ class CleanTalkWidgetDoboard {
             iconSpotPublic: SpotFixSVGLoader.getAsDataURI('iconSpotPublic'),
             iconSpotPrivate: SpotFixSVGLoader.getAsDataURI('iconSpotPrivate'),
             iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
+            iconMute: SpotFixSVGLoader.getAsDataURI('iconMute'),
+            iconHighlight: SpotFixSVGLoader.getAsDataURI('iconHighlight'),
+            iconLockDark: SpotFixSVGLoader.getAsDataURI('iconLockDark'),
+            iconPublicDark: SpotFixSVGLoader.getAsDataURI('iconPublicDark'),
         };
         this.fileUploader = new FileUploader(this.escapeHtml);
         this.init(type);
@@ -574,9 +578,9 @@ class CleanTalkWidgetDoboard {
                 templateName = 'user_menu';
                 this.socket_type_name = templateName;
                 this.nonRequesting = nonRequesting;
-                const version = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+                const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
                 templateVariables = {
-                    spotfixVersion: version ? 'Spotfix version ' + version + '.' : '',
+                    spotfixVersion: userMenuVersion ? 'Spotfix version ' + userMenuVersion + '.' : '',
                     avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
                     iconEye: SpotFixSVGLoader.getAsDataURI('iconEye'),
                     iconDoor: SpotFixSVGLoader.getAsDataURI('iconDoor'),
@@ -584,6 +588,21 @@ class CleanTalkWidgetDoboard {
                     buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
                     userName: 'Guest',
                     email: localStorage.getItem('spotfix_email') || '',
+                    ...this.srcVariables};
+                break;
+            case 'spot_menu':
+                templateName = 'spot_menu';
+                this.socket_type_name = templateName;
+                this.nonRequesting = nonRequesting;
+                const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+                templateVariables = {
+                    spotfixVersion: spotMenuVersion ? 'Spotfix version ' + spotMenuVersion + '.' : '',
+                    chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
+                    buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
+                    avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
+                    taskName: '',
+                    viewersCount: '',
+                    viewers: '',
                     ...this.srcVariables};
                 break;
             case 'concrete_issue':
@@ -852,11 +871,11 @@ class CleanTalkWidgetDoboard {
 
                 const user = await getUserDetails(this.params, this.nonRequesting);
                 if(!this.nonRequesting) await getReleaseVersion();
-                let spotfixVersion = '';
-                const version = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
-                spotfixVersion = version ? `Spotfix version ${version}.` : '';
+                let userMenuSpotfixVersion = '';
+                const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+                userMenuSpotfixVersion = userMenuVersion ? `Spotfix version ${userMenuVersion}.` : '';
 
-                templateVariables.spotfixVersion = spotfixVersion || '';
+                templateVariables.spotfixVersion = userMenuSpotfixVersion || '';
 
                 if(user){
                     templateVariables.userName = user.name || 'Guest';
@@ -873,6 +892,34 @@ class CleanTalkWidgetDoboard {
                 this.bindWidgetInputsInteractive();
 
                 break;
+        case 'spot_menu':
+            if(!this.nonRequesting) await getReleaseVersion();
+            let spotfixVersion = '';
+            const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+            spotfixVersion = spotMenuVersion ? `Spotfix version ${spotMenuVersion}.` : '';
+            templateVariables.spotfixVersion = spotfixVersion || '';
+
+            const currentTask = this.allTasksData.find(task => +task.taskId === +this.currentActiveTaskId);
+
+            templateVariables.taskName = currentTask.taskTitle;
+            templateVariables.taskType = currentTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicDark : this.srcVariables.iconLockDark,
+            templateVariables.viewersCount = `${currentTask.viewers.length || 0} members`;
+
+            const users = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
+            const usersFiltered = users.filter(user => currentTask.viewers.includes(user.user_id));
+
+            if(usersFiltered.length) {
+                templateVariables.viewers = usersFiltered.map(user => {
+                    return `<div class="spotfix_widget-task-menu_user">
+                    <span><img alt="" src="${user?.avatar?.s || templateVariables.avatar}" />${user.name || 'Anonymous'}</span><span>${user?.position || ''}</span>
+                </div>`
+                }).join('')
+            }
+
+            widgetContainer.innerHTML = this.loadTemplate('spot_menu', templateVariables);
+            document.body.appendChild(widgetContainer);
+
+            break;
         case 'concrete_issue':
                 if(this.nonRequesting) {
                     hideContainersSpinner();
@@ -1180,6 +1227,10 @@ class CleanTalkWidgetDoboard {
 
         document.querySelector('#openUserMenuButton')?.addEventListener('click', () => {
             this.createWidgetElement('user_menu')
+        }) || '';
+
+        document.querySelector('#openSpotMenuButton')?.addEventListener('click', () => {
+            this.createWidgetElement('spot_menu')
         }) || '';
 
         document.getElementById('spotfix-widget-create-task-visibility')?.addEventListener('change', () => {

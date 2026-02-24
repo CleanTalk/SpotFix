@@ -258,6 +258,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         taskCreatorTaskUser: task.creator_user_id,
         taskMeta: task.meta,
         taskStatus: task.status,
+        viewers: task.comments_viewers,
     }));
     await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_TASKS, tasks);
     storageSaveTasksCount(tasks);

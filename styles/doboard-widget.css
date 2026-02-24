@@ -1498,3 +1498,44 @@ input:checked + .slider:before {
     margin-bottom: 4px
 }
 
+#spotfix_widget-task-menu_name {
+    color: #252A2F;
+    font-size: 16px;
+    font-weight: 500;
+    display: inline-flex;
+}
+
+#spotfix_widget-task-menu_users {
+    font-size: 12px;
+    font-weight: 400;
+    color: #707A83
+}
+
+.spotfix_widget-task-menu_user {
+    width: 100%;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.spotfix_widget-task-menu_user img {
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+.spotfix_widget-task-menu_user > :first-child {
+    font-weight: 400;
+    font-size: 14px;
+    color: black;
+    display: inline-flex;
+    align-items: center;
+}
+
+.spotfix_widget-task-menu_user > :last-child {
+    color: #40484F;
+    font-size: 12px;
+    font-weight: 400;
+}
