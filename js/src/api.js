@@ -343,6 +343,17 @@ const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, tim
     };
 };
 
+const getProjectDoboard = async (projectToken, accountId) => {
+    const sessionId = localStorage.getItem('spotfix_session_id');
+    const data = {
+        project_token: projectToken,
+    };
+    if (sessionId) {
+        data.session_id = sessionId;
+    }
+    return await spotfixApiCall(data, 'project_get', accountId);
+};
+
 const getReleaseVersion = async () => {
     try {
         const res = await fetch('https://api.github.com/repos/CleanTalk/SpotFix/tags');

@@ -17,6 +17,21 @@ function spotFixInit() {
     new CleanTalkWidgetDoboard({}, 'wrap');
     loadBotDetector();
     loadTinyMCE();
+    
+    const projectToken = localStorage.getItem('spotfix_project_token');
+    const accountId = localStorage.getItem('spotfix_company_id');
+    if (projectToken && accountId) {
+        getProjectDoboard(projectToken, accountId)
+            .then(result => {
+                if (result && result?.projects && result?.projects[0]) {
+                    const project = result?.projects[0];
+                    if (project?.require_full_registration !== undefined) {
+                        localStorage.setItem('spotfix_require_full_registration', project?.require_full_registration);
+                    }
+                }
+            })
+            .catch(err => console.error('project_get error:', err));
+    }
 }
 
 function loadBotDetector() {
