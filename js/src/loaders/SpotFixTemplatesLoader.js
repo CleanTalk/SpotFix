@@ -147,9 +147,13 @@ class SpotFixTemplatesLoader {
             <label class="spotfix_placeholder_title" for="doboard_task_widget-title">Report about</label>
         </div>
 
-        <div class="doboard_task_widget-input-container doboard_task_widget-input-container-textarea" style="flex-grow: 1; min-height: 200px">
+        <div id="doboard_task_widget-description-container" class="doboard_task_widget-input-container doboard_task_widget-input-container-textarea" style="flex-grow: 1; min-height: 200px">
             <textarea id="doboard_task_widget-description" class="doboard_task_widget-field" name="description" placeholder=" " required></textarea>
             <label for="doboard_task_widget-description" class="doboard_task_widget-field-textarea-label" >Description</label>
+        </div>
+
+        <div id="doboard_task_widget-require_full_registration" class="doboard_task_widget-require_full_registration doboard_task_widget-hidden">
+            <span class="doboard_task_widget-require_full_registration-title">Require full registration</span>
         </div>
 
         <div class="doboard_task_widget-login" style="margin-top: 12px; margin-bottom: 4px">
