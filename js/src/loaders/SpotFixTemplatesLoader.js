@@ -395,29 +395,33 @@ class SpotFixTemplatesLoader {
     <div class="doboard_task_widget-content" style="min-height:200px ">
         <div style="height: 392px">
         <div style="position: sticky; top: 0; margin-top: 8px">
-            <div class="doboard_task_widget-user_menu-item">
+            <div class="doboard_task_widget-task_menu-item">
                 <img src="{{iconHighlight}}" alt="" style="margin-right: 12px">
                 <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
-                    <span style="font-weight: 400; font-size: 14px; color: #252A2F;">
-                        Highlight issue</span>
+                    <span style="font-weight: 400; font-size: 14px; color: #252A2F; display: inline-flex; flex-direction: column;">
+                        Highlight issue
+                        <span style="font-weight: 400; font-size: 12px; color: #707A83;">Available only to authorized users</span>
+                        </span>
                     <label class="toggle" style="margin-left: 8px">
                       <input id="widget_visibility" type="checkbox">
                       <span class="slider"></span>
                     </label>
                 </div>
             </div>
-            <div class="doboard_task_widget-user_menu-item">
+            <div class="doboard_task_widget-task_menu-item">
                 <img src="{{iconMute}}" alt="" style="margin-right: 12px">
                 <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
-                    <span style="font-weight: 400; font-size: 14px; color: #252A2F;">
-                        Mute conversation</span>
+                    <span style="font-weight: 400; font-size: 14px; color: #252A2F; display: inline-flex; flex-direction: column;">
+                        Mute conversation
+                        <span style="font-weight: 400; font-size: 12px; color: #707A83;">Available only to authorized users</span>
+                        </span>
                     <label class="toggle" style="margin-left: 8px">
-                      <input id="widget_visibility" type="checkbox">
+                      <input id="unsubscribe_from_spot" type="checkbox">
                       <span class="slider"></span>
                     </label>
                 </div>
             </div>
-            <div class="doboard_task_widget-user_menu-item" 
+            <div class="doboard_task_widget-task_menu-item" 
             style="flex-direction: column; height: fit-content; padding-top: 8px">
                 {{viewers}}
             </div>
@@ -430,10 +434,6 @@ class SpotFixTemplatesLoader {
              doBoard
             </a></span>
         </div>
-        <div class="doboard_task_widget-message-wrapper hidden">
-            <span id="doboard_task_widget-error_message-header"></span>
-        <div id="doboard_task_widget-error_message"></div>
-    </div>
     </div>
 </div>`;
     }
