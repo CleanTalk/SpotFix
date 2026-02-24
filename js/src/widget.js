@@ -656,6 +656,8 @@ class CleanTalkWidgetDoboard {
                     if (submitButtonContainer) submitButtonContainer.style.display = 'none';
                     if (visibilityToggle) visibilityToggle.style.display = 'none';
                     if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.remove('doboard_task_widget-hidden');
+                    const loginSection = document.querySelector('.doboard_task_widget-login');
+                    if (loginSection) loginSection.classList.add('active');
                 } else {
                     if (titleContainer) titleContainer.style.display = '';
                     if (descriptionContainer) descriptionContainer.style.display = '';
