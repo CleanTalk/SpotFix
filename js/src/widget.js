@@ -452,6 +452,8 @@ class CleanTalkWidgetDoboard {
                             submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
                         }
 
+                        await this.createWidgetElement('create_issue');
+
                 } catch (error) {
                     document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
                 }
