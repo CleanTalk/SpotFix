@@ -403,7 +403,7 @@ class SpotFixTemplatesLoader {
                         <span style="font-weight: 400; font-size: 12px; color: #707A83;">Available only to authorized users</span>
                         </span>
                     <label class="toggle" style="margin-left: 8px">
-                      <input id="widget_visibility" type="checkbox">
+                      <input id="highlight_the_spot" type="checkbox">
                       <span class="slider"></span>
                     </label>
                 </div>

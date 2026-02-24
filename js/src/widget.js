@@ -907,14 +907,6 @@ class CleanTalkWidgetDoboard {
 
             const currentUserId = localStorage.getItem('spotfix_user_id') || 0;
 
-            if(currentTask.viewers.includes(+currentUserId)){
-                document.getElementById('unsubscribe_from_spot').checked = true;
-            }
-
-            if(!localStorage.getItem('spotfix_session_id')){
-                document.getElementById('unsubscribe_from_spot').disabled = true;
-            }
-
             const users = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
             const usersFiltered = users.filter(user => currentTask.viewers.includes(user.user_id));
 
@@ -934,8 +926,16 @@ class CleanTalkWidgetDoboard {
             if(currentTask.viewers.includes(+currentUserId)){
                 document.getElementById('unsubscribe_from_spot').checked = true;
             }
+            if (currentUserId) {
+                const highlightStatuses = JSON.parse(
+                    localStorage.getItem('spotfix_highlight_statuses') || '{}'
+                );
+                document.getElementById('highlight_the_spot').checked =
+                    highlightStatuses[currentUserId]?.[this.currentActiveTaskId] ?? true;
+            }
             if(!localStorage.getItem('spotfix_session_id')){
                 document.getElementById('unsubscribe_from_spot').disabled = true;
+                document.getElementById('highlight_the_spot').disabled = true;
             }
 
             break;
@@ -1000,7 +1000,7 @@ class CleanTalkWidgetDoboard {
 
                     if (meta && nodePath) {
                         // Pass the task meta object as an array
-                        spotFixHighlightElements([meta], this);
+                        spotFixHighlightElements([{...meta, taskId: currentTaskData.taskId}], this);
                         if (typeof spotFixScrollToNodePath === 'function') {
                             spotFixScrollToNodePath(nodePath);
                         }
@@ -1253,18 +1253,41 @@ class CleanTalkWidgetDoboard {
         }) || '';
 
         document.querySelector('#unsubscribe_from_spot')?.addEventListener('change', () => {
-            const viewers = this.allTasksData.find(task => +task.taskId === +this.currentActiveTaskId)?.viewers;
             const currentUserId = localStorage.getItem('spotfix_user_id');
-            let filteredUsersIds = [];
-            if(viewers.includes(+currentUserId)){
-                filteredUsersIds = viewers.filter(item => +item !== +currentUserId)?.join(',');
-            } else {
-                filteredUsersIds = viewers.push(+currentUserId)?.join(',');
-            }
-            if(filteredUsersIds.length) {
-                updateViewersDoboard(filteredUsersIds, this.currentActiveTaskId, this.params.projectToken, this.params.accountId);
+
+            if(currentUserId){
+                const viewers = this.allTasksData.find(task => +task.taskId === +this.currentActiveTaskId)?.viewers;
+                let filteredUsersIds = [];
+                if (viewers.includes(+currentUserId)) {
+                    filteredUsersIds = viewers.filter(item => +item !== +currentUserId)?.join(',');
+                } else {
+                    filteredUsersIds = viewers.push(+currentUserId)?.join(',');
+                }
+                if (filteredUsersIds.length) {
+                    updateViewersDoboard(filteredUsersIds, this.currentActiveTaskId, this.params.projectToken, this.params.accountId);
+                }
             }
         }) || '';
+
+        document.querySelector('#highlight_the_spot')?.addEventListener('change', (e) => {
+            const currentUserId = localStorage.getItem('spotfix_user_id');
+            if (!currentUserId) return;
+
+            const highlightStatuses = JSON.parse(
+                localStorage.getItem('spotfix_highlight_statuses') || '{}'
+            );
+
+            if (!highlightStatuses[currentUserId]) {
+                highlightStatuses[currentUserId] = {};
+            }
+
+            highlightStatuses[currentUserId][this.currentActiveTaskId] = e.target.checked;
+
+            localStorage.setItem(
+                'spotfix_highlight_statuses',
+                JSON.stringify(highlightStatuses)
+            );
+        });
 
         document.getElementById('spotfix-widget-create-task-visibility')?.addEventListener('change', () => {
             this.new_task_type = this.new_task_type === 'PUBLIC' ? 'REGULAR' : 'PUBLIC';
