@@ -643,6 +643,27 @@ class CleanTalkWidgetDoboard {
                     document.querySelector('.doboard_task_widget-login').classList.add('hidden');
                 }
 
+                const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
+                const titleContainer = document.getElementById('doboard_task_widget-title')?.closest('.doboard_task_widget-input-container');
+                const descriptionContainer = document.getElementById('doboard_task_widget-description-container');
+                const requireFullRegistrationMessage = document.getElementById('doboard_task_widget-require_full_registration');
+                const submitButtonContainer = document.getElementById('doboard_task_widget-submit_button')?.closest('.doboard_task_widget-field');
+                const visibilityToggle = document.querySelector('.doboard_task_widget-visibility-toggle');
+
+                if (requireFullRegistration && !sessionIdExists) {
+                    if (titleContainer) titleContainer.style.display = 'none';
+                    if (descriptionContainer) descriptionContainer.style.display = 'none';
+                    if (submitButtonContainer) submitButtonContainer.style.display = 'none';
+                    if (visibilityToggle) visibilityToggle.style.display = 'none';
+                    if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.remove('doboard_task_widget-hidden');
+                } else {
+                    if (titleContainer) titleContainer.style.display = '';
+                    if (descriptionContainer) descriptionContainer.style.display = '';
+                    if (submitButtonContainer) submitButtonContainer.style.display = '';
+                    if (visibilityToggle) visibilityToggle.style.display = '';
+                    if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.add('doboard_task_widget-hidden');
+                }
+
                 if (
                     selection.type === 'Range'
                 ) {

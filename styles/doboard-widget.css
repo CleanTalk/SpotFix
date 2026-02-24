@@ -1498,3 +1498,15 @@ input:checked + .slider:before {
     margin-bottom: 4px
 }
 
+/* Require full registration message */
+.doboard_task_widget-require_full_registration {
+    padding: 16px;
+    background-color: #65D4AC;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.doboard_task_widget-require_full_registration-title {
+    color: #252A2F;
+    font-weight: 500;
+}
