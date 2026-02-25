@@ -199,9 +199,8 @@ function registerUser(taskDetails) {
     const userName = taskDetails.userName;
     const projectToken = taskDetails.projectToken;
     const accountId = taskDetails.accountId;
-    const pageURL = taskDetails.selectedData.pageURL ? taskDetails.selectedData.pageURL : window.location.href;
 
-    const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName, pageURL)
+    const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName)
         .then((response) => {
             if (response.accountExists) {
                 document.querySelector('.doboard_task_widget-accordion .doboard_task_widget-input-container').innerText = ksesFilter('Account already exists. Please, login usin your password.');

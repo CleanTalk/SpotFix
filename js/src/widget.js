@@ -505,6 +505,68 @@ class CleanTalkWidgetDoboard {
                 }
             })
         }
+        
+        const registerOnlyButton = document.getElementById('doboard_task_widget-register_only_button');
+        if (registerOnlyButton) {
+            registerOnlyButton.addEventListener('click', async () => {
+                const userNameElement = document.getElementById('doboard_task_widget-user_name');
+                const userEmailElement = document.getElementById('doboard_task_widget-user_email');
+                
+                const userName = userNameElement?.value?.trim();
+                const userEmail = userEmailElement?.value?.trim();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                
+                if (!userName) {
+                    userNameElement.style.borderColor = 'red';
+                    userNameElement.focus();
+                    userNameElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                }
+                
+                // Validate email
+                if (!userEmail) {
+                    userEmailElement.style.borderColor = 'red';
+                    userEmailElement.focus();
+                    userEmailElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                } else if (!emailRegex.test(userEmail)) {
+                    userEmailElement.style.borderColor = 'red';
+                    userEmailElement.focus();
+                    userEmailElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                }
+                
+                registerOnlyButton.disabled = true;
+                registerOnlyButton.innerText = 'Signing up...';
+                
+                try {
+                    const taskDetails = {
+                        userName: userName,
+                        userEmail: userEmail,
+                        projectToken: this.params.projectToken,
+                        accountId: this.params.accountId,
+                    };
+                    
+                    await registerUser(taskDetails)(this.registrationShowMessage);
+                    
+                    if (localStorage.getItem('spotfix_session_id')) {
+                        // Redraw widget after successful registration
+                        await this.createWidgetElement('create_issue');
+                    }
+                } catch (error) {
+                    this.registrationShowMessage(error.message, 'error');
+                }
+                
+                registerOnlyButton.disabled = false;
+                registerOnlyButton.innerText = 'Sign up';
+            });
+        }
     }
 
     /**
@@ -652,6 +714,8 @@ class CleanTalkWidgetDoboard {
                 const submitButtonContainer = document.getElementById('doboard_task_widget-submit_button')?.closest('.doboard_task_widget-field');
                 const visibilityToggle = document.querySelector('.doboard_task_widget-visibility-toggle');
 
+                const registerOnlyButton = document.getElementById('doboard_task_widget-register_only_button');
+                
                 if (requireFullRegistration && !sessionIdExists) {
                     if (titleContainer) titleContainer.style.display = 'none';
                     if (descriptionContainer) descriptionContainer.style.display = 'none';
@@ -660,12 +724,16 @@ class CleanTalkWidgetDoboard {
                     if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.remove('doboard_task_widget-hidden');
                     const loginSection = document.querySelector('.doboard_task_widget-login');
                     if (loginSection) loginSection.classList.add('active');
+                    // Show register only button
+                    if (registerOnlyButton) registerOnlyButton.classList.remove('doboard_task_widget-hidden');
                 } else {
                     if (titleContainer) titleContainer.style.display = '';
                     if (descriptionContainer) descriptionContainer.style.display = '';
                     if (submitButtonContainer) submitButtonContainer.style.display = '';
                     if (visibilityToggle) visibilityToggle.style.display = '';
                     if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.add('doboard_task_widget-hidden');
+                    // Hide register only button
+                    if (registerOnlyButton) registerOnlyButton.classList.add('doboard_task_widget-hidden');
                 }
 
                 if (

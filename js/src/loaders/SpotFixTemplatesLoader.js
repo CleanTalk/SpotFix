@@ -173,6 +173,8 @@ class SpotFixTemplatesLoader {
                             <label for="doboard_task_widget-user_email">Email</label>
                         </div>
         
+                        <button id="doboard_task_widget-register_only_button" class="doboard_task_widget-submit_button doboard_task_widget-hidden" style="margin-top: 8px; width: 100%;">Sign up</button>
+        
                         <div class="doboard_task_widget-input-container hidden">
                             <input id="doboard_task_widget-user_password" class="doboard_task_widget-field" type="password" name="user_password">
                             <label for="doboard_task_widget-user_password">Password</label>

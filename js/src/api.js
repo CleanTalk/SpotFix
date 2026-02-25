@@ -150,7 +150,7 @@ const attachmentAddDoboard = async (fileData) => {
     // @ToDo need to handle result?
 };
 
-const registerUserDoboard = async (projectToken, accountId, email, nickname, pageURL) => {
+const registerUserDoboard = async (projectToken, accountId, email, nickname) => {
     let data = {
         project_token: projectToken,
         account_id: accountId,
