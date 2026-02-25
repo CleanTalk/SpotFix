@@ -153,7 +153,7 @@ class SpotFixTemplatesLoader {
         </div>
 
         <div id="doboard_task_widget-require_full_registration" class="doboard_task_widget-require_full_registration doboard_task_widget-hidden">
-            <span class="doboard_task_widget-require_full_registration-title">Require full registration</span>
+            <span class="doboard_task_widget-require_full_registration-title">You must complete full registration</span>
         </div>
 
         <div class="doboard_task_widget-login">
@@ -172,13 +172,13 @@ class SpotFixTemplatesLoader {
                             <input id="doboard_task_widget-user_email" class="doboard_task_widget-field" type="email" name="user_email">
                             <label for="doboard_task_widget-user_email">Email</label>
                         </div>
-        
-                        <button id="doboard_task_widget-register_only_button" class="doboard_task_widget-submit_button doboard_task_widget-hidden" style="margin-top: 8px; width: 100%;">Sign up</button>
-        
+
                         <div class="doboard_task_widget-input-container hidden">
                             <input id="doboard_task_widget-user_password" class="doboard_task_widget-field" type="password" name="user_password">
                             <label for="doboard_task_widget-user_password">Password</label>
                         </div>
+
+                        <button id="doboard_task_widget-register_only_button" class="doboard_task_widget-submit_button doboard_task_widget-hidden" style="margin-top: 8px; width: 100%;">Sign up</button>
         
                         <i>Note about DoBoard register and accepting email notifications about tasks have to be here.</i>
                         </br>

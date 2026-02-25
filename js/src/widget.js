@@ -1604,7 +1604,16 @@ class CleanTalkWidgetDoboard {
         if ( accordionController ) {
             const context = this;
             accordionController.addEventListener('click', function() {
-                this.closest('.doboard_task_widget-login').classList.toggle('active');
+                const loginSection = this.closest('.doboard_task_widget-login');
+                const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
+                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+
+                if (requireFullRegistration && !sessionIdExists) {
+                    loginSection.classList.add('active');
+                } else {
+                    loginSection.classList.toggle('active');
+                }
+
                 // Scroll
                 context.positionWidgetContainer();
                 setTimeout(() => {
