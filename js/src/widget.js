@@ -553,9 +553,26 @@ class CleanTalkWidgetDoboard {
                         accountId: this.params.accountId,
                     };
                     
-                    await registerUser(taskDetails)(this.registrationShowMessage);
+                    const response = await registerUser(taskDetails)(this.registrationShowMessage);
                     
-                    if (localStorage.getItem('spotfix_session_id')) {
+                    if (response && response.accountExists) {
+                        const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
+                        const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
+                        const loginEmailElement = document.getElementById('doboard_task_widget-login_email');
+                        
+                        if (phantomContainer) {
+                            phantomContainer.classList.add('doboard_task_widget-hidden');
+                        }
+                        if (loginContainer) {
+                            loginContainer.classList.remove('doboard_task_widget-hidden');
+                        }
+                        if (loginEmailElement && userEmail) {
+                            loginEmailElement.value = userEmail;
+                        }
+                        registerOnlyButton.classList.add('doboard_task_widget-hidden');
+                        
+                        this.registrationShowMessage('Account already exists. Please login with your password.', 'notice');
+                    } else if (localStorage.getItem('spotfix_session_id')) {
                         // Redraw widget after successful registration
                         await this.createWidgetElement('create_issue');
                     }

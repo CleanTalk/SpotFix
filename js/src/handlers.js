@@ -203,9 +203,8 @@ function registerUser(taskDetails) {
     const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName)
         .then((response) => {
             if (response.accountExists) {
-                document.querySelector('.doboard_task_widget-accordion .doboard_task_widget-input-container').innerText = ksesFilter('Account already exists. Please, login usin your password.');
-                document.querySelector('.doboard_task_widget-accordion .doboard_task_widget-input-container.hidden').classList.remove('hidden');
-                document.getElementById('doboard_task_widget-user_password').focus();
+                // Return response to let caller handle account exists case
+                return response;
             } else if (response.sessionId) {
                 localStorage.setItem('spotfix_session_id', response.sessionId);
                 localStorage.setItem('spotfix_user_id', response.userId);
@@ -216,6 +215,7 @@ function registerUser(taskDetails) {
                 wsSpotfix.connect();
                 wsSpotfix.subscribe();
                 userUpdate(projectToken, accountId);
+                return response;
             } else if (response.operationStatus === 'SUCCESS' && response.operationMessage && response.operationMessage.length > 0) {
                 if (response.operationMessage == 'Waiting for email confirmation') {
                     response.operationMessage = 'Waiting for an email confirmation. Please check your Inbox.';
@@ -229,6 +229,7 @@ function registerUser(taskDetails) {
                 const submitButton = document.getElementById('doboard_task_widget-submit_button');
                 submitButton.disabled = true;
                 submitButton.innerText = ksesFilter('Create spot');
+                return response;
             } else {
                 throw new Error('Session ID not found in response');
             }
