@@ -568,6 +568,7 @@ class CleanTalkWidgetDoboard {
                         }
                         if (loginEmailElement && userEmail) {
                             loginEmailElement.value = userEmail;
+                            loginEmailElement.classList.add('has-value');
                         }
                         registerOnlyButton.classList.add('doboard_task_widget-hidden');
                         
