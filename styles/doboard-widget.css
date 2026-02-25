@@ -345,6 +345,8 @@
 }
 
 .doboard_task_widget-login {
+    margin-top: 12px;
+    margin-bottom: 4px;
     border: 1px solid #BBC7D1;
     border-radius: 4px;
     padding: 11px 8px 8px 8px;

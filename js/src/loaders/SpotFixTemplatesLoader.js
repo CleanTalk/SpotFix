@@ -156,7 +156,7 @@ class SpotFixTemplatesLoader {
             <span class="doboard_task_widget-require_full_registration-title">Require full registration</span>
         </div>
 
-        <div class="doboard_task_widget-login" style="margin-top: 12px; margin-bottom: 4px">
+        <div class="doboard_task_widget-login">
 
             <span  class="doboard_task_widget-login-icon" >Sign up here to receive notifications.</span>
 
