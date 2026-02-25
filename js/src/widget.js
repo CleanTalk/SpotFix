@@ -742,6 +742,9 @@ class CleanTalkWidgetDoboard {
                     if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.remove('doboard_task_widget-hidden');
                     const loginSection = document.querySelector('.doboard_task_widget-login');
                     if (loginSection) loginSection.classList.add('active');
+                    // Hide login accordion icon when require_full_registration
+                    const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
+                    if (loginIcon) loginIcon.style.display = 'none';
                     // Show register only button
                     if (registerOnlyButton) registerOnlyButton.classList.remove('doboard_task_widget-hidden');
                 } else {
@@ -750,6 +753,9 @@ class CleanTalkWidgetDoboard {
                     if (submitButtonContainer) submitButtonContainer.style.display = '';
                     if (visibilityToggle) visibilityToggle.style.display = '';
                     if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.add('doboard_task_widget-hidden');
+                    // Show login accordion icon when not require_full_registration
+                    const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
+                    if (loginIcon) loginIcon.style.display = '';
                     // Hide register only button
                     if (registerOnlyButton) registerOnlyButton.classList.add('doboard_task_widget-hidden');
                 }
