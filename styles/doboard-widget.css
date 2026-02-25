@@ -534,8 +534,6 @@
     align-items: center;
     justify-content: space-between;
     padding: 0px 15px;
-    margin-bottom: 4px;
-    margin-top: 4px;
 }
 .doboard_task_widget-task_row:last-child {
     margin-bottom: 0;
@@ -597,12 +595,11 @@
 }
 
 .doboard_task_widget-description_container {
-    height: 55px;
+    height: 62px;
     width: calc(100% - 44px - 8px);
     border-bottom: 1px solid #EBF0F4;
     display: block;
     margin-left: 8px;
-    padding-bottom: 6px;
     padding-top: 4px;
 }
 .doboard_task_widget-task_row:last-child .doboard_task_widget-description_container {
@@ -1497,7 +1494,7 @@ input:checked + .slider:before {
     min-width: 270px;
     max-width: 420px;
     margin-top: 4px;
-    margin-bottom: 4px
+    margin-bottom: 12px
 }
 
 /* Require full registration message */
