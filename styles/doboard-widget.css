@@ -403,6 +403,11 @@
     transform: rotate(-135deg);
     top: 7px;
 }
+
+.doboard_task_widget-login-icon.doboard_task_widget-login-icon-hidden::after {
+    display: none;
+}
+
 .doboard_task_widget-login .doboard_task_widget-input-container .doboard_task_widget-field,
 .doboard_task_widget-login .doboard_task_widget-field + label {
     background: #F9FBFD;

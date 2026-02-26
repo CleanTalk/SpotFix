@@ -152,10 +152,6 @@ class SpotFixTemplatesLoader {
             <label for="doboard_task_widget-description" class="doboard_task_widget-field-textarea-label" >Description</label>
         </div>
 
-        <div id="doboard_task_widget-require_full_registration" class="doboard_task_widget-require_full_registration doboard_task_widget-hidden">
-            <span class="doboard_task_widget-require_full_registration-title">You must complete full registration</span>
-        </div>
-
         <div class="doboard_task_widget-login">
 
             <span  class="doboard_task_widget-login-icon" >Sign up here to receive notifications.</span>
