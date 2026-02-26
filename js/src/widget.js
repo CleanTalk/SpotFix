@@ -735,8 +735,8 @@ class CleanTalkWidgetDoboard {
                 const registerOnlyButton = document.getElementById('doboard_task_widget-register_only_button');
                 
                 if (requireFullRegistration && !sessionIdExists) {
-                    if (titleContainer) titleContainer.style.display = 'none';
-                    if (descriptionContainer) descriptionContainer.style.display = 'none';
+                    if (titleContainer) titleContainer.style.display = '';
+                    if (descriptionContainer) descriptionContainer.style.display = '';
                     if (submitButtonContainer) submitButtonContainer.style.display = 'none';
                     if (visibilityToggle) visibilityToggle.style.display = 'none';
                     if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.remove('doboard_task_widget-hidden');
