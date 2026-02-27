@@ -977,9 +977,8 @@ class CleanTalkWidgetDoboard {
 
             let taskFormattedPageUrl = '';
 
-            if (typeof meta?.pageURL === 'string') {
+            if (typeof meta?.pageURL === 'string'){
                 taskFormattedPageUrl = meta.pageURL.replace(window.location.origin, '');
-
                 templateVariables.taskFormattedPageUrl = taskFormattedPageUrl.length < 2
                     ? meta.pageURL.replace(/^https?:\/\//, '')
                     : taskFormattedPageUrl;
