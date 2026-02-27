@@ -422,7 +422,7 @@ class SpotFixTemplatesLoader {
                 </div>
             </div>
             <div class="doboard_task_widget-task_menu-item" 
-            style="flex-direction: column; height: fit-content; padding-top: 8px">
+            style="flex-direction: column; height: fit-content; padding-top: 8px; max-height: 270px; overflow: auto;">
                 {{viewers}}
             </div>
         </div>
