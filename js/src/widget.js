@@ -594,6 +594,7 @@ class CleanTalkWidgetDoboard {
                 templateName = 'spot_menu';
                 this.socket_type_name = templateName;
                 this.nonRequesting = nonRequesting;
+                this.socket_type_name = templateName;
                 const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
                 templateVariables = {
                     spotfixVersion: spotMenuVersion ? 'Spotfix version ' + spotMenuVersion + '.' : '',
@@ -899,7 +900,14 @@ class CleanTalkWidgetDoboard {
             spotfixVersion = spotMenuVersion ? `Spotfix version ${spotMenuVersion}.` : '';
             templateVariables.spotfixVersion = spotfixVersion || '';
 
-            const currentTask = this.allTasksData.find(task => +task.taskId === +this.currentActiveTaskId);
+            let allTasks = this.allTasksData;
+
+            if(this.nonRequesting){
+                allTasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+                this.allTasksData = allTasks;
+            }
+
+            const currentTask = allTasks.find(task => +task.taskId === +this.currentActiveTaskId);
 
             templateVariables.taskName = currentTask.taskTitle;
             templateVariables.taskType = currentTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicDark : this.srcVariables.iconLockDark;
@@ -1261,16 +1269,28 @@ class CleanTalkWidgetDoboard {
         document.querySelector('#unsubscribe_from_spot')?.addEventListener('change', () => {
             const currentUserId = localStorage.getItem('spotfix_user_id');
 
-            if(currentUserId){
-                const viewers = this.allTasksData.find(task => +task.taskId === +this.currentActiveTaskId)?.viewers;
-                let filteredUsersIds = [];
+            if (currentUserId) {
+                const task = this.allTasksData.find(task => +task.taskId === +this.currentActiveTaskId);
+                const viewers = task?.viewers || [];
+
+                let newViewers;
+
                 if (viewers.includes(+currentUserId)) {
-                    filteredUsersIds = viewers.filter(item => +item !== +currentUserId)?.join(',');
+                    newViewers = viewers.filter(item => +item !== +currentUserId);
                 } else {
-                    filteredUsersIds = viewers.push(+currentUserId)?.join(',');
+                    newViewers = [...viewers, +currentUserId];
                 }
+
+                const filteredUsersIds = newViewers.join(',');
+
                 if (filteredUsersIds.length) {
-                    updateViewersDoboard(filteredUsersIds, this.currentActiveTaskId, this.params.projectToken, this.params.accountId);
+                    updateViewersDoboard(filteredUsersIds, this.currentActiveTaskId, this.params.projectToken, this.params.accountId)
+                        .then(() => {
+                            let timer = setTimeout(() => {
+                                this.createWidgetElement(this.socket_type_name, true);
+                                clearTimeout(timer);
+                            }, 500);
+                        })
                 }
             }
         }) || '';
