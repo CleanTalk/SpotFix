@@ -743,24 +743,22 @@ class CleanTalkWidgetDoboard {
                 });
                 break;
             case 'all_issues':
-                let notifications = [];
+
                 if (this.nonRequesting) {
                     hideContainersSpinner();
                 } else {
                     changeSize(container);
                 }
                     spotFixRemoveHighlights();
+
+                const notifications = await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
+
                 let issuesQuantityOnPage = 0;
                 const sessionId = localStorage.getItem('spotfix_session_id');
 
                 this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
                 const tasks = this.allTasksData;
                 tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId, this.nonRequesting);
-
-                if (!this.nonRequesting) {
-                    notifications = await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
-                }
-
                 let spotsToBeHighlighted = [];
                 if (tasks.length > 0) {
                     const currentURL = window.location.href;
