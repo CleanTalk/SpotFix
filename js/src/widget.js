@@ -972,15 +972,18 @@ class CleanTalkWidgetDoboard {
                         } catch (e) { nodePath = null; meta = null; }
                     }
 
-            templateVariables.taskPageUrl = meta.pageURL;
+            templateVariables.taskPageUrl = meta?.pageURL;
             templateVariables.taskFormattedPageUrl = '';
-            let taskFormattedPageUrl = '';
-            if(meta?.pageURL) {
-                taskFormattedPageUrl = meta?.pageURL?.replace(window.location.origin, '');
-                templateVariables.taskFormattedPageUrl = taskFormattedPageUrl.length < 2
-                    ? meta.pageURL.replace(/^https?:\/\//, '') : taskFormattedPageUrl;
-            }
 
+            let taskFormattedPageUrl = '';
+
+            if (typeof meta?.pageURL === 'string') {
+                taskFormattedPageUrl = meta.pageURL.replace(window.location.origin, '');
+
+                templateVariables.taskFormattedPageUrl = taskFormattedPageUrl.length < 2
+                    ? meta.pageURL.replace(/^https?:\/\//, '')
+                    : taskFormattedPageUrl;
+            }
             const issueLinkElement = document.getElementById('spotfix_doboard_task_widget_url');
             if (issueLinkElement) {
                 issueLinkElement.innerHTML = `<a rel="nofollow" href="${meta.pageURL}">${templateVariables.taskFormattedPageUrl}</a>`;
