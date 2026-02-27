@@ -973,9 +973,15 @@ class CleanTalkWidgetDoboard {
                     }
 
             templateVariables.taskPageUrl = meta.pageURL;
-            const taskFormattedPageUrl = meta.pageURL.replace(window.location.origin, '');
-            templateVariables.taskFormattedPageUrl = taskFormattedPageUrl.length < 2
-                ? meta.pageURL.replace(/^https?:\/\//, '') : taskFormattedPageUrl;
+            templateVariables.taskFormattedPageUrl = '';
+
+            let taskFormattedPageUrl = '';
+
+            if(meta?.pageURL) {
+                taskFormattedPageUrl = meta?.pageURL?.replace(window.location.origin, '');
+                templateVariables.taskFormattedPageUrl = taskFormattedPageUrl.length < 2
+                    ? meta.pageURL.replace(/^https?:\/\//, '') : taskFormattedPageUrl;
+            }
 
             const issueLinkElement = document.getElementById('spotfix_doboard_task_widget_url');
             if (issueLinkElement) {
