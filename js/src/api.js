@@ -258,6 +258,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         taskCreatorTaskUser: task.creator_user_id,
         taskMeta: task.meta,
         taskStatus: task.status,
+        viewers: task.comments_viewers,
     }));
     await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_TASKS, tasks);
     storageSaveTasksCount(tasks);
@@ -389,5 +390,19 @@ const updateNotificationsDoboard = async (taskId, projectToken, accountId) => {
         };
 
         await spotfixApiCall(data, 'notification_update', accountId);
+    }
+};
+
+const updateViewersDoboard = async (usersIds, taskId, projectToken, accountId) => {
+    const sessionId = localStorage.getItem('spotfix_session_id');
+    if (sessionId) {
+        const data = {
+            session_id: sessionId,
+            project_token: projectToken,
+            task_id: taskId,
+            viewers_ids: usersIds,
+        };
+
+        await spotfixApiCall(data, 'viewers_update', accountId);
     }
 };

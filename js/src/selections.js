@@ -137,6 +137,18 @@ function spotFixGetSelectedData(selection) {
  * @param widgetInstance
  */
 function spotFixHighlightElements(spotsToBeHighlighted, widgetInstance) {
+    const currentUserId = localStorage.getItem('spotfix_user_id');
+    const highlightStatuses = localStorage.getItem('spotfix_highlight_statuses');
+
+    if (currentUserId && highlightStatuses) {
+        const userHighlightStatuses = JSON.parse(highlightStatuses)[currentUserId];
+        if (userHighlightStatuses) {
+            spotsToBeHighlighted = spotsToBeHighlighted.filter((spot) => {
+                if(userHighlightStatuses[spot?.taskId] === undefined) return true;
+                return userHighlightStatuses[spot?.taskId];
+            })
+        }
+    }
 
     if (spotsToBeHighlighted.length === 0) return;
 

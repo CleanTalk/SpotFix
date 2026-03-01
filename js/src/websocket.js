@@ -42,6 +42,9 @@ const handleIncomingData = async (data) => {
             taskCreatorTaskUser: data.data.creator_user_id,
             taskMeta: data.data.meta,
             taskStatus: data.data.status,
+            viewers: data.data.comments_viewers,
+            task_type: data.data.task_type,
+            commentsCount: data.data.comments_count,
         });
         break;
 

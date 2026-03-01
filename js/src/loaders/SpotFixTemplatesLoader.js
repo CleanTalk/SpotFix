@@ -54,14 +54,14 @@ class SpotFixTemplatesLoader {
             <span title="Return to all spots list"> All {{issuesCounter}}</span>
         </div>
         <div class="doboard_task_widget-issue-title">
-            <span style="text-align: center">{{issueTitle}}</span>
+            <span class="doboard_task_widget-issue-title" style="text-align: center">{{issueTitle}}</span>
             <span>{{amountOfComments}}</span>
         </div>
         <div class="doboard_task_widget-header-icons">
             <span id="maximizeWidgetContainer">
                 <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
-            <span id="openUserMenuButton">
+            <span id="openSpotMenuButton">
                 <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
@@ -367,6 +367,73 @@ class SpotFixTemplatesLoader {
             <span id="doboard_task_widget-error_message-header"></span>
         <div id="doboard_task_widget-error_message"></div>
     </div>
+    </div>
+</div>`;
+    }
+
+    static spot_menu() {
+        return `
+<div class="doboard_task_widget-container">
+    <div class="doboard_task_widget-user_menu-header">
+        <div class="doboard_task_widget-user_menu-header-top">
+            <div id="spotfix_back_button" class="doboard_task_widget_cursor-pointer" 
+            style="display: flex;align-items: center;gap: 8px;">
+                <img src="{{chevronBackDark}}" alt="">
+                <span> Back</span>
+            </div>
+            <div>
+                <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center">
+             <span id="spotfix_widget-task-menu_name">{{taskName}}
+             <img src="{{taskType}}" alt="" style="margin-left: 6px">
+             </span>
+             <span id="spotfix_widget-task-menu_users">{{viewersCount}}</span>
+        </div>
+    </div>
+    <div class="doboard_task_widget-content" style="min-height:200px ">
+        <div style="height: 392px">
+        <div style="position: sticky; top: 0; margin-top: 8px">
+            <div class="doboard_task_widget-task_menu-item">
+                <img src="{{iconHighlight}}" alt="" style="margin-right: 12px">
+                <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
+                    <span style="font-weight: 400; font-size: 14px; color: #252A2F; display: inline-flex; flex-direction: column;">
+                        Highlight issue
+                        <span style="font-weight: 400; font-size: 12px; color: #707A83;">Available only to authorized users</span>
+                        </span>
+                    <label class="toggle" style="margin-left: 8px">
+                      <input id="highlight_the_spot" type="checkbox">
+                      <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="doboard_task_widget-task_menu-item">
+                <img src="{{iconMute}}" alt="" style="margin-right: 12px">
+                <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
+                    <span style="font-weight: 400; font-size: 14px; color: #252A2F; display: inline-flex; flex-direction: column;">
+                        Mute conversation
+                        <span style="font-weight: 400; font-size: 12px; color: #707A83;">Available only to authorized users</span>
+                        </span>
+                    <label class="toggle" style="margin-left: 8px">
+                      <input id="unsubscribe_from_spot" type="checkbox">
+                      <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="doboard_task_widget-task_menu-item" 
+            style="flex-direction: column; height: fit-content; padding-top: 8px; max-height: 270px; overflow: auto;">
+                {{viewers}}
+            </div>
+        </div>
+        </div>
+        <div style="padding: 16px; font-size: 13px; position: sticky; bottom: 0; margin-top: 12px">
+            <span>{{spotfixVersion}}</span>
+            <span>Powered by
+            <a rel="nofollow" target="_blank" href="https://doboard.com">
+             doBoard
+            </a></span>
+        </div>
     </div>
 </div>`;
     }

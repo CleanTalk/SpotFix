@@ -38,6 +38,10 @@ class CleanTalkWidgetDoboard {
             iconSpotPublic: SpotFixSVGLoader.getAsDataURI('iconSpotPublic'),
             iconSpotPrivate: SpotFixSVGLoader.getAsDataURI('iconSpotPrivate'),
             iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
+            iconMute: SpotFixSVGLoader.getAsDataURI('iconMute'),
+            iconHighlight: SpotFixSVGLoader.getAsDataURI('iconHighlight'),
+            iconLockDark: SpotFixSVGLoader.getAsDataURI('iconLockDark'),
+            iconPublicDark: SpotFixSVGLoader.getAsDataURI('iconPublicDark'),
         };
         this.fileUploader = new FileUploader(this.escapeHtml);
         this.init(type);
@@ -574,9 +578,9 @@ class CleanTalkWidgetDoboard {
                 templateName = 'user_menu';
                 this.socket_type_name = templateName;
                 this.nonRequesting = nonRequesting;
-                const version = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+                const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
                 templateVariables = {
-                    spotfixVersion: version ? 'Spotfix version ' + version + '.' : '',
+                    spotfixVersion: userMenuVersion ? 'Spotfix version ' + userMenuVersion + '.' : '',
                     avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
                     iconEye: SpotFixSVGLoader.getAsDataURI('iconEye'),
                     iconDoor: SpotFixSVGLoader.getAsDataURI('iconDoor'),
@@ -584,6 +588,22 @@ class CleanTalkWidgetDoboard {
                     buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
                     userName: 'Guest',
                     email: localStorage.getItem('spotfix_email') || '',
+                    ...this.srcVariables};
+                break;
+            case 'spot_menu':
+                templateName = 'spot_menu';
+                this.socket_type_name = templateName;
+                this.nonRequesting = nonRequesting;
+                this.socket_type_name = templateName;
+                const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+                templateVariables = {
+                    spotfixVersion: spotMenuVersion ? 'Spotfix version ' + spotMenuVersion + '.' : '',
+                    chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
+                    buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
+                    avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
+                    taskName: '',
+                    viewersCount: '',
+                    viewers: '',
                     ...this.srcVariables};
                 break;
             case 'concrete_issue':
@@ -729,7 +749,7 @@ class CleanTalkWidgetDoboard {
                 } else {
                     changeSize(container);
                 }
-                    spotFixRemoveHighlights();
+                spotFixRemoveHighlights();
                 let issuesQuantityOnPage = 0;
                 const sessionId = localStorage.getItem('spotfix_session_id');
 
@@ -852,11 +872,11 @@ class CleanTalkWidgetDoboard {
 
                 const user = await getUserDetails(this.params, this.nonRequesting);
                 if(!this.nonRequesting) await getReleaseVersion();
-                let spotfixVersion = '';
-                const version = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
-                spotfixVersion = version ? `Spotfix version ${version}.` : '';
+                let userMenuSpotfixVersion = '';
+                const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+                userMenuSpotfixVersion = userMenuVersion ? `Spotfix version ${userMenuVersion}.` : '';
 
-                templateVariables.spotfixVersion = spotfixVersion || '';
+                templateVariables.spotfixVersion = userMenuSpotfixVersion || '';
 
                 if(user){
                     templateVariables.userName = user.name || 'Guest';
@@ -873,6 +893,60 @@ class CleanTalkWidgetDoboard {
                 this.bindWidgetInputsInteractive();
 
                 break;
+        case 'spot_menu':
+            if(!this.nonRequesting) await getReleaseVersion();
+            let spotfixVersion = '';
+            const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+            spotfixVersion = spotMenuVersion ? `Spotfix version ${spotMenuVersion}.` : '';
+            templateVariables.spotfixVersion = spotfixVersion || '';
+
+            let allTasks = this.allTasksData;
+
+            if(this.nonRequesting){
+                allTasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+                this.allTasksData = allTasks;
+            }
+
+            const currentTask = allTasks.find(task => +task.taskId === +this.currentActiveTaskId);
+
+            templateVariables.taskName = currentTask.taskTitle;
+            templateVariables.taskType = currentTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicDark : this.srcVariables.iconLockDark;
+
+
+            const currentUserId = localStorage.getItem('spotfix_user_id') || 0;
+
+            const users = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
+            const usersFiltered = users.filter(user => currentTask.viewers.includes(user.user_id));
+
+            templateVariables.viewersCount = `${usersFiltered.length || 0} members`;
+
+            if(usersFiltered.length) {
+                templateVariables.viewers = usersFiltered.map(user => {
+                    return `<div class="spotfix_widget-task-menu_user">
+                    <span><img alt="" src="${user?.avatar?.s || templateVariables.avatar}" />${user.name || 'Anonymous'}</span><span>${user?.position || ''}</span>
+                </div>`
+                }).join('')
+            }
+
+            widgetContainer.innerHTML = this.loadTemplate('spot_menu', templateVariables);
+            document.body.appendChild(widgetContainer);
+
+            if(currentTask.viewers.includes(+currentUserId)){
+                document.getElementById('unsubscribe_from_spot').checked = true;
+            }
+            if (currentUserId) {
+                const highlightStatuses = JSON.parse(
+                    localStorage.getItem('spotfix_highlight_statuses') || '{}'
+                );
+                document.getElementById('highlight_the_spot').checked =
+                    highlightStatuses[currentUserId]?.[this.currentActiveTaskId] ?? true;
+            }
+            if(!localStorage.getItem('spotfix_session_id')){
+                document.getElementById('unsubscribe_from_spot').disabled = true;
+                document.getElementById('highlight_the_spot').disabled = true;
+            }
+
+            break;
         case 'concrete_issue':
                 if(this.nonRequesting) {
                     hideContainersSpinner();
@@ -906,11 +980,17 @@ class CleanTalkWidgetDoboard {
                         } catch (e) { nodePath = null; meta = null; }
                     }
 
-            templateVariables.taskPageUrl = meta.pageURL;
-            const taskFormattedPageUrl = meta.pageURL.replace(window.location.origin, '');
-            templateVariables.taskFormattedPageUrl = taskFormattedPageUrl.length < 2
-                ? meta.pageURL.replace(/^https?:\/\//, '') : taskFormattedPageUrl;
+            templateVariables.taskPageUrl = meta?.pageURL;
+            templateVariables.taskFormattedPageUrl = '';
 
+            let taskFormattedPageUrl = '';
+
+            if (typeof meta?.pageURL === 'string'){
+                taskFormattedPageUrl = meta.pageURL.replace(window.location.origin, '');
+                templateVariables.taskFormattedPageUrl = taskFormattedPageUrl.length < 2
+                    ? meta.pageURL.replace(/^https?:\/\//, '')
+                    : taskFormattedPageUrl;
+            }
             const issueLinkElement = document.getElementById('spotfix_doboard_task_widget_url');
             if (issueLinkElement) {
                 issueLinkElement.innerHTML = `<a rel="nofollow" href="${meta.pageURL}">${templateVariables.taskFormattedPageUrl}</a>`;
@@ -934,7 +1014,7 @@ class CleanTalkWidgetDoboard {
 
                     if (meta && nodePath) {
                         // Pass the task meta object as an array
-                        spotFixHighlightElements([meta], this);
+                        spotFixHighlightElements([{...meta, taskId: currentTaskData.taskId}], this);
                         if (typeof spotFixScrollToNodePath === 'function') {
                             spotFixScrollToNodePath(nodePath);
                         }
@@ -1181,6 +1261,59 @@ class CleanTalkWidgetDoboard {
         document.querySelector('#openUserMenuButton')?.addEventListener('click', () => {
             this.createWidgetElement('user_menu')
         }) || '';
+
+        document.querySelector('#openSpotMenuButton')?.addEventListener('click', () => {
+            this.createWidgetElement('spot_menu')
+        }) || '';
+
+        document.querySelector('#unsubscribe_from_spot')?.addEventListener('change', () => {
+            const currentUserId = localStorage.getItem('spotfix_user_id');
+
+            if (currentUserId) {
+                const task = this.allTasksData.find(task => +task.taskId === +this.currentActiveTaskId);
+                const viewers = task?.viewers || [];
+
+                let newViewers;
+
+                if (viewers.includes(+currentUserId)) {
+                    newViewers = viewers.filter(item => +item !== +currentUserId);
+                } else {
+                    newViewers = [...viewers, +currentUserId];
+                }
+
+                const filteredUsersIds = newViewers.join(',');
+
+                if (filteredUsersIds.length) {
+                    updateViewersDoboard(filteredUsersIds, this.currentActiveTaskId, this.params.projectToken, this.params.accountId)
+                        .then(() => {
+                            let timer = setTimeout(() => {
+                                this.createWidgetElement(this.socket_type_name, true);
+                                clearTimeout(timer);
+                            }, 500);
+                        })
+                }
+            }
+        }) || '';
+
+        document.querySelector('#highlight_the_spot')?.addEventListener('change', (e) => {
+            const currentUserId = localStorage.getItem('spotfix_user_id');
+            if (!currentUserId) return;
+
+            const highlightStatuses = JSON.parse(
+                localStorage.getItem('spotfix_highlight_statuses') || '{}'
+            );
+
+            if (!highlightStatuses[currentUserId]) {
+                highlightStatuses[currentUserId] = {};
+            }
+
+            highlightStatuses[currentUserId][this.currentActiveTaskId] = e.target.checked;
+
+            localStorage.setItem(
+                'spotfix_highlight_statuses',
+                JSON.stringify(highlightStatuses)
+            );
+        });
 
         document.getElementById('spotfix-widget-create-task-visibility')?.addEventListener('change', () => {
             this.new_task_type = this.new_task_type === 'PUBLIC' ? 'REGULAR' : 'PUBLIC';
