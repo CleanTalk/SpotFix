@@ -109,10 +109,20 @@ class SpotFixTemplatesLoader {
     </div>
     <div class="doboard_task_widget-comment_text_container">
         <div class="doboard_task_widget-comment_body">{{commentBody}}</div>
+        <div class="doboard_task_widget-comment_attachments">{{commentAttachments}}</div>
         <div class="doboard_task_widget-comment_time">{{commentTime}}</div>
     </div>
 </div>
 `;
+    }
+
+    static concrete_issue_attachment() {
+        return `
+        <div class="doboard_task_widget-attachment_item {{attachmentClass}}" data-attachment-url="{{attachmentUrl}}" data-is-image="{{attachmentIsImage}}">
+            <img src="{{attachmentIcon}}" alt="{{attachmentFilename}}">
+            <span class="doboard_task_widget-attachment_filename">{{attachmentFilename}}</span>
+        </div>
+    `;
     }
 
     static create_issue() {
@@ -460,6 +470,20 @@ class SpotFixTemplatesLoader {
     }
     static fixedTaskHtml() {
         return `<p class="doboard_task_widget-bottom-is-fixed-task-block"><span class="doboard_task_widget-bottom-is-fixed-task">This issue already fixed</span></p>`;
+    }
+
+    static imageLightbox() {
+        return `
+        <div class="doboard_task_widget-lightbox" id="doboard_task_widget-lightbox">
+            <div class="doboard_task_widget-lightbox-overlay"></div>
+            <div class="doboard_task_widget-lightbox-content">
+                <img src="{{imageUrl}}" alt="{{imageAlt}}" class="doboard_task_widget-lightbox-image">
+            </div>
+            <button class="doboard_task_widget-lightbox-close doboard_task_widget_cursor-pointer" title="Close">
+                <img src="{{buttonCloseScreen}}" alt="Close">
+            </button>
+        </div>
+    `;
     }
 
 }
