@@ -13929,6 +13929,7 @@ class MessageEditorIframe {
                     toolbar_location: "bottom",
                     toolbar: "attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote sendCommentButton",
                     height: 50,
+                    max_height: 100,
                     autoresize_bottom_margin: 0,
                     resize: false,
                     file_picker_types: "file image media",
