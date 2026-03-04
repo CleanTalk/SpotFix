@@ -671,56 +671,27 @@ class CleanTalkWidgetDoboard {
                 this.bindCreateTaskEvents();
                 this.bindShowLoginFormEvents();
 
-                if (tinymce?.get('doboard_task_widget-description')) {
-                    tinymce?.remove('#doboard_task_widget-description');
-                }
-
                 const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
 
-                SpotFixTinyMCE.init({
-                    selector: '#doboard_task_widget-description',
-                    plugins: 'link lists',
-                    menubar: false,
-                    statusbar: false,
-                    toolbar_location: 'bottom',
-                    height: '100%',
-                    width: '100%',
-                    toolbar: 'attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote',
-                    icons: 'icon_pack_SpotFix',
-                    file_picker_types: 'file image media',
-                    setup: function (editor) {
-                        editor.on('init', function() {
-                            if (savedDescription) {
-                                editor.setContent(savedDescription, { format: 'html' });
-                            }
-
-                            setTimeout(() => {
-                                editor.save();
-                            });
-                        });
-                        editor.on('change', function () {
-                            editor.save();
-                            const content = editor.getContent();
-                            localStorage.setItem('spotfix-description-ls', content);
-                        });
-                        editor.ui.registry.addButton('attachmentButton', {
-                            icon: 'paperclip',
-                            tooltip: 'In development',
-                            disabled: true,
-                            onAction: (e) => {
-                                // fileUploader?.fileInput?.click(e);
-                            },
-                        });
-                        editor.ui.registry.addButton('screenshotButton', {
-                            icon: 'screenshot',
-                            tooltip: 'In development',
-                            disabled: true,
-                            onAction: (e) => {
-                                // fileUploader?.makeScreenshot();
-                            },
-                        });
-                     }
-                    })
+                // Create description editor iframe
+                window.DescriptionEditorIframe.create({
+                    savedContent: savedDescription,
+                    onChange: function(content) {
+                        localStorage.setItem('spotfix-description-ls', content);
+                    },
+                    handlers: {
+                        onAttachmentClick: function() {
+                            // Attachment button clicked in description editor
+                            // Currently disabled
+                        },
+                        onScreenshotClick: function() {
+                            // Screenshot button clicked in description editor
+                            // Currently disabled
+                        }
+                    }
+                }).catch(function(error) {
+                    console.error('Failed to create description editor:', error);
+                });
 
                 break;
             case 'wrap':
@@ -1106,88 +1077,43 @@ class CleanTalkWidgetDoboard {
                     issuesCommentsContainer.innerHTML = ksesFilter('No comments');
                 }
 
-                // textarea (new comment) behaviour
-                const textarea = document.querySelector('.doboard_task_widget-send_message_input');
-                if (textarea) {
-                    function handleTextareaChange() {
-                        const triggerChars = 40;
+                // textarea (new comment) behaviour - using iframe editor
+                const mainThis = this;
+                const fileUploader = this.fileUploader;
 
-                        if (this.value.length > triggerChars) {
-                            this.classList.add('high');
-                        } else {
-                            this.classList.remove('high');
+                // Remove existing iframe editor if any
+                if (window.MessageEditorIframe.iframe) {
+                    window.MessageEditorIframe.remove();
+                }
+
+                // Create message editor iframe
+                window.MessageEditorIframe.create({
+                    onReady: function() {
+                        // Scroll to the bottom comments
+                        if(!mainThis.nonRequesting) {
+                            const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
+                            if (container) {
+                                setTimeout(() => {
+                                    const scrollPosition = container.scrollHeight;
+                                    container.scrollTo({ top: scrollPosition, behavior: 'smooth' });
+                                }, 50);
+                            }
+                        }
+                    },
+                    handlers: {
+                        onAttachmentClick: function() {
+                            fileUploader?.fileInput?.click();
+                        },
+                        onScreenshotClick: function() {
+                            fileUploader?.makeScreenshot();
+                        },
+                        onSendComment: function(eventData) {
+                            clickHandler(mainThis, null, eventData.content);
                         }
                     }
-                    textarea.addEventListener('input', handleTextareaChange)
-                    textarea.addEventListener('change', handleTextareaChange)
-
-                    const fileUploader = this.fileUploader;
-
-                    if (tinymce?.get('doboard_task_widget-send_message_input_SpotFix')) {
-                        tinymce?.remove('#doboard_task_widget-send_message_input_SpotFix');
-                    }
-
-                    const mainThis = this;
-
-                    SpotFixTinyMCE.init({
-                        selector: '#doboard_task_widget-send_message_input_SpotFix',
-                        plugins: 'link lists autoresize',
-                        menubar: false,
-                        placeholder: 'Write a message...',
-                        content_style: `body[data-mce-placeholder]:not(.mce-content-body:not([data-mce-placeholder]))::before {
-                        color: #707A83 !important;}
-                        body {background-color: #F3F6F9;}`,
-                        statusbar: false,
-                        toolbar_location: 'bottom',
-                        toolbar: 'attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote sendCommentButton',
-                        min_height: 100,
-                        max_height: 200,
-                        autoresize_bottom_margin: 0,
-                        resize: false,
-                        icons: 'icon_pack_SpotFix',
-                        file_picker_types: 'file image media',
-                        setup: function (editor) {
-                            editor.on('change', function () {
-                                editor.save();
-                            });
-                            editor.on('init', () => {
-                                // Scroll to the bottom comments
-                                if(!this.nonRequesting) {
-                                    const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
-
-                                    if (container) {
-                                        setTimeout(() => {
-                                            const scrollPosition = container.scrollHeight;
-                                            container.scrollTo({ top: scrollPosition, behavior: 'smooth' });
-                                        }, 50);
-                                    }
-                                }
-                            });
-                            editor.ui.registry.addButton('attachmentButton', {
-                                icon: 'paperclip',
-                                tooltip: 'Add file',
-                                    onAction: (e) => {
-                                       fileUploader?.fileInput?.click(e);
-
-                                    },
-                                });
-                            editor.ui.registry.addButton('screenshotButton', {
-                                icon: 'screenshot',
-                                tooltip: 'Screenshot',
-                                onAction: (e) => {
-                                   fileUploader?.makeScreenshot();
-                                },
-                                });
-                            editor.ui.registry.addButton('sendCommentButton', {
-                                icon: 'sendComment',
-                                tooltip: 'Send comment',
-                                onAction: (e) => {
-                                    clickHandler(mainThis, editor);
-                                },
-                            });
-                            }
-                        });
-                    }
+                }).catch(function(error) {
+                    console.error('Failed to create message editor:', error);
+                });
 
             if(this.nonRequesting) {
                 const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
@@ -1206,12 +1132,18 @@ class CleanTalkWidgetDoboard {
 
                     this.fileUploader.init();
 
-                    async function clickHandler(mainThis, editor)  {
+                    async function clickHandler(mainThis, editor, contentFromIframe)  {
                         const sendButton = document.querySelector('.doboard_task_widget-send_message_button');
                         const sendMessageContainer = sendButton?.closest('.doboard_task_widget-send_message');
                         const input = sendMessageContainer?.querySelector('.doboard_task_widget-send_message_input');
 
-                        const commentText =  editor?.getContent({ format: 'html' })?.trim();
+                        // Get content from iframe or from editor parameter
+                        let commentText;
+                        if (contentFromIframe) {
+                            commentText = contentFromIframe.trim();
+                        } else if (editor) {
+                            commentText = editor?.getContent({ format: 'html' })?.trim();
+                        }
 
                             if (!commentText) return;
 
