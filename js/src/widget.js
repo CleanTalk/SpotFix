@@ -118,10 +118,21 @@ class CleanTalkWidgetDoboard {
         if ( ! params ) {
             throw new Error('Script params not provided');
         }
+
+        // Fallback to spotfixConfig if URL params are incomplete (e.g. WordPress spotfix plugin)
+        if ( ! params.projectToken || ! params.accountId || ! params.projectId ) {
+            const config = typeof window.spotfixConfig === 'object' && window.spotfixConfig ? window.spotfixConfig : null;
+            if ( config ) {
+                params.projectToken = params.projectToken || config.projectToken || '';
+                params.projectId = params.projectId || config.projectId || '';
+                params.accountId = params.accountId || config.accountId || '';
+            }
+        }
+
         if ( ! params.projectToken || ! params.accountId || ! params.projectId ) {
             throw new Error('Necessary script params not provided');
-
         }
+
         if (params.accountId) {
             localStorage.setItem('spotfix_company_id', params.accountId);
         }
