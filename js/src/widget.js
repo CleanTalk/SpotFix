@@ -115,18 +115,16 @@ class CleanTalkWidgetDoboard {
 
         const url = new URL(script.src);
         let params = Object.fromEntries(url.searchParams.entries());
-        if ( ! params ) {
-            throw new Error('Script params not provided');
-        }
+        const config = typeof window.spotfixConfig === 'object' && window.spotfixConfig ? window.spotfixConfig : null;
 
-        // Fallback to spotfixConfig if URL params are incomplete (e.g. WordPress spotfix plugin)
-        if ( ! params.projectToken || ! params.accountId || ! params.projectId ) {
-            const config = typeof window.spotfixConfig === 'object' && window.spotfixConfig ? window.spotfixConfig : null;
-            if ( config ) {
-                params.projectToken = params.projectToken || config.projectToken || '';
-                params.projectId = params.projectId || config.projectId || '';
-                params.accountId = params.accountId || config.accountId || '';
-            }
+        // Fallback to spotfixConfig when URL has no params or they are incomplete (e.g. WordPress plugin)
+        if ( config ) {
+            params = {
+                ...params,
+                projectToken: params.projectToken || config.projectToken || '',
+                projectId: params.projectId || config.projectId || '',
+                accountId: params.accountId || config.accountId || ''
+            };
         }
 
         if ( ! params.projectToken || ! params.accountId || ! params.projectId ) {
