@@ -38,6 +38,7 @@ class CleanTalkWidgetDoboard {
             iconSpotPublic: SpotFixSVGLoader.getAsDataURI('iconSpotPublic'),
             iconSpotPrivate: SpotFixSVGLoader.getAsDataURI('iconSpotPrivate'),
             iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
+            iconLinkChainDark: SpotFixSVGLoader.getAsDataURI('iconLinkChainDark'),
             iconMute: SpotFixSVGLoader.getAsDataURI('iconMute'),
             iconHighlight: SpotFixSVGLoader.getAsDataURI('iconHighlight'),
             iconLockDark: SpotFixSVGLoader.getAsDataURI('iconLockDark'),
@@ -771,8 +772,8 @@ class CleanTalkWidgetDoboard {
                 if (tasks.length > 0) {
                     const currentURL = window.location.href;
                     const sortedTasks = tasks.sort((a, b) => {
-                        const aIsHere = JSON.parse(a.taskMeta).pageURL === currentURL ? 1 : 0;
-                        const bIsHere = JSON.parse(b.taskMeta).pageURL === currentURL ? 1 : 0;
+                        const aIsHere = JSON.parse(a.taskMeta)?.pageURL === currentURL ? 1 : 0;
+                        const bIsHere = JSON.parse(b.taskMeta)?.pageURL === currentURL ? 1 : 0;
                         return bIsHere - aIsHere;
                     });
 
@@ -795,7 +796,7 @@ class CleanTalkWidgetDoboard {
                                 taskData = null;
                             }
                         }
-                        const currentPageURL = taskData ? taskData.pageURL : '';
+                        const currentPageURL = taskData ? taskData?.pageURL : '';
                         let taskNodePath = ''; // nodePath need for only current page's spots
 
                         // Define publicity details
@@ -920,7 +921,10 @@ class CleanTalkWidgetDoboard {
 
             templateVariables.taskName = currentTask.taskTitle;
             templateVariables.taskType = currentTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicDark : this.srcVariables.iconLockDark;
-
+            templateVariables.doboardLink =
+                `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}?token=${currentTask.taskToken}`;
+            templateVariables.doboardLinkShort =
+                `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}`;
 
             const currentUserId = localStorage.getItem('spotfix_user_id') || 0;
 
@@ -995,14 +999,14 @@ class CleanTalkWidgetDoboard {
             let taskFormattedPageUrl = '';
 
             if (typeof meta?.pageURL === 'string'){
-                taskFormattedPageUrl = meta.pageURL.replace(window.location.origin, '');
+                taskFormattedPageUrl = meta?.pageURL?.replace(window.location.origin, '');
                 templateVariables.taskFormattedPageUrl = taskFormattedPageUrl.length < 2
-                    ? meta.pageURL.replace(/^https?:\/\//, '')
+                    ? meta?.pageURL?.replace(/^https?:\/\//, '')
                     : taskFormattedPageUrl;
             }
             const issueLinkElement = document.getElementById('spotfix_doboard_task_widget_url');
             if (issueLinkElement) {
-                issueLinkElement.innerHTML = `<a rel="nofollow" href="${meta.pageURL}">${templateVariables.taskFormattedPageUrl}</a>`;
+                issueLinkElement.innerHTML = `<a rel="nofollow" href="${meta?.pageURL}">${templateVariables.taskFormattedPageUrl}</a>`;
             }
 
             templateVariables.contenerClasess = +localStorage.getItem('maximize')
