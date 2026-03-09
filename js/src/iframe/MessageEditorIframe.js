@@ -86,6 +86,11 @@ class MessageEditorIframe {
         this.handlers = options.handlers || {};
         this.onReady = options.onReady;
 
+        const existingWrapper = document.querySelector('.spotfix-message-wrapper');
+        if (existingWrapper && existingWrapper.parentElement) {
+            existingWrapper.remove();
+        }
+
         this.iframe = document.createElement('iframe');
         this.iframe.id = 'spotfix-message-editor-iframe';
         this.iframe.className = 'spotfix-tinymce-iframe';
@@ -94,7 +99,7 @@ class MessageEditorIframe {
         const parent = targetElement.parentElement;
 
         this.wrapper = document.createElement('div');
-        this.wrapper.className = 'spotfix-tinymce-wrapper';
+        this.wrapper.className = 'spotfix-tinymce-wrapper spotfix-message-wrapper';
         this.wrapper.style.cssText = 'position: relative; width: 100%; flex-grow: 1;';
 
         targetElement.style.display = 'none';
@@ -119,7 +124,7 @@ class MessageEditorIframe {
 
             const timeout = setTimeout(function () {
                 reject(new Error('TinyMCE initialization timeout'));
-            }, 30000);
+            }, 10000);
 
             const messageHandler = function (event) {
                 if (event.data && event.data.type === 'spotfix:tinymce-ready' &&
