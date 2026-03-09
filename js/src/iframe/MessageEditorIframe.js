@@ -41,7 +41,7 @@ class MessageEditorIframe {
                 }
                 break;
             case 'spotfix:tinymce-change':
-                var targetElement = document.getElementById(this.targetId);
+                const targetElement = document.getElementById(this.targetId);
                 if (targetElement) {
                     targetElement.value = data.content;
                     targetElement.dispatchEvent(new Event('change', {bubbles: true}));
@@ -78,7 +78,7 @@ class MessageEditorIframe {
 
     async create(options) {
         options = options || {};
-        var targetElement = document.getElementById(this.targetId);
+        const targetElement = document.getElementById(this.targetId);
         if (!targetElement) {
             throw new Error('Target element with id "' + this.targetId + '" not found');
         }
@@ -91,7 +91,7 @@ class MessageEditorIframe {
         this.iframe.className = 'spotfix-tinymce-iframe';
         this.iframe.style.cssText = 'width: 100%; min-height: 107px; height: 107px; border: none; background: transparent;';
 
-        var parent = targetElement.parentElement;
+        const parent = targetElement.parentElement;
 
         this.wrapper = document.createElement('div');
         this.wrapper.className = 'spotfix-tinymce-wrapper';
@@ -102,12 +102,12 @@ class MessageEditorIframe {
         parent.insertBefore(this.wrapper, targetElement);
         this.wrapper.appendChild(this.iframe);
 
-        await this._initializeContent(options.savedContent || '');
+        await this.initializeContent(options.savedContent || '');
 
         return this.iframe;
     }
 
-    _initializeContent(savedContent) {
+    initializeContent(savedContent) {
         const self = this;
         return new Promise(function (resolve, reject) {
             const escapedContent = self.escapeHtml(savedContent);
@@ -121,7 +121,7 @@ class MessageEditorIframe {
                 reject(new Error('TinyMCE initialization timeout'));
             }, 30000);
 
-            var messageHandler = function (event) {
+            const messageHandler = function (event) {
                 if (event.data && event.data.type === 'spotfix:tinymce-ready' &&
                     event.data.source === 'spotfix-message-editor-iframe') {
                     clearTimeout(timeout);
@@ -213,9 +213,9 @@ class MessageEditorIframe {
                     setup: function(editor) {
                     editor.ui.registry.addButton("attachmentButton", { icon: "paperclip", tooltip: "Add file", onAction: function() { window.parent.postMessage({ type: "spotfix:tinymce-action", source: "spotfix-message-editor-iframe", action: "attachment", eventData: { type: "attachment" } }, "*"); } });
                     editor.ui.registry.addButton("screenshotButton", { icon: "screenshot", tooltip: "Screenshot", onAction: function() { window.parent.postMessage({ type: "spotfix:tinymce-action", source: "spotfix-message-editor-iframe", action: "screenshot", eventData: { type: "screenshot" } }, "*"); } });
-                    editor.ui.registry.addButton("sendCommentButton", { icon: "sendComment", tooltip: "Send comment", onAction: function() { var content = editor.getContent({ format: "html" }); window.parent.postMessage({ type: "spotfix:tinymce-action", source: "spotfix-message-editor-iframe", action: "sendComment", eventData: { type: "sendComment", content: content } }, "*"); } });
+                    editor.ui.registry.addButton("sendCommentButton", { icon: "sendComment", tooltip: "Send comment", onAction: function() { const content = editor.getContent({ format: "html" }); window.parent.postMessage({ type: "spotfix:tinymce-action", source: "spotfix-message-editor-iframe", action: "sendComment", eventData: { type: "sendComment", content: content } }, "*"); } });
                     editor.on("init", function() { if (savedContent && savedContent.trim() !== "") { editor.setContent(savedContent, { format: "html" }); editor.save(); } window.parent.postMessage({ type: "spotfix:tinymce-ready", source: "spotfix-message-editor-iframe" }, "*"); });
-                    editor.on("change", function() { var content = editor.getContent(); window.parent.postMessage({ type: "spotfix:tinymce-change", source: "spotfix-message-editor-iframe", content: content }, "*"); });
+                    editor.on("change", function() { const content = editor.getContent(); window.parent.postMessage({ type: "spotfix:tinymce-change", source: "spotfix-message-editor-iframe", content: content }, "*"); });
                     }
                     }).catch(function(error) { window.parent.postMessage({ type: "spotfix:tinymce-error", source: "spotfix-message-editor-iframe", error: error.message }, "*"); });
                     }
@@ -266,17 +266,17 @@ class MessageEditorIframe {
 
     getContent() {
         if (!this.iframe) return '';
-        var iframeWin = this.iframe.contentWindow;
+        const iframeWin = this.iframe.contentWindow;
         if (!iframeWin || !iframeWin.tinymce) return '';
-        var editor = iframeWin.tinymce.get('tinymce-editor');
+        const editor = iframeWin.tinymce.get('tinymce-editor');
         return editor ? editor.getContent() : '';
     }
 
     setContent(content) {
         if (!this.iframe) return;
-        var iframeWin = this.iframe.contentWindow;
+        const iframeWin = this.iframe.contentWindow;
         if (!iframeWin || !iframeWin.tinymce) return;
-        var editor = iframeWin.tinymce.get('tinymce-editor');
+        const editor = iframeWin.tinymce.get('tinymce-editor');
         if (editor) {
             editor.setContent(content);
         }
@@ -284,9 +284,9 @@ class MessageEditorIframe {
 
     focus() {
         if (!this.iframe) return;
-        var iframeWin = this.iframe.contentWindow;
+        const iframeWin = this.iframe.contentWindow;
         if (!iframeWin || !iframeWin.tinymce) return;
-        var editor = iframeWin.tinymce.get('tinymce-editor');
+        const editor = iframeWin.tinymce.get('tinymce-editor');
         if (editor) {
             editor.focus();
         }
@@ -295,7 +295,7 @@ class MessageEditorIframe {
     remove() {
         if (!this.iframe) return;
 
-        var targetElement = document.getElementById(this.targetId);
+        const targetElement = document.getElementById(this.targetId);
         if (targetElement) {
             targetElement.style.display = '';
         }
