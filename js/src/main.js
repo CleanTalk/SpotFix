@@ -190,6 +190,7 @@ function getTaskFullDetails(tasksDetails, taskId) {
         return comment?.taskId?.toString() === taskId?.toString()
     });
     const users = tasksDetails.users;
+    const attachments = tasksDetails.attachments || [];
     // Last comment
     let lastComment = comments.length > 0 ? comments[0] : null;
     // Author of the last comment
@@ -223,6 +224,11 @@ function getTaskFullDetails(tasksDetails, taskId) {
                 if (users && users.length > 0) {
                     author = users.find(u => String(u.user_id) === String(comment.userId));
                 }
+                // Get attachments for this comment
+                const commentAttachments = attachments
+                    .filter(att => String(att.commentId) === String(comment.commentId))
+                    .sort((a, b) => (a.attachmentOrder || 0) - (b.attachmentOrder || 0));
+                
                 return {
                     commentAuthorAvatarSrc: getAvatarSrc(author),
                     commentAuthorName: getAuthorName(author),
@@ -230,6 +236,7 @@ function getTaskFullDetails(tasksDetails, taskId) {
                     commentDate: date,
                     commentTime: time,
                     commentUserId: comment.userId || 'Unknown User',
+                    commentAttachments: commentAttachments,
                 };
             })
     };
@@ -369,7 +376,7 @@ function ksesFilter(html, options = false) {
         a: ['href', 'title', 'target', 'rel', 'style', 'class'],
         span: ['style', 'class', 'id'],
         p: ['style', 'class'],
-        div: ['style', 'class', 'id', 'data-node-path', 'data-task-id'],
+        div: ['style', 'class', 'id', 'data-node-path', 'data-task-id', 'data-attachment-url', 'data-is-image'],
         img: ['src', 'alt', 'title', 'class', 'style', 'width', 'height'],
         input: ['type', 'class', 'style', 'id', 'multiple', 'accept', 'value'],
         label: ['for', 'class', 'style'],
@@ -390,28 +397,7 @@ function ksesFilter(html, options = false) {
             const tag = node.tagName.toLowerCase();
 
             if (options) {
-                if (allowedTags[tag]) {
-                    // Special handling for images in 'concrete_issue_day_content' template (wrap img in link always)
-                    if (tag === 'img' && options.template === 'concrete_issue_day_content' && options.imgFilter) {
-                        const src = node.getAttribute('src') || '';
-                        const alt = node.getAttribute('alt') || '[image]';
-                        const link = doc.createElement('a');
-                        link.href = src;
-                        link.target = '_blank';
-                        link.className = 'doboard_task_widget-img-link';
-                        const img = doc.createElement('img');
-                        img.src = src;
-                        img.alt = alt;
-                        img.className = 'doboard_task_widget-comment_body-img-strict';
-                        link.appendChild(img);
-                        node.parentNode.insertBefore(link, node);
-                        node.remove();
-                        return;
-                    }
-                }
-
                 if (!allowedTags[tag]) {
-                    // Special handling for images in 'list_issues' template
                     if (tag === 'img' && options.template === 'list_issues' && options.imgFilter) {
                         const src = node.getAttribute('src') || '';
                         const alt = node.getAttribute('alt') || '[image]';
@@ -426,7 +412,6 @@ function ksesFilter(html, options = false) {
                 }
             }
 
-            // Remove disallowed attributes
             [...node.attributes].forEach(attr => {
                 const attrName = attr.name.toLowerCase();
                 if (!allowedAttrs[tag]?.includes(attrName) ||
@@ -436,7 +421,6 @@ function ksesFilter(html, options = false) {
                 }
             });
         }
-        // Recursively clean children
         [...node.childNodes].forEach(clean);
     }
     [...doc.body.childNodes].forEach(clean);
