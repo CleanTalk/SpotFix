@@ -456,7 +456,7 @@ class CleanTalkWidgetDoboard {
                     document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
                 }
                 const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
-                const email = localStorage.getItem('spotfix_email');
+                const email = getSpotfixEmail();
                 if (sessionIdExists && email && !email.includes('spotfix_')) {
                     const loginEl= document.querySelector('.doboard_task_widget-login');
                     loginEl?.classList?.add('doboard_task_widget-hidden');
@@ -583,7 +583,7 @@ class CleanTalkWidgetDoboard {
                     chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
                     buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
                     userName: 'Guest',
-                    email: localStorage.getItem('spotfix_email') || '',
+                    email: getSpotfixEmail() || '',
                     ...this.srcVariables};
                 break;
             case 'concrete_issue':
@@ -633,7 +633,7 @@ class CleanTalkWidgetDoboard {
                 // highlight selected item during task creation
                 const selection = window.getSelection();
                 const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
-                const email = localStorage.getItem('spotfix_email');
+                const email = getSpotfixEmail();
 
                 if (templateVariables.selectedText) {
                     document.querySelector('.spotfix_placeholder_title').style.display = 'none';
@@ -860,7 +860,7 @@ class CleanTalkWidgetDoboard {
 
                 if(user){
                     templateVariables.userName = user.name || 'Guest';
-                    templateVariables.email = user.email || localStorage.getItem('spotfix_email') || '';
+                    templateVariables.email = user.email || getSpotfixEmail() || '';
                     if(user?.avatar?.s) templateVariables.avatar = user?.avatar?.s;
                 }
 
@@ -1655,7 +1655,7 @@ async setUserMenuData() {
         if (userData && userData.email) {
             emailElement.innerText = userData.email;
         } else {
-            const email = localStorage.getItem('spotfix_email') || '';
+            const email = getSpotfixEmail() || '';
             emailElement.innerText = email.includes('spotfix_') ? '' : email;
         }
     }

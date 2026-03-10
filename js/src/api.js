@@ -221,7 +221,7 @@ const logoutUserDoboard = async (projectToken) => {
             session_id: sessionId,
         };
 
-        const email = localStorage.getItem('spotfix_email') || '';
+        const email = getSpotfixEmail() || '';
 
         if (email && email.includes('spotfix_')) {
             data.project_token = projectToken;

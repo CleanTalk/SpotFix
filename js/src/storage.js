@@ -197,3 +197,37 @@ function clearLocalstorageOnLogout () {
     localStorage.setItem('spotfix_widget_is_closed', '1');
     wsSpotfix.close();
 }
+
+
+/**
+ * Email validator for spotfix_email in localStorage
+ * @param {string} email 
+ * @returns {boolean} 
+ */
+function isValidSpotfixEmail(email) {
+    if (!email || typeof email !== 'string') return false;
+    if (email === 'undefined') return false;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+/**
+ * 
+ * @returns {string|null}
+ */
+function getSpotfixEmail() {
+    const email = getSpotfixEmail();
+    return isValidSpotfixEmail(email) ? email : null;
+}
+
+/**
+ * 
+ * @param {string} email 
+ */
+function setSpotfixEmail(email) {
+    if (isValidSpotfixEmail(email)) {
+        localStorage.setItem('spotfix_email', email);
+    } else {
+        localStorage.removeItem('spotfix_email');
+    }
+}

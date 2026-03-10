@@ -1,8 +1,8 @@
 
 async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
     const result = await spotFixUserConfirmEmailDoboard(emailConfirmationToken);
-    // Save session data to LS
-    localStorage.setItem('spotfix_email', result.email);
+    // Save session data to LS    
+    setSpotfixEmail(result.email);
     localStorage.setItem('spotfix_session_id', result.sessionId);
     localStorage.setItem('spotfix_user_id', result.userId);
     localStorage.setItem('spotfix_widget_is_closed', '0');
@@ -210,7 +210,10 @@ function registerUser(taskDetails) {
             } else if (response.sessionId) {
                 localStorage.setItem('spotfix_session_id', response.sessionId);
                 localStorage.setItem('spotfix_user_id', response.userId);
-                localStorage.setItem('spotfix_email', response.email);
+                setSpotfixEmail(response.email);
+                console.log('resultRegisterUser Accounts:', response.accounts);
+                console.log('resultRegisterUser Accounts JSON:', JSON.stringify(response.accounts));
+                
                 localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
                 spotfixIndexedDB.init();
                 localStorage.setItem('spotfix_widget_is_closed', '0');
@@ -250,7 +253,9 @@ function loginUser(taskDetails) {
             if (response.sessionId) {
                 localStorage.setItem('spotfix_session_id', response.sessionId);
                 localStorage.setItem('spotfix_user_id', response.userId);
-                localStorage.setItem('spotfix_email', userEmail);
+                setSpotfixEmail(userEmail);
+                console.log('loginUser Accounts:', response.accounts);
+                console.log('loginUser Accounts JSON:', JSON.stringify(response.accounts));
                 localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
                 checkLogInOutButtonsVisible();
                 localStorage.setItem('spotfix_widget_is_closed', '0');
