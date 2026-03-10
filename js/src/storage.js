@@ -216,7 +216,7 @@ function isValidSpotfixEmail(email) {
  * @returns {string|null}
  */
 function getSpotfixEmail() {
-    const email = getSpotfixEmail();
+    const email = localStorage.getItem('spotfix_email');
     return isValidSpotfixEmail(email) ? email : null;
 }
 

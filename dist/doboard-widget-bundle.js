@@ -8850,10 +8850,7 @@ function registerUser(taskDetails) {
             } else if (response.sessionId) {
                 localStorage.setItem('spotfix_session_id', response.sessionId);
                 localStorage.setItem('spotfix_user_id', response.userId);
-                setSpotfixEmail(response.email);
-                console.log('resultRegisterUser Accounts:', response.accounts);
-                console.log('resultRegisterUser Accounts JSON:', JSON.stringify(response.accounts));
-                
+                setSpotfixEmail(response.email);                
                 localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
                 spotfixIndexedDB.init();
                 localStorage.setItem('spotfix_widget_is_closed', '0');
@@ -8894,8 +8891,6 @@ function loginUser(taskDetails) {
                 localStorage.setItem('spotfix_session_id', response.sessionId);
                 localStorage.setItem('spotfix_user_id', response.userId);
                 setSpotfixEmail(userEmail);
-                console.log('loginUser Accounts:', response.accounts);
-                console.log('loginUser Accounts JSON:', JSON.stringify(response.accounts));
                 localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
                 checkLogInOutButtonsVisible();
                 localStorage.setItem('spotfix_widget_is_closed', '0');
@@ -8918,7 +8913,6 @@ function loginUser(taskDetails) {
 function forgotPassword(userEmail) {
     return (showMessageCallback) => forgotPasswordDoboard(userEmail)
         .then((response) => {
-            console.log('response ', response);
             if (response?.operation_status === 'SUCCESS') {
                 showMessageCallback('New password sent to email', 'notice');
                 const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
@@ -12256,7 +12250,7 @@ function isValidSpotfixEmail(email) {
  * @returns {string|null}
  */
 function getSpotfixEmail() {
-    const email = getSpotfixEmail();
+    const email = localStorage.getItem('spotfix_email');
     return isValidSpotfixEmail(email) ? email : null;
 }
 
