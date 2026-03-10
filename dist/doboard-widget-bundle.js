@@ -7830,16 +7830,18 @@
 //# sourceMappingURL=html2canvas.js.map
 
 const SPOTFIX_INDEXED_DB_NAME = 'spotfix-localDB';
-const spotfixIndexedDBVersion = 1;
+const spotfixIndexedDBVersion = 2;
 
 const SPOTFIX_TABLE_USERS = 'users';
 const SPOTFIX_TABLE_TASKS = 'tasks';
 const SPOTFIX_TABLE_COMMENTS = 'comments';
+const SPOTFIX_TABLE_ATTACHMENT = 'attachment';
 
 const LOCAL_DATA_BASE_TABLE = [
     { name: SPOTFIX_TABLE_USERS, keyPath: 'user_id' },
     { name: SPOTFIX_TABLE_TASKS, keyPath: 'taskId' },
     { name: SPOTFIX_TABLE_COMMENTS, keyPath: 'commentId' },
+    { name: SPOTFIX_TABLE_ATTACHMENT, keyPath: 'attachmentId' },
 ];
 
 const SPOTFIX_LAST_DB_KEY = 'spotfix_last_db_key';
@@ -8002,7 +8004,7 @@ const spotfixIndexedDB = {
     },
 };
 
-let spotFixCSS = `.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after{content:"";position:absolute;left:8%;top:100%;transform:translateX(-50%);pointer-events:none;background:0 0}.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after{border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid #545b61;display:block}.doboard_task_widget-send_message_paperclip{position:relative}.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip{display:none;position:absolute;left:0;bottom:0;transform:translateX(-3%) translateY(-43px);background:#545b61;color:#fff;border:none;border-radius:3px;padding:10px 16px;font-size:13px;line-height:1.4;z-index:100;min-width:220px;max-width:320px;text-align:left;pointer-events:none;text-transform:none}.doboard_task_widget-send_message_paperclip:hover .doboard_task_widget-paperclip-tooltip{display:block}.doboard_task_widget *{font-family:Inter,sans-serif;font-weight:400;font-size:14px;line-height:130%;color:#40484f}.doboard_task_widget-header *{color:#252a2f;margin:0}.doboard_task_widget-header-icons{display:flex;gap:12px}.doboard_task_widget-close_btn{transform:translateY(-2px)}#openUserMenuButton{transform:scale(.85)}#maximizeWidgetContainer{transform:scale(.8)}.doboard_task_widget a{text-decoration:underline;color:#2f68b7}.doboard_task_widget a:hover{text-decoration:none}.doboard_task_widget{position:fixed;right:50px;bottom:20px;z-index:9999;vertical-align:middle;transition:top .1s;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}.doboard_task_widget_cursor-pointer{cursor:pointer}.doboard_task_widget-container-maximize .doboard_task_widget-field{display:flex;justify-content:space-evenly;flex-wrap:wrap}.doboard_task_widget-input-container-textarea .tox-tinymce{position:absolute}.doboard_task_widget-container-maximize{width:80vw!important;max-width:1120px!important;max-height:75vh!important;min-height:75vh!important;display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-container{width:430px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-header{display:flex;min-height:41px;padding:0 16px;background-color:#f3f6f9;border-radius:8px 8px 0 0;border:1px solid #bbc7d1;border-bottom:none;justify-content:space-between;align-items:center;color:#fff}.doboard_task_widget-user_menu-header{display:flex;padding:16px 16px;border:1px #bbc7d1 solid;border-bottom-color:#ebf0f4;border-radius:8px 8px 0 0;flex-direction:column;align-items:center;color:#252a2f;background-color:#f3f6f9}.doboard_task_widget-user_menu-header-top{display:flex;height:fit-content;align-items:center;width:100%;justify-content:space-between}.doboard_task_widget-user_menu-header-avatar{max-width:60px;max-height:60px;width:60px;height:60px;border-radius:50%;margin-bottom:4px}.doboard_task_widget-user_menu-item{display:flex;align-items:center;border-bottom:1px #ebf0f4 solid;padding:0 16px;height:52px}.doboard_task_widget-content{flex:1;overflow-y:auto;background:#fff;border-radius:0 0 8px 8px;border:1px;border-style:none solid solid solid;border-color:#bbc7d1;box-shadow:0 4px 15px 8px #cacACA40;scrollbar-width:none;max-height:60vh}.doboard_task_widget-container-maximize .doboard_task_widget-content{max-height:inherit}.doboard_task_widget-element-container{margin-bottom:16px}.doboard_task_widget-element-container span{color:#707a83;font-size:12px;font-weight:400}.doboard_task_widget-wrap{box-shadow:none;position:fixed;right:-50px;padding:0;cursor:pointer;width:69px;height:52px;border-top-left-radius:4px;border-bottom-left-radius:4px;background-color:rgba(255,255,255,.9);border:1px #ebf0f4 solid;display:flex;align-items:center;justify-content:center}.doboard_task_widget-wrap img{width:32px;height:32px;transform:scaleX(-1)}.doboard_task_widget-wrap.hidden{display:none}.wrap_review{width:164px;min-width:164px;height:54px}.wrap_review img{width:28px;height:28px;transform:scaleX(-1)}.wrap_review:hover{background-color:#fff}@media (max-width:480px){.doboard_task_widget-wrap{right:-20px}}#review_content_button_text{color:#d5991a;margin-left:6px;font-weight:600;font-size:14px;text-transform:none!important}.wrap_review::after{display:none}#doboard_task_widget-task_count{position:absolute;top:-12px;right:4px;width:22px;height:22px;opacity:1;background:#ef8b43;border-radius:50%;color:#fff;text-align:center;line-height:22px}#doboard_task_widget-task_count.hidden{width:0;height:0;opacity:0}.doboard_task_widget-input-container{position:relative;margin-bottom:6px}.doboard_task_widget-hidden,.doboard_task_widget-input-container.hidden{display:none}.doboard_task_widget-input-container .doboard_task_widget-field{padding:0 8px;border-radius:4px;border:1px solid #bbc7d1;outline:0!important;appearance:none;width:100%;height:40px;background:#fff;color:#000;max-width:-webkit-fill-available;max-width:-moz-available}.doboard_task_widget-field:focus{border-color:#2f68b7}.doboard_task_widget-input-container textarea.doboard_task_widget-field{min-height:94px;padding-top:11px;padding-bottom:11px}.doboard_task_widget-field+label{color:#252a2f;background:#fff;position:absolute;top:20px;left:8px;transform:translateY(-50%);transition:all .2s ease-in-out}.doboard_task_widget-field.has-value+label,.doboard_task_widget-field:focus+label{font-size:10px;top:0;left:12px;padding:0 4px;z-index:5}.doboard_task_widget-field:focus+label{color:#2f68b7}.doboard_task_widget-login{border:1px solid #bbc7d1;border-radius:4px;padding:11px 8px 8px 8px}.doboard_task_widget-login.hidden{display:none}.doboard_task_widget-login .doboard_task_widget-accordion{height:0;overflow:hidden;opacity:0;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-accordion{height:auto;overflow:visible;opacity:1}.doboard_task_widget-accordion i{font-size:12px}.doboard_task_widget-login .doboard_task_widget-input-container:last-child{margin-bottom:0}.doboard_task_widget-login .doboard_task_widget-login-icon{display:block;position:relative;padding-right:24px;cursor:pointer}.doboard_task_widget-login.active .doboard_task_widget-login-icon{margin-bottom:24px}.doboard_task_widget-login .doboard_task_widget-login-icon::after{position:absolute;top:0;right:4px;content:"";display:block;width:10px;height:10px;transform:rotate(45deg);border:2px solid #40484f;border-radius:1px;border-top:none;border-left:none;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-login-icon::after{transform:rotate(-135deg);top:7px}.doboard_task_widget-login .doboard_task_widget-field+label,.doboard_task_widget-login .doboard_task_widget-input-container .doboard_task_widget-field{background:#f9fbfd}.doboard_task_widget-submit_button{min-height:48px;width:100%;max-width:400px;margin-bottom:10px;border-radius:6px;font-family:Inter,sans-serif;font-size:16px;line-height:150%;cursor:pointer;transition:all .2s ease-in-out;background:0 0;border:1px solid #22a475;color:#22a475;font-weight:600}.doboard_task_widget-submit_button:hover{background:#22a475;color:#fff}.doboard_task_widget-submit_button:disabled{background:rgba(117,148,138,.92);color:#fff;cursor:wait}.doboard_task_widget-login-buttons-wrapper{display:flex;gap:10px;margin-bottom:10px}.doboard_task_widget-login-buttons-wrapper .doboard_task_widget-submit_button{margin-bottom:0;width:auto;min-height:32px;font-size:14px;padding:4px 12px}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-forgot_password-black,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-on_phantom_login_page{flex:1;background:#fff;border:1px solid #22a475;color:#22a475}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-forgot_password-black:hover,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-on_phantom_login_page:hover{background:#f0fdf4;color:#1c7857}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-login_button,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-restore_password_button{flex:2}.doboard_task_widget-issue-title{display:inline-flex;flex-direction:column;transform:translateY(-2px);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-issue-title>:last-child{color:#707a83;text-align:center;font-size:10px;font-weight:400}.doboard_task_widget-hidden_element{opacity:0}.doboard_task_widget-message-wrapper{border-radius:4px;padding:8px;margin-bottom:14px;display:grid;justify-items:center}.doboard_task_widget-message-wrapper.hidden{display:none}.doboard_task_widget-error_message{background:#fdd;border:1px solid #cf6868}.doboard_task_widget-notice_message{background:#dde9ff;border:1px solid #68a6cf}.doboard_task_widget-error_message-wrapper.hidden{display:none}#doboard_task_widget-error_message-header{font-weight:600}#doboard_task_widget-error_message{text-align:center}.doboard_task_widget-task_row{display:flex;max-height:67px;cursor:pointer;align-items:center;justify-content:space-between;padding:0 15px;margin-bottom:4px;margin-top:4px}.doboard_task_widget-task_row:last-child{margin-bottom:0}.doboard_task_widget-task-text_bold{font-weight:700}.doboard_task_widget-element_selection,.doboard_task_widget-image_selection,.doboard_task_widget-text_selection,.doboard_task_widget-text_selection.image-highlight>img{background:rgba(208,213,127,.68)}.doboard_task_widget-issues_list_empty{text-align:center;margin:20px 0}.doboard_task_widget-avatar_container{display:flex;height:44px;width:44px;border-radius:50%;background-repeat:no-repeat;background-position:center;background-size:100%}.doboard_task_widget-comment_data_owner .doboard_task_widget-avatar_container{opacity:0}.doboard_task_widget-avatar_placeholder{min-height:44px;min-width:44px;border-radius:50%;font-size:24px;line-height:1.2083333333;padding:0;background:#1c7857;display:inline-grid;align-content:center;justify-content:center}.doboard_task_widget-avatar-initials{color:#fff;width:inherit;text-align:center}.doboard_task_widget-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover}.doboard_task_widget-description_container{height:55px;width:calc(100% - 44px - 8px);border-bottom:1px solid #ebf0f4;display:block;margin-left:8px;padding-bottom:6px;padding-top:4px}.doboard_task_widget-task_row:last-child .doboard_task_widget-description_container{border-bottom:none}.doboard_task_widget-all_issues{padding-bottom:0}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{overflow:auto;max-height:85vh;display:none}.doboard_task_widget-all_issues-container{scrollbar-width:none;margin-top:10px;min-height:60vh}.doboard_task_widget-content.doboard_task_widget-concrete_issue{padding:0;display:flex;flex-direction:column}.doboard_task_widget-concrete_issues-container{padding:10px 16px 5px;flex-grow:1}.doboard_task_widget-all_issues-container::-webkit-scrollbar,.doboard_task_widget-all_issues::-webkit-scrollbar,.doboard_task_widget-concrete_issues-container::-webkit-scrollbar,.doboard_task_widget-content::-webkit-scrollbar{width:0}.doboard_task_widget-task_title{font-weight:700;display:flex;justify-content:space-between;align-items:center}.doboard_task_widget-task_title span{font-weight:700;display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-task_title-details{display:flex;max-width:calc(100% - 65px);align-items:center}.doboard_task_widget-task_title-unread_block{opacity:0;height:8px;width:8px;background:#f08c43;border-radius:50%;display:inline-block;font-size:8px;font-weight:600;position:relative}.doboard_task_widget-task_title-unread_block.unread{opacity:1}.doboard_task_widget-task_last_message{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:85%;height:36px}.doboard_task_widget-task_page_url{max-width:70%;height:30px;display:flex;align-items:flex-end}.doboard_task_widget-task_page_url a{color:#40484f;text-decoration:none;margin-left:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.doboard_task_widget-bottom{display:flex;justify-content:space-between;align-items:flex-end}.doboard_task_widget-bottom-is-fixed{border-radius:10px;background-size:14px 14px;background:#ebfaf4 url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkiIGhlaWdodD0iMTkiIHZpZXdCb3g9IjAgMCAxOSAxOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCjxwYXRoIGQ9Ik03LjA4MTE5IDAuMjIzNDM0QzguOTkxNjkgLTAuMjA4MTY3IDEwLjk5MTMgLTAuMDExMjE5NCAxMi43ODA0IDAuNzg1OTM0QzEzLjE1ODQgMC45NTQ2MjQgMTMuMzI4NiAxLjM5ODAzIDEzLjE2MDMgMS43NzYxN0MxMi45OTE3IDIuMTU0MTkgMTIuNTQ4MiAyLjMyNDI0IDEyLjE3MDEgMi4xNTYwNUMxMC42NzY0IDEuNDkwNTIgOS4wMDcyNiAxLjMyNiA3LjQxMjI1IDEuNjg2MzJDNS44MTcxNyAyLjA0NjcxIDQuMzgwOTcgMi45MTI5NiAzLjMxODUgNC4xNTYwNUMyLjI1NjIzIDUuMzk5MDEgMS42MjQ0MSA2Ljk1MjI5IDEuNTE2NzQgOC41ODM3OUMxLjQwOTI0IDEwLjIxNTQgMS44MzE4NCAxMS44MzkgMi43MjE4MiAxMy4yMTA3QzMuNjExNzkgMTQuNTgyMiA0LjkyMTY0IDE1LjYyOTQgNi40NTUyMSAxNi4xOTYxQzcuOTg5MDIgMTYuNzYyNiA5LjY2NTUzIDE2LjgxODkgMTEuMjMzNSAxNi4zNTUzQzEyLjgwMTYgMTUuODkxNiAxNC4xNzgzIDE0LjkzMzUgMTUuMTU3NCAxMy42MjM4QzE2LjEzNjQgMTIuMzE0MiAxNi42NjYxIDEwLjcyMjcgMTYuNjY3MSA5LjA4NzY5TDE4LjE2NzEgOS4wODg2N0MxOC4xNjU4IDExLjA0NzEgMTcuNTMxMiAxMi45NTM2IDE2LjM1ODUgMTQuNTIyM0MxNS4xODU5IDE2LjA5MDcgMTMuNTM3MyAxNy4yMzg0IDExLjY1OTMgMTcuNzkzN0M5Ljc4MTEgMTguMzQ5MSA3Ljc3MjkzIDE4LjI4MiA1LjkzNTY4IDE3LjYwMzNDNC4wOTg1IDE2LjkyNDYgMi41MjkxMiAxNS42NzAxIDEuNDYzMDMgMTQuMDI3MUMwLjM5NzAzNSAxMi4zODQxIC0wLjEwOTEwOSAxMC40Mzk1IDAuMDE5NjY4MyA4LjQ4NTE1QzAuMTQ4NjA3IDYuNTMwOCAwLjkwNjMyMyA0LjY3MDMzIDIuMTc4ODUgMy4xODE0NEMzLjQ1MTM2IDEuNjkyNjggNS4xNzA4OCAwLjY1NTE2MiA3LjA4MTE5IDAuMjIzNDM0WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPHBhdGggZD0iTTE2Ljg4NTkgMS44OTA0M0MxNy4xNzg2IDEuNTk3NTMgMTcuNjUzNCAxLjU5Nzg0IDE3Ljk0NjQgMS44OTA0M0MxOC4yMzkzIDIuMTgzMTYgMTguMjQwMSAyLjY1Nzk2IDE3Ljk0NzQgMi45NTA5N0w5LjYxMzQyIDExLjI5MjhDOS40NzI4MiAxMS40MzMzIDkuMjgxOTYgMTEuNTEyNCA5LjA4MzE1IDExLjUxMjVDOC44ODQzMiAxMS41MTI1IDguNjkzNDggMTEuNDMzMyA4LjU1Mjg3IDExLjI5MjhMNi4wNTI4NyA4Ljc5Mjc3QzUuNzYwMTQgOC40OTk5IDUuNzYwMTEgOC4wMjUwOCA2LjA1Mjg3IDcuNzMyMjJDNi4zNDU3MiA3LjQzOTM3IDYuODIwNTEgNy40Mzk0NiA3LjExMzQyIDcuNzMyMjJMOS4wODIxNyA5LjcwMDk3TDE2Ljg4NTkgMS44OTA0M1oiIGZpbGw9IiMyMkE0NzUiLz4NCjxwYXRoIGQ9Ik0xNy40MTcxIDcuNTcxMDlDMTcuODMxIDcuNTcxNDQgMTguMTY3IDcuOTA3MTYgMTguMTY3MSA4LjMyMTA5VjkuMDg4NjdMMTcuNDE3MSA5LjA4NzY5SDE2LjY2NzFWOC4zMjEwOUMxNi42NjcyIDcuOTA2OTQgMTcuMDAzIDcuNTcxMDkgMTcuNDE3MSA3LjU3MTA5WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPC9zdmc+) no-repeat 8px center;padding:4px 7px 4px 30px}.doboard_task_widget-bottom-is-fixed-task-block{text-align:center}.doboard_task_widget-bottom-is-fixed-task{background:#f3f6f9;color:#1c7857;display:inline-block;border-radius:10px;padding:5px 8px;margin:0 auto}.doboard_task_widget-task_row-green{background:#ebf0f4}.doboard_task_widget-task_row-green .doboard_task_widget-description_container{border-bottom:1px solid #e5e5e5}.doboard_task_widget_return_to_all{display:flex;gap:8px;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:wrap}.doboard_task_widget-task_title-last_update_time{font-family:Inter,serif;font-weight:400;font-style:normal;font-size:11px;leading-trim:NONE;line-height:100%}.doboard_task_widget-task_title_public_status_img{opacity:50%;margin-left:5px;scale:90%}.doboard_task_widget-description-textarea{resize:none}.doboard_task_widget-switch_row{display:flex;align-items:center;gap:12px;margin:16px 0;justify-content:space-between}.doboard_task_widget-switch-label{font-weight:600;font-size:16px;height:24px;align-content:center}.doboard_task_widget-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}.doboard_task_widget-switch input{opacity:0;width:0;height:0}.doboard_task_widget-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;border-radius:24px;transition:.2s}.doboard_task_widget-slider:before{position:absolute;content:"";height:20px;width:20px;left:2px;bottom:2px;background-color:#fff;border-radius:50%;transition:.2s}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider{background-color:#65d4ac}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider:before{transform:translateX(20px)}.doboard_task_widget-switch-img{width:24px;height:24px;flex-shrink:0}.doboard_task_widget-switch-center{display:flex;gap:2px;flex-direction:column;-moz-flex-direction:column;flex:1 1 auto;min-width:0}.doboard_task_widget-switch-desc{display:block;font-size:12px;color:#707a83;margin:0;line-height:1.2;max-width:180px;word-break:break-word}.doboard_task_widget-concrete_issue-day_content{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-concrete_issue_day_content-month_day{text-align:center;font-weight:400;font-size:12px;line-height:100%;padding:8px;opacity:.75}.doboard_task_widget-concrete_issue_day_content-messages_wrapper{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-comment_data_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;margin-bottom:15px;align-items:flex-end}.doboard_task_widget-comment_text_container{position:relative;width:calc(100% - 44px - 5px);height:auto;margin-left:5px;background:#f3f6f9;border-radius:16px}.doboard_task_widget-comment_text_container:after{content:"";position:absolute;bottom:0;left:-5px;width:13px;height:19px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAxMyAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAuMTEyNTggMTkuMDMzNEM1LjI5NDg2IDE5LjgyMDEgMTAuNjEwNSAxNy45NzQxIDEyLjI3MTUgMTYuMTcxM0MxMi4yNzE1IDE2LjE3MTMgMTAuOTYyMyAtMi43ODEyNCA1LjA5NTU0IDAuMzQ5MDc5QzUuMDc0NCAxLjYxNDU0IDUuMDk1NTQgNS45OTQ5IDUuMDk1NTQgNi43NDA2OUM1LjA5NTU0IDE3LjA2NjIgLTAuODg0MDEyIDE4LjQ0MDEgMC4xMTI1OCAxOS4wMzM0WiIgZmlsbD0iI0YzRjZGOSIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container{background:#ebfaf4}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container:after{left:auto;right:-5px;height:13px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMyAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjc3NzEgMTIuMzA2NkM3LjMzMTM1IDEzLjA5MzcgMS43NDU0NCAxMS4yNDY5IDAgOS40NDMxOUw3LjM5MTYgMEM3LjM5MTYgMTAuMzMwMyAxMy44MjQ0IDExLjcxMzEgMTIuNzc3MSAxMi4zMDY2WiIgZmlsbD0iI0VCRkFGNCIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_body,.doboard_task_widget-comment_time{position:relative;z-index:1}.doboard_task_widget-comment_body{padding:6px 8px;min-height:30px}.doboard_task_widget-comment_body strong{font-variation-settings:"wght" 700}.doboard_task_widget-comment_body blockquote{margin:0;border-left:3px solid #22a475}.doboard_task_widget-comment_body blockquote p{margin:0 10px}.doboard_task_widget-comment_body details .mce-accordion-body{padding-left:20px}.doboard_task_widget-comment_body details .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg transform='rotate(180 0 0)' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") no-repeat 0;padding-left:20px}.doboard_task_widget-comment_body .mce-accordion[open] .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") no-repeat 0}.doboard_task_widget-comment_body details .mce-accordion-summary::marker{content:""}.doboard_task_widget-comment_body pre{border:1px solid #d6dde3;border-left-width:8px;border-radius:4px;padding:13px 16px 14px 12px;white-space:pre-wrap}.doboard_task_widget-comment_time{font-weight:400;font-size:11px;opacity:.8;position:absolute;bottom:6px;right:6px}.doboard_task_widget-comment_body-img-strict{max-width:-webkit-fill-available;height:100px;margin-right:5px}.doboard_task_widget-send_message{border-top:1px solid #bbc7d1;position:sticky;background:#fff;bottom:0;z-index:4}.doboard_task_widget-send_message_elements_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:nowrap;justify-content:space-between;align-items:end}.doboard_task_widget-send_message_elements_wrapper img{margin:0}.doboard_task_widget-send_message_input_wrapper{position:relative;display:inline-grid;align-items:center;justify-items:center;flex-grow:1;padding:0 6px}.doboard_task_widget-send_message_input_wrapper textarea{position:relative;width:100%;height:37px;border:none;outline:0;box-shadow:none;border-radius:24px;background:#f3f6f9;resize:none;margin-bottom:0!important;transition:height .2s ease-in-out;padding:8px;box-sizing:border-box}.doboard_task_widget-send_message_input_wrapper textarea.high{height:170px}.doboard_task_widget-send_message_input_wrapper textarea:focus{background:#f3f6f9;border-color:#007bff;outline:0}.doboard_task_widget-send_message_button{display:inline-grid;border:none;cursor:pointer;padding:0;width:100%;align-items:center;margin:20px 0 0 0}.doboard_task_widget-send_message_paperclip{display:inline-grid;border:none;background:0 0;cursor:pointer;padding:0;align-items:center;margin:0}.doboard_task_widget-send_message_button:hover,.doboard_task_widget-send_message_paperclip:hover rect{fill:#45a049}.doboard_task_widget-send_message_button:active,.doboard_task_widget-send_message_paperclip:active{transform:scale(.98)}.doboard_task_widget-spinner_wrapper_for_containers{display:flex;justify-content:center;align-items:center;min-height:60px;width:100%}.spotfix_doboard_task_widget_url{background-color:#d6dde3;padding:12px 16px;display:none}.doboard_task_widget-spinner_for_containers{width:40px;height:40px;border-radius:50%;background:conic-gradient(transparent,#1c7857);mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#fff 0);animation:spin 1s linear infinite}.doboard_task_widget-create_issue{padding:10px}.doboard_task_widget__file-upload__wrapper{display:none;border:1px solid #bbc7d1;margin-top:14px;padding:0 10px 10px;border-radius:4px}.doboard_task_widget__file-upload__list-header{text-align:left;font-size:.9em;margin:5px 0;color:#444c529e}.doboard_task_widget__file-upload__file-input-button{display:none}.doboard_task_widget__file-upload__file-list{border:1px solid #ddd;border-radius:5px;padding:6px;max-height:200px;overflow-y:auto;background:#f3f6f9}.doboard_task_widget__file-upload__file-item{display:flex;justify-content:space-between;align-items:center;padding:4px;border-bottom:1px solid #bbc7d16b}.doboard_task_widget__file-upload__file-item:last-child{border-bottom:none}.doboard_task_widget__file-upload__file_info{display:inline-flex;align-items:center}.doboard_task_widget__file-upload__file-name{font-weight:700;font-size:.9em}.doboard_task_widget__file-upload__file-item-content{width:100%}.doboard_task_widget__file-upload__file_size{color:#666;font-size:.8em;margin-left:6px}.doboard_task_widget__file-upload__remove-btn{background:#22a475;color:#fff;border:none;border-radius:3px;cursor:pointer}.doboard_task_widget__file-upload__error{display:block;margin:7px 0 0;padding:7px;border-radius:4px;background:#fdd;border:1px solid #cf6868}.doboard_task_widget-show_button{position:fixed;background:#1c7857;color:#fff;padding:8px 12px;border-radius:4px;font-size:14px;z-index:10000;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);transform:translate(-50%,-100%);margin-top:-8px;white-space:nowrap;border:none;font-family:inherit}@keyframes spin{to{transform:rotate(1turn)}}@media (max-width:480px){.doboard_task_widget{position:fixed;right:0;top:auto;bottom:0;margin:0 20px 20px;box-sizing:border-box;transform:translateZ(0);-moz-transform:translateZ(0);will-change:transform;max-height:90vh}.doboard_task_widget-header{padding:8px}.doboard_task_widget-issue-title{max-width:70px}.doboard_task_widget-container{width:100%;max-width:290px;min-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-container-maximize{width:100%;max-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-content{height:auto;max-height:100%;min-height:100%;scrollbar-width:none}.doboard_task_widget-content::-webkit-scrollbar{display:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{max-height:80vh}}@supports (-webkit-overflow-scrolling:touch){.doboard_task_widget{position:fixed}}.doboard_task_widget_tasks_list{background-color:#fff;position:sticky;bottom:0;height:38px;display:flex;flex-direction:column-reverse;align-items:center;padding-bottom:8px}#doboard_task_widget-user_menu-logout_button{display:inline-flex;align-items:center}.doboard_task_widget-text_selection{position:relative;display:inline-block}.doboard_task_widget-see-task{cursor:pointer;text-decoration:underline}.doboard_task_widget-text_selection_tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:4px 8px;border-radius:4px;font-size:10px;white-space:nowrap;z-index:9000;border:1px solid #bbc7d1;margin-bottom:8px}.doboard_task_widget-text_selection_tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#fff}.doboard_task_widget-text_selection_tooltip::before{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#bbc7d1;z-index:-1}.doboard_task_widget-text_selection_tooltip_icon{background-image:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDEwMyAxMDAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDEwMyAxMDA7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtmaWxsOiMxNzcyNTA7fQ0KPC9zdHlsZT4NCjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik01MywwSDB2MTAwaDMwLjJINTNDMTE5LjYsMTAwLDExOS42LDAsNTMsMHogTTMwLjIsMTAwYy0xNi42LDAtMzAtMTMuNC0zMC0zMHMxMy40LTMwLDMwLTMwDQoJYzE2LjYsMCwzMCwxMy40LDMwLDMwUzQ2LjgsMTAwLDMwLjIsMTAweiIvPg0KPC9zdmc+DQo=);background-repeat:no-repeat;width:22px;height:22px;margin:5px 3px}.doboard_task_widget-text_selection_tooltip_element{display:flex;justify-content:space-between}.doboard_task_widget-content .tox .tox-toolbar__group{padding:0 8px!important}.doboard_task_widget-spotfix-editor .tox-tinymce{border:none!important}.doboard_task_widget-content .tox-tinymce{border:1px solid #bbc7d1;border-radius:4px}.doboard_task_widget-content ol,.doboard_task_widget-content ul{margin:0 0 0 1em!important}.toggle{position:relative;display:inline-block;width:46px;min-width:46px;height:20px}.toggle input{opacity:0;width:0;height:0;position:absolute}.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#d6dde3;border-radius:24px;transition:.3s;height:14px;width:37px}.slider:before{content:"";position:absolute;height:20px;width:20px;top:-3px;left:-2px;background-color:#fff;border-radius:50%;transition:.3s;box-shadow:0 0 4px rgba(0,0,0,.21)}input:checked+.slider{background-color:#65d4AC80}input:checked+.slider:before{transform:translateX(20px);box-shadow:none;background-color:#65d4ac}.logout_button{font-weight:500;font-size:14px;color:#707a83;cursor:pointer}.doboard_task_widget-forgot_password,.doboard_task_widget-on_phantom_login_page,.doboard_task_widget-show_login_form{display:inline-block;cursor:pointer;color:#2f68b7;margin-bottom:0}.doboard_task_widget-forgot_password{margin-bottom:20px}.doboard_task_widget-login-is-invalid{color:red}.doboard_task_widget-forgot_password_form-menu,.doboard_task_widget-input-container-login-menu{margin:20px}.doboard_task_widget-bottom-eye-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:20px;height:20px;background:#fff url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgMjAgMjAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDIwIDIwOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8cGF0aCBkPSJNMTAsMTcuNGMtNi4yLDAtOS43LTYuOC05LjgtNy4xYy0wLjEtMC4yLTAuMS0wLjUsMC0wLjdDMC4zLDkuNCwzLjgsMi42LDEwLDIuNmM2LjIsMCw5LjcsNi44LDkuOCw3LjENCgljMC4xLDAuMiwwLjEsMC41LDAsMC43QzE5LjcsMTAuNiwxNi4yLDE3LjQsMTAsMTcuNHogTTEuNywxMGMwLjgsMS4zLDMuNyw1LjksOC4zLDUuOWM0LjYsMCw3LjYtNC42LDguMy01LjkNCgljLTAuOC0xLjMtMy43LTUuOS04LjMtNS45QzUuNCw0LjEsMi40LDguNywxLjcsMTB6IE0xMCwxMy4zYy0xLjgsMC0zLjMtMS41LTMuMy0zLjNTOC4yLDYuOCwxMCw2LjhzMy4zLDEuNSwzLjMsMy4zDQoJUzExLjgsMTMuMywxMCwxMy4zeiBNMTAsOC4zQzksOC4zLDguMyw5LDguMywxMFM5LDExLjgsMTAsMTEuOHMxLjgtMC44LDEuOC0xLjhTMTEsOC4zLDEwLDguM3oiLz4NCjwvc3ZnPg0K) no-repeat center center;background-size:16px 16px;cursor:pointer;border-radius:50%;transition:all .2s ease;z-index:10}.doboard_task_widget-bottom-eye-off-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:20px;height:20px;background:#fff url(data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDIwIDIwIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAyMCAyMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggY2xhc3M9InN0MCIgZD0iTTE2LjgsMTMuMmMwLjEsMC4xLDAuMywwLjIsMC41LDAuMmMwLDAsMCwwLDAsMGMwLjIsMCwwLjQtMC4xLDAuNS0wLjNjMC43LTAuOSwxLjQtMS44LDEuOS0yLjgNCgljMC4xLTAuMiwwLjEtMC41LDAtMC43Yy0wLjEtMC4zLTMuNi03LjEtOS44LTcuMWMwLDAsMCwwLDAsMGMtMC42LDAtMS4zLDAuMS0xLjksMC4yQzcuOCwyLjksNy42LDMuMSw3LjUsMy4zczAsMC41LDAuMiwwLjcNCglMMTYuOCwxMy4yeiBNMTAsNC4xYzQuNiwwLDcuNiw0LjYsOC4zLDUuOWMtMC4zLDAuNS0wLjYsMS0xLDEuNUw5LjksNC4xQzkuOSw0LjEsMTAsNC4xLDEwLDQuMXogTTE5LjcsMTguNmwtNC4yLTQuMkw1LjYsNC41DQoJYzAsMCwwLDAsMCwwTDEuNCwwLjNDMS4xLDAsMC42LDAsMC4zLDAuM1MwLDEuMSwwLjMsMS40TDMuOSw1QzIuNCw2LjMsMS4xLDcuOSwwLjIsOS42Yy0wLjEsMC4yLTAuMSwwLjUsMCwwLjcNCgljMC4xLDAuMywzLjYsNy4xLDkuOSw3LjFjMS43LDAsMy40LTAuNSw0LjktMS41bDMuOCwzLjhjMC4xLDAuMSwwLjMsMC4yLDAuNSwwLjJzMC40LTAuMSwwLjUtMC4yQzIwLDE5LjQsMjAsMTguOSwxOS43LDE4LjZ6DQoJIE04LjMsOS40bDIuMywyLjNjLTAuMiwwLjEtMC40LDAuMS0wLjYsMC4xYy0wLjIsMC0wLjUsMC0wLjctMC4xYy0wLjItMC4xLTAuNC0wLjItMC42LTAuNGMtMC4yLTAuMi0wLjMtMC40LTAuNC0wLjYNCgljLTAuMS0wLjItMC4xLTAuNS0wLjEtMC43QzguMiw5LjgsOC4yLDkuNiw4LjMsOS40eiBNMTAsMTUuOWMtNC42LDAtNy42LTQuNi04LjMtNS45YzAuOS0xLjUsMi0yLjgsMy4zLTMuOWwyLjIsMi4yDQoJQzcuMSw4LjQsNyw4LjYsNyw4LjdDNi44LDkuMSw2LjcsOS42LDYuNywxMGMwLDAuNCwwLjEsMC45LDAuMiwxLjNjMC4yLDAuNCwwLjQsMC44LDAuNywxLjFjMC4zLDAuMywwLjcsMC42LDEuMSwwLjcNCgljMC40LDAuMiwwLjgsMC4yLDEuMywwLjJjMC40LDAsMC45LTAuMSwxLjMtMC4zYzAuMi0wLjEsMC4zLTAuMiwwLjUtMC4zbDIuMSwyLjFDMTIuNiwxNS41LDExLjMsMTUuOSwxMCwxNS45eiIvPg0KPC9zdmc+DQo=) no-repeat center center;background-size:16px 16px;cursor:pointer;border-radius:50%;transition:all .2s ease;opacity:.5;z-index:10}.doboard_task_widget-input-container-textarea{position:relative;margin-top:16px}.doboard_task_widget-field-textarea-label{position:absolute;left:10px;top:10px;padding:0 5px;color:#666;background-color:#fff;transition:.2s ease all;pointer-events:none}.doboard_task_widget-input-container-textarea .doboard_task_widget-field~label{top:-10px;left:14px;font-size:10px;color:#252a2f}.doboard_task_widget-concrete_issue .tox-tinymce .tox-toolbar__group{display:inline-flex!important;width:100%!important;justify-content:space-evenly}.doboard_task_widget-task_title-text{margin-right:6px}.doboard_task_widget-commentsIndicator{width:22px;height:22px;border-radius:50%;color:#fff;font-weight:400;font-size:11px;display:inline-flex;justify-content:center;align-items:center}.doboard_task_widget-visibility-toggle{display:flex;justify-content:space-between;align-items:center;min-width:270px;max-width:420px;margin-top:4px;margin-bottom:4px}`;
+let spotFixCSS = `.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after{content:"";position:absolute;left:8%;top:100%;transform:translateX(-50%);pointer-events:none;background:0 0}.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after{border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid #545b61;display:block}.doboard_task_widget-send_message_paperclip{position:relative}.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip{display:none;position:absolute;left:0;bottom:0;transform:translateX(-3%) translateY(-43px);background:#545b61;color:#fff;border:none;border-radius:3px;padding:10px 16px;font-size:13px;line-height:1.4;z-index:100;min-width:220px;max-width:320px;text-align:left;pointer-events:none;text-transform:none}.doboard_task_widget-send_message_paperclip:hover .doboard_task_widget-paperclip-tooltip{display:block}.doboard_task_widget *{font-family:Inter,sans-serif;font-weight:400;font-size:14px;line-height:130%;color:#40484f}.doboard_task_widget-header *{color:#252a2f;margin:0}.doboard_task_widget-header-icons{display:flex;gap:12px}.doboard_task_widget-close_btn{transform:translateY(-2px)}#openUserMenuButton{transform:scale(.85)}#maximizeWidgetContainer{transform:scale(.8)}.doboard_task_widget a{text-decoration:underline;color:#2f68b7}.doboard_task_widget a:hover{text-decoration:none}.doboard_task_widget{position:fixed;right:50px;bottom:20px;z-index:9999;vertical-align:middle;transition:top .1s;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}.doboard_task_widget_cursor-pointer{cursor:pointer}.doboard_task_widget-container-maximize .doboard_task_widget-field{display:flex;justify-content:space-evenly;flex-wrap:wrap}.doboard_task_widget-input-container-textarea .tox-tinymce{position:absolute}.doboard_task_widget-container-maximize{width:80vw!important;max-width:1120px!important;max-height:75vh!important;min-height:75vh!important;display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-container{width:430px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-header{display:flex;min-height:41px;padding:0 16px;background-color:#f3f6f9;border-radius:8px 8px 0 0;border:1px solid #bbc7d1;border-bottom:none;justify-content:space-between;align-items:center;color:#fff}.doboard_task_widget-user_menu-header{display:flex;padding:16px 16px;border:1px #bbc7d1 solid;border-bottom-color:#ebf0f4;border-radius:8px 8px 0 0;flex-direction:column;align-items:center;color:#252a2f;background-color:#f3f6f9}.doboard_task_widget-user_menu-header-top{display:flex;height:fit-content;align-items:center;width:100%;justify-content:space-between}.doboard_task_widget-user_menu-header-avatar{max-width:60px;max-height:60px;width:60px;height:60px;border-radius:50%;margin-bottom:4px}.doboard_task_widget-task_menu-item,.doboard_task_widget-user_menu-item{display:flex;align-items:center;border-bottom:1px #ebf0f4 solid;padding:0 16px;height:52px}.doboard_task_widget-content{flex:1;overflow-y:auto;background:#fff;border-radius:0 0 8px 8px;border:1px;border-style:none solid solid solid;border-color:#bbc7d1;box-shadow:0 4px 15px 8px #cacACA40;scrollbar-width:none;max-height:60vh}.doboard_task_widget-container-maximize .doboard_task_widget-content{max-height:inherit}.doboard_task_widget-element-container{margin-bottom:16px}.doboard_task_widget-element-container span{color:#707a83;font-size:12px;font-weight:400}.doboard_task_widget-wrap{box-shadow:none;position:fixed;right:-50px;padding:0;cursor:pointer;width:69px;height:52px;border-top-left-radius:4px;border-bottom-left-radius:4px;background-color:rgba(255,255,255,.9);border:1px #ebf0f4 solid;display:flex;align-items:center;justify-content:center}.doboard_task_widget-wrap img{width:32px;height:32px;transform:scaleX(-1)}.doboard_task_widget-wrap.hidden{display:none}.wrap_review{width:164px;min-width:164px;height:54px}.wrap_review img{width:28px;height:28px;transform:scaleX(-1)}.wrap_review:hover{background-color:#fff}@media (max-width:480px){.doboard_task_widget-wrap{right:-20px}}#review_content_button_text{color:#d5991a;margin-left:6px;font-weight:600;font-size:14px;text-transform:none!important}.wrap_review::after{display:none}#doboard_task_widget-task_count{position:absolute;top:-12px;right:4px;width:22px;height:22px;opacity:1;background:#ef8b43;border-radius:50%;color:#fff;text-align:center;line-height:22px}#doboard_task_widget-task_count.hidden{width:0;height:0;opacity:0}.doboard_task_widget-input-container{position:relative;margin-bottom:6px}.doboard_task_widget-hidden,.doboard_task_widget-input-container.hidden{display:none}.doboard_task_widget-input-container .doboard_task_widget-field{padding:0 8px;border-radius:4px;border:1px solid #bbc7d1;outline:0!important;appearance:none;width:100%;height:40px;background:#fff;color:#000;max-width:-webkit-fill-available;max-width:-moz-available}.doboard_task_widget-field:focus{border-color:#2f68b7}.doboard_task_widget-input-container textarea.doboard_task_widget-field{min-height:94px;padding-top:11px;padding-bottom:11px}.doboard_task_widget-field+label{color:#252a2f;background:#fff;position:absolute;top:20px;left:8px;transform:translateY(-50%);transition:all .2s ease-in-out}.doboard_task_widget-field.has-value+label,.doboard_task_widget-field:focus+label{font-size:10px;top:0;left:12px;padding:0 4px;z-index:5}.doboard_task_widget-field:focus+label{color:#2f68b7}.doboard_task_widget-login{border:1px solid #bbc7d1;border-radius:4px;padding:11px 8px 8px 8px}.doboard_task_widget-login.hidden{display:none}.doboard_task_widget-login .doboard_task_widget-accordion{height:0;overflow:hidden;opacity:0;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-accordion{height:auto;overflow:visible;opacity:1}.doboard_task_widget-accordion i{font-size:12px}.doboard_task_widget-login .doboard_task_widget-input-container:last-child{margin-bottom:0}.doboard_task_widget-login .doboard_task_widget-login-icon{display:block;position:relative;padding-right:24px;cursor:pointer}.doboard_task_widget-login.active .doboard_task_widget-login-icon{margin-bottom:24px}.doboard_task_widget-login .doboard_task_widget-login-icon::after{position:absolute;top:0;right:4px;content:"";display:block;width:10px;height:10px;transform:rotate(45deg);border:2px solid #40484f;border-radius:1px;border-top:none;border-left:none;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-login-icon::after{transform:rotate(-135deg);top:7px}.doboard_task_widget-login .doboard_task_widget-field+label,.doboard_task_widget-login .doboard_task_widget-input-container .doboard_task_widget-field{background:#f9fbfd}.doboard_task_widget-submit_button{min-height:48px;width:100%;max-width:400px;margin-bottom:10px;border-radius:6px;font-family:Inter,sans-serif;font-size:16px;line-height:150%;cursor:pointer;transition:all .2s ease-in-out;background:0 0;border:1px solid #22a475;color:#22a475;font-weight:600}.doboard_task_widget-submit_button:hover{background:#22a475;color:#fff}.doboard_task_widget-submit_button:disabled{background:rgba(117,148,138,.92);color:#fff;cursor:wait}.doboard_task_widget-login-buttons-wrapper{display:flex;gap:10px;margin-bottom:10px}.doboard_task_widget-login-buttons-wrapper .doboard_task_widget-submit_button{margin-bottom:0;width:auto;min-height:32px;font-size:14px;padding:4px 12px}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-forgot_password-black,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-on_phantom_login_page{flex:1;background:#fff;border:1px solid #22a475;color:#22a475}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-forgot_password-black:hover,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-on_phantom_login_page:hover{background:#f0fdf4;color:#1c7857}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-login_button,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-restore_password_button{flex:2}.doboard_task_widget-issue-title{display:inline-flex;flex-direction:column;transform:translateY(-2px);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-issue-title>:last-child{color:#707a83;text-align:center;font-size:10px;font-weight:400}.doboard_task_widget-hidden_element{opacity:0}.doboard_task_widget-message-wrapper{border-radius:4px;padding:8px;margin-bottom:14px;display:grid;justify-items:center}.doboard_task_widget-message-wrapper.hidden{display:none}.doboard_task_widget-error_message{background:#fdd;border:1px solid #cf6868}.doboard_task_widget-notice_message{background:#dde9ff;border:1px solid #68a6cf}.doboard_task_widget-error_message-wrapper.hidden{display:none}#doboard_task_widget-error_message-header{font-weight:600}#doboard_task_widget-error_message{text-align:center}.doboard_task_widget-task_row{display:flex;max-height:67px;cursor:pointer;align-items:center;justify-content:space-between;padding:0 15px}.doboard_task_widget-task_row:last-child{margin-bottom:0}.doboard_task_widget-task-text_bold{font-weight:700}.doboard_task_widget-element_selection,.doboard_task_widget-image_selection,.doboard_task_widget-text_selection,.doboard_task_widget-text_selection.image-highlight>img{background:rgba(208,213,127,.68)}.doboard_task_widget-issues_list_empty{text-align:center;margin:20px 0}.doboard_task_widget-avatar_container{display:flex;height:44px;width:44px;border-radius:50%;background-repeat:no-repeat;background-position:center;background-size:100%}.doboard_task_widget-comment_data_owner .doboard_task_widget-avatar_container{opacity:0}.doboard_task_widget-avatar_placeholder{min-height:44px;min-width:44px;border-radius:50%;font-size:24px;line-height:1.2083333333;padding:0;background:#1c7857;display:inline-grid;align-content:center;justify-content:center}.doboard_task_widget-avatar-initials{color:#fff;width:inherit;text-align:center}.doboard_task_widget-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover}.doboard_task_widget-description_container{height:62px;width:calc(100% - 44px - 8px);border-bottom:1px solid #ebf0f4;display:block;margin-left:8px;padding-top:4px}.doboard_task_widget-task_row:last-child .doboard_task_widget-description_container{border-bottom:none}.doboard_task_widget-all_issues{padding-bottom:0}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{overflow:auto;max-height:85vh;display:none}.doboard_task_widget-all_issues-container{scrollbar-width:none;margin-top:10px;min-height:60vh}.doboard_task_widget-content.doboard_task_widget-concrete_issue{padding:0;display:flex;flex-direction:column}.doboard_task_widget-concrete_issues-container{padding:10px 16px 5px;flex-grow:1}.doboard_task_widget-all_issues-container::-webkit-scrollbar,.doboard_task_widget-all_issues::-webkit-scrollbar,.doboard_task_widget-concrete_issues-container::-webkit-scrollbar,.doboard_task_widget-content::-webkit-scrollbar{width:0}.doboard_task_widget-task_title{font-weight:700;display:flex;justify-content:space-between;align-items:center}.doboard_task_widget-task_title span{font-weight:700;display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-task_title-details{display:flex;max-width:calc(100% - 65px);align-items:center}.doboard_task_widget-task_title-unread_block{opacity:0;height:8px;width:8px;background:#f08c43;border-radius:50%;display:inline-block;font-size:8px;font-weight:600;position:relative}.doboard_task_widget-task_title-unread_block.unread{opacity:1}.doboard_task_widget-task_last_message{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:85%;height:36px}.doboard_task_widget-task_page_url{max-width:70%;height:30px;display:flex;align-items:flex-end}.doboard_task_widget-task_page_url a{color:#40484f;text-decoration:none;margin-left:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.doboard_task_widget-bottom{display:flex;justify-content:space-between;align-items:flex-end}.doboard_task_widget-bottom-is-fixed{border-radius:10px;background-size:14px 14px;background:#ebfaf4 url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkiIGhlaWdodD0iMTkiIHZpZXdCb3g9IjAgMCAxOSAxOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCjxwYXRoIGQ9Ik03LjA4MTE5IDAuMjIzNDM0QzguOTkxNjkgLTAuMjA4MTY3IDEwLjk5MTMgLTAuMDExMjE5NCAxMi43ODA0IDAuNzg1OTM0QzEzLjE1ODQgMC45NTQ2MjQgMTMuMzI4NiAxLjM5ODAzIDEzLjE2MDMgMS43NzYxN0MxMi45OTE3IDIuMTU0MTkgMTIuNTQ4MiAyLjMyNDI0IDEyLjE3MDEgMi4xNTYwNUMxMC42NzY0IDEuNDkwNTIgOS4wMDcyNiAxLjMyNiA3LjQxMjI1IDEuNjg2MzJDNS44MTcxNyAyLjA0NjcxIDQuMzgwOTcgMi45MTI5NiAzLjMxODUgNC4xNTYwNUMyLjI1NjIzIDUuMzk5MDEgMS42MjQ0MSA2Ljk1MjI5IDEuNTE2NzQgOC41ODM3OUMxLjQwOTI0IDEwLjIxNTQgMS44MzE4NCAxMS44MzkgMi43MjE4MiAxMy4yMTA3QzMuNjExNzkgMTQuNTgyMiA0LjkyMTY0IDE1LjYyOTQgNi40NTUyMSAxNi4xOTYxQzcuOTg5MDIgMTYuNzYyNiA5LjY2NTUzIDE2LjgxODkgMTEuMjMzNSAxNi4zNTUzQzEyLjgwMTYgMTUuODkxNiAxNC4xNzgzIDE0LjkzMzUgMTUuMTU3NCAxMy42MjM4QzE2LjEzNjQgMTIuMzE0MiAxNi42NjYxIDEwLjcyMjcgMTYuNjY3MSA5LjA4NzY5TDE4LjE2NzEgOS4wODg2N0MxOC4xNjU4IDExLjA0NzEgMTcuNTMxMiAxMi45NTM2IDE2LjM1ODUgMTQuNTIyM0MxNS4xODU5IDE2LjA5MDcgMTMuNTM3MyAxNy4yMzg0IDExLjY1OTMgMTcuNzkzN0M5Ljc4MTEgMTguMzQ5MSA3Ljc3MjkzIDE4LjI4MiA1LjkzNTY4IDE3LjYwMzNDNC4wOTg1IDE2LjkyNDYgMi41MjkxMiAxNS42NzAxIDEuNDYzMDMgMTQuMDI3MUMwLjM5NzAzNSAxMi4zODQxIC0wLjEwOTEwOSAxMC40Mzk1IDAuMDE5NjY4MyA4LjQ4NTE1QzAuMTQ4NjA3IDYuNTMwOCAwLjkwNjMyMyA0LjY3MDMzIDIuMTc4ODUgMy4xODE0NEMzLjQ1MTM2IDEuNjkyNjggNS4xNzA4OCAwLjY1NTE2MiA3LjA4MTE5IDAuMjIzNDM0WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPHBhdGggZD0iTTE2Ljg4NTkgMS44OTA0M0MxNy4xNzg2IDEuNTk3NTMgMTcuNjUzNCAxLjU5Nzg0IDE3Ljk0NjQgMS44OTA0M0MxOC4yMzkzIDIuMTgzMTYgMTguMjQwMSAyLjY1Nzk2IDE3Ljk0NzQgMi45NTA5N0w5LjYxMzQyIDExLjI5MjhDOS40NzI4MiAxMS40MzMzIDkuMjgxOTYgMTEuNTEyNCA5LjA4MzE1IDExLjUxMjVDOC44ODQzMiAxMS41MTI1IDguNjkzNDggMTEuNDMzMyA4LjU1Mjg3IDExLjI5MjhMNi4wNTI4NyA4Ljc5Mjc3QzUuNzYwMTQgOC40OTk5IDUuNzYwMTEgOC4wMjUwOCA2LjA1Mjg3IDcuNzMyMjJDNi4zNDU3MiA3LjQzOTM3IDYuODIwNTEgNy40Mzk0NiA3LjExMzQyIDcuNzMyMjJMOS4wODIxNyA5LjcwMDk3TDE2Ljg4NTkgMS44OTA0M1oiIGZpbGw9IiMyMkE0NzUiLz4NCjxwYXRoIGQ9Ik0xNy40MTcxIDcuNTcxMDlDMTcuODMxIDcuNTcxNDQgMTguMTY3IDcuOTA3MTYgMTguMTY3MSA4LjMyMTA5VjkuMDg4NjdMMTcuNDE3MSA5LjA4NzY5SDE2LjY2NzFWOC4zMjEwOUMxNi42NjcyIDcuOTA2OTQgMTcuMDAzIDcuNTcxMDkgMTcuNDE3MSA3LjU3MTA5WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPC9zdmc+) no-repeat 8px center;padding:4px 7px 4px 30px}.doboard_task_widget-bottom-is-fixed-task-block{text-align:center}.doboard_task_widget-bottom-is-fixed-task{background:#f3f6f9;color:#1c7857;display:inline-block;border-radius:10px;padding:5px 8px;margin:0 auto}.doboard_task_widget-task_row-green{background:#ebf0f4}.doboard_task_widget-task_row-green .doboard_task_widget-description_container{border-bottom:1px solid #e5e5e5}.doboard_task_widget_return_to_all{display:flex;gap:8px;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:wrap}.doboard_task_widget-task_title-last_update_time{font-family:Inter,serif;font-weight:400;font-style:normal;font-size:11px;leading-trim:NONE;line-height:100%}.doboard_task_widget-task_title_public_status_img{opacity:50%;margin-left:5px;scale:90%}.doboard_task_widget-description-textarea{resize:none}.doboard_task_widget-switch_row{display:flex;align-items:center;gap:12px;margin:16px 0;justify-content:space-between}.doboard_task_widget-switch-label{font-weight:600;font-size:16px;height:24px;align-content:center}.doboard_task_widget-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}.doboard_task_widget-switch input{opacity:0;width:0;height:0}.doboard_task_widget-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;border-radius:24px;transition:.2s}.doboard_task_widget-slider:before{position:absolute;content:"";height:20px;width:20px;left:2px;bottom:2px;background-color:#fff;border-radius:50%;transition:.2s}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider{background-color:#65d4ac}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider:before{transform:translateX(20px)}.doboard_task_widget-switch-img{width:24px;height:24px;flex-shrink:0}.doboard_task_widget-switch-center{display:flex;gap:2px;flex-direction:column;-moz-flex-direction:column;flex:1 1 auto;min-width:0}.doboard_task_widget-switch-desc{display:block;font-size:12px;color:#707a83;margin:0;line-height:1.2;max-width:180px;word-break:break-word}.doboard_task_widget-concrete_issue-day_content{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-concrete_issue_day_content-month_day{text-align:center;font-weight:400;font-size:12px;line-height:100%;padding:8px;opacity:.75}.doboard_task_widget-concrete_issue_day_content-messages_wrapper{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-comment_data_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;margin-bottom:15px;align-items:flex-end}.doboard_task_widget-comment_text_container{position:relative;width:calc(100% - 44px - 5px);height:auto;margin-left:5px;background:#f3f6f9;border-radius:16px}.doboard_task_widget-comment_text_container:after{content:"";position:absolute;bottom:0;left:-5px;width:13px;height:19px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAxMyAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAuMTEyNTggMTkuMDMzNEM1LjI5NDg2IDE5LjgyMDEgMTAuNjEwNSAxNy45NzQxIDEyLjI3MTUgMTYuMTcxM0MxMi4yNzE1IDE2LjE3MTMgMTAuOTYyMyAtMi43ODEyNCA1LjA5NTU0IDAuMzQ5MDc5QzUuMDc0NCAxLjYxNDU0IDUuMDk1NTQgNS45OTQ5IDUuMDk1NTQgNi43NDA2OUM1LjA5NTU0IDE3LjA2NjIgLTAuODg0MDEyIDE4LjQ0MDEgMC4xMTI1OCAxOS4wMzM0WiIgZmlsbD0iI0YzRjZGOSIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container{background:#ebfaf4}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container:after{left:auto;right:-5px;height:13px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMyAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjc3NzEgMTIuMzA2NkM3LjMzMTM1IDEzLjA5MzcgMS43NDU0NCAxMS4yNDY5IDAgOS40NDMxOUw3LjM5MTYgMEM3LjM5MTYgMTAuMzMwMyAxMy44MjQ0IDExLjcxMzEgMTIuNzc3MSAxMi4zMDY2WiIgZmlsbD0iI0VCRkFGNCIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_body,.doboard_task_widget-comment_time{position:relative;z-index:1}.doboard_task_widget-comment_body{padding:6px 8px;min-height:30px}.doboard_task_widget-comment_body strong{font-variation-settings:"wght" 700}.doboard_task_widget-comment_body blockquote{margin:0;border-left:3px solid #22a475}.doboard_task_widget-comment_body blockquote p{margin:0 10px}.doboard_task_widget-comment_body details .mce-accordion-body{padding-left:20px}.doboard_task_widget-comment_body details .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg transform='rotate(180 0 0)' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") no-repeat 0;padding-left:20px}.doboard_task_widget-comment_body .mce-accordion[open] .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") no-repeat 0}.doboard_task_widget-comment_body details .mce-accordion-summary::marker{content:""}.doboard_task_widget-comment_body pre{border:1px solid #d6dde3;border-left-width:8px;border-radius:4px;padding:13px 16px 14px 12px;white-space:pre-wrap}.doboard_task_widget-comment_time{font-weight:400;font-size:11px;opacity:.8;position:absolute;bottom:6px;right:6px}.doboard_task_widget-comment_body-img-strict{max-width:-webkit-fill-available;height:100px;margin-right:5px}.doboard_task_widget-send_message{border-top:1px solid #bbc7d1;position:sticky;background:#fff;bottom:0;z-index:4}.doboard_task_widget-send_message_elements_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:nowrap;justify-content:space-between;align-items:end}.doboard_task_widget-send_message_elements_wrapper img{margin:0}.doboard_task_widget-send_message_input_wrapper{position:relative;display:inline-grid;align-items:center;justify-items:center;flex-grow:1;padding:0 6px}.doboard_task_widget-send_message_input_wrapper textarea{position:relative;width:100%;height:37px;border:none;outline:0;box-shadow:none;border-radius:24px;background:#f3f6f9;resize:none;margin-bottom:0!important;transition:height .2s ease-in-out;padding:8px;box-sizing:border-box}.doboard_task_widget-send_message_input_wrapper textarea.high{height:170px}.doboard_task_widget-send_message_input_wrapper textarea:focus{background:#f3f6f9;border-color:#007bff;outline:0}.doboard_task_widget-send_message_button{display:inline-grid;border:none;cursor:pointer;padding:0;width:100%;align-items:center;margin:20px 0 0 0}.doboard_task_widget-send_message_paperclip{display:inline-grid;border:none;background:0 0;cursor:pointer;padding:0;align-items:center;margin:0}.doboard_task_widget-send_message_button:hover,.doboard_task_widget-send_message_paperclip:hover rect{fill:#45a049}.doboard_task_widget-send_message_button:active,.doboard_task_widget-send_message_paperclip:active{transform:scale(.98)}.doboard_task_widget-spinner_wrapper_for_containers{display:flex;justify-content:center;align-items:center;min-height:60px;width:100%}.spotfix_doboard_task_widget_url{background-color:#d6dde3;padding:12px 16px;display:none}.doboard_task_widget-spinner_for_containers{width:40px;height:40px;border-radius:50%;background:conic-gradient(transparent,#1c7857);mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#fff 0);animation:spin 1s linear infinite}.doboard_task_widget-create_issue{padding:10px}.doboard_task_widget__file-upload__wrapper{display:none;border:1px solid #bbc7d1;margin-top:14px;padding:0 10px 10px;border-radius:4px}.doboard_task_widget__file-upload__list-header{text-align:left;font-size:.9em;margin:5px 0;color:#444c529e}.doboard_task_widget__file-upload__file-input-button{display:none}.doboard_task_widget__file-upload__file-list{border:1px solid #ddd;border-radius:5px;padding:6px;max-height:200px;overflow-y:auto;background:#f3f6f9}.doboard_task_widget__file-upload__file-item{display:flex;justify-content:space-between;align-items:center;padding:4px;border-bottom:1px solid #bbc7d16b}.doboard_task_widget__file-upload__file-item:last-child{border-bottom:none}.doboard_task_widget__file-upload__file_info{display:inline-flex;align-items:center}.doboard_task_widget__file-upload__file-name{font-weight:700;font-size:.9em}.doboard_task_widget__file-upload__file-item-content{width:100%}.doboard_task_widget__file-upload__file_size{color:#666;font-size:.8em;margin-left:6px}.doboard_task_widget__file-upload__remove-btn{background:#22a475;color:#fff;border:none;border-radius:3px;cursor:pointer}.doboard_task_widget__file-upload__error{display:block;margin:7px 0 0;padding:7px;border-radius:4px;background:#fdd;border:1px solid #cf6868}.doboard_task_widget-show_button{position:fixed;background:#1c7857;color:#fff;padding:8px 12px;border-radius:4px;font-size:14px;z-index:10000;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);transform:translate(-50%,-100%);margin-top:-8px;white-space:nowrap;border:none;font-family:inherit}@keyframes spin{to{transform:rotate(1turn)}}@media (max-width:480px){.doboard_task_widget{position:fixed;right:0;top:auto;bottom:0;margin:0 20px 20px;box-sizing:border-box;transform:translateZ(0);-moz-transform:translateZ(0);will-change:transform;max-height:90vh}.doboard_task_widget-header{padding:8px}.doboard_task_widget-issue-title{max-width:70px}.doboard_task_widget-container{width:100%;max-width:290px;min-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-container-maximize{width:100%;max-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-content{height:auto;max-height:100%;min-height:100%;scrollbar-width:none}.doboard_task_widget-content::-webkit-scrollbar{display:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{max-height:80vh}}@supports (-webkit-overflow-scrolling:touch){.doboard_task_widget{position:fixed}}.doboard_task_widget_tasks_list{background-color:#fff;position:sticky;bottom:0;height:38px;display:flex;flex-direction:column-reverse;align-items:center;padding-bottom:8px}#doboard_task_widget-user_menu-logout_button{display:inline-flex;align-items:center}.doboard_task_widget-text_selection{position:relative;display:inline-block}.doboard_task_widget-see-task{cursor:pointer;text-decoration:underline}.doboard_task_widget-text_selection_tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:4px 8px;border-radius:4px;font-size:10px;white-space:nowrap;z-index:9000;border:1px solid #bbc7d1;margin-bottom:8px}.doboard_task_widget-text_selection_tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#fff}.doboard_task_widget-text_selection_tooltip::before{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#bbc7d1;z-index:-1}.doboard_task_widget-text_selection_tooltip_icon{background-image:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDEwMyAxMDAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDEwMyAxMDA7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtmaWxsOiMxNzcyNTA7fQ0KPC9zdHlsZT4NCjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik01MywwSDB2MTAwaDMwLjJINTNDMTE5LjYsMTAwLDExOS42LDAsNTMsMHogTTMwLjIsMTAwYy0xNi42LDAtMzAtMTMuNC0zMC0zMHMxMy40LTMwLDMwLTMwDQoJYzE2LjYsMCwzMCwxMy40LDMwLDMwUzQ2LjgsMTAwLDMwLjIsMTAweiIvPg0KPC9zdmc+DQo=);background-repeat:no-repeat;width:22px;height:22px;margin:5px 3px}.doboard_task_widget-text_selection_tooltip_element{display:flex;justify-content:space-between}.doboard_task_widget-content .tox .tox-toolbar__group{padding:0 8px!important}.doboard_task_widget-spotfix-editor .tox-tinymce{border:none!important}.doboard_task_widget-content .tox-tinymce{border:1px solid #bbc7d1;border-radius:4px}.doboard_task_widget-content ol,.doboard_task_widget-content ul{margin:0 0 0 1em!important}.toggle{position:relative;display:inline-block;width:46px;min-width:46px;height:20px}.toggle input{opacity:0;width:0;height:0;position:absolute}.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#d6dde3;border-radius:24px;transition:.3s;height:14px;width:37px}.slider:before{content:"";position:absolute;height:20px;width:20px;top:-3px;left:-2px;background-color:#fff;border-radius:50%;transition:.3s;box-shadow:0 0 4px rgba(0,0,0,.21)}input:checked+.slider{background-color:#65d4AC80}input:checked+.slider:before{transform:translateX(20px);box-shadow:none;background-color:#65d4ac}.logout_button{font-weight:500;font-size:14px;color:#707a83;cursor:pointer}.doboard_task_widget-forgot_password,.doboard_task_widget-on_phantom_login_page,.doboard_task_widget-show_login_form{display:inline-block;cursor:pointer;color:#2f68b7;margin-bottom:0}.doboard_task_widget-forgot_password{margin-bottom:20px}.doboard_task_widget-login-is-invalid{color:red}.doboard_task_widget-forgot_password_form-menu,.doboard_task_widget-input-container-login-menu{margin:20px}.doboard_task_widget-bottom-eye-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:20px;height:20px;background:#fff url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgMjAgMjAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDIwIDIwOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8cGF0aCBkPSJNMTAsMTcuNGMtNi4yLDAtOS43LTYuOC05LjgtNy4xYy0wLjEtMC4yLTAuMS0wLjUsMC0wLjdDMC4zLDkuNCwzLjgsMi42LDEwLDIuNmM2LjIsMCw5LjcsNi44LDkuOCw3LjENCgljMC4xLDAuMiwwLjEsMC41LDAsMC43QzE5LjcsMTAuNiwxNi4yLDE3LjQsMTAsMTcuNHogTTEuNywxMGMwLjgsMS4zLDMuNyw1LjksOC4zLDUuOWM0LjYsMCw3LjYtNC42LDguMy01LjkNCgljLTAuOC0xLjMtMy43LTUuOS04LjMtNS45QzUuNCw0LjEsMi40LDguNywxLjcsMTB6IE0xMCwxMy4zYy0xLjgsMC0zLjMtMS41LTMuMy0zLjNTOC4yLDYuOCwxMCw2LjhzMy4zLDEuNSwzLjMsMy4zDQoJUzExLjgsMTMuMywxMCwxMy4zeiBNMTAsOC4zQzksOC4zLDguMyw5LDguMywxMFM5LDExLjgsMTAsMTEuOHMxLjgtMC44LDEuOC0xLjhTMTEsOC4zLDEwLDguM3oiLz4NCjwvc3ZnPg0K) no-repeat center center;background-size:16px 16px;cursor:pointer;border-radius:50%;transition:all .2s ease;z-index:10}.doboard_task_widget-bottom-eye-off-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:20px;height:20px;background:#fff url(data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDIwIDIwIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAyMCAyMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggY2xhc3M9InN0MCIgZD0iTTE2LjgsMTMuMmMwLjEsMC4xLDAuMywwLjIsMC41LDAuMmMwLDAsMCwwLDAsMGMwLjIsMCwwLjQtMC4xLDAuNS0wLjNjMC43LTAuOSwxLjQtMS44LDEuOS0yLjgNCgljMC4xLTAuMiwwLjEtMC41LDAtMC43Yy0wLjEtMC4zLTMuNi03LjEtOS44LTcuMWMwLDAsMCwwLDAsMGMtMC42LDAtMS4zLDAuMS0xLjksMC4yQzcuOCwyLjksNy42LDMuMSw3LjUsMy4zczAsMC41LDAuMiwwLjcNCglMMTYuOCwxMy4yeiBNMTAsNC4xYzQuNiwwLDcuNiw0LjYsOC4zLDUuOWMtMC4zLDAuNS0wLjYsMS0xLDEuNUw5LjksNC4xQzkuOSw0LjEsMTAsNC4xLDEwLDQuMXogTTE5LjcsMTguNmwtNC4yLTQuMkw1LjYsNC41DQoJYzAsMCwwLDAsMCwwTDEuNCwwLjNDMS4xLDAsMC42LDAsMC4zLDAuM1MwLDEuMSwwLjMsMS40TDMuOSw1QzIuNCw2LjMsMS4xLDcuOSwwLjIsOS42Yy0wLjEsMC4yLTAuMSwwLjUsMCwwLjcNCgljMC4xLDAuMywzLjYsNy4xLDkuOSw3LjFjMS43LDAsMy40LTAuNSw0LjktMS41bDMuOCwzLjhjMC4xLDAuMSwwLjMsMC4yLDAuNSwwLjJzMC40LTAuMSwwLjUtMC4yQzIwLDE5LjQsMjAsMTguOSwxOS43LDE4LjZ6DQoJIE04LjMsOS40bDIuMywyLjNjLTAuMiwwLjEtMC40LDAuMS0wLjYsMC4xYy0wLjIsMC0wLjUsMC0wLjctMC4xYy0wLjItMC4xLTAuNC0wLjItMC42LTAuNGMtMC4yLTAuMi0wLjMtMC40LTAuNC0wLjYNCgljLTAuMS0wLjItMC4xLTAuNS0wLjEtMC43QzguMiw5LjgsOC4yLDkuNiw4LjMsOS40eiBNMTAsMTUuOWMtNC42LDAtNy42LTQuNi04LjMtNS45YzAuOS0xLjUsMi0yLjgsMy4zLTMuOWwyLjIsMi4yDQoJQzcuMSw4LjQsNyw4LjYsNyw4LjdDNi44LDkuMSw2LjcsOS42LDYuNywxMGMwLDAuNCwwLjEsMC45LDAuMiwxLjNjMC4yLDAuNCwwLjQsMC44LDAuNywxLjFjMC4zLDAuMywwLjcsMC42LDEuMSwwLjcNCgljMC40LDAuMiwwLjgsMC4yLDEuMywwLjJjMC40LDAsMC45LTAuMSwxLjMtMC4zYzAuMi0wLjEsMC4zLTAuMiwwLjUtMC4zbDIuMSwyLjFDMTIuNiwxNS41LDExLjMsMTUuOSwxMCwxNS45eiIvPg0KPC9zdmc+DQo=) no-repeat center center;background-size:16px 16px;cursor:pointer;border-radius:50%;transition:all .2s ease;opacity:.5;z-index:10}.doboard_task_widget-input-container-textarea{position:relative;margin-top:16px}.doboard_task_widget-field-textarea-label{position:absolute;left:10px;top:10px;padding:0 5px;color:#666;background-color:#fff;transition:.2s ease all;pointer-events:none}.doboard_task_widget-input-container-textarea .doboard_task_widget-field~label{top:-10px;left:14px;font-size:10px;color:#252a2f}.doboard_task_widget-concrete_issue .tox-tinymce .tox-toolbar__group{display:inline-flex!important;width:100%!important;justify-content:space-evenly}.doboard_task_widget-task_title-text{margin-right:6px}.doboard_task_widget-commentsIndicator{width:22px;height:22px;border-radius:50%;color:#fff;font-weight:400;font-size:11px;display:inline-flex;justify-content:center;align-items:center}.doboard_task_widget-visibility-toggle{display:flex;justify-content:space-between;align-items:center;min-width:270px;max-width:420px;margin-top:4px;margin-bottom:12px}#spotfix_widget-task-menu_name{color:#252a2f;font-size:16px;font-weight:500;display:inline-flex}#spotfix_widget-task-menu_users{font-size:12px;font-weight:400;color:#707a83}.spotfix_widget-task-menu_user{width:100%;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}.spotfix_widget-task-menu_user img{height:24px;width:24px;border-radius:50%;margin-right:12px}.spotfix_widget-task-menu_user>:first-child{font-weight:400;font-size:14px;color:#000;display:inline-flex;align-items:center}.spotfix_widget-task-menu_user>:last-child{color:#40484f;font-size:12px;font-weight:400}.doboard_task_widget-comment_attachments{padding:8px 8px 30px 8px;display:flex;flex-direction:column;flex-wrap:nowrap;overflow-x:auto;gap:6px;scrollbar-width:thin;scrollbar-color:#bbc7d1 transparent;margin-bottom:2px}.doboard_task_widget-comment_attachments::-webkit-scrollbar{height:4px}.doboard_task_widget-comment_attachments::-webkit-scrollbar-track{background:0 0}.doboard_task_widget-comment_attachments::-webkit-scrollbar-thumb{background-color:#bbc7d1;border-radius:2px}.doboard_task_widget-attachment_item{display:flex}.doboard_task_widget-attachment_url{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(255,255,255,.8);border-radius:4px;text-decoration:none;color:#40484f!important;font-size:11px;transition:background-color .2s ease;border:1px solid #bbc7d1;flex-shrink:0;white-space:nowrap}.doboard_task_widget-attachment_item:hover{background:#fff;text-decoration:none}.doboard_task_widget-attachment_icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:12px;height:12px}.doboard_task_widget-attachment_filename{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#40484f}.doboard_task_widget-attachment_item.image-attachment{cursor:pointer}.doboard_task_widget-attachment_item:not(.image-attachment){cursor:pointer}.doboard_task_widget-attachment_item.image-attachment img{width:64px;height:64px;object-fit:cover;border-radius:4px;border:1px solid #bbc7d1;transition:transform .2s ease,box-shadow .2s ease}.doboard_task_widget-attachment_item.image-attachment:hover img{transform:scale(1.1);box-shadow:0 2px 8px rgba(0,0,0,.15)}.doboard_task_widget-lightbox{position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s ease}.doboard_task_widget-lightbox.active{opacity:1;visibility:visible}.doboard_task_widget-lightbox-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);cursor:pointer}.doboard_task_widget-lightbox-content{position:relative;max-width:90vw;max-height:90vh;z-index:1}.doboard_task_widget-lightbox-image{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:4px;box-shadow:0 4px 20px rgba(0,0,0,.5)}.doboard_task_widget-lightbox-close{position:absolute;top:20px;right:20px;width:40px;height:40px;background:rgba(255,255,255,.8);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s ease;z-index:2}.doboard_task_widget-lightbox-close:hover{background:rgba(255,255,255,.6)}.doboard_task_widget-lightbox-close img{width:24px;height:24px}`;
 const SPOTFIX_DOBOARD_API_URL = 'https://api.doboard.com';
 
 /**
@@ -8152,6 +8154,7 @@ const attachmentAddDoboard = async (fileData) => {
         attachment_order: fileData.attachmentOrder,
     };
     const result = await spotfixApiCall(data, 'attachment_add', accountId);
+    //await getTasksCommentsDoboard(fileData.sessionId, params.accountId, params.projectToken, currentActiveTaskId);
     // @ToDo need to handle result?
 };
 
@@ -8263,6 +8266,8 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         taskCreatorTaskUser: task.creator_user_id,
         taskMeta: task.meta,
         taskStatus: task.status,
+        viewers: task.comments_viewers,
+        taskToken: task.token
     }));
     await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_TASKS, tasks);
     storageSaveTasksCount(tasks);
@@ -8291,6 +8296,27 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, curre
     }));
     await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_COMMENTS, comments);
     return comments;
+};
+const getTasksAttachmenDoboard = async (sessionId, accountId, projectToken, currentActiveTaskId, status = 'ACTIVE') => {
+    const data = {
+        session_id: sessionId,
+        project_token: projectToken,
+        status: status,
+        task_id: currentActiveTaskId
+    }
+    const result = await spotfixApiCall(data, 'attachment_get', accountId);
+    
+    const attachment = result.attachments.map((item, index) => ({
+        attachmentId: item.attachment_id || `att_${item.task_id}_${index}_${Date.now()}`,
+        taskId: item.task_id,
+        commentId: item.comment_id,
+        attachmentOrder: item.attachment_order,
+        URL_thumbnail: item.URL_thumbnail,
+        URL: item.URL,
+        filename: item.filename,
+    }));
+    await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_ATTACHMENT, attachment);
+    return attachment;
 };
 
 const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
@@ -8397,6 +8423,20 @@ const updateNotificationsDoboard = async (taskId, projectToken, accountId) => {
     }
 };
 
+const updateViewersDoboard = async (usersIds, taskId, projectToken, accountId) => {
+    const sessionId = localStorage.getItem('spotfix_session_id');
+    if (sessionId) {
+        const data = {
+            session_id: sessionId,
+            project_token: projectToken,
+            task_id: taskId,
+            viewers_ids: usersIds,
+        };
+
+        await spotfixApiCall(data, 'viewers_update', accountId);
+    }
+};
+
 let socket = null;
 let heartbeatInterval = null;
 let messageCallback = null;
@@ -8441,6 +8481,10 @@ const handleIncomingData = async (data) => {
             taskCreatorTaskUser: data.data.creator_user_id,
             taskMeta: data.data.meta,
             taskStatus: data.data.status,
+            viewers: data.data.comments_viewers,
+            task_type: data.data.task_type,
+            commentsCount: data.data.comments_count,
+            taskToken: data.data.token,
         });
         break;
 
@@ -8457,6 +8501,27 @@ const handleIncomingData = async (data) => {
             commentDate: data.data.updated,
             status: data.data.status,
             issueTitle: data.data.task_name,
+        });
+        break;
+
+    case 'attachments':
+        if (data.data.status === 'REMOVED') {
+            await spotfixIndexedDB.delete(SPOTFIX_TABLE_ATTACHMENT, data.data.attachment_id);
+            break;
+        }
+        await spotfixIndexedDB.put(SPOTFIX_TABLE_ATTACHMENT, {
+            attachmentId: data.data.attachment_id,
+            taskId: data.data.task_id,
+            commentId: data.data.comment_id,
+            userId: data.data.user_id,
+            filename: data.data.filename,
+            URL: data.data.URL,
+            URL_thumbnail: data.data.URL_thumbnail,
+            mimeType: data.data.mime_content_type,
+            fileSize: data.data.file_size,
+            attachmentOrder: data.data.attachment_order,
+            created: data.data.created,
+            updated: data.data.updated,
         });
         break;
 
@@ -8500,7 +8565,7 @@ const wsSpotfix = {
                 return;
             }
 
-            if (!['users', 'tasks', 'comments'].includes(data.object)) return;
+            if (!['users', 'tasks', 'comments', 'attachments'].includes(data.object)) return;
 
             const eventId = data.id ? `${data.object}-${data.id}` : JSON.stringify(data);
 
@@ -8616,10 +8681,12 @@ async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
 async function getTasksFullDetails(params, tasks, currentActiveTaskId, nonRequesting = false) {
     if (tasks.length > 0) {
         const sessionId = localStorage.getItem('spotfix_session_id');
-        if (!nonRequesting) {
+        if (!nonRequesting && currentActiveTaskId && +currentActiveTaskId !== 0) {
+            await getTasksAttachmenDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
             await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
         }
         const comments = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_COMMENTS);
+        const attachments = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_ATTACHMENT);
         if (!nonRequesting) {
             await getUserDoboard(sessionId, params.projectToken, params.accountId);
         }
@@ -8629,6 +8696,7 @@ async function getTasksFullDetails(params, tasks, currentActiveTaskId, nonReques
         return {
             comments: comments,
             users: users,
+            attachments: attachments,
             taskStatus: foundTask?.taskStatus,
             taskName: foundTask?.taskTitle,
         };
@@ -8771,7 +8839,7 @@ function registerUser(taskDetails) {
     const userName = taskDetails.userName;
     const projectToken = taskDetails.projectToken;
     const accountId = taskDetails.accountId;
-    const pageURL = taskDetails.selectedData.pageURL ? taskDetails.selectedData.pageURL : window.location.href;
+    const pageURL = taskDetails?.selectedData?.pageURL ? taskDetails?.selectedData?.pageURL : window.location.href;
 
     const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName, pageURL)
         .then((response) => {
@@ -9064,6 +9132,7 @@ class CleanTalkWidgetDoboard {
             iconSpotPublic: SpotFixSVGLoader.getAsDataURI('iconSpotPublic'),
             iconSpotPrivate: SpotFixSVGLoader.getAsDataURI('iconSpotPrivate'),
             iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
+            iconLinkChainDark: SpotFixSVGLoader.getAsDataURI('iconLinkChainDark'),
         };
         this.fileUploader = new FileUploader(this.escapeHtml);
         this.init(type);
@@ -9137,13 +9206,22 @@ class CleanTalkWidgetDoboard {
 
         const url = new URL(script.src);
         let params = Object.fromEntries(url.searchParams.entries());
-        if ( ! params ) {
-            throw new Error('Script params not provided');
+        const config = typeof window.spotfixConfig === 'object' && window.spotfixConfig ? window.spotfixConfig : null;
+
+        // Fallback to spotfixConfig when URL has no params or they are incomplete (e.g. WordPress plugin)
+        if ( config ) {
+            params = {
+                ...params,
+                projectToken: params.projectToken || config.projectToken || '',
+                projectId: params.projectId || config.projectId || '',
+                accountId: params.accountId || config.accountId || ''
+            };
         }
+
         if ( ! params.projectToken || ! params.accountId || ! params.projectId ) {
             throw new Error('Necessary script params not provided');
-
         }
+
         if (params.accountId) {
             localStorage.setItem('spotfix_company_id', params.accountId);
         }
@@ -9247,7 +9325,6 @@ class CleanTalkWidgetDoboard {
                     taskDescription: taskDescription,
                     //typeSend: typeSend,
                     selectedData: this.selectedData,
-                    task_type: this.new_task_type,
                     projectToken: this.params.projectToken,
                     projectId: this.params.projectId,
                     accountId: this.params.accountId,
@@ -9600,9 +9677,9 @@ class CleanTalkWidgetDoboard {
                 templateName = 'user_menu';
                 this.socket_type_name = templateName;
                 this.nonRequesting = nonRequesting;
-                const version = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+                const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
                 templateVariables = {
-                    spotfixVersion: version ? 'Spotfix version ' + version + '.' : '',
+                    spotfixVersion: userMenuVersion ? 'Spotfix version ' + userMenuVersion + '.' : '',
                     avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
                     iconEye: SpotFixSVGLoader.getAsDataURI('iconEye'),
                     iconDoor: SpotFixSVGLoader.getAsDataURI('iconDoor'),
@@ -9610,6 +9687,22 @@ class CleanTalkWidgetDoboard {
                     buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
                     userName: 'Guest',
                     email: getSpotfixEmail() || '',
+                    ...this.srcVariables};
+                break;
+            case 'spot_menu':
+                templateName = 'spot_menu';
+                this.socket_type_name = templateName;
+                this.nonRequesting = nonRequesting;
+                this.socket_type_name = templateName;
+                const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+                templateVariables = {
+                    spotfixVersion: spotMenuVersion ? 'Spotfix version ' + spotMenuVersion + '.' : '',
+                    chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
+                    buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
+                    avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
+                    taskName: '',
+                    viewersCount: '',
+                    viewers: '',
                     ...this.srcVariables};
                 break;
             case 'concrete_issue':
@@ -9755,7 +9848,7 @@ class CleanTalkWidgetDoboard {
                 } else {
                     changeSize(container);
                 }
-                    spotFixRemoveHighlights();
+                spotFixRemoveHighlights();
                 let issuesQuantityOnPage = 0;
                 const sessionId = localStorage.getItem('spotfix_session_id');
 
@@ -9768,8 +9861,8 @@ class CleanTalkWidgetDoboard {
                 if (tasks.length > 0) {
                     const currentURL = window.location.href;
                     const sortedTasks = tasks.sort((a, b) => {
-                        const aIsHere = JSON.parse(a.taskMeta).pageURL === currentURL ? 1 : 0;
-                        const bIsHere = JSON.parse(b.taskMeta).pageURL === currentURL ? 1 : 0;
+                        const aIsHere = JSON.parse(a.taskMeta)?.pageURL === currentURL ? 1 : 0;
+                        const bIsHere = JSON.parse(b.taskMeta)?.pageURL === currentURL ? 1 : 0;
                         return bIsHere - aIsHere;
                     });
 
@@ -9792,7 +9885,7 @@ class CleanTalkWidgetDoboard {
                                 taskData = null;
                             }
                         }
-                        const currentPageURL = taskData ? taskData.pageURL : '';
+                        const currentPageURL = taskData ? taskData?.pageURL : '';
                         let taskNodePath = ''; // nodePath need for only current page's spots
 
                         // Define publicity details
@@ -9878,11 +9971,11 @@ class CleanTalkWidgetDoboard {
 
                 const user = await getUserDetails(this.params, this.nonRequesting);
                 if(!this.nonRequesting) await getReleaseVersion();
-                let spotfixVersion = '';
-                const version = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
-                spotfixVersion = version ? `Spotfix version ${version}.` : '';
+                let userMenuSpotfixVersion = '';
+                const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+                userMenuSpotfixVersion = userMenuVersion ? `Spotfix version ${userMenuVersion}.` : '';
 
-                templateVariables.spotfixVersion = spotfixVersion || '';
+                templateVariables.spotfixVersion = userMenuSpotfixVersion || '';
 
                 if(user){
                     templateVariables.userName = user.name || 'Guest';
@@ -9899,6 +9992,63 @@ class CleanTalkWidgetDoboard {
                 this.bindWidgetInputsInteractive();
 
                 break;
+        case 'spot_menu':
+            if(!this.nonRequesting) await getReleaseVersion();
+            let spotfixVersion = '';
+            const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+            spotfixVersion = spotMenuVersion ? `Spotfix version ${spotMenuVersion}.` : '';
+            templateVariables.spotfixVersion = spotfixVersion || '';
+
+            let allTasks = this.allTasksData;
+
+            if(this.nonRequesting){
+                allTasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+                this.allTasksData = allTasks;
+            }
+
+            const currentTask = allTasks.find(task => +task.taskId === +this.currentActiveTaskId);
+
+            templateVariables.taskName = currentTask.taskTitle;
+            templateVariables.taskType = currentTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicDark : this.srcVariables.iconLockDark;
+            templateVariables.doboardLink =
+                `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}?token=${currentTask.taskToken}`;
+            templateVariables.doboardLinkShort =
+                `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}`;
+
+            const currentUserId = localStorage.getItem('spotfix_user_id') || 0;
+
+            const users = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
+            const usersFiltered = users.filter(user => currentTask.viewers.includes(user.user_id));
+
+            templateVariables.viewersCount = `${usersFiltered.length || 0} members`;
+
+            if(usersFiltered.length) {
+                templateVariables.viewers = usersFiltered.map(user => {
+                    return `<div class="spotfix_widget-task-menu_user">
+                    <span><img alt="" src="${user?.avatar?.s || templateVariables.avatar}" />${user.name || 'Anonymous'}</span><span>${user?.position || ''}</span>
+                </div>`
+                }).join('')
+            }
+
+            widgetContainer.innerHTML = this.loadTemplate('spot_menu', templateVariables);
+            document.body.appendChild(widgetContainer);
+
+            if(currentTask.viewers.includes(+currentUserId)){
+                document.getElementById('unsubscribe_from_spot').checked = true;
+            }
+            if (currentUserId) {
+                const highlightStatuses = JSON.parse(
+                    localStorage.getItem('spotfix_highlight_statuses') || '{}'
+                );
+                document.getElementById('highlight_the_spot').checked =
+                    highlightStatuses[currentUserId]?.[this.currentActiveTaskId] ?? true;
+            }
+            if(!localStorage.getItem('spotfix_session_id')){
+                document.getElementById('unsubscribe_from_spot').disabled = true;
+                document.getElementById('highlight_the_spot').disabled = true;
+            }
+
+            break;
         case 'concrete_issue':
                 if(this.nonRequesting) {
                     hideContainersSpinner();
@@ -9932,14 +10082,20 @@ class CleanTalkWidgetDoboard {
                         } catch (e) { nodePath = null; meta = null; }
                     }
 
-            templateVariables.taskPageUrl = meta.pageURL;
-            const taskFormattedPageUrl = meta.pageURL.replace(window.location.origin, '');
-            templateVariables.taskFormattedPageUrl = taskFormattedPageUrl.length < 2
-                ? meta.pageURL.replace(/^https?:\/\//, '') : taskFormattedPageUrl;
+            templateVariables.taskPageUrl = meta?.pageURL;
+            templateVariables.taskFormattedPageUrl = '';
 
+            let taskFormattedPageUrl = '';
+
+            if (typeof meta?.pageURL === 'string'){
+                taskFormattedPageUrl = meta?.pageURL?.replace(window.location.origin, '');
+                templateVariables.taskFormattedPageUrl = taskFormattedPageUrl.length < 2
+                    ? meta?.pageURL?.replace(/^https?:\/\//, '')
+                    : taskFormattedPageUrl;
+            }
             const issueLinkElement = document.getElementById('spotfix_doboard_task_widget_url');
             if (issueLinkElement) {
-                issueLinkElement.innerHTML = `<a rel="nofollow" href="${meta.pageURL}">${templateVariables.taskFormattedPageUrl}</a>`;
+                issueLinkElement.innerHTML = `<a rel="nofollow" href="${meta?.pageURL}">${templateVariables.taskFormattedPageUrl}</a>`;
             }
 
             templateVariables.contenerClasess = +localStorage.getItem('maximize')
@@ -9960,7 +10116,7 @@ class CleanTalkWidgetDoboard {
 
                     if (meta && nodePath) {
                         // Pass the task meta object as an array
-                        spotFixHighlightElements([meta], this);
+                        spotFixHighlightElements([{...meta, taskId: currentTaskData.taskId}], this);
                         if (typeof spotFixScrollToNodePath === 'function') {
                             spotFixScrollToNodePath(nodePath);
                         }
@@ -9984,11 +10140,31 @@ class CleanTalkWidgetDoboard {
                             taskAuthorAvatarImgSrc: comment.commentAuthorAvatarSrc,
                             taskAuthorName: comment.commentAuthorName,
                         });
+                        let attachmentsHTML = '';
+                        if (comment.commentAttachments && comment.commentAttachments.length > 0) {
+                            for (const att of comment.commentAttachments) {
+                                const attFilename = att.filename || att.URL?.split('/').pop() || 'File';
+                                const attUrl = att.URL || '#';
+                                const attThumbnailUrl = att.URL_thumbnail || att.URL || '#';
+                                const attIcon = SpotFixSVGLoader.getAttachmentIcon(attFilename, attUrl, attThumbnailUrl);
+                                const attIsImage = this.isImageFile(attFilename);
+                                const attClass = attIsImage ? 'image-attachment' : '';
+                                attachmentsHTML += this.loadTemplate('concrete_issue_attachment', {
+                                    attachmentUrl: attUrl,
+                                    attachmentFilename: attFilename,
+                                    attachmentIcon: attIcon,
+                                    attachmentClass: attClass,
+                                    attachmentIsImage: attIsImage ? 'true' : 'false',
+                                });
+                            }
+                        }
+
                         const commentData = {
                             commentAuthorName: comment.commentAuthorName,
                             commentBody: comment.commentBody,
                             commentDate: comment.commentDate,
                             commentTime: comment.commentTime,
+                            commentAttachments: attachmentsHTML,
                             issueTitle: templateVariables.issueTitle,
                             avatarCSSClass: avatarData.avatarCSSClass,
                             avatarStyle: avatarData.avatarStyle,
@@ -10029,6 +10205,9 @@ class CleanTalkWidgetDoboard {
                             issuesCommentsContainer.innerHTML = daysWrapperHTML;
                         }
                     }
+
+                    // Bind click events to image attachments for lightbox
+                    this.bindImageAttachmentClicks();
 
                 } else {
                     issuesCommentsContainer.innerHTML = ksesFilter('No comments');
@@ -10207,6 +10386,59 @@ class CleanTalkWidgetDoboard {
         document.querySelector('#openUserMenuButton')?.addEventListener('click', () => {
             this.createWidgetElement('user_menu')
         }) || '';
+
+        document.querySelector('#openSpotMenuButton')?.addEventListener('click', () => {
+            this.createWidgetElement('spot_menu')
+        }) || '';
+
+        document.querySelector('#unsubscribe_from_spot')?.addEventListener('change', () => {
+            const currentUserId = localStorage.getItem('spotfix_user_id');
+
+            if (currentUserId) {
+                const task = this.allTasksData.find(task => +task.taskId === +this.currentActiveTaskId);
+                const viewers = task?.viewers || [];
+
+                let newViewers;
+
+                if (viewers.includes(+currentUserId)) {
+                    newViewers = viewers.filter(item => +item !== +currentUserId);
+                } else {
+                    newViewers = [...viewers, +currentUserId];
+                }
+
+                const filteredUsersIds = newViewers.join(',');
+
+                if (filteredUsersIds.length) {
+                    updateViewersDoboard(filteredUsersIds, this.currentActiveTaskId, this.params.projectToken, this.params.accountId)
+                        .then(() => {
+                            let timer = setTimeout(() => {
+                                this.createWidgetElement(this.socket_type_name, true);
+                                clearTimeout(timer);
+                            }, 500);
+                        })
+                }
+            }
+        }) || '';
+
+        document.querySelector('#highlight_the_spot')?.addEventListener('change', (e) => {
+            const currentUserId = localStorage.getItem('spotfix_user_id');
+            if (!currentUserId) return;
+
+            const highlightStatuses = JSON.parse(
+                localStorage.getItem('spotfix_highlight_statuses') || '{}'
+            );
+
+            if (!highlightStatuses[currentUserId]) {
+                highlightStatuses[currentUserId] = {};
+            }
+
+            highlightStatuses[currentUserId][this.currentActiveTaskId] = e.target.checked;
+
+            localStorage.setItem(
+                'spotfix_highlight_statuses',
+                JSON.stringify(highlightStatuses)
+            );
+        });
 
         document.getElementById('spotfix-widget-create-task-visibility')?.addEventListener('change', () => {
             this.new_task_type = this.new_task_type === 'PUBLIC' ? 'REGULAR' : 'PUBLIC';
@@ -10649,6 +10881,115 @@ class CleanTalkWidgetDoboard {
 }
 
 /**
+ * Check if file is an image based on extension
+ * @param {string} filename - The filename to check
+ * @return {boolean}
+ */
+isImageFile(filename) {
+    if (!filename) return false;
+    const ext = filename.split('.').pop().toLowerCase();
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg', 'ico'];
+    return imageExtensions.includes(ext);
+}
+
+/**
+ * Show image in lightbox
+ * @param {string} imageUrl - The image URL to show
+ * @param {string} imageAlt - The image alt text
+ */
+showImageLightbox(imageUrl, imageAlt = '') {
+    // Remove existing lightbox if any
+    this.hideImageLightbox();
+
+    // Create lightbox
+    const lightboxHTML = this.loadTemplate('imageLightbox', {
+        imageUrl: imageUrl,
+        imageAlt: imageAlt || 'Image',
+        buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen')
+    });
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = lightboxHTML;
+    const lightbox = tempDiv.firstElementChild;
+
+    document.body.appendChild(lightbox);
+
+    // Force reflow then add active class for animation
+    lightbox.offsetHeight;
+    lightbox.classList.add('active');
+
+    // Bind close events
+    const closeBtn = lightbox.querySelector('.doboard_task_widget-lightbox-close');
+    const overlay = lightbox.querySelector('.doboard_task_widget-lightbox-overlay');
+
+    const closeHandler = () => this.hideImageLightbox();
+
+    if (closeBtn) closeBtn.addEventListener('click', closeHandler);
+    if (overlay) overlay.addEventListener('click', closeHandler);
+
+    // Close on Escape key
+    const escHandler = (e) => {
+        if (e.key === 'Escape') {
+            this.hideImageLightbox();
+            document.removeEventListener('keydown', escHandler);
+        }
+    };
+    document.addEventListener('keydown', escHandler);
+}
+
+/**
+ * Hide image lightbox
+ */
+hideImageLightbox() {
+    const lightbox = document.getElementById('doboard_task_widget-lightbox');
+    if (lightbox) {
+        lightbox.classList.remove('active');
+        setTimeout(() => {
+            lightbox.remove();
+        }, 300);
+    }
+}
+
+/**
+ * Bind click events to attachments - images show lightbox, other files download
+ */
+bindImageAttachmentClicks() {
+    const allAttachments = document.querySelectorAll('.doboard_task_widget-attachment_item');
+    allAttachments.forEach(item => {
+        const newItem = item.cloneNode(true);
+        item.parentNode.replaceChild(newItem, item);
+
+        newItem.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const fileUrl = newItem.getAttribute('data-attachment-url');
+            const fileName = newItem.querySelector('.doboard_task_widget-attachment_filename')?.textContent || 'file';
+            const isImage = newItem.classList.contains('image-attachment');
+
+            if (isImage && fileUrl) {
+                this.showImageLightbox(fileUrl, fileName);
+            } else if (fileUrl) {
+                this.downloadFile(fileUrl, fileName);
+            }
+        });
+    });
+}
+
+/**
+ * Download a file
+ * @param {string} fileUrl - The file URL to download
+ * @param {string} fileName - The file name
+ */
+downloadFile(fileUrl, fileName) {
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+/**
  * Set user menu data with current user information
  */
 async setUserMenuData() {
@@ -10889,6 +11230,7 @@ function getTaskFullDetails(tasksDetails, taskId) {
         return comment?.taskId?.toString() === taskId?.toString()
     });
     const users = tasksDetails.users;
+    const attachments = tasksDetails.attachments || [];
     // Last comment
     let lastComment = comments.length > 0 ? comments[0] : null;
     // Author of the last comment
@@ -10922,6 +11264,11 @@ function getTaskFullDetails(tasksDetails, taskId) {
                 if (users && users.length > 0) {
                     author = users.find(u => String(u.user_id) === String(comment.userId));
                 }
+                // Get attachments for this comment
+                const commentAttachments = attachments
+                    .filter(att => String(att.commentId) === String(comment.commentId))
+                    .sort((a, b) => (a.attachmentOrder || 0) - (b.attachmentOrder || 0));
+                
                 return {
                     commentAuthorAvatarSrc: getAvatarSrc(author),
                     commentAuthorName: getAuthorName(author),
@@ -10929,6 +11276,7 @@ function getTaskFullDetails(tasksDetails, taskId) {
                     commentDate: date,
                     commentTime: time,
                     commentUserId: comment.userId || 'Unknown User',
+                    commentAttachments: commentAttachments,
                 };
             })
     };
@@ -11068,7 +11416,7 @@ function ksesFilter(html, options = false) {
         a: ['href', 'title', 'target', 'rel', 'style', 'class'],
         span: ['style', 'class', 'id'],
         p: ['style', 'class'],
-        div: ['style', 'class', 'id', 'data-node-path', 'data-task-id'],
+        div: ['style', 'class', 'id', 'data-node-path', 'data-task-id', 'data-attachment-url', 'data-is-image'],
         img: ['src', 'alt', 'title', 'class', 'style', 'width', 'height'],
         input: ['type', 'class', 'style', 'id', 'multiple', 'accept', 'value'],
         label: ['for', 'class', 'style'],
@@ -11089,28 +11437,7 @@ function ksesFilter(html, options = false) {
             const tag = node.tagName.toLowerCase();
 
             if (options) {
-                if (allowedTags[tag]) {
-                    // Special handling for images in 'concrete_issue_day_content' template (wrap img in link always)
-                    if (tag === 'img' && options.template === 'concrete_issue_day_content' && options.imgFilter) {
-                        const src = node.getAttribute('src') || '';
-                        const alt = node.getAttribute('alt') || '[image]';
-                        const link = doc.createElement('a');
-                        link.href = src;
-                        link.target = '_blank';
-                        link.className = 'doboard_task_widget-img-link';
-                        const img = doc.createElement('img');
-                        img.src = src;
-                        img.alt = alt;
-                        img.className = 'doboard_task_widget-comment_body-img-strict';
-                        link.appendChild(img);
-                        node.parentNode.insertBefore(link, node);
-                        node.remove();
-                        return;
-                    }
-                }
-
                 if (!allowedTags[tag]) {
-                    // Special handling for images in 'list_issues' template
                     if (tag === 'img' && options.template === 'list_issues' && options.imgFilter) {
                         const src = node.getAttribute('src') || '';
                         const alt = node.getAttribute('alt') || '[image]';
@@ -11125,7 +11452,6 @@ function ksesFilter(html, options = false) {
                 }
             }
 
-            // Remove disallowed attributes
             [...node.attributes].forEach(attr => {
                 const attrName = attr.name.toLowerCase();
                 if (!allowedAttrs[tag]?.includes(attrName) ||
@@ -11135,7 +11461,6 @@ function ksesFilter(html, options = false) {
                 }
             });
         }
-        // Recursively clean children
         [...node.childNodes].forEach(clean);
     }
     [...doc.body.childNodes].forEach(clean);
@@ -11281,6 +11606,18 @@ function spotFixGetSelectedData(selection) {
  * @param widgetInstance
  */
 function spotFixHighlightElements(spotsToBeHighlighted, widgetInstance) {
+    const currentUserId = localStorage.getItem('spotfix_user_id');
+    const highlightStatuses = localStorage.getItem('spotfix_highlight_statuses');
+
+    if (currentUserId && highlightStatuses) {
+        const userHighlightStatuses = JSON.parse(highlightStatuses)[currentUserId];
+        if (userHighlightStatuses) {
+            spotsToBeHighlighted = spotsToBeHighlighted.filter((spot) => {
+                if(userHighlightStatuses[spot?.taskId] === undefined) return true;
+                return userHighlightStatuses[spot?.taskId];
+            })
+        }
+    }
 
     if (spotsToBeHighlighted.length === 0) return;
 
@@ -11956,7 +12293,7 @@ class FileUploader {
         this.maxFiles = 5;
 
         /** @type {string[]} Allowed MIME types for files */
-        this.allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain', 'application/msword'];
+        this.allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
 
         /** @type {function} HTML escaping function for XSS protection */
         this.escapeHtmlHandler = escapeHtmlHandler;
@@ -12427,14 +12764,14 @@ class SpotFixTemplatesLoader {
             <span title="Return to all spots list"> All {{issuesCounter}}</span>
         </div>
         <div class="doboard_task_widget-issue-title">
-            <span style="text-align: center">{{issueTitle}}</span>
+            <span class="doboard_task_widget-issue-title" style="text-align: center">{{issueTitle}}</span>
             <span>{{amountOfComments}}</span>
         </div>
         <div class="doboard_task_widget-header-icons">
             <span id="maximizeWidgetContainer">
                 <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
-            <span id="openUserMenuButton">
+            <span id="openSpotMenuButton">
                 <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
@@ -12482,10 +12819,20 @@ class SpotFixTemplatesLoader {
     </div>
     <div class="doboard_task_widget-comment_text_container">
         <div class="doboard_task_widget-comment_body">{{commentBody}}</div>
+        <div class="doboard_task_widget-comment_attachments">{{commentAttachments}}</div>
         <div class="doboard_task_widget-comment_time">{{commentTime}}</div>
     </div>
 </div>
 `;
+    }
+
+    static concrete_issue_attachment() {
+        return `
+        <div class="doboard_task_widget-attachment_item {{attachmentClass}}" data-attachment-url="{{attachmentUrl}}" data-is-image="{{attachmentIsImage}}">
+            <img src="{{attachmentIcon}}" alt="{{attachmentFilename}}">
+            <span class="doboard_task_widget-attachment_filename">{{attachmentFilename}}</span>
+        </div>
+    `;
     }
 
     static create_issue() {
@@ -12744,6 +13091,82 @@ class SpotFixTemplatesLoader {
 </div>`;
     }
 
+    static spot_menu() {
+        return `
+<div class="doboard_task_widget-container">
+    <div class="doboard_task_widget-user_menu-header">
+        <div class="doboard_task_widget-user_menu-header-top">
+            <div id="spotfix_back_button" class="doboard_task_widget_cursor-pointer" 
+            style="display: flex;align-items: center;gap: 8px;">
+                <img src="{{chevronBackDark}}" alt="">
+                <span> Back</span>
+            </div>
+            <div>
+                <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center">
+             <span id="spotfix_widget-task-menu_name">{{taskName}}
+             <img src="{{taskType}}" alt="" style="margin-left: 6px">
+             </span>
+             <span id="spotfix_widget-task-menu_users">{{viewersCount}}</span>
+        </div>
+    </div>
+    <div class="doboard_task_widget-content" style="min-height:200px ">
+        <div style="height: 392px">
+        <div style="position: sticky; top: 0; margin-top: 8px">
+            <div class="doboard_task_widget-task_menu-item">
+                <img src="{{iconHighlight}}" alt="" style="margin-right: 12px">
+                <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
+                    <span style="font-weight: 400; font-size: 14px; color: #252A2F; display: inline-flex; flex-direction: column;">
+                        Highlight issue
+                        <span style="font-weight: 400; font-size: 12px; color: #707A83;">Available only to authorized users</span>
+                        </span>
+                    <label class="toggle" style="margin-left: 8px">
+                      <input id="highlight_the_spot" type="checkbox">
+                      <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="doboard_task_widget-task_menu-item">
+                <img src="{{iconMute}}" alt="" style="margin-right: 12px">
+                <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
+                    <span style="font-weight: 400; font-size: 14px; color: #252A2F; display: inline-flex; flex-direction: column;">
+                        Mute conversation
+                        <span style="font-weight: 400; font-size: 12px; color: #707A83;">Available only to authorized users</span>
+                        </span>
+                    <label class="toggle" style="margin-left: 8px">
+                      <input id="unsubscribe_from_spot" type="checkbox">
+                      <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="doboard_task_widget-task_menu-item" style="height: 60px">
+                <img src="{{iconLinkChainDark}}" alt="" style="margin-right: 12px">
+                <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
+                    <span style="font-weight: 400; font-size: 14px; color: #252A2F; display: inline-flex; flex-direction: column;">
+                        Link the doBoard task
+                        <a href={{doboardLink}} style="font-weight: 400; font-size: 14px;">{{doboardLinkShort}}</a>
+                        </span>
+                </div>
+            </div>
+            <div class="doboard_task_widget-task_menu-item" 
+            style="flex-direction: column; height: fit-content; padding-top: 8px; max-height: 200px; overflow: auto;">
+                {{viewers}}
+            </div>
+        </div>
+        </div>
+        <div style="padding: 16px; font-size: 13px; position: sticky; bottom: 0; margin-top: 12px">
+            <span>{{spotfixVersion}}</span>
+            <span>Powered by
+            <a rel="nofollow" target="_blank" href="https://doboard.com">
+             doBoard
+            </a></span>
+        </div>
+    </div>
+</div>`;
+    }
+
     static wrap() {
         return `
 <div class="doboard_task_widget-wrap" style="bottom: {{position}}">
@@ -12766,6 +13189,20 @@ class SpotFixTemplatesLoader {
     }
     static fixedTaskHtml() {
         return `<p class="doboard_task_widget-bottom-is-fixed-task-block"><span class="doboard_task_widget-bottom-is-fixed-task">This issue already fixed</span></p>`;
+    }
+
+    static imageLightbox() {
+        return `
+        <div class="doboard_task_widget-lightbox" id="doboard_task_widget-lightbox">
+            <div class="doboard_task_widget-lightbox-overlay"></div>
+            <div class="doboard_task_widget-lightbox-content">
+                <img src="{{imageUrl}}" alt="{{imageAlt}}" class="doboard_task_widget-lightbox-image">
+            </div>
+            <button class="doboard_task_widget-lightbox-close doboard_task_widget_cursor-pointer" title="Close">
+                <img src="{{buttonCloseScreen}}" alt="Close">
+            </button>
+        </div>
+    `;
     }
 
 }
@@ -12886,6 +13323,13 @@ class SpotFixSVGLoader {
 </svg>`;
     }
 
+    static iconLinkChainDark() {
+        return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M11.25 5.25H13.5C13.9925 5.25 14.4801 5.347 14.9351 5.53545C15.39 5.72391 15.8034 6.00013 16.1517 6.34835C16.4999 6.69657 16.7761 7.10997 16.9645 7.56494C17.153 8.01991 17.25 8.50754 17.25 9C17.25 9.49246 17.153 9.98009 16.9645 10.4351C16.7761 10.89 16.4999 11.3034 16.1517 11.6517C15.8034 11.9999 15.39 12.2761 14.9351 12.4645C14.4801 12.653 13.9925 12.75 13.5 12.75H11.25M6.75 12.75H4.5C4.00754 12.75 3.51991 12.653 3.06494 12.4645C2.60997 12.2761 2.19657 11.9999 1.84835 11.6517C1.14509 10.9484 0.75 9.99456 0.75 9C0.75 8.00544 1.14509 7.05161 1.84835 6.34835C2.55161 5.64509 3.50544 5.25 4.5 5.25H6.75" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 9H12" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+    }
+
     static iconEllipsesMore() {
         return `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -12964,6 +13408,190 @@ height="100%" width="100%"/></svg>`;
         return `<svg width="12" height="15" viewBox="0 0 12 15" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M6 0C6.99456 0 7.94839 0.395088 8.65165 1.09835C9.35491 1.80161 9.75 2.75544 9.75 3.75V6C10.3467 6 10.919 6.23705 11.341 6.65901C11.7629 7.08097 12 7.65326 12 8.25V12.75C12 13.3467 11.7629 13.919 11.341 14.341C10.919 14.7629 10.3467 15 9.75 15H2.25C1.65326 15 1.08097 14.7629 0.65901 14.341C0.237053 13.919 0 13.3467 0 12.75V8.25C0 7.65326 0.237053 7.08097 0.65901 6.65901C1.08097 6.23705 1.65326 6 2.25 6V3.75C2.25 2.75544 2.64509 1.80161 3.34835 1.09835C4.05161 0.395088 5.00544 0 6 0ZM6 9C5.62157 8.99988 5.25707 9.14281 4.97959 9.40012C4.7021 9.65744 4.53213 10.0101 4.50375 10.3875L4.5 10.5C4.5 10.7967 4.58797 11.0867 4.7528 11.3334C4.91762 11.58 5.15189 11.7723 5.42597 11.8858C5.70006 11.9994 6.00166 12.0291 6.29264 11.9712C6.58361 11.9133 6.85088 11.7704 7.06066 11.5607C7.27044 11.3509 7.4133 11.0836 7.47118 10.7926C7.52906 10.5017 7.49935 10.2001 7.38582 9.92597C7.27229 9.65189 7.08003 9.41762 6.83335 9.2528C6.58668 9.08797 6.29667 9 6 9ZM6 1.5C5.40326 1.5 4.83097 1.73705 4.40901 2.15901C3.98705 2.58097 3.75 3.15326 3.75 3.75V6H8.25V3.75C8.25 3.15326 8.01295 2.58097 7.59099 2.15901C7.16903 1.73705 6.59674 1.5 6 1.5Z" fill="#BBC7D1"/>
 </svg>`
+    }
+
+    static iconLockDark() {
+        return `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 1.5C9.99456 1.5 10.9484 1.89509 11.6517 2.59835C12.3549 3.30161 12.75 4.25544 12.75 5.25V7.5C13.3467 7.5 13.919 7.73705 14.341 8.15901C14.7629 8.58097 15 9.15326 15 9.75V14.25C15 14.8467 14.7629 15.419 14.341 15.841C13.919 16.2629 13.3467 16.5 12.75 16.5H5.25C4.65326 16.5 4.08097 16.2629 3.65901 15.841C3.23705 15.419 3 14.8467 3 14.25V9.75C3 9.15326 3.23705 8.58097 3.65901 8.15901C4.08097 7.73705 4.65326 7.5 5.25 7.5V5.25C5.25 4.25544 5.64509 3.30161 6.34835 2.59835C7.05161 1.89509 8.00544 1.5 9 1.5ZM9 10.5C8.62157 10.4999 8.25707 10.6428 7.97959 10.9001C7.7021 11.1574 7.53213 11.5101 7.50375 11.8875L7.5 12C7.5 12.2967 7.58797 12.5867 7.7528 12.8334C7.91762 13.08 8.15189 13.2723 8.42597 13.3858C8.70006 13.4994 9.00166 13.5291 9.29264 13.4712C9.58361 13.4133 9.85088 13.2704 10.0607 13.0607C10.2704 12.8509 10.4133 12.5836 10.4712 12.2926C10.5291 12.0017 10.4994 11.7001 10.3858 11.426C10.2723 11.1519 10.08 10.9176 9.83335 10.7528C9.58668 10.588 9.29667 10.5 9 10.5ZM9 3C8.40326 3 7.83097 3.23705 7.40901 3.65901C6.98705 4.08097 6.75 4.65326 6.75 5.25V7.5H11.25V5.25C11.25 4.65326 11.0129 4.08097 10.591 3.65901C10.169 3.23705 9.59674 3 9 3Z" fill="#707A83"/>
+</svg>`}
+
+    static iconPublicDark() {
+        return `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6.75062 0.000203522C3.12883 -0.0285965 -0.0218053 3.00287 0.000657237 6.7502C-0.0614428 11.1072 4.28792 14.4434 8.47944 13.2751C16.0166 11.1029 14.6756 0.203304 6.75062 0.000203522ZM10.6881 8.97395C10.4706 10.5115 9.72062 11.6027 8.86937 12.364C8.73812 12.4127 8.60687 12.4577 8.47187 12.4952C8.36687 10.714 7.57187 10.4402 6.79562 10.1702C5.79913 9.91824 5.24736 9.21868 5.22066 8.26517C5.16812 7.79645 5.11562 7.30895 4.60562 6.9677C4.07312 6.61524 3.61187 6.58145 3.20308 6.5477C2.71933 6.5102 2.36683 6.48395 2.03683 5.90645C1.36183 4.72895 2.17933 3.1877 3.21433 1.9052C4.20808 1.18145 5.43058 0.750203 6.75058 0.750203C7.39033 0.677941 8.26566 1.00427 8.44933 1.56024C8.68251 2.19185 7.57776 2.70575 7.33183 3.2927C7.09554 3.7652 7.23808 4.12145 7.34308 4.3802C7.44058 4.6202 7.44433 4.6652 7.36933 4.74395C7.16683 4.9427 6.86683 4.81895 6.39433 4.60145C5.91808 4.38395 5.37808 4.13645 4.81558 4.32395C3.54677 4.72457 3.75808 6.14713 4.87558 6.18774C5.20941 6.18474 5.87203 5.98637 6.11683 6.17645C6.14683 6.2027 6.18808 6.25145 6.18808 6.3752C6.24324 7.21183 7.25511 7.274 7.95805 6.91895C8.58808 6.60395 8.66308 6.67895 9.24433 7.25642C9.81073 7.91537 10.8632 7.90865 10.6881 8.97395Z" fill="#707A83"/>
+</svg>`}
+
+    static iconMute() {
+        return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M16.005 14.6501C16.4382 14.0995 16.7682 13.5163 16.8863 12.832C17.0863 11.6751 16.9025 10.6045 16.1838 9.64822C15.8788 9.24197 15.8969 8.74072 16.21 8.37947C16.5082 8.03447 17.0163 7.93697 17.4225 8.14572C17.5938 8.23322 17.7188 8.3701 17.8319 8.52135C18.6 9.5501 18.9488 10.7151 18.955 11.9888C18.9613 13.2876 18.6157 14.477 17.8325 15.527C17.7244 15.672 17.6082 15.812 17.4432 15.8895C17.3094 15.952 17.36 15.9976 17.4313 16.0676C17.7144 16.3463 18 16.6232 18.2725 16.9126C18.3925 17.0401 18.4469 17.0563 18.555 16.892C19.1538 15.9838 19.5588 14.997 19.7644 13.9326C20.1744 11.8101 19.9532 9.76635 18.9513 7.82947C18.7469 7.43447 18.4975 7.06822 18.2263 6.71635C17.8319 6.2051 17.8863 5.61197 18.355 5.24822C18.81 4.89447 19.4169 5.00197 19.8088 5.50447C21.06 7.1101 21.7169 8.9451 21.8982 10.9595C22.0907 13.0932 21.745 15.1307 20.77 17.0495C20.5513 17.4801 20.3088 17.8995 20.0057 18.2751C19.8638 18.4507 19.8925 18.5407 20.0438 18.6863C20.5882 19.2107 21.1232 19.7451 21.6494 20.2882C22.1938 20.8507 21.9707 21.7426 21.2363 21.9557C20.8532 22.067 20.5132 21.9695 20.2294 21.687C19.8538 21.3132 19.4794 20.9382 19.1044 20.5632C13.5269 14.9863 7.95378 9.40572 2.36753 3.83822C1.76378 3.23635 1.97503 2.30635 2.71065 2.09447C3.1244 1.9751 3.47065 2.1026 3.77065 2.40447C4.90815 3.54822 6.05378 4.68447 7.18878 5.83135C7.3369 5.98072 7.48565 6.02635 7.69253 6.04822C8.3619 6.11822 8.87878 5.87697 9.38753 5.45072C10.6594 4.38635 11.9732 3.37197 13.2657 2.33197C13.6125 2.0526 13.9832 1.9576 14.3925 2.14885C14.8132 2.3451 14.9719 2.70197 14.9713 3.15572C14.9682 6.56135 14.9713 9.96697 14.965 13.3726C14.965 13.5438 15.0144 13.6607 15.1363 13.777C15.4344 14.062 15.7194 14.3607 16.005 14.6501Z" fill="#252A2F"/>
+<path d="M2.0035 12.0173C2.0035 11.0279 2.0035 10.0379 2.0035 9.04853C2.0035 8.13978 2.3535 7.38916 3.021 6.77728C3.1385 6.66916 3.20475 6.65041 3.33475 6.78041C7.171 10.6248 11.0122 14.4642 14.8547 18.3023C14.9385 18.386 14.9729 18.4692 14.9722 18.5879C14.9672 19.3748 14.9697 20.1617 14.9697 20.9485C14.9697 21.376 14.7941 21.7067 14.406 21.8942C14.0097 22.0854 13.6366 22.0135 13.2954 21.7404C11.886 20.6104 10.4716 19.4854 9.06662 18.3504C8.78037 18.1192 8.47912 18.001 8.10662 18.0054C7.086 18.0192 6.06537 18.0123 5.04412 18.0098C3.32037 18.0054 2.01537 16.7098 2.00412 14.986C1.99787 13.9967 2.00287 13.0067 2.00287 12.0173H2.0035Z" fill="#252A2F"/>
+</svg>`}
+
+    static iconHighlight() {
+        return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14.9364 3.00011C14.7416 3.00322 14.5556 3.08202 14.4179 3.21984L4.87148 12.7662C4.7421 12.8965 4.665 13.0697 4.65477 13.253C4.64454 13.4363 4.7019 13.617 4.81598 13.7609L3.22073 15.3561C3.08007 15.4967 3.00102 15.6874 3.00098 15.8863V18.0074C3.001 18.2063 3.08002 18.3971 3.22067 18.5377C3.36132 18.6784 3.55207 18.7574 3.75098 18.7574H5.87213C6.07102 18.7574 6.26175 18.6784 6.40238 18.5377L7.9932 16.9469L8.0547 17.0084C8.1953 17.1485 8.38572 17.2272 8.58424 17.2272C8.78276 17.2272 8.97318 17.1485 9.11378 17.0084L18.6602 7.46347C18.8008 7.32281 18.8797 7.13208 18.8797 6.9332C18.8797 6.73432 18.8008 6.54358 18.6602 6.40292L15.48 3.21981C15.409 3.14876 15.3244 3.0927 15.2313 3.05496C15.1382 3.01721 15.0385 2.99855 14.9381 3.00009L14.9364 3.00011ZM14.9499 4.81066L17.071 6.93321L8.5851 15.4176L8.56035 15.3942C8.54855 15.3811 8.5363 15.3684 8.5236 15.3561L6.46403 13.2965L14.9499 4.81066Z" fill="#252A2F"/>
+<path d="M12.8044 15.75C12.6056 15.75 12.4148 15.8291 12.2742 15.9697L8.52419 19.7197C8.41937 19.8246 8.34799 19.9583 8.31908 20.1037C8.29017 20.2492 8.30503 20.3999 8.36177 20.5369C8.41852 20.674 8.51461 20.7911 8.6379 20.8735C8.76119 20.9559 8.90614 20.9999 9.05444 21H20.2503C20.4492 21 20.64 20.921 20.7806 20.7803C20.9213 20.6397 21.0003 20.4489 21.0003 20.25V16.5C21.0003 16.3011 20.9213 16.1103 20.7806 15.9697C20.64 15.829 20.4492 15.75 20.2503 15.75H12.8044Z" fill="#252A2F"/>
+</svg>`}
+
+
+
+
+
+
+    /**
+ * Get attachment icon based on file extension
+ * @param {string} filename - The filename to check
+ * @return {string} - Data URI of the appropriate icon
+ */
+static getAttachmentIcon(filename, fileUrl, thumbnailUrl) {
+    if (!filename) {
+        return SpotFixSVGLoader.getAsDataURI('iconAttachmentDefault');
+    }
+
+    const ext = filename.split('.').pop().toLowerCase();
+
+    // Image files - return thumbnail or full image URL
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg', 'ico'];
+    if (imageExtensions.includes(ext)) {
+        // Return thumbnail URL if available, otherwise full image URL
+        return thumbnailUrl || fileUrl;
+    }
+
+    // Text files
+    const txtExtensions = ['txt', 'md', 'rtf', 'log', 'csv'];
+    if (txtExtensions.includes(ext)) {
+        return SpotFixSVGLoader.getAsDataURI('iconAttachmentTxt');
+    }
+
+    // Document files
+    const pdfExtensions = ['pdf', 'ppt', 'pptx'];
+    if (pdfExtensions.includes(ext)) {
+        return SpotFixSVGLoader.getAsDataURI('iconAttachmentPdf');
+    }
+    // Document files
+    const docExtensions = ['doc', 'docx', 'odt'];
+    if (docExtensions.includes(ext)) {
+        return SpotFixSVGLoader.getAsDataURI('iconAttachmentDoc');
+    }
+
+    // Code files
+    const codeExtensions = ['js', 'ts', 'jsx', 'tsx', 'py', 'java', 'c', 'cpp', 'h', 'hpp', 'cs', 'go', 'rs', 'rb', 'php', 'swift', 'kt', 'scala', 'json', 'yaml', 'yml', 'toml', 'ini', 'cfg', 'conf', 'sh', 'bash', 'zsh', 'ps1', 'bat', 'cmd'];
+    if (codeExtensions.includes(ext)) {
+        return SpotFixSVGLoader.getAsDataURI('iconAttachmentCode');
+    }
+
+    // XML/HTML files
+    const xmlExtensions = ['xml', 'xls', 'xlsx', 'html', 'htm', 'xhtml', 'svg', 'css', 'scss', 'sass', 'less'];
+    if (xmlExtensions.includes(ext)) {
+        return SpotFixSVGLoader.getAsDataURI('iconAttachmentXml');
+    }
+
+    // Default icon for all other files
+    return SpotFixSVGLoader.getAsDataURI('iconAttachmentDefault');
+}
+
+
+    static iconAttachmentDefault() {
+        return `<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_20762_37355)">
+            <path d="M48.65 64.0008H15.1017C15.03 63.9524 14.95 63.9441 14.8667 63.9374C11.5267 63.6608 9.59332 61.6008 8.32332 58.7308C7.94165 57.8674 7.82499 56.9441 7.82499 55.9924C7.83332 40.0308 7.84498 24.0708 7.81998 8.10909C7.81498 4.85243 10.1017 1.5341 13.4083 0.374095C14.1783 0.104095 15.0033 0.0807618 15.8083 0.0790951C22.935 0.0640951 30.0616 0.0707618 37.19 0.0724284C37.3716 0.0724284 37.5666 0.0174285 37.7333 0.144095C37.9983 0.599095 37.9667 1.10243 37.9683 1.59743C37.97 6.72743 37.9683 11.8574 37.9683 16.9874C37.9683 18.0296 38.4994 18.5513 39.5616 18.5524C44.2333 18.5524 48.9067 18.5541 53.5783 18.5508C54.2633 18.5508 54.9483 18.5508 55.625 18.6774C55.9283 18.7824 56.0083 19.0274 56.0283 19.3158C56.05 19.6474 56.0483 19.9808 56.0483 20.3124C56.0483 32.1408 56.0117 43.9691 56.0733 55.7974C56.09 59.0608 53.8983 62.3874 50.8433 63.6091C50.1383 63.8908 49.3766 63.8391 48.6516 64.0008H48.65Z" fill="#FEB01F"/>
+            <path d="M37.665 0.154297C38 0.30263 38.1917 0.610963 38.4317 0.860963C44.06 6.72763 49.685 12.5993 55.31 18.4693C55.4233 18.5876 55.5267 18.7193 55.635 18.8443C49.9267 18.8443 44.2183 18.8443 38.5117 18.8443C37.6833 18.8443 37.6817 18.8426 37.6817 18.0276C37.6817 12.381 37.6817 6.7343 37.6817 1.08763C37.6817 0.775963 37.6717 0.464297 37.6683 0.154297H37.665Z" fill="#FEC863"/>
+            <path d="M21.6233 4.69483C22.495 4.69483 23.3683 4.71483 24.24 4.6865C24.6817 4.6715 24.8167 4.83316 24.8017 5.2615C24.7733 5.98816 24.8167 6.7165 24.785 7.44316C24.7667 7.86816 24.93 7.97816 25.3267 7.96816C26.1567 7.94483 26.9883 7.95316 27.82 7.96483C28.55 7.97316 28.8233 8.25483 28.8367 8.9915C28.845 9.5115 28.8483 10.0298 28.835 10.5498C28.8167 11.2032 28.5283 11.4948 27.8733 11.5048C27.0017 11.5182 26.1283 11.5215 25.2567 11.5032C24.9 11.4948 24.7833 11.6232 24.79 11.9715C24.8067 12.8432 24.8167 13.7182 24.7867 14.5898C24.7717 15.0282 24.9617 15.1048 25.3417 15.0948C26.1717 15.0732 27.0033 15.0815 27.835 15.0898C28.54 15.0982 28.8217 15.3732 28.8367 16.0632C28.8483 16.5832 28.8467 17.1015 28.8367 17.6215C28.8233 18.3215 28.55 18.6048 27.855 18.6148C27.0033 18.6282 26.1517 18.6332 25.3 18.6115C24.9317 18.6032 24.7783 18.7082 24.79 19.0998C24.8133 19.9715 24.8133 20.8448 24.79 21.7182C24.7783 22.1215 24.9517 22.2048 25.31 22.1965C26.14 22.1782 26.9717 22.1832 27.8033 22.1932C28.5417 22.2015 28.825 22.4815 28.8383 23.2015C28.8483 23.7415 28.845 24.2815 28.8383 24.8215C28.83 25.3982 28.525 25.7165 27.95 25.7198C26.4133 25.7298 24.875 25.7332 23.3383 25.7165C22.765 25.7115 22.4667 25.3798 22.46 24.8048C22.4533 24.1198 22.4333 23.4332 22.4667 22.7482C22.4867 22.3232 22.37 22.1598 21.9183 22.1782C21.11 22.2132 20.2983 22.1948 19.4883 22.1848C18.715 22.1765 18.43 21.9032 18.4083 21.1398C18.3933 20.6415 18.3933 20.1415 18.4083 19.6448C18.4317 18.9148 18.715 18.6298 19.445 18.6182C20.2967 18.6048 21.1483 18.6015 22 18.6198C22.3483 18.6282 22.4733 18.5198 22.465 18.1598C22.4433 17.2882 22.445 16.4148 22.465 15.5415C22.4733 15.1932 22.3667 15.0665 22.0083 15.0748C21.1783 15.0965 20.3467 15.0882 19.515 15.0798C18.7167 15.0715 18.4267 14.7865 18.4067 13.9898C18.3933 13.4915 18.39 12.9915 18.41 12.4948C18.4367 11.8082 18.7267 11.5215 19.4233 11.5082C20.275 11.4915 21.1267 11.4948 21.9783 11.5082C22.3 11.5132 22.475 11.4582 22.465 11.0715C22.44 10.1782 22.44 9.28483 22.465 8.39149C22.475 8.00483 22.2983 7.94816 21.9767 7.95316C21.1667 7.9665 20.3567 7.96483 19.5467 7.95483C18.695 7.94483 18.4217 7.6765 18.405 6.83816C18.395 6.33983 18.4283 5.83983 18.395 5.34316C18.3633 4.86983 18.4967 4.67816 19.01 4.70316C19.88 4.74483 20.755 4.71483 21.6267 4.71483C21.6267 4.70816 21.6267 4.69983 21.6267 4.69316L21.6233 4.69483Z" fill="#FEFEFE"/>
+            <path d="M25.6533 31.1115C25.2783 33.1998 26.2667 35.0065 26.8733 36.8848C27.1567 37.7631 27.255 38.6231 26.9383 39.5031C26.305 41.2598 24.395 42.2131 22.5967 41.6731C20.83 41.1431 19.74 39.3115 20.2083 37.5215C20.5017 36.4015 20.9133 35.3115 21.3033 34.2181C21.5167 33.6231 21.6167 33.0281 21.6017 32.3948C21.575 31.3365 21.59 30.2781 21.5967 29.2181C21.6017 28.3898 21.89 28.1081 22.7317 28.0981C23.3133 28.0915 23.8933 28.0931 24.475 28.0981C25.3817 28.1065 25.6433 28.3731 25.6517 29.3048C25.6567 29.9065 25.6517 30.5081 25.6517 31.1115H25.6533Z" fill="#FEFEFE"/>
+            <path d="M23.6417 36.4238C24.5383 36.4238 25.1083 36.8649 25.3517 37.7472C25.5667 38.5288 25.3183 39.3005 24.71 39.7422C24.11 40.1772 23.17 40.1822 22.5417 39.7522C21.9267 39.3322 21.6683 38.5572 21.8783 37.7638C22.1161 36.8705 22.7033 36.4238 23.64 36.4238H23.6417Z" fill="#FEB01F"/>
+            </g>
+            <defs>
+            <clipPath id="clip0_20762_37355">
+            <rect width="64" height="64" fill="white"/>
+            </clipPath>
+            </defs>
+        </svg>`;
+    }
+
+   static iconAttachmentTxt() {
+        return `<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_20762_37349)">
+            <path d="M48.525 63.9998H15.225C13.6117 63.9365 12.1817 63.3732 10.9633 62.3348C9.05666 60.7115 7.87333 58.6782 7.86999 56.1265C7.85166 40.0782 7.85833 24.0298 7.86333 7.98317C7.86333 4.60984 10.5133 1.15984 13.765 0.291503C14.4483 0.109836 15.1617 0.0765031 15.865 0.0765031C22.9517 0.0681698 30.04 0.0698365 37.1267 0.0748365C37.3283 0.0748365 37.5433 0.0115031 37.73 0.151503C37.9667 0.526503 37.9317 0.946503 37.9317 1.35984C37.9333 6.67484 37.9317 11.9898 37.9317 17.3048C37.9317 17.5332 37.9383 17.7615 37.935 17.9898C37.93 18.4115 38.145 18.5898 38.5517 18.5832C38.78 18.5798 39.0083 18.5865 39.2367 18.5865C44.26 18.5865 49.2833 18.5865 54.3067 18.5848C54.745 18.5848 55.1767 18.6048 55.605 18.6998C55.92 18.8398 55.9783 19.1215 56 19.4198C56.0183 19.6682 56.01 19.9182 56.01 20.1682C56.01 32.0748 55.9833 43.9815 56.0283 55.8865C56.04 58.9848 53.9367 62.3615 50.7733 63.6115C50.045 63.8998 49.2683 63.8532 48.5217 64.0015L48.525 63.9998Z" fill="#251D36"/>
+            <path d="M37.6667 0.152344C38.08 0.36901 38.335 0.755677 38.645 1.07901C44.22 6.88568 49.7883 12.699 55.3567 18.5123C55.4567 18.6157 55.5417 18.7323 55.635 18.8423C49.8817 18.8423 44.1283 18.8373 38.375 18.8573C37.83 18.859 37.6717 18.7173 37.6733 18.1623C37.6933 12.449 37.6867 6.73568 37.685 1.02401C37.685 0.73401 37.6733 0.442344 37.6667 0.152344Z" fill="#676173"/>
+            <path d="M31.9483 43.2074C31.29 44.3091 30.67 45.3107 30.09 46.3341C29.9 46.6674 29.6867 46.7907 29.305 46.7774C28.4783 46.7491 27.6483 46.7691 26.825 46.7691C26.755 46.5241 26.9217 46.3907 27.0117 46.2391C28.015 44.5424 29.0117 42.8424 30.045 41.1657C30.3067 40.7424 30.33 40.4324 30.06 39.9974C29.0883 38.4341 28.1633 36.8424 27.165 35.1707C28.1983 35.1707 29.1417 35.1757 30.085 35.1674C30.3633 35.1657 30.4067 35.3974 30.5067 35.5624C30.9783 36.3341 31.4383 37.1124 31.9467 37.9624C32.4483 37.1141 32.9117 36.3607 33.3433 35.5874C33.5133 35.2841 33.7033 35.1457 34.0683 35.1591C34.9167 35.1891 35.7683 35.1691 36.7167 35.1691C36.51 35.5257 36.34 35.8241 36.165 36.1191C35.3717 37.4574 34.5933 38.8057 33.7717 40.1257C33.5483 40.4841 33.575 40.7274 33.785 41.0707C34.79 42.7174 35.765 44.3824 36.75 46.0407C36.875 46.2507 36.9883 46.4657 37.16 46.7691C36.1483 46.7691 35.225 46.7591 34.3017 46.7741C33.99 46.7791 33.935 46.5374 33.825 46.3557C33.2133 45.3441 32.6133 44.3274 31.9483 43.2074Z" fill="#FEFEFE"/>
+            <path d="M21.5767 35.1709C23.0083 35.1709 24.4417 35.1826 25.8733 35.1626C26.2617 35.1576 26.44 35.2343 26.4067 35.6693C26.3683 36.1643 26.365 36.6676 26.4067 37.1626C26.445 37.6276 26.2517 37.7126 25.8383 37.6943C25.1133 37.6643 24.3833 37.7143 23.66 37.6759C23.2033 37.6509 23.0683 37.7676 23.0733 38.2459C23.1 40.8193 23.0867 43.3943 23.0867 45.9693C23.0867 46.5048 22.8089 46.7726 22.2533 46.7726C21.755 46.7726 21.2533 46.7393 20.76 46.7826C20.255 46.8259 20.0933 46.6793 20.0983 46.1476C20.1267 43.5326 20.1017 40.9159 20.1217 38.3009C20.125 37.8409 20.0467 37.6409 19.5267 37.6759C18.7617 37.7259 17.9917 37.6726 17.2233 37.6959C16.8933 37.7059 16.7917 37.6009 16.8067 37.2759C16.8317 36.7576 16.8417 36.2359 16.805 35.7193C16.775 35.2926 16.8933 35.1526 17.3417 35.1626C18.7517 35.1926 20.165 35.1743 21.5767 35.1743V35.1709Z" fill="#FEFEFE"/>
+            <path d="M42.3133 35.1708C43.745 35.1708 45.1783 35.1808 46.61 35.1642C46.9483 35.1608 47.0883 35.2392 47.07 35.6058C47.04 36.1642 47.0417 36.7275 47.07 37.2875C47.0867 37.6325 46.9483 37.6992 46.64 37.6925C45.8717 37.6742 45.1033 37.7158 44.3367 37.6758C43.8733 37.6508 43.7483 37.7775 43.7533 38.2508C43.7783 40.8875 43.7533 43.5242 43.7767 46.1608C43.78 46.6392 43.675 46.8242 43.1667 46.7842C42.5483 46.7358 41.92 46.7475 41.3 46.7825C40.8933 46.8042 40.7783 46.6792 40.7817 46.2692C40.8 43.6125 40.7817 40.9542 40.8017 38.2975C40.805 37.8325 40.7183 37.6425 40.2033 37.6758C39.4383 37.7258 38.6683 37.6758 37.9 37.6958C37.5767 37.7042 37.46 37.6092 37.4733 37.2775C37.4967 36.7392 37.5017 36.1975 37.4733 35.6592C37.4517 35.2792 37.5667 35.1592 37.9567 35.1658C39.41 35.1892 40.8617 35.1742 42.315 35.1742L42.3133 35.1708Z" fill="#FEFEFE"/>
+            </g>
+            <defs>
+            <clipPath id="clip0_20762_37349">
+            <rect width="64" height="64" fill="white"/>
+            </clipPath>
+            </defs>
+        </svg>`;
+    }
+    static iconAttachmentDoc() {
+        return `<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_20762_37361)">
+            <path d="M48.65 63.9994H15.1017C15.0467 63.9727 14.9933 63.946 14.9283 63.9394C11.605 63.5627 8.99666 61.3227 8.10166 58.086C7.91166 57.401 7.81999 56.7094 7.81999 55.996C7.82499 40.0344 7.84499 24.0744 7.80666 8.11271C7.79999 5.14105 9.95166 1.59605 13.345 0.391048C14.135 0.111048 14.9783 0.0827149 15.805 0.0810482C22.9317 0.0660482 30.0583 0.0710482 37.1867 0.0743816C37.3683 0.0743816 37.5633 0.0193816 37.73 0.146048C37.995 0.599382 37.97 1.10271 37.97 1.59771C37.9733 6.64105 37.97 11.686 37.97 16.7294C37.97 16.9777 37.9683 17.2277 37.97 17.476C37.9833 18.406 38.1183 18.536 39.0717 18.5477C39.3833 18.551 39.695 18.5477 40.005 18.5477C44.4667 18.5477 48.9283 18.5477 53.39 18.5477C54.1367 18.5477 54.8833 18.5377 55.6217 18.676C55.9317 18.776 56.005 19.0244 56.025 19.3094C56.0483 19.641 56.0467 19.9727 56.0467 20.306C56.0467 32.1644 56.06 44.0227 56.04 55.881C56.0333 59.3594 54.275 61.7927 51.2967 63.4294C50.4717 63.8827 49.5333 63.8294 48.645 64.001L48.65 63.9994Z" fill="#0263D0"/>
+            <path d="M37.6667 0.152057C37.8783 0.177057 37.965 0.363724 38.0883 0.492057C43.8883 6.54206 49.6867 12.5954 55.4817 18.6487C55.5383 18.7071 55.5817 18.7804 55.63 18.8454C49.9217 18.8454 44.215 18.8454 38.5067 18.8454C37.6867 18.8454 37.6833 18.8437 37.6833 18.0237C37.6833 12.3571 37.6833 6.68872 37.6833 1.02206C37.6833 0.732057 37.6717 0.440391 37.6667 0.150391V0.152057Z" fill="#4E91DE"/>
+            <path d="M15.7633 40.4195C15.7633 38.8611 15.7783 37.3028 15.7533 35.7445C15.7467 35.3028 15.83 35.1078 16.3283 35.1345C17.86 35.2178 19.4067 34.9845 20.9267 35.2911C23.7283 35.8578 25.2567 37.9411 25.05 40.8561C24.8533 43.6311 22.98 45.5095 20.1883 45.6578C18.8617 45.7278 17.53 45.6761 16.2 45.7028C15.8233 45.7111 15.7533 45.5528 15.7567 45.2211C15.7683 43.6211 15.7617 42.0211 15.7617 40.4211L15.7633 40.4195Z" fill="#FEFEFE"/>
+            <path d="M31.4733 35.0234C34.63 35.0268 36.925 37.2934 36.9267 40.4101C36.9283 43.5334 34.6433 45.8034 31.4883 45.8101C28.2933 45.8168 25.9633 43.5468 25.96 40.4251C25.9567 37.2984 28.2817 35.0201 31.4733 35.0234Z" fill="#FEFEFE"/>
+            <path d="M43.4867 35.0275C44.595 35.0259 45.775 35.3359 46.775 36.1859C47.43 36.7425 47.8417 37.4459 48.0283 38.2842C48.0917 38.5709 48.0567 38.7492 47.7067 38.8059C47.0933 38.9042 46.485 39.0442 45.8767 39.1709C45.6133 39.2259 45.4467 39.2192 45.315 38.8925C44.8683 37.7759 44.0983 37.2692 43.0417 37.3125C41.995 37.3559 41.1217 38.0075 40.76 39.0475C40.4267 40.0042 40.4283 40.9759 40.805 41.9125C41.215 42.9325 42.01 43.4925 43.11 43.5225C44.1183 43.5492 44.8833 43.1092 45.2417 42.1309C45.345 41.8475 45.4767 41.8559 45.7017 41.9075C46.3483 42.0575 46.995 42.2042 47.645 42.3375C47.9767 42.4059 48.0733 42.5175 47.9433 42.8809C47.46 44.2392 46.5067 45.0925 45.1683 45.5292C43.975 45.9192 42.7517 45.9309 41.545 45.6025C39.1767 44.9575 37.7867 42.9675 37.835 40.3442C37.8933 37.1075 40.0717 34.9892 43.4833 35.0259L43.4867 35.0275Z" fill="#FEFEFE"/>
+            <path d="M18.42 40.41C18.42 39.5583 18.4317 38.705 18.415 37.8533C18.4083 37.5383 18.4933 37.385 18.8317 37.4266C18.995 37.4466 19.1633 37.4283 19.33 37.4316C21.845 37.4916 23.1817 39.7816 21.9967 42.0166C21.43 43.0866 20.4117 43.36 19.3133 43.4C18.2067 43.4383 18.4433 43.495 18.4233 42.53C18.4083 41.8233 18.42 41.1166 18.42 40.41Z" fill="#0263D0"/>
+            <path d="M28.6633 40.4347C28.6567 38.2631 30.3433 36.8581 32.275 37.4281C33.6217 37.8247 34.3833 39.2097 34.2017 40.9264C34.0467 42.3764 33.0067 43.4314 31.64 43.5247C29.9517 43.6397 28.67 42.3081 28.6633 40.4347Z" fill="#0263D0"/>
+            </g>
+            <defs>
+            <clipPath id="clip0_20762_37361">
+            <rect width="64" height="64" fill="white"/>
+            </clipPath>
+            </defs>
+        </svg>`;
+    }
+    static iconAttachmentCode() {
+        return `<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_20762_37369)">
+            <path d="M48.65 64.0004H15.1017C14.0534 63.8204 12.9917 63.7437 12.0417 63.1404C9.42002 61.4754 7.83169 59.177 7.82502 56.0204C7.79669 40.0554 7.83168 24.092 7.79335 8.12702C7.78668 5.26368 9.81169 1.65368 13.3217 0.395351C14.135 0.103685 15.0067 0.0786845 15.8584 0.0770179C22.9667 0.0636845 30.0734 0.0686845 37.1817 0.0720179C37.3634 0.0720179 37.5584 0.0186845 37.7267 0.142018C37.9984 0.615351 37.9784 1.13702 37.9784 1.65368C37.9817 6.53035 37.9784 11.4087 37.9784 16.2854C37.9784 16.472 37.9784 16.6587 37.9784 16.8454C37.9784 18.4904 38.0234 18.5354 39.64 18.5354C44.08 18.5354 48.5217 18.5354 52.9617 18.5354C53.8534 18.5354 54.7467 18.4987 55.63 18.6637C55.9234 18.7387 56.0017 18.9637 56.03 19.2287C56.0667 19.5804 56.06 19.9354 56.06 20.287C56.06 32.1554 56.075 44.0253 56.0517 55.8937C56.045 59.3453 54.2934 61.7737 51.3417 63.4104C50.5067 63.8737 49.5517 63.8237 48.6484 63.9954L48.65 64.0004Z" fill="#7442EC"/>
+            <path d="M37.6667 0.152344C37.8717 0.187344 37.9667 0.36401 38.0917 0.495677C43.89 6.54568 49.685 12.599 55.48 18.6523C55.5367 18.7123 55.5817 18.7823 55.6317 18.8473C49.9384 18.8473 44.2434 18.8473 38.55 18.8457C37.685 18.8457 37.6834 18.8423 37.6834 17.9857C37.6767 12.0407 37.6717 6.09734 37.6667 0.152344Z" fill="#9E7BF1"/>
+            <path d="M30.57 41.262C30.57 40.7836 30.5666 40.307 30.57 39.8286C30.5766 38.752 31 38.2903 32.08 38.1753C33.3833 38.037 34.2616 36.8436 33.965 35.6153C33.7216 34.612 32.905 33.982 31.88 34.0053C30.865 34.0286 30.1117 34.652 29.8967 35.652C29.8617 35.8136 29.85 35.9803 29.83 36.1436C29.7383 36.942 29.17 37.457 28.4216 37.422C27.6483 37.3853 27.1717 36.852 27.1617 36.012C27.1333 33.4386 29.3117 31.2986 31.9517 31.3086C34.6467 31.317 36.785 33.477 36.7083 36.1703C36.6483 38.237 35.63 39.702 33.735 40.5236C33.3917 40.672 33.2616 40.8353 33.28 41.2003C33.3066 41.7386 33.2966 42.2803 33.2833 42.8186C33.26 43.7603 32.7217 44.3353 31.9017 44.3186C31.13 44.302 30.59 43.697 30.575 42.817C30.565 42.2986 30.5733 41.7786 30.5733 41.2603L30.57 41.262Z" fill="#FEFEFE"/>
+            <path d="M47.7867 39.5912C47.8167 39.9512 47.63 40.2662 47.3567 40.5412C45.6683 42.2328 43.9833 43.9262 42.285 45.6095C41.6983 46.1912 40.875 46.1978 40.3367 45.6595C39.7967 45.1212 39.7833 44.3078 40.37 43.7062C41.6167 42.4262 42.8817 41.1628 44.1617 39.9162C44.4783 39.6078 44.4633 39.4378 44.1533 39.1378C42.8733 37.8912 41.6117 36.6245 40.3617 35.3478C39.8583 34.8328 39.805 34.1928 40.1517 33.6362C40.4567 33.1445 41.0267 32.9245 41.6133 33.0578C41.8883 33.1212 42.105 33.2728 42.2983 33.4662C43.9733 35.1428 45.6467 36.8178 47.3217 38.4945C47.6117 38.7845 47.7933 39.1228 47.785 39.5928L47.7867 39.5912Z" fill="#FEFEFE"/>
+            <path d="M22.6067 46.0524C22.2083 46.0608 21.8817 45.9074 21.6033 45.6291C19.9017 43.9258 18.1917 42.2274 16.4983 40.5174C15.8917 39.9041 15.9 39.1558 16.5183 38.5324C18.1983 36.8358 19.8867 35.1474 21.5833 33.4674C22.1833 32.8724 22.9667 32.8658 23.5217 33.4141C24.08 33.9658 24.08 34.7424 23.4867 35.3524C22.6767 36.1858 21.8433 36.9974 21.025 37.8241C20.4717 38.3824 19.9317 38.9524 19.385 39.5174C19.835 40.1724 20.4617 40.6574 21.0067 41.2224C21.8433 42.0891 22.7117 42.9241 23.55 43.7874C23.9683 44.2174 24.0533 44.7441 23.7933 45.2824C23.56 45.7624 23.1583 46.0374 22.6067 46.0541V46.0524Z" fill="#FEFEFE"/>
+            <path d="M31.95 45.0702C32.6816 45.0819 33.2883 45.7118 33.275 46.4468C33.2616 47.2035 32.6666 47.7818 31.9133 47.7702C31.1733 47.7585 30.565 47.1402 30.5766 46.4085C30.5883 45.6969 31.2433 45.0568 31.95 45.0685V45.0702Z" fill="#FDFDFE"/>
+            </g>
+            <defs>
+            <clipPath id="clip0_20762_37369">
+            <rect width="64" height="64" fill="white"/>
+            </clipPath>
+            </defs>
+        </svg>`;
+    }
+    static iconAttachmentXml() {
+        return `<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_20762_37376)">
+            <path d="M48.0267 63.9991H15.1017C14.0383 63.8407 12.985 63.7007 12.035 63.0974C9.42999 61.444 7.87165 59.1474 7.86499 56.024C7.83332 40.0407 7.83499 24.0574 7.86499 8.07405C7.86999 4.97072 9.42665 2.69239 12.005 1.05239C13.1717 0.310721 14.4617 0.0757205 15.8067 0.0740538C22.935 0.0657205 30.0617 0.0690538 37.19 0.0740538C37.3717 0.0740538 37.565 0.0190538 37.7317 0.149054C37.975 0.544054 37.945 0.985721 37.945 1.41905C37.9467 6.65405 37.945 11.8907 37.945 17.1257C37.945 17.3124 37.9433 17.4991 37.945 17.6874C37.96 18.4841 38.04 18.5724 38.8583 18.5724C43.9267 18.5791 48.995 18.5757 54.0633 18.5724C54.5833 18.5724 55.1017 18.5841 55.6117 18.6907C55.9 18.8124 55.9883 19.0574 56.0067 19.3424C56.0217 19.5707 56.0217 19.7991 56.0217 20.0274C56.0217 32.0224 56.01 44.0174 56.03 56.0124C56.035 59.149 53.8783 62.369 50.85 63.5907C50.1833 63.8607 49.4767 63.8874 48.775 63.9374C48.525 63.9674 48.265 63.8724 48.0233 64.0007L48.0267 63.9991Z" fill="#00723B"/>
+            <path d="M48.675 63.8988C48.675 63.9338 48.665 63.9688 48.65 64.0005H48.0267C48.225 63.8555 48.445 63.8455 48.675 63.8988Z" fill="#59A480"/>
+            <path d="M37.6667 0.152057C38.0717 0.345391 38.3084 0.723724 38.6034 1.03039C44.1884 6.85539 49.7667 12.6871 55.3467 18.5187C55.4467 18.6221 55.5334 18.7387 55.6267 18.8487C49.8967 18.8487 44.1667 18.8387 38.435 18.8587C37.8317 18.8604 37.67 18.6904 37.6717 18.0921C37.6934 12.4021 37.685 6.71206 37.6834 1.02206C37.6834 0.732057 37.6717 0.440391 37.6667 0.150391V0.152057Z" fill="#4D9C76"/>
+            <path d="M41.7167 34.9166C43.1467 34.92 44.2833 35.235 45.2633 36.03C45.69 36.3766 45.9983 36.8133 46.25 37.2983C46.4617 37.7033 46.435 37.955 45.9384 38.1183C45.35 38.3116 44.7767 38.565 44.2183 38.835C43.8883 38.995 43.78 38.9216 43.635 38.595C43.225 37.6683 42.5384 37.295 41.6 37.4133C41.16 37.4683 40.76 37.6216 40.7033 38.12C40.6483 38.6016 41.01 38.8133 41.4067 38.94C42.3517 39.245 43.3333 39.4033 44.2683 39.7716C46.3533 40.5916 46.7 42.7783 46.285 44.2016C46.0733 44.93 45.6167 45.48 44.9967 45.905C43.0684 47.2283 40.31 47.0416 38.59 45.47C38.005 44.935 37.6367 44.2766 37.455 43.5066C37.38 43.1916 37.4367 43.0083 37.79 42.9216C38.3534 42.7833 38.9083 42.6116 39.46 42.4283C39.7883 42.32 39.9383 42.3366 40.06 42.735C40.43 43.9533 41.6484 44.5666 42.7567 44.16C43.1584 44.0116 43.4433 43.7583 43.4717 43.31C43.5 42.8816 43.245 42.6116 42.8917 42.43C41.945 41.9433 40.8733 41.8133 39.9017 41.3866C38.2933 40.6816 37.5283 39.3816 37.7833 37.7183C37.8717 37.1433 38.1283 36.6566 38.53 36.245C39.455 35.295 40.5983 34.8983 41.7167 34.9166Z" fill="#FEFEFE"/>
+            <path d="M18 35.0561C18.9367 35.0561 19.865 35.0661 20.7917 35.0511C21.0683 35.0461 21.13 35.2427 21.2333 35.4144C21.705 36.1927 22.1733 36.9727 22.6967 37.8394C23.1817 37.0211 23.65 36.2694 24.075 35.4961C24.2583 35.1644 24.4667 35.0311 24.8533 35.0461C25.6833 35.0777 26.515 35.0561 27.3433 35.0561C27.4367 35.2644 27.2717 35.3744 27.1967 35.5027C26.3317 36.9677 25.4817 38.4427 24.5783 39.8844C24.3033 40.3227 24.3367 40.6344 24.5933 41.0544C25.6 42.6994 26.5733 44.3677 27.555 46.0277C27.6567 46.1994 27.7417 46.3811 27.88 46.6444C26.89 46.6444 25.985 46.6344 25.0817 46.6494C24.78 46.6544 24.7033 46.4427 24.5883 46.2527C23.9733 45.2244 23.3617 44.1944 22.695 43.0744C22.0483 44.1577 21.4317 45.1527 20.8567 46.1727C20.66 46.5211 20.45 46.6761 20.0333 46.6561C19.21 46.6161 18.385 46.6444 17.5433 46.6444C17.5667 46.3094 17.7667 46.1094 17.8983 45.8861C18.8767 44.2227 19.8533 42.5577 20.86 40.9111C21.0733 40.5627 21.0867 40.3227 20.8633 39.9661C19.9717 38.5411 19.1183 37.0927 18.2583 35.6477C18.1567 35.4777 17.9917 35.3311 17.9983 35.0544L18 35.0561Z" fill="#FEFEFE"/>
+            <path d="M29.0183 40.8113C29.0183 39.0879 29.0333 37.3629 29.0083 35.6396C29.0017 35.1979 29.0767 35.0013 29.575 35.0446C30.1317 35.0946 30.6983 35.0896 31.255 35.0446C31.795 35.0013 31.9867 35.1346 31.9783 35.7329C31.94 38.3296 31.9783 40.9263 31.9483 43.523C31.9433 44.0346 32.105 44.1446 32.58 44.1346C33.8883 44.1046 35.1967 44.1413 36.505 44.1146C36.93 44.1063 37.045 44.2496 37.0217 44.6496C36.9917 45.1679 37.0033 45.6879 37.0183 46.2063C37.0283 46.5079 36.9617 46.6546 36.6117 46.6513C34.2233 46.6379 31.835 46.6329 29.4467 46.6546C28.99 46.6579 29.0133 46.4146 29.015 46.1079C29.02 44.3429 29.0167 42.5763 29.0167 40.8113H29.0183Z" fill="#FEFEFE"/>
+            </g>
+            <defs>
+            <clipPath id="clip0_20762_37376">
+            <rect width="64" height="64" fill="white"/>
+            </clipPath>
+            </defs>
+        </svg>`;
+    }
+    static iconAttachmentPdf() {
+        return `<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_20762_37383)">
+            <path d="M48.65 64.0004H15.1017C15.0467 63.9738 14.9933 63.9471 14.9283 63.9404C11.6067 63.5638 8.99499 61.3171 8.09999 58.0838C7.89832 57.3554 7.82166 56.6221 7.82166 55.8688C7.82832 39.9921 7.82166 24.1138 7.82999 8.23709C7.82999 5.12708 9.30999 2.83375 11.8383 1.12542C13.03 0.318752 14.3617 0.0804187 15.745 0.078752C22.9333 0.063752 30.1233 0.0720853 37.3117 0.073752C37.4533 0.073752 37.605 0.038752 37.73 0.147085C37.995 0.600419 37.9667 1.10375 37.9667 1.60042C37.97 6.66709 37.9667 11.7321 37.9667 16.7988C37.9667 17.0471 37.9633 17.2971 37.9683 17.5454C37.985 18.4038 38.1217 18.5404 39.0033 18.5504C39.73 18.5588 40.4567 18.5538 41.1833 18.5538C45.2933 18.5538 49.4033 18.5554 53.5133 18.5538C54.22 18.5538 54.925 18.5488 55.6217 18.6804C55.8967 18.7721 55.995 18.9854 56.0183 19.2538C56.0417 19.5238 56.045 19.7938 56.045 20.0621C56.045 32.0854 56.05 44.1088 56.0433 56.1321C56.0417 59.2488 53.7917 62.4871 50.8967 63.6004C50.17 63.8804 49.3917 63.8404 48.6467 64.0037L48.65 64.0004Z" fill="#E4252A"/>
+            <path d="M37.6667 0.152344C38.0484 0.342344 38.2784 0.697344 38.56 0.990677C44.1617 6.82734 49.76 12.669 55.3567 18.5123C55.4567 18.6157 55.5434 18.7323 55.635 18.8423C49.9067 18.8423 44.1767 18.8357 38.4484 18.8573C37.8517 18.859 37.6717 18.6923 37.6734 18.089C37.6934 12.4207 37.6867 6.75401 37.685 1.08568C37.685 0.77401 37.6734 0.46401 37.6667 0.152344Z" fill="#EC676A"/>
+            <path d="M30.245 36.111C31.325 36.1143 32.4083 36.0693 33.4683 36.3276C36.2833 37.011 37.8766 39.171 37.7716 42.1443C37.655 45.4376 35.565 47.5843 32.225 47.7576C30.795 47.8326 29.3583 47.771 27.9266 47.7876C27.635 47.791 27.53 47.7076 27.5316 47.4043C27.54 43.7676 27.54 40.1326 27.5316 36.496C27.5316 36.1893 27.6533 36.1026 27.94 36.1076C28.7083 36.1193 29.4766 36.111 30.245 36.111Z" fill="#FEFEFE"/>
+            <path d="M17.3066 41.9853C17.3066 40.2003 17.32 38.4137 17.2966 36.6287C17.2916 36.212 17.4266 36.0987 17.8283 36.1037C19.24 36.1237 20.6516 36.1037 22.0633 36.117C22.4983 36.122 22.94 36.1437 23.3633 36.2287C25.2766 36.6153 26.4366 38.167 26.2966 40.112C26.1566 42.0587 24.8033 43.417 22.85 43.5437C22.2083 43.5853 21.5616 43.6103 20.9216 43.5687C20.38 43.5337 20.26 43.7403 20.2766 44.2403C20.3116 45.257 20.2733 46.2753 20.295 47.292C20.3033 47.662 20.2133 47.8103 19.8133 47.7903C19.15 47.757 18.485 47.7587 17.8216 47.7903C17.42 47.8087 17.2933 47.692 17.2983 47.277C17.3216 45.512 17.3083 43.747 17.3083 41.9837L17.3066 41.9853Z" fill="#FEFEFE"/>
+            <path d="M39.2783 41.955C39.2783 40.1883 39.2916 38.4233 39.2683 36.6567C39.2616 36.2167 39.395 36.0983 39.8266 36.1017C42.215 36.1217 44.605 36.12 46.9933 36.1017C47.4083 36.0983 47.6083 36.1883 47.5616 36.645C47.495 37.2983 47.8366 38.1533 47.4233 38.5583C47.0433 38.9317 46.1983 38.6517 45.56 38.6617C44.605 38.6767 43.6483 38.675 42.6933 38.66C42.385 38.655 42.2666 38.725 42.255 39.0683C42.2033 40.5317 42.19 40.5317 43.6383 40.5317C44.4283 40.5317 45.2183 40.5567 46.0066 40.5217C46.435 40.5033 46.54 40.665 46.5166 41.0566C46.4883 41.5333 46.4816 42.0133 46.5166 42.49C46.5483 42.9167 46.4283 43.0683 45.975 43.0533C44.8966 43.02 43.815 43.0617 42.735 43.0333C42.3383 43.0233 42.25 43.1533 42.255 43.5267C42.2766 44.7733 42.2483 46.02 42.2716 47.2667C42.2783 47.665 42.1783 47.8167 41.7566 47.7933C41.115 47.7583 40.4683 47.7567 39.8266 47.7933C39.3983 47.8167 39.2616 47.705 39.2683 47.2533C39.2966 45.4883 39.28 43.7216 39.28 41.955H39.2783Z" fill="#FEFEFE"/>
+            <path d="M31.3567 38.668C34.1484 38.688 35.63 41.0147 34.4734 43.573C33.96 44.7097 32.9567 45.0847 31.815 45.2213C30.9006 45.3302 30.4434 44.9408 30.4434 44.053C30.4434 42.5614 30.4434 41.0697 30.4434 39.5764C30.4434 38.9664 30.7472 38.6636 31.355 38.668H31.3567Z" fill="#E4252A"/>
+            <path d="M20.2867 39.8052C20.2867 39.0474 20.6633 38.6686 21.4167 38.6686C21.6867 38.6686 21.9583 38.6569 22.225 38.6836C22.8883 38.7486 23.3067 39.1886 23.325 39.8152C23.3433 40.4486 22.9617 40.9452 22.3017 41.0152C21.7267 41.0769 21.14 41.0369 20.56 41.0502C20.3333 41.0552 20.28 40.9369 20.2833 40.7419C20.2883 40.4302 20.2833 40.1186 20.2833 39.8069L20.2867 39.8052Z" fill="#E4252A"/>
+            </g>
+            <defs>
+            <clipPath id="clip0_20762_37383">
+            <rect width="64" height="64" fill="white"/>
+            </clipPath>
+            </defs>
+    </svg>`;
     }
 }
 

@@ -44,10 +44,12 @@ async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
 async function getTasksFullDetails(params, tasks, currentActiveTaskId, nonRequesting = false) {
     if (tasks.length > 0) {
         const sessionId = localStorage.getItem('spotfix_session_id');
-        if (!nonRequesting) {
+        if (!nonRequesting && currentActiveTaskId && +currentActiveTaskId !== 0) {
+            await getTasksAttachmenDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
             await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
         }
         const comments = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_COMMENTS);
+        const attachments = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_ATTACHMENT);
         if (!nonRequesting) {
             await getUserDoboard(sessionId, params.projectToken, params.accountId);
         }
@@ -57,6 +59,7 @@ async function getTasksFullDetails(params, tasks, currentActiveTaskId, nonReques
         return {
             comments: comments,
             users: users,
+            attachments: attachments,
             taskStatus: foundTask?.taskStatus,
             taskName: foundTask?.taskTitle,
         };
@@ -199,7 +202,7 @@ function registerUser(taskDetails) {
     const userName = taskDetails.userName;
     const projectToken = taskDetails.projectToken;
     const accountId = taskDetails.accountId;
-    const pageURL = taskDetails.selectedData.pageURL ? taskDetails.selectedData.pageURL : window.location.href;
+    const pageURL = taskDetails?.selectedData?.pageURL ? taskDetails?.selectedData?.pageURL : window.location.href;
 
     const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName, pageURL)
         .then((response) => {
