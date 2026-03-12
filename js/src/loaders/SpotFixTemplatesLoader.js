@@ -431,8 +431,17 @@ class SpotFixTemplatesLoader {
                     </label>
                 </div>
             </div>
+            <div class="doboard_task_widget-task_menu-item" style="height: 60px">
+                <img src="{{iconLinkChainDark}}" alt="" style="margin-right: 12px">
+                <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
+                    <span style="font-weight: 400; font-size: 14px; color: #252A2F; display: inline-flex; flex-direction: column;">
+                        Link the doBoard task
+                        <a href={{doboardLink}} style="font-weight: 400; font-size: 14px;">{{doboardLinkShort}}</a>
+                        </span>
+                </div>
+            </div>
             <div class="doboard_task_widget-task_menu-item" 
-            style="flex-direction: column; height: fit-content; padding-top: 8px; max-height: 270px; overflow: auto;">
+            style="flex-direction: column; height: fit-content; padding-top: 8px; max-height: 200px; overflow: auto;">
                 {{viewers}}
             </div>
         </div>

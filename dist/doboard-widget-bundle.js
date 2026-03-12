@@ -8229,7 +8229,7 @@ const logoutUserDoboard = async (projectToken) => {
             session_id: sessionId,
         };
 
-        const email = localStorage.getItem('spotfix_email') || '';
+        const email = getSpotfixEmail() || '';
 
         if (email && email.includes('spotfix_')) {
             data.project_token = projectToken;
@@ -8267,6 +8267,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         taskMeta: task.meta,
         taskStatus: task.status,
         viewers: task.comments_viewers,
+        taskToken: task.token
     }));
     await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_TASKS, tasks);
     storageSaveTasksCount(tasks);
@@ -8483,6 +8484,7 @@ const handleIncomingData = async (data) => {
             viewers: data.data.comments_viewers,
             task_type: data.data.task_type,
             commentsCount: data.data.comments_count,
+            taskToken: data.data.token,
         });
         break;
 
@@ -8636,8 +8638,8 @@ const SPOTFIX_VERSION = "1.1.13";
 
 async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
     const result = await spotFixUserConfirmEmailDoboard(emailConfirmationToken);
-    // Save session data to LS
-    localStorage.setItem('spotfix_email', result.email);
+    // Save session data to LS    
+    setSpotfixEmail(result.email);
     localStorage.setItem('spotfix_session_id', result.sessionId);
     localStorage.setItem('spotfix_user_id', result.userId);
     localStorage.setItem('spotfix_widget_is_closed', '0');
@@ -8837,7 +8839,7 @@ function registerUser(taskDetails) {
     const userName = taskDetails.userName;
     const projectToken = taskDetails.projectToken;
     const accountId = taskDetails.accountId;
-    const pageURL = taskDetails.selectedData.pageURL ? taskDetails.selectedData.pageURL : window.location.href;
+    const pageURL = taskDetails?.selectedData?.pageURL ? taskDetails?.selectedData?.pageURL : window.location.href;
 
     const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName, pageURL)
         .then((response) => {
@@ -8848,7 +8850,7 @@ function registerUser(taskDetails) {
             } else if (response.sessionId) {
                 localStorage.setItem('spotfix_session_id', response.sessionId);
                 localStorage.setItem('spotfix_user_id', response.userId);
-                localStorage.setItem('spotfix_email', response.email);
+                setSpotfixEmail(response.email);                
                 localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
                 spotfixIndexedDB.init();
                 localStorage.setItem('spotfix_widget_is_closed', '0');
@@ -8888,7 +8890,7 @@ function loginUser(taskDetails) {
             if (response.sessionId) {
                 localStorage.setItem('spotfix_session_id', response.sessionId);
                 localStorage.setItem('spotfix_user_id', response.userId);
-                localStorage.setItem('spotfix_email', userEmail);
+                setSpotfixEmail(userEmail);
                 localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
                 checkLogInOutButtonsVisible();
                 localStorage.setItem('spotfix_widget_is_closed', '0');
@@ -8911,7 +8913,6 @@ function loginUser(taskDetails) {
 function forgotPassword(userEmail) {
     return (showMessageCallback) => forgotPasswordDoboard(userEmail)
         .then((response) => {
-            console.log('response ', response);
             if (response?.operation_status === 'SUCCESS') {
                 showMessageCallback('New password sent to email', 'notice');
                 const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
@@ -9125,6 +9126,7 @@ class CleanTalkWidgetDoboard {
             iconSpotPublic: SpotFixSVGLoader.getAsDataURI('iconSpotPublic'),
             iconSpotPrivate: SpotFixSVGLoader.getAsDataURI('iconSpotPrivate'),
             iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
+            iconLinkChainDark: SpotFixSVGLoader.getAsDataURI('iconLinkChainDark'),
         };
         this.fileUploader = new FileUploader(this.escapeHtml);
         this.init(type);
@@ -9551,7 +9553,7 @@ class CleanTalkWidgetDoboard {
                     document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
                 }
                 const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
-                const email = localStorage.getItem('spotfix_email');
+                const email = getSpotfixEmail();
                 if (sessionIdExists && email && !email.includes('spotfix_')) {
                     const loginEl= document.querySelector('.doboard_task_widget-login');
                     loginEl?.classList?.add('doboard_task_widget-hidden');
@@ -9678,7 +9680,7 @@ class CleanTalkWidgetDoboard {
                     chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
                     buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
                     userName: 'Guest',
-                    email: localStorage.getItem('spotfix_email') || '',
+                    email: getSpotfixEmail() || '',
                     ...this.srcVariables};
                 break;
             case 'spot_menu':
@@ -9744,7 +9746,7 @@ class CleanTalkWidgetDoboard {
                 // highlight selected item during task creation
                 const selection = window.getSelection();
                 const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
-                const email = localStorage.getItem('spotfix_email');
+                const email = getSpotfixEmail();
 
                 if (templateVariables.selectedText) {
                     document.querySelector('.spotfix_placeholder_title').style.display = 'none';
@@ -9853,8 +9855,8 @@ class CleanTalkWidgetDoboard {
                 if (tasks.length > 0) {
                     const currentURL = window.location.href;
                     const sortedTasks = tasks.sort((a, b) => {
-                        const aIsHere = JSON.parse(a.taskMeta).pageURL === currentURL ? 1 : 0;
-                        const bIsHere = JSON.parse(b.taskMeta).pageURL === currentURL ? 1 : 0;
+                        const aIsHere = JSON.parse(a.taskMeta)?.pageURL === currentURL ? 1 : 0;
+                        const bIsHere = JSON.parse(b.taskMeta)?.pageURL === currentURL ? 1 : 0;
                         return bIsHere - aIsHere;
                     });
 
@@ -9877,7 +9879,7 @@ class CleanTalkWidgetDoboard {
                                 taskData = null;
                             }
                         }
-                        const currentPageURL = taskData ? taskData.pageURL : '';
+                        const currentPageURL = taskData ? taskData?.pageURL : '';
                         let taskNodePath = ''; // nodePath need for only current page's spots
 
                         // Define publicity details
@@ -9971,7 +9973,7 @@ class CleanTalkWidgetDoboard {
 
                 if(user){
                     templateVariables.userName = user.name || 'Guest';
-                    templateVariables.email = user.email || localStorage.getItem('spotfix_email') || '';
+                    templateVariables.email = user.email || getSpotfixEmail() || '';
                     if(user?.avatar?.s) templateVariables.avatar = user?.avatar?.s;
                 }
 
@@ -10002,7 +10004,10 @@ class CleanTalkWidgetDoboard {
 
             templateVariables.taskName = currentTask.taskTitle;
             templateVariables.taskType = currentTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicDark : this.srcVariables.iconLockDark;
-
+            templateVariables.doboardLink =
+                `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}?token=${currentTask.taskToken}`;
+            templateVariables.doboardLinkShort =
+                `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}`;
 
             const currentUserId = localStorage.getItem('spotfix_user_id') || 0;
 
@@ -10077,14 +10082,14 @@ class CleanTalkWidgetDoboard {
             let taskFormattedPageUrl = '';
 
             if (typeof meta?.pageURL === 'string'){
-                taskFormattedPageUrl = meta.pageURL.replace(window.location.origin, '');
+                taskFormattedPageUrl = meta?.pageURL?.replace(window.location.origin, '');
                 templateVariables.taskFormattedPageUrl = taskFormattedPageUrl.length < 2
-                    ? meta.pageURL.replace(/^https?:\/\//, '')
+                    ? meta?.pageURL?.replace(/^https?:\/\//, '')
                     : taskFormattedPageUrl;
             }
             const issueLinkElement = document.getElementById('spotfix_doboard_task_widget_url');
             if (issueLinkElement) {
-                issueLinkElement.innerHTML = `<a rel="nofollow" href="${meta.pageURL}">${templateVariables.taskFormattedPageUrl}</a>`;
+                issueLinkElement.innerHTML = `<a rel="nofollow" href="${meta?.pageURL}">${templateVariables.taskFormattedPageUrl}</a>`;
             }
 
             templateVariables.contenerClasess = +localStorage.getItem('maximize')
@@ -11011,7 +11016,7 @@ async setUserMenuData() {
         if (userData && userData.email) {
             emailElement.innerText = userData.email;
         } else {
-            const email = localStorage.getItem('spotfix_email') || '';
+            const email = getSpotfixEmail() || '';
             emailElement.innerText = email.includes('spotfix_') ? '' : email;
         }
     }
@@ -12227,6 +12232,39 @@ function clearLocalstorageOnLogout () {
     wsSpotfix.close();
 }
 
+
+/**
+ * Email validator for spotfix_email in localStorage
+ * @param {string} email 
+ * @returns {boolean} 
+ */
+function isValidSpotfixEmail(email) {
+    if (!email || typeof email !== 'string') return false;
+    if (email === 'undefined') return false;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+/**
+ * 
+ * @returns {string|null}
+ */
+function getSpotfixEmail() {
+    const email = localStorage.getItem('spotfix_email');
+    return isValidSpotfixEmail(email) ? email : null;
+}
+
+/**
+ * 
+ * @param {string} email 
+ */
+function setSpotfixEmail(email) {
+    if (isValidSpotfixEmail(email)) {
+        localStorage.setItem('spotfix_email', email);
+    } else {
+        localStorage.removeItem('spotfix_email');
+    }
+}
 /**
  * File uploader handler for managing file attachments with validation and upload capabilities
  */
@@ -13097,8 +13135,17 @@ class SpotFixTemplatesLoader {
                     </label>
                 </div>
             </div>
+            <div class="doboard_task_widget-task_menu-item" style="height: 60px">
+                <img src="{{iconLinkChainDark}}" alt="" style="margin-right: 12px">
+                <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
+                    <span style="font-weight: 400; font-size: 14px; color: #252A2F; display: inline-flex; flex-direction: column;">
+                        Link the doBoard task
+                        <a href={{doboardLink}} style="font-weight: 400; font-size: 14px;">{{doboardLinkShort}}</a>
+                        </span>
+                </div>
+            </div>
             <div class="doboard_task_widget-task_menu-item" 
-            style="flex-direction: column; height: fit-content; padding-top: 8px; max-height: 270px; overflow: auto;">
+            style="flex-direction: column; height: fit-content; padding-top: 8px; max-height: 200px; overflow: auto;">
                 {{viewers}}
             </div>
         </div>
@@ -13267,6 +13314,13 @@ class SpotFixSVGLoader {
         return `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M11.25 5.25H13.5C13.9925 5.25 14.4801 5.347 14.9351 5.53545C15.39 5.72391 15.8034 6.00013 16.1517 6.34835C16.4999 6.69657 16.7761 7.10997 16.9645 7.56494C17.153 8.01991 17.25 8.50754 17.25 9C17.25 9.49246 17.153 9.98009 16.9645 10.4351C16.7761 10.89 16.4999 11.3034 16.1517 11.6517C15.8034 11.9999 15.39 12.2761 14.9351 12.4645C14.4801 12.653 13.9925 12.75 13.5 12.75H11.25M6.75 12.75H4.5C4.00754 12.75 3.51991 12.653 3.06494 12.4645C2.60997 12.2761 2.19657 11.9999 1.84835 11.6517C1.14509 10.9484 0.75 9.99456 0.75 9C0.75 8.00544 1.14509 7.05161 1.84835 6.34835C2.55161 5.64509 3.50544 5.25 4.5 5.25H6.75" stroke="#707A83" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M6 9H12" stroke="#707A83" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+    }
+
+    static iconLinkChainDark() {
+        return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M11.25 5.25H13.5C13.9925 5.25 14.4801 5.347 14.9351 5.53545C15.39 5.72391 15.8034 6.00013 16.1517 6.34835C16.4999 6.69657 16.7761 7.10997 16.9645 7.56494C17.153 8.01991 17.25 8.50754 17.25 9C17.25 9.49246 17.153 9.98009 16.9645 10.4351C16.7761 10.89 16.4999 11.3034 16.1517 11.6517C15.8034 11.9999 15.39 12.2761 14.9351 12.4645C14.4801 12.653 13.9925 12.75 13.5 12.75H11.25M6.75 12.75H4.5C4.00754 12.75 3.51991 12.653 3.06494 12.4645C2.60997 12.2761 2.19657 11.9999 1.84835 11.6517C1.14509 10.9484 0.75 9.99456 0.75 9C0.75 8.00544 1.14509 7.05161 1.84835 6.34835C2.55161 5.64509 3.50544 5.25 4.5 5.25H6.75" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 9H12" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
     }
 

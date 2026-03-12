@@ -38,6 +38,7 @@ class CleanTalkWidgetDoboard {
             iconSpotPublic: SpotFixSVGLoader.getAsDataURI('iconSpotPublic'),
             iconSpotPrivate: SpotFixSVGLoader.getAsDataURI('iconSpotPrivate'),
             iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
+            iconLinkChainDark: SpotFixSVGLoader.getAsDataURI('iconLinkChainDark'),
         };
         this.fileUploader = new FileUploader(this.escapeHtml);
         this.init(type);
@@ -464,7 +465,7 @@ class CleanTalkWidgetDoboard {
                     document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
                 }
                 const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
-                const email = localStorage.getItem('spotfix_email');
+                const email = getSpotfixEmail();
                 if (sessionIdExists && email && !email.includes('spotfix_')) {
                     const loginEl= document.querySelector('.doboard_task_widget-login');
                     loginEl?.classList?.add('doboard_task_widget-hidden');
@@ -591,7 +592,7 @@ class CleanTalkWidgetDoboard {
                     chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
                     buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
                     userName: 'Guest',
-                    email: localStorage.getItem('spotfix_email') || '',
+                    email: getSpotfixEmail() || '',
                     ...this.srcVariables};
                 break;
             case 'spot_menu':
@@ -657,7 +658,7 @@ class CleanTalkWidgetDoboard {
                 // highlight selected item during task creation
                 const selection = window.getSelection();
                 const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
-                const email = localStorage.getItem('spotfix_email');
+                const email = getSpotfixEmail();
 
                 if (templateVariables.selectedText) {
                     document.querySelector('.spotfix_placeholder_title').style.display = 'none';
@@ -766,8 +767,8 @@ class CleanTalkWidgetDoboard {
                 if (tasks.length > 0) {
                     const currentURL = window.location.href;
                     const sortedTasks = tasks.sort((a, b) => {
-                        const aIsHere = JSON.parse(a.taskMeta).pageURL === currentURL ? 1 : 0;
-                        const bIsHere = JSON.parse(b.taskMeta).pageURL === currentURL ? 1 : 0;
+                        const aIsHere = JSON.parse(a.taskMeta)?.pageURL === currentURL ? 1 : 0;
+                        const bIsHere = JSON.parse(b.taskMeta)?.pageURL === currentURL ? 1 : 0;
                         return bIsHere - aIsHere;
                     });
 
@@ -790,7 +791,7 @@ class CleanTalkWidgetDoboard {
                                 taskData = null;
                             }
                         }
-                        const currentPageURL = taskData ? taskData.pageURL : '';
+                        const currentPageURL = taskData ? taskData?.pageURL : '';
                         let taskNodePath = ''; // nodePath need for only current page's spots
 
                         // Define publicity details
@@ -884,7 +885,7 @@ class CleanTalkWidgetDoboard {
 
                 if(user){
                     templateVariables.userName = user.name || 'Guest';
-                    templateVariables.email = user.email || localStorage.getItem('spotfix_email') || '';
+                    templateVariables.email = user.email || getSpotfixEmail() || '';
                     if(user?.avatar?.s) templateVariables.avatar = user?.avatar?.s;
                 }
 
@@ -915,7 +916,10 @@ class CleanTalkWidgetDoboard {
 
             templateVariables.taskName = currentTask.taskTitle;
             templateVariables.taskType = currentTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicDark : this.srcVariables.iconLockDark;
-
+            templateVariables.doboardLink =
+                `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}?token=${currentTask.taskToken}`;
+            templateVariables.doboardLinkShort =
+                `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}`;
 
             const currentUserId = localStorage.getItem('spotfix_user_id') || 0;
 
@@ -990,14 +994,14 @@ class CleanTalkWidgetDoboard {
             let taskFormattedPageUrl = '';
 
             if (typeof meta?.pageURL === 'string'){
-                taskFormattedPageUrl = meta.pageURL.replace(window.location.origin, '');
+                taskFormattedPageUrl = meta?.pageURL?.replace(window.location.origin, '');
                 templateVariables.taskFormattedPageUrl = taskFormattedPageUrl.length < 2
-                    ? meta.pageURL.replace(/^https?:\/\//, '')
+                    ? meta?.pageURL?.replace(/^https?:\/\//, '')
                     : taskFormattedPageUrl;
             }
             const issueLinkElement = document.getElementById('spotfix_doboard_task_widget_url');
             if (issueLinkElement) {
-                issueLinkElement.innerHTML = `<a rel="nofollow" href="${meta.pageURL}">${templateVariables.taskFormattedPageUrl}</a>`;
+                issueLinkElement.innerHTML = `<a rel="nofollow" href="${meta?.pageURL}">${templateVariables.taskFormattedPageUrl}</a>`;
             }
 
             templateVariables.contenerClasess = +localStorage.getItem('maximize')
@@ -1924,7 +1928,7 @@ async setUserMenuData() {
         if (userData && userData.email) {
             emailElement.innerText = userData.email;
         } else {
-            const email = localStorage.getItem('spotfix_email') || '';
+            const email = getSpotfixEmail() || '';
             emailElement.innerText = email.includes('spotfix_') ? '' : email;
         }
     }
