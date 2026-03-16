@@ -13587,7 +13587,7 @@ class DescriptionEditorIframe {
             <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
             html, body { height: 100%; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: transparent; }
-            #editor-container { min-height: 200px; background: #fff; border-radius: 4px; }
+            #editor-container { min-height: 190px; background: #fff; border-radius: 4px; }
             .tox-tinymce { border: none !important; position: absolute !important; height: 100% !important;}
             .tox-editor-header { border-bottom: none !important; }
             </style>
