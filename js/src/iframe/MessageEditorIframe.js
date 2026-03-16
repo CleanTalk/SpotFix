@@ -34,6 +34,11 @@ class MessageEditorIframe {
         if (!data || !data.type || data.source !== 'spotfix-message-editor-iframe') return;
 
         switch (data.type) {
+            case 'spotfix:tinymce-resize':
+                if (this.iframe) {
+                    this.iframe.style.height = data.height + 'px';
+                }
+                break;
             case 'spotfix:tinymce-ready':
                 this.editorReady = true;
                 if (this.onReady) {
@@ -94,13 +99,13 @@ class MessageEditorIframe {
         this.iframe = document.createElement('iframe');
         this.iframe.id = 'spotfix-message-editor-iframe';
         this.iframe.className = 'spotfix-tinymce-iframe';
-        this.iframe.style.cssText = 'width: 100%; min-height: 107px; height: 107px; border: none; background: transparent;';
+        this.iframe.style.cssText = 'width: 100%; border: none; background: transparent;';
 
         const parent = targetElement.parentElement;
 
         this.wrapper = document.createElement('div');
         this.wrapper.className = 'spotfix-tinymce-wrapper spotfix-message-wrapper';
-        this.wrapper.style.cssText = 'position: relative; width: 100%; flex-grow: 1;';
+        this.wrapper.style.cssText = 'min-height: 107px; overflow-y: hidden;';
 
         targetElement.style.display = 'none';
 
@@ -167,13 +172,14 @@ class MessageEditorIframe {
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1">
                     <style>
-                    * { margin: 0; padding: 0; box-sizing: border-box; }
-                    html, body { height: 100%; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: transparent; }
+                    * { margin: 0; padding: 0; }
+                    html, body { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: transparent; }
                     #editor-container { min-height: 107px }
-                    .tox-tinymce { border-radius: 4px !important; }
+                    .tox-tinymce { border: none !important; }
                     .tox-editor-header { border-bottom: none !important; }
+                    .tox-toolbar__group {display: inline-flex !important; width: 100% !important; justify-content: space-evenly;}
                     body[data-mce-placeholder]:not(.mce-content-body:not([data-mce-placeholder]))::before { color: #707A83 !important; }
-                    body { background-color: #F3F6F9; }
+                   
                     </style>
                     </head>
                     <body>
@@ -204,23 +210,35 @@ class MessageEditorIframe {
                     
                     target: document.getElementById("tinymce-editor"),
                     icons: "icon_pack_SpotFix",
-                    plugins: "link lists autoresize",
                     menubar: false,
                     placeholder: "Write a message...",
                     statusbar: false,
+                  content_style: \`body[data-mce-placeholder]:not(.mce-content-body:not([data-mce-placeholder]))::before {
+                        color: #707A83 !important;}
+                        body {background-color: #F3F6F9;}\`,
                     toolbar_location: "bottom",
                     toolbar: "attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote sendCommentButton",
-                    height: 50,
-                    max_height: 100,
+                    plugins: 'link lists autoresize',
+                    min_height: 100,
+                    max_height: 200,
                     autoresize_bottom_margin: 0,
                     resize: false,
                     file_picker_types: "file image media",
                     setup: function(editor) {
+                        function updateHeight() {
+                    const height = document.body.scrollHeight;
+               
+                    window.parent.postMessage({
+                        type: "spotfix:tinymce-resize",
+                        source: "spotfix-message-editor-iframe",
+                        height: height
+                    }, "*");
+                    }
                     editor.ui.registry.addButton("attachmentButton", { icon: "paperclip", tooltip: "Add file", onAction: function() { window.parent.postMessage({ type: "spotfix:tinymce-action", source: "spotfix-message-editor-iframe", action: "attachment", eventData: { type: "attachment" } }, "*"); } });
                     editor.ui.registry.addButton("screenshotButton", { icon: "screenshot", tooltip: "Screenshot", onAction: function() { window.parent.postMessage({ type: "spotfix:tinymce-action", source: "spotfix-message-editor-iframe", action: "screenshot", eventData: { type: "screenshot" } }, "*"); } });
                     editor.ui.registry.addButton("sendCommentButton", { icon: "sendComment", tooltip: "Send comment", onAction: function() { const content = editor.getContent({ format: "html" }); window.parent.postMessage({ type: "spotfix:tinymce-action", source: "spotfix-message-editor-iframe", action: "sendComment", eventData: { type: "sendComment", content: content } }, "*"); } });
-                    editor.on("init", function() { if (savedContent && savedContent.trim() !== "") { editor.setContent(savedContent, { format: "html" }); editor.save(); } window.parent.postMessage({ type: "spotfix:tinymce-ready", source: "spotfix-message-editor-iframe" }, "*"); });
-                    editor.on("change", function() { const content = editor.getContent(); window.parent.postMessage({ type: "spotfix:tinymce-change", source: "spotfix-message-editor-iframe", content: content }, "*"); });
+                    editor.on("init", function() {updateHeight(); if (savedContent && savedContent.trim() !== "") { editor.setContent(savedContent, { format: "html" }); editor.save(); } window.parent.postMessage({ type: "spotfix:tinymce-ready", source: "spotfix-message-editor-iframe" }, "*"); });
+                    editor.on("change", function() {updateHeight(); const content = editor.getContent(); window.parent.postMessage({ type: "spotfix:tinymce-change", source: "spotfix-message-editor-iframe", content: content }, "*"); });
                     }
                     }).catch(function(error) { window.parent.postMessage({ type: "spotfix:tinymce-error", source: "spotfix-message-editor-iframe", error: error.message }, "*"); });
                     }

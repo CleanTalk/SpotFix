@@ -5,13 +5,13 @@
  */
 class DescriptionEditorIframe {
     static instance = null;
-    
+
     constructor() {
         if (DescriptionEditorIframe.instance) {
             return DescriptionEditorIframe.instance;
         }
         DescriptionEditorIframe.instance = this;
-        
+
         this.iframe = null;
         this.wrapper = null;
         this.targetId = 'doboard_task_widget-description';
@@ -19,7 +19,7 @@ class DescriptionEditorIframe {
         this.handlers = {};
         this.onChange = null;
         this.onInput = null;
-        
+
         // Bind message handler
         this.bindMessageHandler();
     }
@@ -100,13 +100,14 @@ class DescriptionEditorIframe {
         this.iframe = document.createElement('iframe');
         this.iframe.id = 'spotfix-description-editor-iframe';
         this.iframe.className = 'spotfix-tinymce-iframe';
-        this.iframe.style.cssText = 'width: 100%; min-height: 100px; height: 200px; border: none; background: transparent;';
+        this.iframe.style.cssText =
+            'width: 100%; min-height: 200px; height: 100%; border: 1px solid #BBC7D1; border-radius: 4px; background: transparent;';
 
         const parent = targetElement.parentElement;
 
         this.wrapper = document.createElement('div');
         this.wrapper.className = 'spotfix-tinymce-wrapper spotfix-description-wrapper';
-        this.wrapper.style.cssText = 'position: relative; width: 100%; flex-grow: 1;';
+        this.wrapper.style.cssText = 'position: absolute; width: 100%; height: 100%;';
 
         targetElement.style.display = 'none';
 
@@ -175,7 +176,7 @@ class DescriptionEditorIframe {
             * { margin: 0; padding: 0; box-sizing: border-box; }
             html, body { height: 100%; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: transparent; }
             #editor-container { min-height: 200px; background: #fff; border-radius: 4px; }
-            .tox-tinymce { border-radius: 4px !important; }
+            .tox-tinymce { border: none !important; position: absolute !important; height: 100% !important;}
             .tox-editor-header { border-bottom: none !important; }
             </style>
             </head>
