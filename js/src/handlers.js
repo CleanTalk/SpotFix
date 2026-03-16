@@ -203,7 +203,9 @@ function registerUser(taskDetails) {
     const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName)
         .then((response) => {
             if (response.accountExists) {
-                // Return response to let caller handle account exists case
+         document.querySelector('.doboard_task_widget-accordion .doboard_task_widget-input-container').innerText = ksesFilter('Account already exists. Please, login usin your password.');
+                document.querySelector('.doboard_task_widget-accordion .doboard_task_widget-input-container.hidden').classList.remove('hidden');
+                document.getElementById('doboard_task_widget-user_password').focus();
                 return response;
             } else if (response.sessionId) {
                 localStorage.setItem('spotfix_session_id', response.sessionId);
