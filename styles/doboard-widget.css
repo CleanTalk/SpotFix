@@ -1474,6 +1474,10 @@ input:checked + .slider:before {
     color: #252A2F;
 }
 
+#spotfix-message-editor-iframe {
+    margin-bottom: 0px !important;
+}
+
 .doboard_task_widget-concrete_issue .tox-tinymce .tox-toolbar__group {
     display: inline-flex !important;
     width: 100% !important;
