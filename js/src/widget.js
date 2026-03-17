@@ -1095,7 +1095,7 @@ class CleanTalkWidgetDoboard {
                 const fileUploader = this.fileUploader;
 
                 // Remove existing iframe editor if any
-                if (window.MessageEditorIframe.iframe) {
+                if (window.MessageEditorIframe.iframe && !this.nonRequesting) {
                     window.MessageEditorIframe.remove();
                 }
                 if(!this.nonRequesting) {
