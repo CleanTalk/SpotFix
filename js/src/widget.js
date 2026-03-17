@@ -1098,36 +1098,36 @@ class CleanTalkWidgetDoboard {
                 if (window.MessageEditorIframe.iframe) {
                     window.MessageEditorIframe.remove();
                 }
-
-                // Create message editor iframe
-                window.MessageEditorIframe.create({
-                    onReady: function() {
-                        // Scroll to the bottom comments
-                        if(!mainThis.nonRequesting) {
-                            const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
-                            if (container) {
-                                setTimeout(() => {
-                                    const scrollPosition = container.scrollHeight;
-                                    container.scrollTo({ top: scrollPosition, behavior: 'smooth' });
-                                }, 50);
+                if(!this.nonRequesting) {
+                    // Create message editor iframe
+                    window.MessageEditorIframe.create({
+                        onReady: function() {
+                            // Scroll to the bottom comments
+                            if (!mainThis.nonRequesting) {
+                                const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
+                                if (container) {
+                                    setTimeout(() => {
+                                        const scrollPosition = container.scrollHeight;
+                                        container.scrollTo({top: scrollPosition, behavior: 'smooth'});
+                                    }, 50);
+                                }
                             }
-                        }
-                    },
-                    handlers: {
-                        onAttachmentClick: function() {
-                            fileUploader?.fileInput?.click();
                         },
-                        onScreenshotClick: function() {
-                            fileUploader?.makeScreenshot();
+                        handlers: {
+                            onAttachmentClick: function() {
+                                fileUploader?.fileInput?.click();
+                            },
+                            onScreenshotClick: function() {
+                                fileUploader?.makeScreenshot();
+                            },
+                            onSendComment: function(eventData) {
+                                clickHandler(mainThis, null, eventData.content);
+                            },
                         },
-                        onSendComment: function(eventData) {
-                            clickHandler(mainThis, null, eventData.content);
-                        }
-                    }
-                }).catch(function(error) {
-                    console.error('Failed to create message editor:', error);
-                });
-
+                    }).catch(function(error) {
+                        console.error('Failed to create message editor:', error);
+                    });
+                }
             if(this.nonRequesting) {
                 const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
 
