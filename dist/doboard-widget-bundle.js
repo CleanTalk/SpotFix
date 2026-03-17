@@ -13890,7 +13890,7 @@ class MessageEditorIframe {
         this.iframe = document.createElement('iframe');
         this.iframe.id = 'spotfix-message-editor-iframe';
         this.iframe.className = 'spotfix-tinymce-iframe';
-        this.iframe.style.cssText = 'width: 100%; border: none; background: transparent; margin: 0;';
+        this.iframe.style.cssText = 'width: 100%; border: none; background: transparent; margin-bottom: 0px !important;';
 
         const parent = targetElement.parentElement;
 
