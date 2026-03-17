@@ -222,7 +222,7 @@ const logoutUserDoboard = async (projectToken) => {
             session_id: sessionId,
         };
 
-        const email = localStorage.getItem('spotfix_email') || '';
+        const email = getSpotfixEmail() || '';
 
         if (email && email.includes('spotfix_')) {
             data.project_token = projectToken;
@@ -260,6 +260,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         taskMeta: task.meta,
         taskStatus: task.status,
         viewers: task.comments_viewers,
+        taskToken: task.token
     }));
     await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_TASKS, tasks);
     storageSaveTasksCount(tasks);

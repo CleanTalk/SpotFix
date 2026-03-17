@@ -45,6 +45,7 @@ const handleIncomingData = async (data) => {
             viewers: data.data.comments_viewers,
             task_type: data.data.task_type,
             commentsCount: data.data.comments_count,
+            taskToken: data.data.token,
         });
         break;
 

@@ -176,6 +176,17 @@
     height: 52px;
 }
 
+.doboard_task_widget-task_menu-item-viewers {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    flex-direction: column;
+    height: fit-content;
+    padding-top: 8px;
+    max-height: 200px;
+    overflow: auto;
+}
+
 .doboard_task_widget-content {
     flex: 1;
     overflow-y: auto;
