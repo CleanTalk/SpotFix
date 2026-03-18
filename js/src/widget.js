@@ -134,6 +134,19 @@ class CleanTalkWidgetDoboard {
         }
 
         if ( ! params.projectToken || ! params.accountId || ! params.projectId ) {
+            const storedProjectToken = localStorage.getItem('spotfix_project_token');
+            const storedAccountId = localStorage.getItem('spotfix_company_id');
+            
+            if (storedProjectToken && storedAccountId) {
+                params = {
+                    projectToken: params.projectToken || storedProjectToken,
+                    accountId: params.accountId || storedAccountId,
+                    projectId: params.projectId || '' // projectId still required
+                };
+            }
+        }
+
+        if ( ! params.projectToken || ! params.accountId || ! params.projectId ) {
             throw new Error('Necessary script params not provided. Please provide projectToken, accountId, and projectId either in the script tag URL or in window.spotfixConfig object.');
         }
 
