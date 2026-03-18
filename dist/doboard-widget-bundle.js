@@ -9193,29 +9193,42 @@ class CleanTalkWidgetDoboard {
     }
 
     getParams() {
-        const script = document.querySelector(`script[src*="doboard-widget-bundle."]`);
-        if ( ! script || ! script.src ) {
-            throw new Error('Script not provided');
-        }
-
-        const url = new URL(script.src);
-        let params = Object.fromEntries(url.searchParams.entries());
         const config = typeof window.spotfixConfig === 'object' && window.spotfixConfig ? window.spotfixConfig : null;
-
-        // Fallback to spotfixConfig when URL has no params or they are incomplete (e.g. WordPress plugin)
-        if ( config ) {
+        
+        let params = {};
+        if (config) {
+            params = {
+                projectToken: config.projectToken || '',
+                projectId: config.projectId || '',
+                accountId: config.accountId || ''
+            };
+        }
+        
+        if (params.projectToken && params.accountId && params.projectId) {
+            return this.finalizeParams(params);
+        }
+        
+        const script = document.querySelector(`script[src*="doboard-widget-bundle."]`);
+        if (script && script.src) {
+            const url = new URL(script.src);
+            const scriptParams = Object.fromEntries(url.searchParams.entries());
+            
             params = {
                 ...params,
-                projectToken: params.projectToken || config.projectToken || '',
-                projectId: params.projectId || config.projectId || '',
-                accountId: params.accountId || config.accountId || ''
+                projectToken: params.projectToken || scriptParams.projectToken || '',
+                projectId: params.projectId || scriptParams.projectId || '',
+                accountId: params.accountId || scriptParams.accountId || ''
             };
         }
 
         if ( ! params.projectToken || ! params.accountId || ! params.projectId ) {
-            throw new Error('Necessary script params not provided');
+            throw new Error('Necessary script params not provided. Please provide projectToken, accountId, and projectId either in the script tag URL or in window.spotfixConfig object.');
         }
 
+        return this.finalizeParams(params);
+    }
+
+    finalizeParams(params) {
         if (params.accountId) {
             localStorage.setItem('spotfix_company_id', params.accountId);
         }
