@@ -16,7 +16,6 @@ function spotFixInit() {
     new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
     loadBotDetector();
-    loadTinyMCE();
 }
 
 function loadBotDetector() {
@@ -33,45 +32,8 @@ function loadBotDetector() {
     document.head.appendChild(script);
 }
 
-/**
- * Downloads TinyMCE script from doboard.com
- */
-function loadTinyMCE() {
-    return new Promise((resolve) => {
-        const existingTinyMCE_temp = window.tinymce;
-        window.tinymce = null;
-        const script = document.createElement('script');
-        script.src = 'https://doboard.com/tinymce/tinymce.min.js';
-        script.async = true;
-
-        script.onload = function () {
-            try {
-                window.SpotFixTinyMCE = window.tinymce;
-                if (existingTinyMCE_temp) {
-                    window.tinymce = existingTinyMCE_temp;
-                }
-                addIconPack();
-                resolve(window.SpotFixTinyMCE);
-            } catch (error) {
-                if (existingTinyMCE_temp) {
-                    window.tinymce = existingTinyMCE_temp;
-                }
-                console.error('Error loading TinyMCE:', error);
-                resolve(null);
-            }
-        };
-
-        script.onerror = function () {
-            if (existingTinyMCE_temp) {
-                window.tinymce = existingTinyMCE_temp;
-            }
-            console.error('Failed to load TinyMCE script');
-            resolve(null);
-        };
-
-        document.head.appendChild(script);
-    });
-}
+// TinyMCE is now loaded inside iframes by SpotFixMceIframe class
+// The loadTinyMCE function has been removed as TinyMCE loads inside each iframe
 
 document.addEventListener('selectionchange', function(e) {
     // Do not run widget for non-document events (i.e. inputs focused)
