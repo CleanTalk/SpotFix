@@ -9193,14 +9193,15 @@ class CleanTalkWidgetDoboard {
     }
 
     getParams() {
-        const script = document.querySelector(`script[src*="doboard-widget-bundle."]`);
-        if ( ! script || ! script.src ) {
-            throw new Error('Script not provided');
-        }
+    const script = document.querySelector(`script[src*="doboard-widget-bundle."]`);
+    let params = {};
 
+    if (script && script.src) {
         const url = new URL(script.src);
-        let params = Object.fromEntries(url.searchParams.entries());
-        const config = typeof window.spotfixConfig === 'object' && window.spotfixConfig ? window.spotfixConfig : null;
+        params = Object.fromEntries(url.searchParams.entries());
+    }
+
+    const config = typeof window.spotfixConfig === 'object' && window.spotfixConfig ? window.spotfixConfig : null;
 
         // Fallback to spotfixConfig when URL has no params or they are incomplete (e.g. WordPress plugin)
         if ( config ) {
