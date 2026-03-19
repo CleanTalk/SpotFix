@@ -29,6 +29,8 @@ function bundle_src_js() {
         'js/src/loaders/SpotFixSVGLoader.js',
         'js/src/loaders/SpotFixSourcesLoader.js',
         'js/src/loaders/SpotFixLoaderEvent.js',
+        'js/src/iframe/DescriptionEditorIframe.js',
+        'js/src/iframe/MessageEditorIframe.js',
     ]);
 
     return mergeStream(cssStream, jsStream)

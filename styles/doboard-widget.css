@@ -176,6 +176,17 @@
     height: 52px;
 }
 
+.doboard_task_widget-task_menu-item-viewers {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    flex-direction: column;
+    height: fit-content;
+    padding-top: 8px;
+    max-height: 200px;
+    overflow: auto;
+}
+
 .doboard_task_widget-content {
     flex: 1;
     overflow-y: auto;
@@ -1461,6 +1472,10 @@ input:checked + .slider:before {
     left: 14px;
     font-size: 10px;
     color: #252A2F;
+}
+
+#spotfix-message-editor-iframe {
+    margin-bottom: 0px !important;
 }
 
 .doboard_task_widget-concrete_issue .tox-tinymce .tox-toolbar__group {
