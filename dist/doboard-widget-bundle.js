@@ -8638,7 +8638,7 @@ const SPOTFIX_VERSION = "1.1.13";
 
 async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
     const result = await spotFixUserConfirmEmailDoboard(emailConfirmationToken);
-    // Save session data to LS    
+    // Save session data to LS
     setSpotfixEmail(result.email);
     localStorage.setItem('spotfix_session_id', result.sessionId);
     localStorage.setItem('spotfix_user_id', result.userId);
@@ -8663,6 +8663,7 @@ async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
         taskTitle: pendingTask.selectedText || 'New Task',
         taskDescription: pendingTask.description || '',
         selectedData: pendingTask,
+        task_type: params.task_type,
         projectToken: params.projectToken,
         projectId: params.projectId,
         accountId: params.accountId,
@@ -8850,7 +8851,7 @@ function registerUser(taskDetails) {
             } else if (response.sessionId) {
                 localStorage.setItem('spotfix_session_id', response.sessionId);
                 localStorage.setItem('spotfix_user_id', response.userId);
-                setSpotfixEmail(response.email);                
+                setSpotfixEmail(response.email);
                 localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
                 spotfixIndexedDB.init();
                 localStorage.setItem('spotfix_widget_is_closed', '0');
@@ -9084,7 +9085,7 @@ class CleanTalkWidgetDoboard {
         if (emailToken) {
             try {
                 // Confirm email and create task
-                const createdTask = await spotFixConfirmUserEmail(emailToken, this.params);
+                const createdTask = await spotFixConfirmUserEmail(emailToken, {...this.params, task_type: this.new_task_type});
                 this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
                 // Open task interface
                 this.currentActiveTaskId = createdTask.taskId;
@@ -9262,6 +9263,7 @@ class CleanTalkWidgetDoboard {
                     projectToken: this.params.projectToken,
                     projectId: this.params.projectId,
                     accountId: this.params.accountId,
+                    task_type: this.new_task_type,
                     taskMeta: JSON.stringify(this.selectedData ? this.selectedData : { pageURL: window.location.href }),
                 };
 
