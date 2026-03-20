@@ -56,7 +56,7 @@ class CleanTalkWidgetDoboard {
         if (emailToken) {
             try {
                 // Confirm email and create task
-                const createdTask = await spotFixConfirmUserEmail(emailToken, this.params);
+                const createdTask = await spotFixConfirmUserEmail(emailToken, {...this.params, task_type: this.new_task_type});
                 this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
                 // Open task interface
                 this.currentActiveTaskId = createdTask.taskId;
@@ -234,6 +234,7 @@ class CleanTalkWidgetDoboard {
                     projectToken: this.params.projectToken,
                     projectId: this.params.projectId,
                     accountId: this.params.accountId,
+                    task_type: this.new_task_type,
                     taskMeta: JSON.stringify(this.selectedData ? this.selectedData : { pageURL: window.location.href }),
                 };
 
