@@ -10535,7 +10535,7 @@ class CleanTalkWidgetDoboard {
         }
 
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
-        if ( taskCountElement ) {
+        if ( taskCountElement && tasksCount ) {
             taskCountElement.innerText = ksesFilter(tasksCount);
             taskCountElement.classList.remove('hidden');
         }
