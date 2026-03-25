@@ -9135,22 +9135,32 @@ class CleanTalkWidgetDoboard {
 
     getParams() {
         const script = document.querySelector(`script[src*="doboard-widget-bundle."]`);
-        if ( ! script || ! script.src ) {
-            throw new Error('Script not provided');
-        }
+        let params ={}
 
-        const url = new URL(script.src);
-        let params = Object.fromEntries(url.searchParams.entries());
-        const config = typeof window.spotfixConfig === 'object' && window.spotfixConfig ? window.spotfixConfig : null;
+        if ( script && script.src) {
+            const url = new URL(script.src);
+            params = Object.fromEntries(url.searchParams.entries());
+            const config = typeof window.spotfixConfig === 'object' && window.spotfixConfig ? window.spotfixConfig : null;
 
-        // Fallback to spotfixConfig when URL has no params or they are incomplete (e.g. WordPress plugin)
-        if ( config ) {
+            // Fallback to spotfixConfig when URL has no params or they are incomplete (e.g. WordPress plugin)
+                    params = {
+                        ...params,
+                        projectToken: params.projectToken || config.projectToken || '',
+                        projectId: params.projectId || config.projectId || '',
+                        accountId: params.accountId || config.accountId || ''
+                    };
+
+        } else {
+            const data = document.querySelector('script[data-spotfix="SpotFix"]')
             params = {
-                ...params,
-                projectToken: params.projectToken || config.projectToken || '',
-                projectId: params.projectId || config.projectId || '',
-                accountId: params.accountId || config.accountId || ''
+                ...data?.dataset,
+                projectToken: data?.dataset?.projecttoken || '',
+                projectId: data?.dataset?.projectid || '',
+                accountId: data?.dataset?.accountid || ''
             };
+            delete params?.projecttoken;
+            delete params?.projectid;
+            delete params?.accountid;
         }
 
         if ( ! params.projectToken || ! params.accountId || ! params.projectId ) {
