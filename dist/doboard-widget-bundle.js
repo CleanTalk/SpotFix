@@ -10535,7 +10535,7 @@ class CleanTalkWidgetDoboard {
         }
 
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
-        if ( taskCountElement ) {
+        if ( taskCountElement && tasksCount ) {
             taskCountElement.innerText = ksesFilter(tasksCount);
             taskCountElement.classList.remove('hidden');
         }
@@ -12572,11 +12572,11 @@ class SpotFixTemplatesLoader {
             <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
         </div>
     </div>
-    <div class="doboard_task_widget-content doboard_task_widget-all_issues">
+    <div class="doboard_task_widget-content doboard_task_widget-all_issues" style="display: flex; flex-direction: column;">
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
             <div class="doboard_task_widget-spinner_for_containers"></div>
         </div>
-        <div class="doboard_task_widget-all_issues-container" style="margin-top: 0px">
+        <div class="doboard_task_widget-all_issues-container" style="margin-top: 0px; flex-grow: 1;">
         </div>
         <div class="doboard_task_widget_tasks_list">
             <span>doBoard / SpotFix</span>
