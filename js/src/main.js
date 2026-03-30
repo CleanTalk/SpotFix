@@ -20,7 +20,7 @@ function spotFixInit() {
 
 function loadBotDetector() {
 
-    const detector = document.querySelectorAll('script[src*="fd.cleantalk.org/ct-bot-detector-wrapper.js"]');
+    const detector = document.querySelectorAll('script[src*="ct-bot-detector-wrapper.js"]');
     if (detector.length > 0 || document.getElementById('ct-bot-detector-script')) {
         return;
     }
