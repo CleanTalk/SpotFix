@@ -7,7 +7,7 @@ let rename = require('gulp-rename');
 let concat = require('gulp-concat');
 let wrap = require('gulp-wrap');
 let mergeStream = require('merge-stream');
-let cssmin = require('gulp-cssmin');
+let cleanCSS = require('gulp-clean-css');
 let browserSync = require('browser-sync').create();
 
 
@@ -29,6 +29,8 @@ function bundle_src_js() {
         'js/src/loaders/SpotFixSVGLoader.js',
         'js/src/loaders/SpotFixSourcesLoader.js',
         'js/src/loaders/SpotFixLoaderEvent.js',
+        'js/src/iframe/DescriptionEditorIframe.js',
+        'js/src/iframe/MessageEditorIframe.js',
     ]);
 
     return mergeStream(cssStream, jsStream)
@@ -49,15 +51,14 @@ function minify_js() {
 
 function processCSS() {
     return gulp.src('styles/doboard-widget.css')
-        .pipe(cssmin())
+        .pipe(cleanCSS())
         .pipe(wrap('let spotFixCSS = `<%= contents %>`;'))
         .pipe(concat('css-as-js.js'))
         .pipe(gulp.dest('temp/'))
         .on('end', async () => {
             const {deleteSync} = await import('del');
             deleteSync('temp');
-        })
-    ;
+        });
 }
 
 gulp.task('compress-js', gulp.series(bundle_src_js, minify_js));

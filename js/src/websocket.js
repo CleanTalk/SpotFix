@@ -42,6 +42,10 @@ const handleIncomingData = async (data) => {
             taskCreatorTaskUser: data.data.creator_user_id,
             taskMeta: data.data.meta,
             taskStatus: data.data.status,
+            viewers: data.data.comments_viewers,
+            task_type: data.data.task_type,
+            commentsCount: data.data.comments_count,
+            taskToken: data.data.token,
         });
         break;
 
@@ -58,6 +62,27 @@ const handleIncomingData = async (data) => {
             commentDate: data.data.updated,
             status: data.data.status,
             issueTitle: data.data.task_name,
+        });
+        break;
+
+    case 'attachments':
+        if (data.data.status === 'REMOVED') {
+            await spotfixIndexedDB.delete(SPOTFIX_TABLE_ATTACHMENT, data.data.attachment_id);
+            break;
+        }
+        await spotfixIndexedDB.put(SPOTFIX_TABLE_ATTACHMENT, {
+            attachmentId: data.data.attachment_id,
+            taskId: data.data.task_id,
+            commentId: data.data.comment_id,
+            userId: data.data.user_id,
+            filename: data.data.filename,
+            URL: data.data.URL,
+            URL_thumbnail: data.data.URL_thumbnail,
+            mimeType: data.data.mime_content_type,
+            fileSize: data.data.file_size,
+            attachmentOrder: data.data.attachment_order,
+            created: data.data.created,
+            updated: data.data.updated,
         });
         break;
 
@@ -101,7 +126,7 @@ const wsSpotfix = {
                 return;
             }
 
-            if (!['users', 'tasks', 'comments'].includes(data.object)) return;
+            if (!['users', 'tasks', 'comments', 'attachments'].includes(data.object)) return;
 
             const eventId = data.id ? `${data.object}-${data.id}` : JSON.stringify(data);
 

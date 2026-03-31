@@ -147,6 +147,7 @@ const attachmentAddDoboard = async (fileData) => {
         attachment_order: fileData.attachmentOrder,
     };
     const result = await spotfixApiCall(data, 'attachment_add', accountId);
+    //await getTasksCommentsDoboard(fileData.sessionId, params.accountId, params.projectToken, currentActiveTaskId);
     // @ToDo need to handle result?
 };
 
@@ -221,7 +222,7 @@ const logoutUserDoboard = async (projectToken) => {
             session_id: sessionId,
         };
 
-        const email = localStorage.getItem('spotfix_email') || '';
+        const email = getSpotfixEmail() || '';
 
         if (email && email.includes('spotfix_')) {
             data.project_token = projectToken;
@@ -258,6 +259,8 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
         taskCreatorTaskUser: task.creator_user_id,
         taskMeta: task.meta,
         taskStatus: task.status,
+        viewers: task.comments_viewers,
+        taskToken: task.token
     }));
     await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_TASKS, tasks);
     storageSaveTasksCount(tasks);
@@ -286,6 +289,27 @@ const getTasksCommentsDoboard = async (sessionId, accountId, projectToken, curre
     }));
     await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_COMMENTS, comments);
     return comments;
+};
+const getTasksAttachmenDoboard = async (sessionId, accountId, projectToken, currentActiveTaskId, status = 'ACTIVE') => {
+    const data = {
+        session_id: sessionId,
+        project_token: projectToken,
+        status: status,
+        task_id: currentActiveTaskId
+    }
+    const result = await spotfixApiCall(data, 'attachment_get', accountId);
+    
+    const attachment = result.attachments.map((item, index) => ({
+        attachmentId: item.attachment_id || `att_${item.task_id}_${index}_${Date.now()}`,
+        taskId: item.task_id,
+        commentId: item.comment_id,
+        attachmentOrder: item.attachment_order,
+        URL_thumbnail: item.URL_thumbnail,
+        URL: item.URL,
+        filename: item.filename,
+    }));
+    await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_ATTACHMENT, attachment);
+    return attachment;
 };
 
 const getUserDoboard = async (sessionId, projectToken, accountId, userId) => {
@@ -400,5 +424,19 @@ const updateNotificationsDoboard = async (taskId, projectToken, accountId) => {
         };
 
         await spotfixApiCall(data, 'notification_update', accountId);
+    }
+};
+
+const updateViewersDoboard = async (usersIds, taskId, projectToken, accountId) => {
+    const sessionId = localStorage.getItem('spotfix_session_id');
+    if (sessionId) {
+        const data = {
+            session_id: sessionId,
+            project_token: projectToken,
+            task_id: taskId,
+            viewers_ids: usersIds,
+        };
+
+        await spotfixApiCall(data, 'viewers_update', accountId);
     }
 };
