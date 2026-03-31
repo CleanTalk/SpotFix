@@ -124,14 +124,10 @@ class CleanTalkWidgetDoboard {
         } else {
             const data = document.querySelector('script[data-spotfix="SpotFix"]')
             params = {
-                ...data?.dataset,
                 projectToken: data?.dataset?.projecttoken || '',
                 projectId: data?.dataset?.projectid || '',
                 accountId: data?.dataset?.accountid || ''
             };
-            delete params?.projecttoken;
-            delete params?.projectid;
-            delete params?.accountid;
         }
 
         if ( ! params.projectToken || ! params.accountId || ! params.projectId ) {
