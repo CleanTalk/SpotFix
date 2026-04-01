@@ -148,6 +148,7 @@ class CleanTalkWidgetDoboard {
      */
     bindCreateTaskEvents() {
         const submitButton = document.getElementById('doboard_task_widget-submit_button');
+        let isSubmitting = false;
 
         if (submitButton) {
             submitButton.addEventListener('click', async () => {
@@ -262,15 +263,19 @@ class CleanTalkWidgetDoboard {
 
                 let submitTaskResult;
                 try {
+                    if (isSubmitting) return;
+                    isSubmitting = true;
                     submitTaskResult = await this.submitTask(taskDetails);
                 } catch (error) {
                     this.registrationShowMessage(error.message);
+                    isSubmitting = false;
                     return;
+                } finally {
+                    // Return the submit button normal state
+                    submitButton.disabled = false;
+                    submitButton.style.cursor = 'pointer';
+                    isSubmitting = false;
                 }
-
-                // Return the submit button normal state
-                submitButton.disabled = false;
-                submitButton.style.cursor = 'pointer';
 
                 if ( submitTaskResult.needToLogin ) {
                     // @ToDo Do not know what to de here: throw an error or pass log message?
