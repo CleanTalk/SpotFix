@@ -740,6 +740,10 @@
     background: #EBF0F4;
 }
 
+.doboard_task_widget-task_row-green {
+    background: #F3F6F9;
+}
+
 .doboard_task_widget-task_row-green .doboard_task_widget-description_container {
     border-bottom: 1px solid #e5e5e5;
 }
@@ -1712,4 +1716,54 @@ input:checked + .slider:before {
 .doboard_task_widget-lightbox-close img {
     width: 24px;
     height: 24px;
+}
+
+/* Finished tasks collapsible section */
+.doboard_task_widget-finished_tasks_section {
+    border-top: 1px solid #EBF0F4;
+    margin-top: 8px;
+}
+
+.doboard_task_widget-finished_tasks_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    cursor: pointer;
+    background-color: #F9FBFD;
+    border-bottom: 1px solid #EBF0F4;
+    transition: background-color 0.2s ease;
+}
+
+.doboard_task_widget-finished_tasks_header:hover {
+    background-color: #F3F6F9;
+}
+
+.doboard_task_widget-finished_tasks_title {
+    font-weight: 600;
+    font-size: 13px;
+    color: #40484F;
+}
+
+.doboard_task_widget-finished_tasks_chevron {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.doboard_task_widget-finished_tasks_header.expanded .doboard_task_widget-finished_tasks_chevron {
+    transform: rotate(180deg);
+}
+
+.doboard_task_widget-finished_tasks_container {
+    background: #F3F6F9;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.doboard_task_widget-finished_tasks_container.expanded {
+    max-height: 2000px;
+    transition: max-height 0.5s ease-in;
 }
