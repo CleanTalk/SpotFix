@@ -39,6 +39,7 @@ class CleanTalkWidgetDoboard {
             iconSpotPrivate: SpotFixSVGLoader.getAsDataURI('iconSpotPrivate'),
             iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
             iconLinkChainDark: SpotFixSVGLoader.getAsDataURI('iconLinkChainDark'),
+            iconFinishedTitle: SpotFixSVGLoader.getAsDataURI('iconFinishedTitle'),
         };
         this.fileUploader = new FileUploader(this.escapeHtml);
         this.init(type);
@@ -738,6 +739,8 @@ class CleanTalkWidgetDoboard {
 
                 const notifications = await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
 
+
+
                 this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
                 const tasks = this.allTasksData;
                 tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId, this.nonRequesting);
@@ -804,6 +807,7 @@ class CleanTalkWidgetDoboard {
 
                             const avatarData = getAvatarData(taskFullDetails);
                             const hasUpdates = !!(notifications?.find(item => +item?.task_id === elTask?.taskId));
+
                             const listIssuesTemplateVariables = {
                                 taskTitle: taskTitle || '',
                                 taskAuthorAvatarImgSrc: taskFullDetails.taskAuthorAvatarImgSrc,
@@ -825,6 +829,7 @@ class CleanTalkWidgetDoboard {
                                 taskAuthorInitials: avatarData.taskAuthorInitials,
                                 initialsClass: avatarData.initialsClass,
                                 classUnread: '',
+                                doboardLink: `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${taskId}?token=${this.params.projectToken}`,
                                 elementBgCSSClass: elTask.taskStatus !== 'DONE' ? '' : 'doboard_task_widget-task_row-green',
                                 statusFixedHtml: elTask.taskStatus !== 'DONE' ? '' : this.loadTemplate('fixedHtml'),
                                 amountOfComments: elTask.taskStatus === 'DONE' ? ''
@@ -907,6 +912,7 @@ class CleanTalkWidgetDoboard {
                                     taskAuthorInitials: avatarData.taskAuthorInitials,
                                     initialsClass: avatarData.initialsClass,
                                     classUnread: '',
+                                    doboardLink: `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${taskId}?token=${this.params.projectToken}`,
                                     elementBgCSSClass:  'doboard_task_widget-task_row-grey',
                                     statusFixedHtml: this.loadTemplate('fixedHtml'),
                                     amountOfComments: ''
@@ -926,6 +932,7 @@ class CleanTalkWidgetDoboard {
 
                         const finishedSectionHTML = this.loadTemplate('finishedTasksSection', {
                             finishedCount: finishedTasks.length,
+                            iconFinishedTitle:  this.srcVariables.iconFinishedTitle,
                             finishedTasksContent: finishedTasksContent
                         });
                         document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += finishedSectionHTML;

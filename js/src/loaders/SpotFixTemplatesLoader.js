@@ -68,9 +68,6 @@ class SpotFixTemplatesLoader {
         </div>
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-concrete_issue">
-        <div id="spotfix_doboard_task_widget_url" class="spotfix_doboard_task_widget_url">
-                <a rel="nofollow" style="word-break: break-all" href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
-        </div>
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
             <div class="doboard_task_widget-spinner_for_containers"></div>
         </div>
@@ -272,8 +269,8 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-bottom">
             <div class="doboard_task_widget-task_page_url">
                 <img src="{{iconLinkChain}}" />
-                   <a class="spotfix_widget_task_url" title="The spot is located on this {{taskPageUrlFull}}">{{taskPageUrl}}</a>
-                   <a class="spotfix_widget_task_url-short" style="display: none" title="The spot is located on this {{taskPageUrlFull}}">{{taskFormattedPageUrl}}</a>
+                   <a class="spotfix_widget_task_url"  title="The spot is located on this {{taskPageUrlFull}}">{{taskPageUrl}}</a>
+                   <a href="{{doboardLink}}" class="spotfix_widget_task_url-short" title="The spot is located on this {{taskPageUrlFull}}">doBoard</a>
                    <a class="spotfix_widget_task_url-full" style="display: none" title="The spot is located on this {{taskPageUrlFull}}">{{taskPageUrlFull}}</a>
              </div>
                 {{statusFixedHtml}}
@@ -500,7 +497,7 @@ class SpotFixTemplatesLoader {
     <div class="doboard_task_widget-finished_tasks_header" id="finishedTasksHeader">
         <span class="doboard_task_widget-finished_tasks_title">Finished spots {{finishedCount}}</span>
         <span class="doboard_task_widget-finished_tasks_chevron">
-       <img src="{{icon}}"  alt="">
+       <img src="{{iconFinishedTitle}}"  alt="">
         </span>
     </div>
     <div class="doboard_task_widget-finished_tasks_container" id="finishedTasksContainer">
