@@ -745,6 +745,11 @@ class CleanTalkWidgetDoboard {
                 if (tasks.length > 0) {
                     const currentURL = window.location.href;
                     const sortedTasks = tasks.sort((a, b) => {
+                        const aIsDone = a.taskStatus === 'DONE' ? 1 : 0;
+                        const bIsDone = b.taskStatus === 'DONE' ? 1 : 0;
+                        if (aIsDone !== bIsDone) {
+                            return aIsDone - bIsDone;
+                        }
                         const aIsHere = JSON.parse(a.taskMeta)?.pageURL === currentURL ? 1 : 0;
                         const bIsHere = JSON.parse(b.taskMeta)?.pageURL === currentURL ? 1 : 0;
                         return bIsHere - aIsHere;
