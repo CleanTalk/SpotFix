@@ -157,12 +157,12 @@ class SpotFixTemplatesLoader {
             <label class="spotfix_placeholder_title" for="doboard_task_widget-title">Report about</label>
         </div>
 
-        <div class="doboard_task_widget-input-container doboard_task_widget-input-container-textarea" style="flex-grow: 1; min-height: 200px">
+        <div id="doboard_task_widget-description-container" class="doboard_task_widget-input-container doboard_task_widget-input-container-textarea" style="flex-grow: 1; min-height: 200px">
             <textarea id="doboard_task_widget-description" class="doboard_task_widget-field" name="description" placeholder=" " required></textarea>
             <label for="doboard_task_widget-description" class="doboard_task_widget-field-textarea-label" >Description</label>
         </div>
 
-        <div class="doboard_task_widget-login" style="margin-top: 12px; margin-bottom: 4px">
+        <div class="doboard_task_widget-login">
 
             <span  class="doboard_task_widget-login-icon" >Sign up here to receive notifications.</span>
 
@@ -178,11 +178,13 @@ class SpotFixTemplatesLoader {
                             <input id="doboard_task_widget-user_email" class="doboard_task_widget-field" type="email" name="user_email">
                             <label for="doboard_task_widget-user_email">Email</label>
                         </div>
-        
+
                         <div class="doboard_task_widget-input-container hidden">
                             <input id="doboard_task_widget-user_password" class="doboard_task_widget-field" type="password" name="user_password">
                             <label for="doboard_task_widget-user_password">Password</label>
                         </div>
+
+                        <button id="doboard_task_widget-register_only_button" class="doboard_task_widget-submit_button doboard_task_widget-hidden" style="margin-top: 8px; width: 100%;">Sign up</button>
         
                         <i>Note about DoBoard register and accepting email notifications about tasks have to be here.</i>
                         </br>
