@@ -468,6 +468,8 @@ class CleanTalkWidgetDoboard {
                             submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
                         }
 
+                        await this.createWidgetElement('create_issue');
+
                 } catch (error) {
                     document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
                 }
@@ -518,6 +520,86 @@ class CleanTalkWidgetDoboard {
                     this.registrationShowMessage(error.message, 'error');
                 }
             })
+        }
+        
+        const registerOnlyButton = document.getElementById('doboard_task_widget-register_only_button');
+        if (registerOnlyButton) {
+            registerOnlyButton.addEventListener('click', async () => {
+                const userNameElement = document.getElementById('doboard_task_widget-user_name');
+                const userEmailElement = document.getElementById('doboard_task_widget-user_email');
+                
+                const userName = userNameElement?.value?.trim();
+                const userEmail = userEmailElement?.value?.trim();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                
+                if (!userName) {
+                    userNameElement.style.borderColor = 'red';
+                    userNameElement.focus();
+                    userNameElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                }
+                
+                // Validate email
+                if (!userEmail) {
+                    userEmailElement.style.borderColor = 'red';
+                    userEmailElement.focus();
+                    userEmailElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                } else if (!emailRegex.test(userEmail)) {
+                    userEmailElement.style.borderColor = 'red';
+                    userEmailElement.focus();
+                    userEmailElement.addEventListener('input', function() {
+                        this.style.borderColor = '';
+                    });
+                    return;
+                }
+                
+                registerOnlyButton.disabled = true;
+                registerOnlyButton.innerText = 'Signing up...';
+                
+                try {
+                    const taskDetails = {
+                        userName: userName,
+                        userEmail: userEmail,
+                        projectToken: this.params.projectToken,
+                        accountId: this.params.accountId,
+                    };
+                    
+                    const response = await registerUser(taskDetails)(this.registrationShowMessage);
+                    
+                    if (response && response.accountExists) {
+                        const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
+                        const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
+                        const loginEmailElement = document.getElementById('doboard_task_widget-login_email');
+                        
+                        if (phantomContainer) {
+                            phantomContainer.classList.add('doboard_task_widget-hidden');
+                        }
+                        if (loginContainer) {
+                            loginContainer.classList.remove('doboard_task_widget-hidden');
+                        }
+                        if (loginEmailElement && userEmail) {
+                            loginEmailElement.value = userEmail;
+                            loginEmailElement.classList.add('has-value');
+                        }
+                        registerOnlyButton.classList.add('doboard_task_widget-hidden');
+                        
+                        this.registrationShowMessage('Account already exists. Please login with your password.', 'notice');
+                    } else if (localStorage.getItem('spotfix_session_id')) {
+                        // Redraw widget after successful registration
+                        await this.createWidgetElement('create_issue');
+                    }
+                } catch (error) {
+                    this.registrationShowMessage(error.message, 'error');
+                }
+                
+                registerOnlyButton.disabled = false;
+                registerOnlyButton.innerText = 'Sign up';
+            });
         }
     }
 
@@ -673,6 +755,41 @@ class CleanTalkWidgetDoboard {
 
                 if (sessionIdExists && email && !email.includes('spotfix_')) {
                     document.querySelector('.doboard_task_widget-login').classList.add('hidden');
+                }
+
+                const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
+                const titleContainer = document.getElementById('doboard_task_widget-title')?.closest('.doboard_task_widget-input-container');
+                const descriptionContainer = document.getElementById('doboard_task_widget-description-container');
+                const requireFullRegistrationMessage = document.getElementById('doboard_task_widget-require_full_registration');
+                const submitButtonContainer = document.getElementById('doboard_task_widget-submit_button')?.closest('.doboard_task_widget-field');
+                const visibilityToggle = document.querySelector('.doboard_task_widget-visibility-toggle');
+
+                const registerOnlyButton = document.getElementById('doboard_task_widget-register_only_button');
+                
+                if (requireFullRegistration && !sessionIdExists) {
+                    if (titleContainer) titleContainer.style.display = '';
+                    if (descriptionContainer) descriptionContainer.style.display = '';
+                    if (submitButtonContainer) submitButtonContainer.style.display = 'none';
+                    if (visibilityToggle) visibilityToggle.style.display = 'none';
+                    if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.remove('doboard_task_widget-hidden');
+                    const loginSection = document.querySelector('.doboard_task_widget-login');
+                    if (loginSection) loginSection.classList.add('active');
+                    // Hide login accordion icon when require_full_registration
+                    const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
+                    if (loginIcon) loginIcon.classList.add('doboard_task_widget-login-icon-hidden');
+                    // Show register only button
+                    if (registerOnlyButton) registerOnlyButton.classList.remove('doboard_task_widget-hidden');
+                } else {
+                    if (titleContainer) titleContainer.style.display = '';
+                    if (descriptionContainer) descriptionContainer.style.display = '';
+                    if (submitButtonContainer) submitButtonContainer.style.display = '';
+                    if (visibilityToggle) visibilityToggle.style.display = '';
+                    if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.add('doboard_task_widget-hidden');
+                    // Show login accordion icon when not require_full_registration
+                    const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
+                    if (loginIcon) loginIcon.classList.remove('doboard_task_widget-login-icon-hidden');
+                    // Hide register only button
+                    if (registerOnlyButton) registerOnlyButton.classList.add('doboard_task_widget-hidden');
                 }
 
                 if (
@@ -1614,7 +1731,16 @@ class CleanTalkWidgetDoboard {
         if ( accordionController ) {
             const context = this;
             accordionController.addEventListener('click', function() {
-                this.closest('.doboard_task_widget-login').classList.toggle('active');
+                const loginSection = this.closest('.doboard_task_widget-login');
+                const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
+                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+
+                if (requireFullRegistration && !sessionIdExists) {
+                    loginSection.classList.add('active');
+                } else {
+                    loginSection.classList.toggle('active');
+                }
+
                 // Scroll
                 context.positionWidgetContainer();
                 setTimeout(() => {

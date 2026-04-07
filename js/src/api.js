@@ -151,7 +151,7 @@ const attachmentAddDoboard = async (fileData) => {
     // @ToDo need to handle result?
 };
 
-const registerUserDoboard = async (projectToken, accountId, email, nickname, pageURL) => {
+const registerUserDoboard = async (projectToken, accountId, email, nickname) => {
     let data = {
         project_token: projectToken,
         account_id: accountId,
@@ -365,6 +365,17 @@ const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, tim
     return {
         success: true,
     };
+};
+
+const getProjectDoboard = async (projectToken, accountId) => {
+    const sessionId = localStorage.getItem('spotfix_session_id');
+    const data = {
+        project_token: projectToken,
+    };
+    if (sessionId) {
+        data.session_id = sessionId;
+    }
+    return await spotfixApiCall(data, 'project_get', accountId);
 };
 
 const getReleaseVersion = async () => {

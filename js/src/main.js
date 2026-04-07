@@ -16,6 +16,21 @@ function spotFixInit() {
     new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
     loadBotDetector();
+
+    const projectToken = localStorage.getItem('spotfix_project_token');
+    const accountId = localStorage.getItem('spotfix_company_id');
+    if (projectToken && accountId) {
+        getProjectDoboard(projectToken, accountId)
+            .then(result => {
+                if (result && result?.projects && result?.projects[0]) {
+                    const project = result?.projects[0];
+                    if (project?.require_full_registration !== undefined) {
+                        localStorage.setItem('spotfix_require_full_registration', project?.require_full_registration);
+                    }
+                }
+            })
+            .catch(err => console.error('project_get error:', err));
+    }
 }
 
 function loadBotDetector() {
@@ -190,7 +205,7 @@ function getTaskFullDetails(tasksDetails, taskId) {
                 const commentAttachments = attachments
                     .filter(att => String(att.commentId) === String(comment.commentId))
                     .sort((a, b) => (a.attachmentOrder || 0) - (b.attachmentOrder || 0));
-                
+
                 return {
                     commentAuthorAvatarSrc: getAvatarSrc(author),
                     commentAuthorName: getAuthorName(author),

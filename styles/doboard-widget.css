@@ -168,23 +168,12 @@
     margin-bottom: 4px
 }
 
-.doboard_task_widget-user_menu-item, .doboard_task_widget-task_menu-item {
+.doboard_task_widget-user_menu-item {
     display: flex;
     align-items: center;
     border-bottom: 1px #EBF0F4 solid;
     padding: 0 16px;
     height: 52px;
-}
-
-.doboard_task_widget-task_menu-item-viewers {
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-    flex-direction: column;
-    height: fit-content;
-    padding-top: 8px;
-    max-height: 200px;
-    overflow: auto;
 }
 
 .doboard_task_widget-content {
@@ -356,6 +345,8 @@
 }
 
 .doboard_task_widget-login {
+    margin-top: 12px;
+    margin-bottom: 4px;
     border: 1px solid #BBC7D1;
     border-radius: 4px;
     padding: 11px 8px 8px 8px;
@@ -412,6 +403,11 @@
     transform: rotate(-135deg);
     top: 7px;
 }
+
+.doboard_task_widget-login-icon.doboard_task_widget-login-icon-hidden::after {
+    display: none;
+}
+
 .doboard_task_widget-login .doboard_task_widget-input-container .doboard_task_widget-field,
 .doboard_task_widget-login .doboard_task_widget-field + label {
     background: #F9FBFD;
@@ -1474,10 +1470,6 @@ input:checked + .slider:before {
     color: #252A2F;
 }
 
-#spotfix-message-editor-iframe {
-    margin-bottom: 0px !important;
-}
-
 .doboard_task_widget-concrete_issue .tox-tinymce .tox-toolbar__group {
     display: inline-flex !important;
     width: 100% !important;
@@ -1510,206 +1502,15 @@ input:checked + .slider:before {
     margin-bottom: 12px
 }
 
-#spotfix_widget-task-menu_name {
-    color: #252A2F;
-    font-size: 16px;
-    font-weight: 500;
-    display: inline-flex;
-}
-
-#spotfix_widget-task-menu_users {
-    font-size: 12px;
-    font-weight: 400;
-    color: #707A83
-}
-
-.spotfix_widget-task-menu_user {
-    width: 100%;
+/* Require full registration message */
+.doboard_task_widget-require_full_registration {
+    padding: 16px;
+    background-color: #65D4AC;
+    border-radius: 8px;
     margin-bottom: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
-.spotfix_widget-task-menu_user img {
-    height: 24px;
-    width: 24px;
-    border-radius: 50%;
-    margin-right: 12px;
-}
-
-.spotfix_widget-task-menu_user > :first-child {
-    font-weight: 400;
-    font-size: 14px;
-    color: black;
-    display: inline-flex;
-    align-items: center;
-}
-
-.spotfix_widget-task-menu_user > :last-child {
-    color: #40484F;
-    font-size: 12px;
-    font-weight: 400;
-}
-
-
-/* Attachments styles */
-.doboard_task_widget-comment_attachments {
-    padding: 8px 8px 30px 8px;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 6px;
-    scrollbar-width: thin;
-    scrollbar-color: #BBC7D1 transparent;
-    margin-bottom: 2px;
-}
-
-.doboard_task_widget-comment_attachments::-webkit-scrollbar {
-    height: 4px;
-}
-
-.doboard_task_widget-comment_attachments::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.doboard_task_widget-comment_attachments::-webkit-scrollbar-thumb {
-    background-color: #BBC7D1;
-    border-radius: 2px;
-}
-
-.doboard_task_widget-attachment_item {
-    display: flex;
-}
-.doboard_task_widget-attachment_url {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 8px;
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 4px;
-    text-decoration: none;
-    color: #40484F !important;
-    font-size: 11px;
-    transition: background-color 0.2s ease;
-    border: 1px solid #BBC7D1;
-    flex-shrink: 0;
-    white-space: nowrap;
-}
-
-.doboard_task_widget-attachment_item:hover {
-    background: rgba(255, 255, 255, 1);
-    text-decoration: none;
-}
-
-.doboard_task_widget-attachment_icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    width: 12px;
-    height: 12px;
-}
-
-.doboard_task_widget-attachment_filename {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #40484F;
-}
-
-/* Image attachment clickable */
-.doboard_task_widget-attachment_item.image-attachment {
-    cursor: pointer;
-}
-
-.doboard_task_widget-attachment_item:not(.image-attachment) {
-    cursor: pointer;
-}
-
-.doboard_task_widget-attachment_item.image-attachment img {
-    width: 64px;
-    height: 64px;
-    object-fit: cover;
-    border-radius: 4px;
-    border: 1px solid #BBC7D1;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.doboard_task_widget-attachment_item.image-attachment:hover img {
-    transform: scale(1.1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-/* Lightbox styles */
-.doboard_task_widget-lightbox {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 99999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.doboard_task_widget-lightbox.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-.doboard_task_widget-lightbox-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    cursor: pointer;
-}
-
-.doboard_task_widget-lightbox-content {
-    position: relative;
-    max-width: 90vw;
-    max-height: 90vh;
-    z-index: 1;
-}
-
-.doboard_task_widget-lightbox-image {
-    max-width: 90vw;
-    max-height: 90vh;
-    object-fit: contain;
-    border-radius: 4px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-}
-
-.doboard_task_widget-lightbox-close {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.8);
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s ease;
-    z-index: 2;
-}
-
-.doboard_task_widget-lightbox-close:hover {
-    background: rgba(255, 255, 255, 0.6);
-}
-
-.doboard_task_widget-lightbox-close img {
-    width: 24px;
-    height: 24px;
+.doboard_task_widget-require_full_registration-title {
+    color: #252A2F;
+    font-weight: 500;
 }
