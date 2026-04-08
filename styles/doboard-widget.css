@@ -389,7 +389,7 @@
     cursor: pointer;
 }
 .doboard_task_widget-login.active .doboard_task_widget-login-icon {
-    margin-bottom: 24px;
+    /*margin-bottom: 24px;*/
 }
 .doboard_task_widget-login .doboard_task_widget-login-icon::after {
     position: absolute;
@@ -1535,12 +1535,30 @@ input:checked + .slider:before {
     justify-content: space-between;
 }
 
+.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container .doboard_task_widget-input-container {
+    flex-grow: 1;
+}
+
+.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container #doboard_task_widget-user_name {
+    margin-right: 24px;
+}
+
+.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container #doboard_task_widget-user_password {
+    margin-right: 24px;
+}
+
 .doboard_task_widget-auth-inputs-container-maximized .doboard_task_widget-input-container {
     flex-grow: 1;
 }
 
-.doboard_task_widget-auth-inputs-container-maximized #doboard_task_widget-user_name {
-    margin-right: 24px;
+.doboard_task_widget-input-container-phantom {
+    display: flex;
+    flex-direction: column;
 }
 
 .doboard_task_widget-auth-inputs-container-maximized #doboard_task_widget-user_name {

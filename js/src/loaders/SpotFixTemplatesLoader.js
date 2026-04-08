@@ -188,7 +188,7 @@ class SpotFixTemplatesLoader {
                         <button id="doboard_task_widget-register_only_button" class="doboard_task_widget-submit_button doboard_task_widget-hidden" style="margin-top: 8px; width: 100%;">Sign up</button>
         
                         <i>Note about DoBoard register and accepting email notifications about tasks have to be here.</i>
-                        </br>
+                        
                         <i>If you are a doBoard user, use same Email and password as at <a href="https://doboard.com" target="_blank" rel="nofollow">doboard.com</a>
                             on the <span id="doboard_task_widget-show_login_form" class="doboard_task_widget-show_login_form">login page</span>
                          </i>
