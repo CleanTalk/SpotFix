@@ -99,8 +99,16 @@
 
 .doboard_task_widget-container-maximize .doboard_task_widget-field {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
     flex-wrap: wrap;
+    column-gap: 32px;
+}
+
+.doboard_task_widget-container-maximize .doboard_task_widget-field .doboard_task_widget-submit_button {
+    flex-grow: 1;
+    width: none;
+    max-width: 40%;
+    min-width: 300px !important;
 }
 
 .doboard_task_widget-input-container-textarea .tox-tinymce {
@@ -291,7 +299,7 @@
 
 .doboard_task_widget-input-container {
     position: relative;
-    margin-bottom: 6px;
+    margin-bottom: 16px;
 }
 .doboard_task_widget-input-container.hidden, .doboard_task_widget-hidden {
     display: none;
@@ -345,8 +353,7 @@
 }
 
 .doboard_task_widget-login {
-    margin-top: 12px;
-    margin-bottom: 4px;
+    margin-bottom: 16px;
     border: 1px solid #BBC7D1;
     border-radius: 4px;
     padding: 11px 8px 8px 8px;
@@ -415,8 +422,7 @@
 .doboard_task_widget-submit_button {
     min-height: 48px;
     width: 100%;
-    max-width: 400px;
-    margin-bottom: 10px;
+    max-width: 500px;
     border-radius: 6px;
     font-family: Inter, sans-serif;
     font-size: 16px;
@@ -1450,7 +1456,6 @@ input:checked + .slider:before {
 }
 .doboard_task_widget-input-container-textarea {
     position: relative;
-    margin-top: 16px;
 }
 
 .doboard_task_widget-field-textarea-label {
@@ -1477,6 +1482,10 @@ input:checked + .slider:before {
     justify-content: space-evenly;
 }
 
+.spotfix-description-wrapper .tox-tinymce .tox-toolbar__group {
+    gap: 20px !important;
+}
+
 .doboard_task_widget-task_title-text {
     margin-right: 6px;
 }
@@ -1500,7 +1509,7 @@ input:checked + .slider:before {
     min-width: 270px;
     max-width: 420px;
     margin-top: 4px;
-    margin-bottom: 12px
+    margin-bottom: 16px
 }
 
 /* Require full registration message */
@@ -1524,9 +1533,27 @@ input:checked + .slider:before {
 .doboard_task_widget-auth-inputs-container-maximized {
     display: flex;
     justify-content: space-between;
-    column-gap: 24px;
 }
 
 .doboard_task_widget-auth-inputs-container-maximized .doboard_task_widget-input-container {
     flex-grow: 1;
+}
+
+.doboard_task_widget-auth-inputs-container-maximized #doboard_task_widget-user_name {
+    margin-right: 24px;
+}
+
+.doboard_task_widget-auth-inputs-container-maximized #doboard_task_widget-user_name {
+    margin-right: 24px;
+}
+
+.doboard_task_widget-auth-inputs-container-maximized #doboard_task_widget-user_password {
+    margin-left: 24px;
+}
+
+.hidden-container {
+    visibility: hidden !important;
+    width: 0px !important;
+    flex-grow: 0 !important;
+    margin: 0px !important;
 }

@@ -24,7 +24,7 @@ class SpotFixTemplatesLoader {
                 <img src="{{iconPlus}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <span id="maximizeWidgetContainer">
-                <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
+                <img src="{{iconMaximize}}" alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <span id="openUserMenuButton">
                 <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
@@ -154,12 +154,12 @@ class SpotFixTemplatesLoader {
 
         <div class="doboard_task_widget-input-container">
             <input id="doboard_task_widget-title" class="doboard_task_widget-field" name="title" value="{{selectedText}}" required>
-            <label class="spotfix_placeholder_title" for="doboard_task_widget-title">Report about</label>
+            <label class="spotfix_placeholder_title" for="doboard_task_widget-title">Report name</label>
         </div>
 
         <div id="doboard_task_widget-description-container" class="doboard_task_widget-input-container doboard_task_widget-input-container-textarea" style="flex-grow: 1; min-height: 200px">
             <textarea id="doboard_task_widget-description" class="doboard_task_widget-field" name="description" placeholder=" " required></textarea>
-            <label for="doboard_task_widget-description" class="doboard_task_widget-field-textarea-label" >Description</label>
+            <label for="doboard_task_widget-description" style="top:1px" class="doboard_task_widget-field-textarea-label" >Description</label>
         </div>
 
         <div class="doboard_task_widget-login">
@@ -229,7 +229,7 @@ class SpotFixTemplatesLoader {
 
         </div>
 
-        <div class="doboard_task_widget-field" style="margin-top: 8px">
+        <div class="doboard_task_widget-field">
             <div class="doboard_task_widget-visibility-toggle">
               <div style="display: flex; align-items: center">
                   <img src="{{iconPublic}}" alt="">
@@ -242,7 +242,7 @@ class SpotFixTemplatesLoader {
                   <span class="slider"></span>
               </label>
             </div>
-            <button id="doboard_task_widget-submit_button" style="min-width: 270px" class="doboard_task_widget-submit_button">Send report</button>
+            <button id="doboard_task_widget-submit_button" style="min-width: 270px; margin-top: 0px" class="doboard_task_widget-submit_button">Send report</button>
         </div>
 
         <div class="doboard_task_widget-message-wrapper hidden">
