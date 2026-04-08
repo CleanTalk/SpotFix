@@ -521,17 +521,17 @@ class CleanTalkWidgetDoboard {
                 }
             })
         }
-        
+
         const registerOnlyButton = document.getElementById('doboard_task_widget-register_only_button');
         if (registerOnlyButton) {
             registerOnlyButton.addEventListener('click', async () => {
                 const userNameElement = document.getElementById('doboard_task_widget-user_name');
                 const userEmailElement = document.getElementById('doboard_task_widget-user_email');
-                
+
                 const userName = userNameElement?.value?.trim();
                 const userEmail = userEmailElement?.value?.trim();
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                
+
                 if (!userName) {
                     userNameElement.style.borderColor = 'red';
                     userNameElement.focus();
@@ -540,7 +540,7 @@ class CleanTalkWidgetDoboard {
                     });
                     return;
                 }
-                
+
                 // Validate email
                 if (!userEmail) {
                     userEmailElement.style.borderColor = 'red';
@@ -557,10 +557,10 @@ class CleanTalkWidgetDoboard {
                     });
                     return;
                 }
-                
+
                 registerOnlyButton.disabled = true;
                 registerOnlyButton.innerText = 'Signing up...';
-                
+
                 try {
                     const taskDetails = {
                         userName: userName,
@@ -568,14 +568,14 @@ class CleanTalkWidgetDoboard {
                         projectToken: this.params.projectToken,
                         accountId: this.params.accountId,
                     };
-                    
+
                     const response = await registerUser(taskDetails)(this.registrationShowMessage);
-                    
+
                     if (response && response.accountExists) {
                         const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
                         const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
                         const loginEmailElement = document.getElementById('doboard_task_widget-login_email');
-                        
+
                         if (phantomContainer) {
                             phantomContainer.classList.add('doboard_task_widget-hidden');
                         }
@@ -587,7 +587,7 @@ class CleanTalkWidgetDoboard {
                             loginEmailElement.classList.add('has-value');
                         }
                         registerOnlyButton.classList.add('doboard_task_widget-hidden');
-                        
+
                         this.registrationShowMessage('Account already exists. Please login with your password.', 'notice');
                     } else if (localStorage.getItem('spotfix_session_id')) {
                         // Redraw widget after successful registration
@@ -596,7 +596,7 @@ class CleanTalkWidgetDoboard {
                 } catch (error) {
                     this.registrationShowMessage(error.message, 'error');
                 }
-                
+
                 registerOnlyButton.disabled = false;
                 registerOnlyButton.innerText = 'Sign up';
             });
@@ -765,7 +765,7 @@ class CleanTalkWidgetDoboard {
                 const visibilityToggle = document.querySelector('.doboard_task_widget-visibility-toggle');
 
                 const registerOnlyButton = document.getElementById('doboard_task_widget-register_only_button');
-                
+
                 if (requireFullRegistration && !sessionIdExists) {
                     if (titleContainer) titleContainer.style.display = '';
                     if (descriptionContainer) descriptionContainer.style.display = '';
@@ -1425,6 +1425,9 @@ class CleanTalkWidgetDoboard {
                 localStorage.setItem('maximize', '0');
                 container.classList.remove('doboard_task_widget-container-maximize');
 
+                document.querySelector('.doboard_task_widget-auth-inputs-container')
+                    .classList.remove('doboard_task_widget-auth-inputs-container-maximized');
+
                 if (this.type_name === 'all_issues') {
                     document
                         .querySelectorAll('.spotfix_widget_task_url-full')
@@ -1439,6 +1442,9 @@ class CleanTalkWidgetDoboard {
             } else {
                 localStorage.setItem('maximize', '1');
                 container.classList.add('doboard_task_widget-container-maximize');
+
+                document.querySelector('.doboard_task_widget-auth-inputs-container')
+                    .classList.add('doboard_task_widget-auth-inputs-container-maximized');
 
                 if (this.type_name === 'all_issues') {
                     document
@@ -1744,6 +1750,14 @@ class CleanTalkWidgetDoboard {
                 // Scroll
                 context.positionWidgetContainer();
                 setTimeout(() => {
+                    if( +localStorage.getItem('maximize') ) {
+                        document.querySelector('.doboard_task_widget-auth-inputs-container')
+                            .classList.add('doboard_task_widget-auth-inputs-container-maximized');
+                    } else {
+                        document.querySelector('.doboard_task_widget-auth-inputs-container')
+                            .classList.remove('doboard_task_widget-auth-inputs-container-maximized');
+                    }
+
                     const contentContainer = document.querySelector('.doboard_task_widget-content');
                     contentContainer.scrollTo({
                         top: contentContainer.scrollHeight,

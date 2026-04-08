@@ -552,7 +552,7 @@
 .doboard_task_widget-text_selection.image-highlight > img,
 .doboard_task_widget-element_selection,
 .doboard_task_widget-image_selection {
-    background: rgba(208, 213, 127, 0.68);
+    background: #FFF07E;
 }
 
 .doboard_task_widget-issues_list_empty {
@@ -733,7 +733,7 @@
 }
 
 .doboard_task_widget-task_row-green {
-    background: #EBF0F4;
+    background: #F3F6F9;
 }
 
 .doboard_task_widget-task_row-green .doboard_task_widget-description_container {
@@ -1282,8 +1282,9 @@
     color: #000000;
     padding: 4px 8px;
     border-radius: 4px;
-    font-size: 10px;
+    font-size: 12px;
     white-space: nowrap;
+    font-weight: 500;
     z-index: 9000;
     border: 1px solid #BBC7D1;
     margin-bottom: 8px; /* Отступ от элемента */
@@ -1513,4 +1514,19 @@ input:checked + .slider:before {
 .doboard_task_widget-require_full_registration-title {
     color: #252A2F;
     font-weight: 500;
+}
+
+.doboard_task_widget-auth-inputs-container {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.doboard_task_widget-auth-inputs-container-maximized {
+    display: flex;
+    justify-content: space-between;
+    column-gap: 24px;
+}
+
+.doboard_task_widget-auth-inputs-container-maximized .doboard_task_widget-input-container {
+    flex-grow: 1;
 }
