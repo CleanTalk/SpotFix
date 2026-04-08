@@ -1556,7 +1556,7 @@ input:checked + .slider:before {
     flex-grow: 1;
 }
 
-.doboard_task_widget-auth-inputs-container .doboard_task_widget-input-container {
+.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container .doboard_task_widget-input-container {
     margin-bottom: 0px;
 }
 
