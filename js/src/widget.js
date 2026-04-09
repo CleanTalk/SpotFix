@@ -824,10 +824,8 @@ class CleanTalkWidgetDoboard {
 
                 this.fileUploader = new FileUploader(this.escapeHtml);
                 this.fileUploader.init();
-                // Create description editor iframe
-                const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
 
-                // Сохраняем ссылку на fileUploader для использования внутри коллбэков
+                const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
                 const fileUploaderDesc = this.fileUploader;
 
                 // Create description editor iframe
