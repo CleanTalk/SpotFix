@@ -178,6 +178,7 @@ class DescriptionEditorIframe {
             #editor-container { min-height: 190px; background: #fff; border-radius: 4px; }
             .tox-tinymce { border: none !important; position: absolute !important; height: 100% !important;}
             .tox-editor-header { border-bottom: none !important; }
+            .tox-toolbar__group {display: inline-flex !important; width: 90% !important; justify-content: space-around}
             </style>
             </head>
             <body>

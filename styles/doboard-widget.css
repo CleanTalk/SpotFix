@@ -1482,10 +1482,6 @@ input:checked + .slider:before {
     justify-content: space-evenly;
 }
 
-.spotfix-description-wrapper .tox-tinymce .tox-toolbar__group {
-    gap: 20px !important;
-}
-
 .doboard_task_widget-task_title-text {
     margin-right: 6px;
 }
