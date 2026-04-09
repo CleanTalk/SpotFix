@@ -1418,6 +1418,7 @@ class CleanTalkWidgetDoboard {
 
         document.getElementById('maximizeWidgetContainer')?.addEventListener('click', () => {
             const container = document.querySelector('.doboard_task_widget-container');
+            const authInputsContainer = document.querySelector('.doboard_task_widget-auth-inputs-container');
 
             const isMaximized =
                 +localStorage.getItem('maximize') &&
@@ -1428,8 +1429,7 @@ class CleanTalkWidgetDoboard {
                 container.classList.remove('doboard_task_widget-container-maximize');
                 document.querySelector('#maximizeWidgetContainer img').src = SpotFixSVGLoader.getAsDataURI('iconMaximize');
 
-                document.querySelector('.doboard_task_widget-auth-inputs-container')
-                    .classList?.remove('doboard_task_widget-auth-inputs-container-maximized');
+                if (authInputsContainer) authInputsContainer.classList?.remove('doboard_task_widget-auth-inputs-container-maximized');
 
                 if (this.type_name === 'all_issues') {
                     document
@@ -1448,8 +1448,7 @@ class CleanTalkWidgetDoboard {
 
                 document.querySelector('#maximizeWidgetContainer img').src = SpotFixSVGLoader.getAsDataURI('iconMinimize');
 
-                document.querySelector('.doboard_task_widget-auth-inputs-container')
-                    .classList?.add('doboard_task_widget-auth-inputs-container-maximized');
+                if (authInputsContainer) authInputsContainer.classList?.add('doboard_task_widget-auth-inputs-container-maximized');
 
                 if (this.type_name === 'all_issues') {
                     document

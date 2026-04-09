@@ -609,10 +609,14 @@
     height: 62px;
     width: calc(100% - 44px - 8px);
     border-bottom: 1px solid #EBF0F4;
-    display: block;
     margin-left: 8px;
     padding-top: 4px;
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
+
 .doboard_task_widget-task_row:last-child .doboard_task_widget-description_container {
     border-bottom: none;
 }
