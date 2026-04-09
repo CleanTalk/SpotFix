@@ -1579,3 +1579,7 @@ input:checked + .slider:before {
     flex-grow: 0 !important;
     margin: 0px !important;
 }
+
+.task-link {
+    overflow-wrap: break-word
+}
