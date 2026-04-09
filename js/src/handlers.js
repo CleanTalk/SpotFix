@@ -84,10 +84,13 @@ async function handleCreateTask(sessionId, taskDetails) {
         const result = await createTaskDoboard(sessionId, taskDetails);
         if (result && result.taskId && taskDetails.taskDescription) {
             const sign = `<br><br><br><em>The spot has been posted at the following URL <a href="${window.location.href}"><span class="task-link task-link--done">${window.location.href}</span></a></em>`;
-            await addTaskComment({
+
+            const commentResponse = await addTaskComment({
                 projectToken: taskDetails.projectToken,
                 accountId: taskDetails.accountId,
-            }, result.taskId, taskDetails.taskDescription+sign);
+            }, result.taskId, taskDetails.taskDescription + sign);
+
+            result.initialComment = commentResponse;
         }
         return result;
     } catch (err) {

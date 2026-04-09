@@ -268,6 +268,23 @@ class CleanTalkWidgetDoboard {
                     return;
                 }
 
+                if (this.fileUploader?.hasFiles() && submitTaskResult?.initialComment?.commentId) {
+                    const sessionId = localStorage.getItem('spotfix_session_id');
+                    try {
+                        const attachmentsSendResult = await this.fileUploader.sendAttachmentsForComment(
+                            this.params,
+                            sessionId,
+                            submitTaskResult.initialComment.commentId
+                        );
+
+                        if (!attachmentsSendResult.success) {
+                            console.error(attachmentsSendResult);
+                        }
+                    } catch (uploadErr) {
+                        console.error(uploadErr);
+                    }
+                }
+
                 // Return the submit button normal state
                 submitButton.disabled = false;
                 submitButton.style.cursor = 'pointer';
