@@ -162,6 +162,13 @@ class SpotFixTemplatesLoader {
             <label for="doboard_task_widget-description" class="doboard_task_widget-field-textarea-label" >Description</label>
         </div>
 
+        <div class="doboard_task_widget__file-upload__wrapper" id="doboard_task_widget__file-upload__wrapper">
+            <div class="doboard_task_widget__file-upload__list-header">Attached files</div>
+            <div class="doboard_task_widget__file-upload__file-list" id="doboard_task_widget__file-upload__file-list"></div>
+            <div class="doboard_task_widget__file-upload__error" id="doboard_task_widget__file-upload__error"></div>
+            <input type="file" class="doboard_task_widget__file-upload__file-input-button" id="doboard_task_widget__file-upload__file-input-button" multiple accept="*/*">
+        </div>
+
         <div class="doboard_task_widget-login">
 
             <span  class="doboard_task_widget-login-icon" >Sign up here to receive notifications.</span>

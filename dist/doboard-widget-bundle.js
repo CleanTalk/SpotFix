@@ -9624,17 +9624,17 @@ class CleanTalkWidgetDoboard {
                 }
             })
         }
-        
+
         const registerOnlyButton = document.getElementById('doboard_task_widget-register_only_button');
         if (registerOnlyButton) {
             registerOnlyButton.addEventListener('click', async () => {
                 const userNameElement = document.getElementById('doboard_task_widget-user_name');
                 const userEmailElement = document.getElementById('doboard_task_widget-user_email');
-                
+
                 const userName = userNameElement?.value?.trim();
                 const userEmail = userEmailElement?.value?.trim();
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                
+
                 if (!userName) {
                     userNameElement.style.borderColor = 'red';
                     userNameElement.focus();
@@ -9643,7 +9643,7 @@ class CleanTalkWidgetDoboard {
                     });
                     return;
                 }
-                
+
                 // Validate email
                 if (!userEmail) {
                     userEmailElement.style.borderColor = 'red';
@@ -9660,10 +9660,10 @@ class CleanTalkWidgetDoboard {
                     });
                     return;
                 }
-                
+
                 registerOnlyButton.disabled = true;
                 registerOnlyButton.innerText = 'Signing up...';
-                
+
                 try {
                     const taskDetails = {
                         userName: userName,
@@ -9671,14 +9671,14 @@ class CleanTalkWidgetDoboard {
                         projectToken: this.params.projectToken,
                         accountId: this.params.accountId,
                     };
-                    
+
                     const response = await registerUser(taskDetails)(this.registrationShowMessage);
-                    
+
                     if (response && response.accountExists) {
                         const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
                         const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
                         const loginEmailElement = document.getElementById('doboard_task_widget-login_email');
-                        
+
                         if (phantomContainer) {
                             phantomContainer.classList.add('doboard_task_widget-hidden');
                         }
@@ -9690,7 +9690,7 @@ class CleanTalkWidgetDoboard {
                             loginEmailElement.classList.add('has-value');
                         }
                         registerOnlyButton.classList.add('doboard_task_widget-hidden');
-                        
+
                         this.registrationShowMessage('Account already exists. Please login with your password.', 'notice');
                     } else if (localStorage.getItem('spotfix_session_id')) {
                         // Redraw widget after successful registration
@@ -9699,7 +9699,7 @@ class CleanTalkWidgetDoboard {
                 } catch (error) {
                     this.registrationShowMessage(error.message, 'error');
                 }
-                
+
                 registerOnlyButton.disabled = false;
                 registerOnlyButton.innerText = 'Sign up';
             });
@@ -9868,7 +9868,7 @@ class CleanTalkWidgetDoboard {
                 const visibilityToggle = document.querySelector('.doboard_task_widget-visibility-toggle');
 
                 const registerOnlyButton = document.getElementById('doboard_task_widget-register_only_button');
-                
+
                 if (requireFullRegistration && !sessionIdExists) {
                     if (titleContainer) titleContainer.style.display = '';
                     if (descriptionContainer) descriptionContainer.style.display = '';
@@ -9908,7 +9908,13 @@ class CleanTalkWidgetDoboard {
                 this.bindCreateTaskEvents();
                 this.bindShowLoginFormEvents();
 
+                this.fileUploader = new FileUploader(this.escapeHtml);
+                this.fileUploader.init();
+                // Create description editor iframe
                 const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
+
+                // Сохраняем ссылку на fileUploader для использования внутри коллбэков
+                const fileUploaderDesc = this.fileUploader;
 
                 // Create description editor iframe
                 window.DescriptionEditorIframe.create({
@@ -9918,17 +9924,17 @@ class CleanTalkWidgetDoboard {
                     },
                     handlers: {
                         onAttachmentClick: function() {
-                            // Attachment button clicked in description editor
-                            // Currently disabled
+                            fileUploaderDesc?.fileInput?.click();
                         },
                         onScreenshotClick: function() {
-                            // Screenshot button clicked in description editor
-                            // Currently disabled
-                        }
+                            fileUploaderDesc?.makeScreenshot();
+                        },
                     }
                 }).catch(function(error) {
                     console.error('Failed to create description editor:', error);
                 });
+
+
 
                 break;
             case 'wrap':
@@ -12923,6 +12929,13 @@ class SpotFixTemplatesLoader {
             <label for="doboard_task_widget-description" class="doboard_task_widget-field-textarea-label" >Description</label>
         </div>
 
+        <div class="doboard_task_widget__file-upload__wrapper" id="doboard_task_widget__file-upload__wrapper">
+            <div class="doboard_task_widget__file-upload__list-header">Attached files</div>
+            <div class="doboard_task_widget__file-upload__file-list" id="doboard_task_widget__file-upload__file-list"></div>
+            <div class="doboard_task_widget__file-upload__error" id="doboard_task_widget__file-upload__error"></div>
+            <input type="file" class="doboard_task_widget__file-upload__file-input-button" id="doboard_task_widget__file-upload__file-input-button" multiple accept="*/*">
+        </div>
+
         <div class="doboard_task_widget-login">
 
             <span  class="doboard_task_widget-login-icon" >Sign up here to receive notifications.</span>
@@ -13656,7 +13669,9 @@ class SpotFixSourcesLoader {
 
     getCSSCode() {
         // global gulp wrapper var
-        return spotFixCSS;
+        if(spotFixCSS) {
+            return spotFixCSS;
+        }
     }
 
     loadAll() {
@@ -13907,13 +13922,13 @@ class DescriptionEditorIframe {
                 window.tinymce.init({
                 target: document.getElementById("tinymce-editor"),
                 icons: "icon_pack_SpotFix",
-                plugins: "link lists",
+                plugins: 'link lists',
                 menubar: false,
                 statusbar: false,
                 toolbar_location: "bottom",
                 height: 200,
                 width: "100%",
-                toolbar: "emoticons bullist numlist bold italic strikethrough underline blockquote",
+                toolbar: "attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote",
                 file_picker_types: "file image media",
                 setup: function(editor) {
                 editor.ui.registry.addButton("attachmentButton", { icon: "paperclip", tooltip: "Add file", onAction: function() { window.parent.postMessage({ type: "spotfix:tinymce-action", source: "spotfix-description-editor-iframe", action: "attachment", eventData: { type: "attachment" } }, "*"); } });
