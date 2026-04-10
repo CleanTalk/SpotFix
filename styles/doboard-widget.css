@@ -168,65 +168,12 @@
     margin-bottom: 4px
 }
 
-.doboard_task_widget-user_menu-item,  .doboard_task_widget-task_menu-item {
+.doboard_task_widget-user_menu-item, .doboard_task_widget-task_menu-item {
     display: flex;
     align-items: center;
     border-bottom: 1px #EBF0F4 solid;
     padding: 0 16px;
     height: 52px;
-}
-
-.doboard_task_widget-task_menu-item-viewers {
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-    flex-direction: column;
-    height: fit-content;
-    padding-top: 8px;
-    max-height: 200px;
-    overflow: auto;
-}
-
-#spotfix_widget-task-menu_name {
-    color: #252A2F;
-    font-size: 16px;
-    font-weight: 500;
-    display: inline-flex;
-}
-
-#spotfix_widget-task-menu_users {
-    font-size: 12px;
-    font-weight: 400;
-    color: #707A83
-}
-
-.spotfix_widget-task-menu_user {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-}
-
-.spotfix_widget-task-menu_user img {
-    height: 24px;
-    width: 24px;
-    border-radius: 50%;
-    margin-right: 12px;
-}
-
-.spotfix_widget-task-menu_user > :first-child {
-    font-weight: 400;
-    font-size: 14px;
-    color: black;
-    display: inline-flex;
-    align-items: center;
-}
-
-.spotfix_widget-task-menu_user > :last-child {
-    color: #40484F;
-    font-size: 12px;
-    font-weight: 400;
 }
 
 .doboard_task_widget-content {
@@ -1566,6 +1513,60 @@ input:checked + .slider:before {
 .doboard_task_widget-require_full_registration-title {
     color: #252A2F;
     font-weight: 500;
+}
+
+
+.doboard_task_widget-task_menu-item-viewers {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    flex-direction: column;
+    height: fit-content;
+    padding-top: 8px;
+    max-height: 200px;
+    overflow: auto;
+}
+
+#spotfix_widget-task-menu_name {
+    color: #252A2F;
+    font-size: 16px;
+    font-weight: 500;
+    display: inline-flex;
+}
+
+#spotfix_widget-task-menu_users {
+    font-size: 12px;
+    font-weight: 400;
+    color: #707A83
+}
+
+.spotfix_widget-task-menu_user {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.spotfix_widget-task-menu_user img {
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+.spotfix_widget-task-menu_user > :first-child {
+    font-weight: 400;
+    font-size: 14px;
+    color: black;
+    display: inline-flex;
+    align-items: center;
+}
+
+.spotfix_widget-task-menu_user > :last-child {
+    color: #40484F;
+    font-size: 12px;
+    font-weight: 400;
 }
 
 .doboard_task_widget-comment_attachments {
