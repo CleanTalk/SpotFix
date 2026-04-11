@@ -39,6 +39,7 @@ class CleanTalkWidgetDoboard {
             iconSpotPrivate: SpotFixSVGLoader.getAsDataURI('iconSpotPrivate'),
             iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
             iconLinkChainDark: SpotFixSVGLoader.getAsDataURI('iconLinkChainDark'),
+            iconFinishedTitle: SpotFixSVGLoader.getAsDataURI('iconFinishedTitle'),
         };
         this.fileUploader = new FileUploader(this.escapeHtml);
         this.init(type);
@@ -867,10 +868,13 @@ class CleanTalkWidgetDoboard {
                         return bIsHere - aIsHere;
                     });
 
+                    const activeTasks = sortedTasks.filter(task => task.taskStatus !== 'DONE');
+                    const finishedTasks = sortedTasks.filter(task => task.taskStatus === 'DONE');
+
                     document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
 
-                    for (let i = 0; i < sortedTasks.length; i++) {
-                        const elTask = sortedTasks[i];
+                    for (let i = 0; i < activeTasks.length; i++) {
+                        const elTask = activeTasks[i];
 
                         // Data from api
                         const taskId = elTask.taskId;
@@ -952,6 +956,104 @@ class CleanTalkWidgetDoboard {
                             }
                         }
                     }
+
+                    if (finishedTasks.length > 0) {
+                        let finishedTasksContent = '';
+                        for (let i = 0; i < finishedTasks.length; i++) {
+                            const elTask = finishedTasks[i];
+                            const taskId = elTask.taskId;
+                            const taskTitle = elTask.taskTitle;
+                            const taskMetaString = elTask.taskMeta;
+                            let taskData = null;
+                            if (taskMetaString) {
+                                try {
+                                    taskData = JSON.parse(taskMetaString);
+                                    taskData.isFixed = elTask.taskStatus === 'DONE';
+                                    taskData.taskId = elTask.taskId;
+                                } catch (error) {
+                                    taskData = null;
+                                }
+                            }
+                            const currentPageURL = taskData ? taskData?.pageURL : '';
+                            let taskNodePath = '';
+
+                            let taskPublicStatusImgSrc = '';
+                            let taskPublicStatusHint = 'Task publicity is unknown'
+                            if (taskData && taskData.isPublic !== undefined) {
+                                if (taskData.isPublic) {
+                                    taskPublicStatusImgSrc = this.srcVariables.iconSpotPublic;
+                                    taskPublicStatusHint = 'The task is public';
+                                } else {
+                                    taskPublicStatusImgSrc = this.srcVariables.iconSpotPrivate;
+                                    taskPublicStatusHint = 'The task is private and visible only for registered DoBoard users';
+                                }
+                            }
+
+                            if(currentPageURL === window.location.href){
+                                issuesQuantityOnPage++;
+                                taskNodePath = taskData ? taskData.nodePath : '';
+                            }
+
+                            if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
+
+                                const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId)
+
+                                const avatarData = getAvatarData(taskFullDetails);
+                                const hasUpdates = !!(notifications?.find(item => +item?.task_id === elTask?.taskId));
+                                const listIssuesTemplateVariables = {
+                                    taskTitle: taskTitle || '',
+                                    taskAuthorAvatarImgSrc: taskFullDetails.taskAuthorAvatarImgSrc,
+                                    taskAuthorName: taskFullDetails.taskAuthorName,
+                                    taskPublicStatusImgSrc: taskPublicStatusImgSrc,
+                                    taskPublicStatusHint: taskPublicStatusHint,
+                                    taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
+                                    taskPageUrlFull: currentPageURL,
+                                    iconOfVisibility: elTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicSmall : this.srcVariables.iconLockSmall,
+                                    iconLinkChain: this.srcVariables.iconLinkChain,
+                                    taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
+                                    taskPageUrl: localStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
+                                    taskLastUpdate: formatToDotMonthDate(elTask.taskLastUpdate),
+                                    nodePath: this.sanitizeNodePath(taskNodePath),
+                                    taskId: taskId,
+                                    avatarCSSClass: avatarData.avatarCSSClass,
+                                    avatarStyle: avatarData.avatarStyle,
+                                    taskAuthorInitials: avatarData.taskAuthorInitials,
+                                    initialsClass: avatarData.initialsClass,
+                                    classUnread: '',
+                                    elementBgCSSClass:  'doboard_task_widget-task_row-grey',
+                                    statusFixedHtml: this.loadTemplate('fixedHtml'),
+                                    amountOfComments: ''
+                                };
+
+                                const taskOwnerReplyIsUnread = storageProvidedTaskHasUnreadUpdates(taskFullDetails.taskId);
+                                if (taskOwnerReplyIsUnread) {
+                                    listIssuesTemplateVariables.classUnread = 'unread';
+                                }
+                                finishedTasksContent += this.loadTemplate('list_issues', listIssuesTemplateVariables);
+
+                                if ( this.isSpotHaveToBeHighlighted(taskData) ) {
+                                    spotsToBeHighlighted.push(taskData);
+                                }
+                            }
+                        }
+
+                        const finishedSectionHTML = this.loadTemplate('finishedTasksSection', {
+                            finishedCount: finishedTasks.length,
+                            iconFinishedTitle:  this.srcVariables.iconFinishedTitle,
+                            finishedTasksContent: finishedTasksContent
+                        });
+                        document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += finishedSectionHTML;
+
+                        const finishedHeader = document.getElementById('finishedTasksHeader');
+                        const finishedContainer = document.getElementById('finishedTasksContainer');
+                        if (finishedHeader && finishedContainer) {
+                            finishedHeader.addEventListener('click', () => {
+                                finishedContainer.classList.toggle('expanded');
+                                finishedHeader.classList.toggle('expanded');
+                            });
+                        }
+                    }
+
                     this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                     this.savedIssuesQuantityAll = tasks.length;
                     spotFixHighlightElements(spotsToBeHighlighted, this);
