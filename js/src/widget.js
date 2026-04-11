@@ -148,6 +148,7 @@ class CleanTalkWidgetDoboard {
      */
     bindCreateTaskEvents() {
         const submitButton = document.getElementById('doboard_task_widget-submit_button');
+        let isSubmitting = false;
 
         if (submitButton) {
             submitButton.addEventListener('click', async () => {
@@ -262,9 +263,13 @@ class CleanTalkWidgetDoboard {
 
                 let submitTaskResult;
                 try {
+                    if (isSubmitting) return;
+                    isSubmitting = true;
                     submitTaskResult = await this.submitTask(taskDetails);
+                    isSubmitting = false;
                 } catch (error) {
                     this.registrationShowMessage(error.message);
+                    isSubmitting = false;
                     return;
                 }
 
