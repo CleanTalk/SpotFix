@@ -856,10 +856,10 @@ class CleanTalkWidgetDoboard {
                 break;
             case 'wrap':
                 await this.getTaskCount();
-                document.querySelector('.doboard_task_widget-wrap').addEventListener('click', (e) => {
+                document.querySelector('.doboard_task_widget-wrap').addEventListener('click', async (e) => {
                     const widgetElementClasses = e.currentTarget.classList;
                     if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
-                        this.createWidgetElement('all_issues');
+                        if(this.type_name !== 'all_issues') await this.createWidgetElement('all_issues');
                     }
                 });
                 hideContainersSpinner(false);
