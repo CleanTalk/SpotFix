@@ -24,7 +24,9 @@ class CleanTalkWidgetDoboard {
             buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
             iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
             iconPlus: SpotFixSVGLoader.getAsDataURI('iconPlus'),
-            iconMaximize: SpotFixSVGLoader.getAsDataURI('iconMaximize'),
+            iconMaximize: +localStorage.getItem('maximize')
+                ? SpotFixSVGLoader.getAsDataURI('iconMinimize')
+                : SpotFixSVGLoader.getAsDataURI('iconMaximize'),
             iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
             iconPublicSmall: SpotFixSVGLoader.getAsDataURI('iconPublicSmall'),
             iconLockSmall: SpotFixSVGLoader.getAsDataURI('iconLockSmall'),
@@ -252,6 +254,8 @@ class CleanTalkWidgetDoboard {
                 }
                 if ( userPassword ) {
                     taskDetails.userPassword = userPassword
+                } else {
+                    taskDetails.userPassword = document?.getElementById('doboard_task_widget-user_password')?.value
                 }
 
                 // Save pending task in LS
@@ -634,7 +638,9 @@ class CleanTalkWidgetDoboard {
                     currentDomain: document.location.hostname || '',
                     descriptionText: this.descriptionText || localStorage.getItem('spotfix-description-ls') || '',
                     buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
-                    iconMaximize: SpotFixSVGLoader.getAsDataURI('iconMaximize'),
+                    iconMaximize: +localStorage.getItem('maximize')
+                        ? SpotFixSVGLoader.getAsDataURI('iconMinimize')
+                        : SpotFixSVGLoader.getAsDataURI('iconMaximize'),
                     iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
                     iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
                     ...this.srcVariables
@@ -748,10 +754,6 @@ class CleanTalkWidgetDoboard {
                 const selection = window.getSelection();
                 const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
                 const email = getSpotfixEmail();
-
-                if (templateVariables.selectedText) {
-                    document.querySelector('.spotfix_placeholder_title').style.display = 'none';
-                }
 
                 if (sessionIdExists && email && !email.includes('spotfix_')) {
                     document.querySelector('.doboard_task_widget-login').classList.add('hidden');
@@ -1417,6 +1419,7 @@ class CleanTalkWidgetDoboard {
 
         document.getElementById('maximizeWidgetContainer')?.addEventListener('click', () => {
             const container = document.querySelector('.doboard_task_widget-container');
+            const authInputsContainer = document.querySelector('.doboard_task_widget-auth-inputs-container');
 
             const isMaximized =
                 +localStorage.getItem('maximize') &&
@@ -1425,6 +1428,9 @@ class CleanTalkWidgetDoboard {
             if (isMaximized) {
                 localStorage.setItem('maximize', '0');
                 container.classList.remove('doboard_task_widget-container-maximize');
+                document.querySelector('#maximizeWidgetContainer img').src = SpotFixSVGLoader.getAsDataURI('iconMaximize');
+
+                if (authInputsContainer) authInputsContainer.classList?.remove('doboard_task_widget-auth-inputs-container-maximized');
 
                 if (this.type_name === 'all_issues') {
                     document
@@ -1440,6 +1446,10 @@ class CleanTalkWidgetDoboard {
             } else {
                 localStorage.setItem('maximize', '1');
                 container.classList.add('doboard_task_widget-container-maximize');
+
+                document.querySelector('#maximizeWidgetContainer img').src = SpotFixSVGLoader.getAsDataURI('iconMinimize');
+
+                if (authInputsContainer) authInputsContainer.classList?.add('doboard_task_widget-auth-inputs-container-maximized');
 
                 if (this.type_name === 'all_issues') {
                     document
@@ -1745,6 +1755,14 @@ class CleanTalkWidgetDoboard {
                 // Scroll
                 context.positionWidgetContainer();
                 setTimeout(() => {
+                    if( +localStorage.getItem('maximize') ) {
+                        document.querySelector('.doboard_task_widget-auth-inputs-container')
+                            .classList.add('doboard_task_widget-auth-inputs-container-maximized');
+                    } else {
+                        document.querySelector('.doboard_task_widget-auth-inputs-container')
+                            .classList.remove('doboard_task_widget-auth-inputs-container-maximized');
+                    }
+
                     const contentContainer = document.querySelector('.doboard_task_widget-content');
                     contentContainer.scrollTo({
                         top: contentContainer.scrollHeight,
