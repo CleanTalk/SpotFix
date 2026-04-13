@@ -72,7 +72,7 @@ class CleanTalkWidgetDoboard {
         } else {
             // Load all tasks
             const isWidgetClosed = localStorage.getItem('spotfix_widget_is_closed');
-            if((isWidgetClosed && !this.selectedText) || !isWidgetClosed){
+            if(((isWidgetClosed && !this.selectedText) || !isWidgetClosed) && type !== 'create_issue'){
                 this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
             }
         }
@@ -828,24 +828,29 @@ class CleanTalkWidgetDoboard {
                 const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
                 const fileUploaderDesc = this.fileUploader;
 
-                // Create description editor iframe
-                window.DescriptionEditorIframe.create({
-                    savedContent: savedDescription,
-                    onChange: function(content) {
-                        localStorage.setItem('spotfix-description-ls', content);
-                    },
-                    handlers: {
-                        onAttachmentClick: function() {
-                            fileUploaderDesc?.fileInput?.click();
-                        },
-                        onScreenshotClick: function() {
-                            fileUploaderDesc?.makeScreenshot();
-                        },
-                    }
-                }).catch(function(error) {
-                    console.error('Failed to create description editor:', error);
-                });
 
+                if (window.DescriptionEditorIframe.iframe && !this.nonRequesting) {
+                    window.DescriptionEditorIframe.remove();
+                }
+                if(!this.nonRequesting) {
+                    // Create description editor iframe
+                    window.DescriptionEditorIframe.create({
+                        savedContent: savedDescription,
+                        onChange: function(content) {
+                            localStorage.setItem('spotfix-description-ls', content);
+                        },
+                        handlers: {
+                            onAttachmentClick: function() {
+                                fileUploaderDesc?.fileInput?.click();
+                            },
+                            onScreenshotClick: function() {
+                                fileUploaderDesc?.makeScreenshot();
+                            },
+                        }
+                    }).catch(function(error) {
+                        console.error('Failed to create description editor:', error);
+                    });
+                }
 
 
                 break;
@@ -874,7 +879,7 @@ class CleanTalkWidgetDoboard {
                 let issuesQuantityOnPage = 0;
                 const sessionId = localStorage.getItem('spotfix_session_id');
 
-                const notifications = await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
+                const notifications = this.nonRequesting ? [] : await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
 
                 this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
                 const tasks = this.allTasksData;
@@ -1432,8 +1437,8 @@ class CleanTalkWidgetDoboard {
             logoutUserDoboard(this.params.projectToken);
         }) || '';
 
-        document.getElementById('addNewTaskButton')?.addEventListener('click', () => {
-            spotFixShowWidget();
+        document.getElementById('addNewTaskButton')?.addEventListener('click', async () => {
+            if(this.type_name !== 'create_issue') await this.createWidgetElement('create_issue');
         }) || '';
 
         document.getElementById('maximizeWidgetContainer')?.addEventListener('click', () => {
