@@ -12976,7 +12976,7 @@ class SpotFixTemplatesLoader {
                          </i>
                  </div> 
                      
-                 <div id="doboard_task_widget-input-container-login" class="doboard_task_widget-input-container-login doboard_task_widget-hidden">
+                 <div id="doboard_task_widget-input-container-login" style="margin-top: 16px" class="doboard_task_widget-input-container-login doboard_task_widget-hidden">
                         <div class="doboard_task_widget-input-container">
                             <input id="doboard_task_widget-login_email" class="doboard_task_widget-field" type="email" name="login_email">
                             <label for="doboard_task_widget-login_email">Email</label>
