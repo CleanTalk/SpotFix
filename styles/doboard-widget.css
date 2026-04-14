@@ -1795,3 +1795,14 @@ input:checked + .slider:before {
     width: 24px;
     height: 24px;
 }
+
+#spotfix_doboard_task_widget_url {
+    display: flex;
+    justify-content: center;
+}
+
+#spotfix_doboard_task_widget_url span {
+    color: #707A83;
+    font-weight: 400;
+    font-size: 12px;
+}

@@ -1092,13 +1092,27 @@ class CleanTalkWidgetDoboard {
 
             if (typeof meta?.pageURL === 'string'){
                 taskFormattedPageUrl = meta?.pageURL?.replace(window.location.origin, '');
-                templateVariables.taskFormattedPageUrl = taskFormattedPageUrl.length < 2
+                taskFormattedPageUrl = taskFormattedPageUrl.length < 2
                     ? meta?.pageURL?.replace(/^https?:\/\//, '')
                     : taskFormattedPageUrl;
+
+                templateVariables.taskFormattedPageUrl
+
+                if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
+                    templateVariables.taskFormattedPageUrl = `<a rel="nofollow" style="word-break: break-all" href="${meta?.pageURL}">${taskFormattedPageUrl}</a>`;
+                } else {
+                    templateVariables.taskFormattedPageUrl = `<span>This spot not have link because it created without selecting a content.</span>`;
+                }
             }
+
             const issueLinkElement = document.getElementById('spotfix_doboard_task_widget_url');
+
             if (issueLinkElement) {
-                issueLinkElement.innerHTML = `<a rel="nofollow" href="${meta?.pageURL}">${templateVariables.taskFormattedPageUrl}</a>`;
+                if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
+                    issueLinkElement.innerHTML = `<a rel="nofollow" href="${meta?.pageURL}">${templateVariables.taskFormattedPageUrl}</a>`;
+                } else {
+                    issueLinkElement.innerHTML = `<span>This spot not have link because it created without selecting a content.</span>`;
+                }
             }
 
             templateVariables.contenerClasess = +localStorage.getItem('maximize')
