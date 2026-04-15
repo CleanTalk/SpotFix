@@ -153,7 +153,7 @@ class SpotFixTemplatesLoader {
         </div>
 
         <div class="doboard_task_widget-input-container">
-            <input id="doboard_task_widget-title" class="doboard_task_widget-field" name="title" value="{{selectedText}}" required>
+            <input id="doboard_task_widget-title" placeholder=" " class="doboard_task_widget-field" name="title" value="{{selectedText}}" required>
             <label class="spotfix_placeholder_title" for="doboard_task_widget-title">Report name</label>
         </div>
 

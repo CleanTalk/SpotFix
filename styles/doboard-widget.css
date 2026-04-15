@@ -337,10 +337,11 @@
     left: 8px;
     transform: translateY(-50%);
     transition: all 0.2s ease-in-out;
+    pointer-events: none;
 }
 
 .doboard_task_widget-field:focus + label,
-.doboard_task_widget-field.has-value + label {
+.doboard_task_widget-field:not(:placeholder-shown) + label {
     font-size: 10px;
     top: 0;
     left: 12px;
