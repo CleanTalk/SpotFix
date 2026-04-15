@@ -212,7 +212,9 @@ function registerUser(taskDetails) {
         .then((response) => {
             if (response.accountExists) {
          document.querySelector('.doboard_task_widget-accordion .doboard_task_widget-input-container').innerText = ksesFilter('Account already exists. Please, login using your password.');
-                document.querySelector('.doboard_task_widget-accordion .doboard_task_widget-input-container.hidden').classList.remove('hidden');
+                document.querySelector('.doboard_task_widget-accordion .doboard_task_widget-input-container.hidden')?.classList?.remove('hidden');
+                document.getElementById('doboard_task_widget-user_name')
+                    .closest('.doboard_task_widget-input-container').classList.add('hidden-container');
                 document.getElementById('doboard_task_widget-user_password').focus();
                 return response;
             } else if (response.sessionId) {
