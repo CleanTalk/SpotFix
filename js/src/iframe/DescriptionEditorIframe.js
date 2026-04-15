@@ -209,13 +209,13 @@ class DescriptionEditorIframe {
                 window.tinymce.init({
                 target: document.getElementById("tinymce-editor"),
                 icons: "icon_pack_SpotFix",
-                plugins: "link lists",
+                plugins: 'link lists',
                 menubar: false,
                 statusbar: false,
                 toolbar_location: "bottom",
                 height: 200,
                 width: "100%",
-                toolbar: "emoticons bullist numlist bold italic strikethrough underline blockquote",
+                toolbar: "attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote",
                 file_picker_types: "file image media",
                 setup: function(editor) {
                 editor.ui.registry.addButton("attachmentButton", { icon: "paperclip", tooltip: "Add file", onAction: function() { window.parent.postMessage({ type: "spotfix:tinymce-action", source: "spotfix-description-editor-iframe", action: "attachment", eventData: { type: "attachment" } }, "*"); } });

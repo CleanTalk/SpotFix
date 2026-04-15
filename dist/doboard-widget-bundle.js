@@ -8732,10 +8732,13 @@ async function handleCreateTask(sessionId, taskDetails) {
         const result = await createTaskDoboard(sessionId, taskDetails);
         if (result && result.taskId && taskDetails.taskDescription) {
             const sign = `<br><br><br><em>The spot has been posted at the following URL <a href="${window.location.href}"><span class="task-link task-link--done">${window.location.href}</span></a></em>`;
-            await addTaskComment({
+
+            const commentResponse = await addTaskComment({
                 projectToken: taskDetails.projectToken,
                 accountId: taskDetails.accountId,
-            }, result.taskId, taskDetails.taskDescription+sign);
+            }, result.taskId, taskDetails.taskDescription + sign);
+
+            result.initialComment = commentResponse;
         }
         return result;
     } catch (err) {
@@ -9179,7 +9182,7 @@ class CleanTalkWidgetDoboard {
         } else {
             // Load all tasks
             const isWidgetClosed = localStorage.getItem('spotfix_widget_is_closed');
-            if((isWidgetClosed && !this.selectedText) || !isWidgetClosed){
+            if(((isWidgetClosed && !this.selectedText) || !isWidgetClosed) && type !== 'create_issue'){
                 this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
             }
         }
@@ -9375,6 +9378,23 @@ class CleanTalkWidgetDoboard {
                 } catch (error) {
                     this.registrationShowMessage(error.message);
                     return;
+                }
+
+                if (this.fileUploader?.hasFiles() && submitTaskResult?.initialComment?.commentId) {
+                    const sessionId = localStorage.getItem('spotfix_session_id');
+                    try {
+                        const attachmentsSendResult = await this.fileUploader.sendAttachmentsForComment(
+                            this.params,
+                            sessionId,
+                            submitTaskResult.initialComment.commentId
+                        );
+
+                        if (!attachmentsSendResult.success) {
+                            console.error(attachmentsSendResult);
+                        }
+                    } catch (uploadErr) {
+                        console.error(uploadErr);
+                    }
                 }
 
                 // Return the submit button normal state
@@ -9912,35 +9932,44 @@ class CleanTalkWidgetDoboard {
                 this.bindCreateTaskEvents();
                 this.bindShowLoginFormEvents();
 
-                const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
+                this.fileUploader = new FileUploader(this.escapeHtml);
+                this.fileUploader.init();
 
-                // Create description editor iframe
-                window.DescriptionEditorIframe.create({
-                    savedContent: savedDescription,
-                    onChange: function(content) {
-                        localStorage.setItem('spotfix-description-ls', content);
-                    },
-                    handlers: {
-                        onAttachmentClick: function() {
-                            // Attachment button clicked in description editor
-                            // Currently disabled
+                const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
+                const fileUploaderDesc = this.fileUploader;
+
+
+                if (window.DescriptionEditorIframe.iframe && !this.nonRequesting) {
+                    window.DescriptionEditorIframe.remove();
+                }
+                if(!this.nonRequesting) {
+                    // Create description editor iframe
+                    window.DescriptionEditorIframe.create({
+                        savedContent: savedDescription,
+                        onChange: function(content) {
+                            localStorage.setItem('spotfix-description-ls', content);
                         },
-                        onScreenshotClick: function() {
-                            // Screenshot button clicked in description editor
-                            // Currently disabled
+                        handlers: {
+                            onAttachmentClick: function() {
+                                fileUploaderDesc?.fileInput?.click();
+                            },
+                            onScreenshotClick: function() {
+                                fileUploaderDesc?.makeScreenshot();
+                            },
                         }
-                    }
-                }).catch(function(error) {
-                    console.error('Failed to create description editor:', error);
-                });
+                    }).catch(function(error) {
+                        console.error('Failed to create description editor:', error);
+                    });
+                }
+
 
                 break;
             case 'wrap':
                 await this.getTaskCount();
-                document.querySelector('.doboard_task_widget-wrap').addEventListener('click', (e) => {
+                document.querySelector('.doboard_task_widget-wrap').addEventListener('click', async (e) => {
                     const widgetElementClasses = e.currentTarget.classList;
                     if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
-                        this.createWidgetElement('all_issues');
+                        if(this.type_name !== 'all_issues') await this.createWidgetElement('all_issues');
                     }
                 });
                 hideContainersSpinner(false);
@@ -9960,7 +9989,7 @@ class CleanTalkWidgetDoboard {
                 let issuesQuantityOnPage = 0;
                 const sessionId = localStorage.getItem('spotfix_session_id');
 
-                const notifications = await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
+                const notifications = this.nonRequesting ? [] : await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
 
                 this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
                 const tasks = this.allTasksData;
@@ -10532,8 +10561,8 @@ class CleanTalkWidgetDoboard {
             logoutUserDoboard(this.params.projectToken);
         }) || '';
 
-        document.getElementById('addNewTaskButton')?.addEventListener('click', () => {
-            spotFixShowWidget();
+        document.getElementById('addNewTaskButton')?.addEventListener('click', async () => {
+            if(this.type_name !== 'create_issue') await this.createWidgetElement('create_issue');
         }) || '';
 
         document.getElementById('maximizeWidgetContainer')?.addEventListener('click', () => {
@@ -12958,6 +12987,13 @@ class SpotFixTemplatesLoader {
             <label for="doboard_task_widget-description" style="top:1px" class="doboard_task_widget-field-textarea-label" >Description</label>
         </div>
 
+        <div class="doboard_task_widget__file-upload__wrapper" id="doboard_task_widget__file-upload__wrapper">
+            <div class="doboard_task_widget__file-upload__list-header">Attached files</div>
+            <div class="doboard_task_widget__file-upload__file-list" id="doboard_task_widget__file-upload__file-list"></div>
+            <div class="doboard_task_widget__file-upload__error" id="doboard_task_widget__file-upload__error"></div>
+            <input type="file" class="doboard_task_widget__file-upload__file-input-button" id="doboard_task_widget__file-upload__file-input-button" multiple accept="*/*">
+        </div>
+
         <div class="doboard_task_widget-login">
 
             <span  class="doboard_task_widget-login-icon" >Sign up here to receive notifications.</span>
@@ -13696,7 +13732,9 @@ class SpotFixSourcesLoader {
 
     getCSSCode() {
         // global gulp wrapper var
-        return spotFixCSS;
+        if(spotFixCSS) {
+            return spotFixCSS;
+        }
     }
 
     loadAll() {
@@ -13948,13 +13986,13 @@ class DescriptionEditorIframe {
                 window.tinymce.init({
                 target: document.getElementById("tinymce-editor"),
                 icons: "icon_pack_SpotFix",
-                plugins: "link lists",
+                plugins: 'link lists',
                 menubar: false,
                 statusbar: false,
                 toolbar_location: "bottom",
                 height: 200,
                 width: "100%",
-                toolbar: "emoticons bullist numlist bold italic strikethrough underline blockquote",
+                toolbar: "attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote",
                 file_picker_types: "file image media",
                 setup: function(editor) {
                 editor.ui.registry.addButton("attachmentButton", { icon: "paperclip", tooltip: "Add file", onAction: function() { window.parent.postMessage({ type: "spotfix:tinymce-action", source: "spotfix-description-editor-iframe", action: "attachment", eventData: { type: "attachment" } }, "*"); } });
