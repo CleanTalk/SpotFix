@@ -941,7 +941,9 @@ class CleanTalkWidgetDoboard {
 
                             const avatarData = getAvatarData(taskFullDetails);
                             const hasUpdates = !!(notifications?.find(item => +item?.task_id === elTask?.taskId));
-                            const isNoRelevant = JSON.parse(elTask.taskMeta).nodePath && !spotFixRetrieveNodeFromPath(JSON.parse(elTask.taskMeta).nodePath);
+                            const meta = JSON.parse(elTask.taskMeta);
+                            const isNoRelevant = meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath);
+                            const isTaskWithoutReference = !((meta.nodePath || meta.selectedText) && meta?.pageURL);
 
                             const listIssuesTemplateVariables = {
                                 taskTitle: taskTitle || '',
@@ -952,9 +954,9 @@ class CleanTalkWidgetDoboard {
                                 taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
                                 taskPageUrlFull: currentPageURL,
                                 iconOfVisibility: elTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicSmall : this.srcVariables.iconLockSmall,
-                                iconLinkChain: this.srcVariables.iconLinkChain,
+                                iconLinkChain: isTaskWithoutReference ? SpotFixSVGLoader.getAsDataURI('iconCrossedLinkChain') : this.srcVariables.iconLinkChain,
                                 taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
-                                taskPageUrl: localStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
+                                taskPageUrl: isTaskWithoutReference ? 'No link with content' : localStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
                                 // taskLastUpdate: taskFullDetails.lastMessageTime,
                                 taskLastUpdate: formatToDotMonthDate(elTask.taskLastUpdate),
                                 nodePath: this.sanitizeNodePath(taskNodePath),
@@ -1263,7 +1265,6 @@ class CleanTalkWidgetDoboard {
                 // textarea (new comment) behaviour - using iframe editor
             const mainThis = this;
 
-            if (meta.nodePath && spotFixRetrieveNodeFromPath(meta.nodePath)) {
                 const fileUploader = this.fileUploader;
 
                 // Remove existing iframe editor if any
@@ -1363,7 +1364,7 @@ class CleanTalkWidgetDoboard {
                 // this._sendButtonClickHandler = clickHandler;
                 //
                 // sendButton.addEventListener('click', clickHandler);
-            }
+
             if (meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath)) {
                 const concreteTaskEditorContainer = document.getElementById('spotfix_widget_task_send_message_container');
                 concreteTaskEditorContainer.style.minHeight = '150px';

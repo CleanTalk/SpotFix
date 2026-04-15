@@ -10049,7 +10049,9 @@ class CleanTalkWidgetDoboard {
 
                             const avatarData = getAvatarData(taskFullDetails);
                             const hasUpdates = !!(notifications?.find(item => +item?.task_id === elTask?.taskId));
-                            const isNoRelevant = JSON.parse(elTask.taskMeta).nodePath && !spotFixRetrieveNodeFromPath(JSON.parse(elTask.taskMeta).nodePath);
+                            const meta = JSON.parse(elTask.taskMeta);
+                            const isNoRelevant = meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath);
+                            const isTaskWithoutReference = !((meta.nodePath || meta.selectedText) && meta?.pageURL);
 
                             const listIssuesTemplateVariables = {
                                 taskTitle: taskTitle || '',
@@ -10060,9 +10062,9 @@ class CleanTalkWidgetDoboard {
                                 taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
                                 taskPageUrlFull: currentPageURL,
                                 iconOfVisibility: elTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicSmall : this.srcVariables.iconLockSmall,
-                                iconLinkChain: this.srcVariables.iconLinkChain,
+                                iconLinkChain: isTaskWithoutReference ? SpotFixSVGLoader.getAsDataURI('iconCrossedLinkChain') : this.srcVariables.iconLinkChain,
                                 taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
-                                taskPageUrl: localStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
+                                taskPageUrl: isTaskWithoutReference ? 'No link with content' : localStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
                                 // taskLastUpdate: taskFullDetails.lastMessageTime,
                                 taskLastUpdate: formatToDotMonthDate(elTask.taskLastUpdate),
                                 nodePath: this.sanitizeNodePath(taskNodePath),
@@ -10371,7 +10373,6 @@ class CleanTalkWidgetDoboard {
                 // textarea (new comment) behaviour - using iframe editor
             const mainThis = this;
 
-            if (meta.nodePath && spotFixRetrieveNodeFromPath(meta.nodePath)) {
                 const fileUploader = this.fileUploader;
 
                 // Remove existing iframe editor if any
@@ -10471,7 +10472,7 @@ class CleanTalkWidgetDoboard {
                 // this._sendButtonClickHandler = clickHandler;
                 //
                 // sendButton.addEventListener('click', clickHandler);
-            }
+
             if (meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath)) {
                 const concreteTaskEditorContainer = document.getElementById('spotfix_widget_task_send_message_container');
                 concreteTaskEditorContainer.style.minHeight = '150px';
@@ -13485,6 +13486,14 @@ class SpotFixSVGLoader {
 <path d="M6 9H12" stroke="#252A2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
     }
+
+    static iconCrossedLinkChain() {
+        return `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.6657 5.39373C14.2155 5.54701 14.703 5.78092 15.1156 6.14467C16.2935 7.18248 16.7332 8.48607 16.3235 9.99498C15.9138 11.5025 14.8793 12.4137 13.3357 12.7006C12.6199 12.8337 11.8891 12.7681 11.1663 12.7494C10.7384 12.7386 10.4604 12.3739 10.4857 11.9501C10.5091 11.5592 10.834 11.2658 11.2521 11.2634C11.7373 11.2606 12.2224 11.2648 12.7076 11.2625C13.842 11.2573 14.8212 10.415 14.9459 9.3392C15.0855 8.13357 14.3693 7.0981 13.2082 6.82576C12.926 6.75967 12.6391 6.7756 12.3532 6.77279C12.3096 6.77232 12.2754 6.78404 12.244 6.81545C11.7687 7.28982 11.2929 7.76326 10.781 8.27326C11.051 8.27326 11.2746 8.27326 11.4982 8.27326C11.6562 8.27326 11.8137 8.26998 11.9716 8.2742C12.3996 8.28451 12.7216 8.60185 12.7259 9.01295C12.7301 9.42873 12.4024 9.7592 11.9651 9.76201C11.1293 9.76717 10.2935 9.76576 9.45774 9.76107C9.34336 9.7606 9.26274 9.79342 9.18258 9.87451C8.62383 10.4398 8.06086 11.0009 7.49742 11.5615C7.43555 11.6234 7.40649 11.6703 7.4393 11.7678C7.60571 12.2633 7.27242 12.7658 6.74414 12.7498C6.38883 12.739 6.16852 12.8797 5.93696 13.1154C4.90524 14.1664 3.85946 15.2033 2.81602 16.2429C2.47336 16.5847 1.97836 16.5814 1.68539 16.2434C1.45102 15.9729 1.43977 15.5736 1.66008 15.2914C1.69571 15.2454 1.73789 15.2042 1.77914 15.1629C6.22617 10.7159 10.6737 6.26982 15.1184 1.82138C15.3481 1.59123 15.6059 1.47826 15.9241 1.56779C16.4398 1.7131 16.6329 2.33232 16.2991 2.75232C16.2485 2.81607 16.1885 2.87279 16.1309 2.93045C15.3171 3.7442 14.5029 4.55795 13.6662 5.3942L13.6657 5.39373Z" fill="#707A83"/>
+<path d="M5.9074 5.27293C6.17036 5.27293 6.43333 5.27011 6.6963 5.27339C7.16083 5.27949 7.48615 5.59589 7.4824 6.03277C7.47865 6.45933 7.14958 6.77011 6.69583 6.77152C6.21677 6.77339 5.73771 6.77058 5.25865 6.77246C4.28318 6.77621 3.4413 7.36824 3.1249 8.26964C2.8038 9.18464 3.08974 10.169 3.86318 10.7831C3.95412 10.8553 3.9649 10.8895 3.87771 10.9729C3.59552 11.2439 3.3138 11.5167 3.04896 11.8045C2.9313 11.9325 2.86615 11.9146 2.74849 11.8101C0.814896 10.094 1.19224 6.93605 3.47833 5.71683C4.07974 5.39621 4.7224 5.26214 5.39974 5.27199C5.56896 5.27433 5.73865 5.27199 5.90787 5.27199L5.9074 5.27293Z" fill="#707A83"/>
+<path d="M6.56685 8.2857C6.18528 8.66586 5.82763 9.01883 5.4756 9.37742C5.39591 9.45851 5.36544 9.44117 5.31903 9.35023C5.102 8.92273 5.36638 8.3607 5.83981 8.2918C6.06622 8.25851 6.30153 8.28617 6.56685 8.28617V8.2857Z" fill="#707A83"/>
+</svg>
+`;}
 
     static iconEllipsesMore() {
         return `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
