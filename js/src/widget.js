@@ -24,7 +24,9 @@ class CleanTalkWidgetDoboard {
             buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
             iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
             iconPlus: SpotFixSVGLoader.getAsDataURI('iconPlus'),
-            iconMaximize: SpotFixSVGLoader.getAsDataURI('iconMaximize'),
+            iconMaximize: +localStorage.getItem('maximize')
+                ? SpotFixSVGLoader.getAsDataURI('iconMinimize')
+                : SpotFixSVGLoader.getAsDataURI('iconMaximize'),
             iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
             iconPublicSmall: SpotFixSVGLoader.getAsDataURI('iconPublicSmall'),
             iconLockSmall: SpotFixSVGLoader.getAsDataURI('iconLockSmall'),
@@ -72,7 +74,7 @@ class CleanTalkWidgetDoboard {
         } else {
             // Load all tasks
             const isWidgetClosed = localStorage.getItem('spotfix_widget_is_closed');
-            if((isWidgetClosed && !this.selectedText) || !isWidgetClosed){
+            if(((isWidgetClosed && !this.selectedText) || !isWidgetClosed) && type !== 'create_issue'){
                 this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
             }
         }
@@ -252,6 +254,8 @@ class CleanTalkWidgetDoboard {
                 }
                 if ( userPassword ) {
                     taskDetails.userPassword = userPassword
+                } else {
+                    taskDetails.userPassword = document?.getElementById('doboard_task_widget-user_password')?.value
                 }
 
                 // Save pending task in LS
@@ -266,6 +270,23 @@ class CleanTalkWidgetDoboard {
                 } catch (error) {
                     this.registrationShowMessage(error.message);
                     return;
+                }
+
+                if (this.fileUploader?.hasFiles() && submitTaskResult?.initialComment?.commentId) {
+                    const sessionId = localStorage.getItem('spotfix_session_id');
+                    try {
+                        const attachmentsSendResult = await this.fileUploader.sendAttachmentsForComment(
+                            this.params,
+                            sessionId,
+                            submitTaskResult.initialComment.commentId
+                        );
+
+                        if (!attachmentsSendResult.success) {
+                            console.error(attachmentsSendResult);
+                        }
+                    } catch (uploadErr) {
+                        console.error(uploadErr);
+                    }
                 }
 
                 // Return the submit button normal state
@@ -634,7 +655,9 @@ class CleanTalkWidgetDoboard {
                     currentDomain: document.location.hostname || '',
                     descriptionText: this.descriptionText || localStorage.getItem('spotfix-description-ls') || '',
                     buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
-                    iconMaximize: SpotFixSVGLoader.getAsDataURI('iconMaximize'),
+                    iconMaximize: +localStorage.getItem('maximize')
+                        ? SpotFixSVGLoader.getAsDataURI('iconMinimize')
+                        : SpotFixSVGLoader.getAsDataURI('iconMaximize'),
                     iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
                     iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
                     ...this.srcVariables
@@ -749,10 +772,6 @@ class CleanTalkWidgetDoboard {
                 const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
                 const email = getSpotfixEmail();
 
-                if (templateVariables.selectedText) {
-                    document.querySelector('.spotfix_placeholder_title').style.display = 'none';
-                }
-
                 if (sessionIdExists && email && !email.includes('spotfix_')) {
                     document.querySelector('.doboard_task_widget-login').classList.add('hidden');
                 }
@@ -805,35 +824,44 @@ class CleanTalkWidgetDoboard {
                 this.bindCreateTaskEvents();
                 this.bindShowLoginFormEvents();
 
-                const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
+                this.fileUploader = new FileUploader(this.escapeHtml);
+                this.fileUploader.init();
 
-                // Create description editor iframe
-                window.DescriptionEditorIframe.create({
-                    savedContent: savedDescription,
-                    onChange: function(content) {
-                        localStorage.setItem('spotfix-description-ls', content);
-                    },
-                    handlers: {
-                        onAttachmentClick: function() {
-                            // Attachment button clicked in description editor
-                            // Currently disabled
+                const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
+                const fileUploaderDesc = this.fileUploader;
+
+
+                if (window.DescriptionEditorIframe.iframe && !this.nonRequesting) {
+                    window.DescriptionEditorIframe.remove();
+                }
+                if(!this.nonRequesting) {
+                    // Create description editor iframe
+                    window.DescriptionEditorIframe.create({
+                        savedContent: savedDescription,
+                        onChange: function(content) {
+                            localStorage.setItem('spotfix-description-ls', content);
                         },
-                        onScreenshotClick: function() {
-                            // Screenshot button clicked in description editor
-                            // Currently disabled
+                        handlers: {
+                            onAttachmentClick: function() {
+                                fileUploaderDesc?.fileInput?.click();
+                            },
+                            onScreenshotClick: function() {
+                                fileUploaderDesc?.makeScreenshot();
+                            },
                         }
-                    }
-                }).catch(function(error) {
-                    console.error('Failed to create description editor:', error);
-                });
+                    }).catch(function(error) {
+                        console.error('Failed to create description editor:', error);
+                    });
+                }
+
 
                 break;
             case 'wrap':
                 await this.getTaskCount();
-                document.querySelector('.doboard_task_widget-wrap').addEventListener('click', (e) => {
+                document.querySelector('.doboard_task_widget-wrap').addEventListener('click', async (e) => {
                     const widgetElementClasses = e.currentTarget.classList;
                     if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
-                        this.createWidgetElement('all_issues');
+                        if(this.type_name !== 'all_issues') await this.createWidgetElement('all_issues');
                     }
                 });
                 hideContainersSpinner(false);
@@ -853,7 +881,7 @@ class CleanTalkWidgetDoboard {
                 let issuesQuantityOnPage = 0;
                 const sessionId = localStorage.getItem('spotfix_session_id');
 
-                const notifications = await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
+                const notifications = this.nonRequesting ? [] : await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
 
                 this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
                 const tasks = this.allTasksData;
@@ -1411,12 +1439,13 @@ class CleanTalkWidgetDoboard {
             logoutUserDoboard(this.params.projectToken);
         }) || '';
 
-        document.getElementById('addNewTaskButton')?.addEventListener('click', () => {
-            spotFixShowWidget();
+        document.getElementById('addNewTaskButton')?.addEventListener('click', async () => {
+            if(this.type_name !== 'create_issue') await this.createWidgetElement('create_issue');
         }) || '';
 
         document.getElementById('maximizeWidgetContainer')?.addEventListener('click', () => {
             const container = document.querySelector('.doboard_task_widget-container');
+            const authInputsContainer = document.querySelector('.doboard_task_widget-auth-inputs-container');
 
             const isMaximized =
                 +localStorage.getItem('maximize') &&
@@ -1425,6 +1454,9 @@ class CleanTalkWidgetDoboard {
             if (isMaximized) {
                 localStorage.setItem('maximize', '0');
                 container.classList.remove('doboard_task_widget-container-maximize');
+                document.querySelector('#maximizeWidgetContainer img').src = SpotFixSVGLoader.getAsDataURI('iconMaximize');
+
+                if (authInputsContainer) authInputsContainer.classList?.remove('doboard_task_widget-auth-inputs-container-maximized');
 
                 if (this.type_name === 'all_issues') {
                     document
@@ -1440,6 +1472,10 @@ class CleanTalkWidgetDoboard {
             } else {
                 localStorage.setItem('maximize', '1');
                 container.classList.add('doboard_task_widget-container-maximize');
+
+                document.querySelector('#maximizeWidgetContainer img').src = SpotFixSVGLoader.getAsDataURI('iconMinimize');
+
+                if (authInputsContainer) authInputsContainer.classList?.add('doboard_task_widget-auth-inputs-container-maximized');
 
                 if (this.type_name === 'all_issues') {
                     document
@@ -1745,6 +1781,14 @@ class CleanTalkWidgetDoboard {
                 // Scroll
                 context.positionWidgetContainer();
                 setTimeout(() => {
+                    if( +localStorage.getItem('maximize') ) {
+                        document.querySelector('.doboard_task_widget-auth-inputs-container')
+                            .classList.add('doboard_task_widget-auth-inputs-container-maximized');
+                    } else {
+                        document.querySelector('.doboard_task_widget-auth-inputs-container')
+                            .classList.remove('doboard_task_widget-auth-inputs-container-maximized');
+                    }
+
                     const contentContainer = document.querySelector('.doboard_task_widget-content');
                     contentContainer.scrollTo({
                         top: contentContainer.scrollHeight,
