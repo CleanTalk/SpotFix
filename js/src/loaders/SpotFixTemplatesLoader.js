@@ -288,6 +288,7 @@ class SpotFixTemplatesLoader {
              </div>
                 {{statusFixedHtml}}
                 {{amountOfComments}}
+                {{noRelevantHtml}}
         </div>
     </div>
 </div>
@@ -485,6 +486,10 @@ class SpotFixTemplatesLoader {
 
     static fixedHtml() {
         return `<p style="margin: 0"><span class="doboard_task_widget-bottom-is-fixed">Finished</span></p>`;
+    }
+
+    static noRelevantHtml() {
+        return `<p style="margin: 0"><span class="doboard_task_widget-bottom-is-norelevant">No longer relevant</span></p>`;
     }
     static fixedTaskHtml() {
         return `<p class="doboard_task_widget-bottom-is-fixed-task-block"><span class="doboard_task_widget-bottom-is-fixed-task">This issue already fixed</span></p>`;

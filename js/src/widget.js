@@ -941,6 +941,8 @@ class CleanTalkWidgetDoboard {
 
                             const avatarData = getAvatarData(taskFullDetails);
                             const hasUpdates = !!(notifications?.find(item => +item?.task_id === elTask?.taskId));
+                            const isNoRelevant = JSON.parse(elTask.taskMeta).nodePath && !spotFixRetrieveNodeFromPath(JSON.parse(elTask.taskMeta).nodePath);
+
                             const listIssuesTemplateVariables = {
                                 taskTitle: taskTitle || '',
                                 taskAuthorAvatarImgSrc: taskFullDetails.taskAuthorAvatarImgSrc,
@@ -962,9 +964,10 @@ class CleanTalkWidgetDoboard {
                                 taskAuthorInitials: avatarData.taskAuthorInitials,
                                 initialsClass: avatarData.initialsClass,
                                 classUnread: '',
-                                elementBgCSSClass: elTask.taskStatus !== 'DONE' ? '' : 'doboard_task_widget-task_row-green',
-                                statusFixedHtml: elTask.taskStatus !== 'DONE' ? '' : this.loadTemplate('fixedHtml'),
-                                amountOfComments: elTask.taskStatus === 'DONE' ? ''
+                                elementBgCSSClass: isNoRelevant || elTask.taskStatus !== 'DONE' ? '' : 'doboard_task_widget-task_row-green',
+                                statusFixedHtml: isNoRelevant || elTask.taskStatus !== 'DONE' ? '' : this.loadTemplate('fixedHtml'),
+                                noRelevantHtml: isNoRelevant ? this.loadTemplate('noRelevantHtml') : '',
+                                amountOfComments: isNoRelevant || elTask.taskStatus === 'DONE' ? ''
                                     : `<span style="background-color: ${hasUpdates ? '#F08C43' : '#D6DDE3'}" 
                                         class="doboard_task_widget-commentsIndicator">${elTask.commentsCount}</span>`,
                             };
@@ -993,6 +996,7 @@ class CleanTalkWidgetDoboard {
                 // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
                 this.bindIssuesClick();
                 hideContainersSpinner(false);
+
                 break;
         case 'user_menu':
 
