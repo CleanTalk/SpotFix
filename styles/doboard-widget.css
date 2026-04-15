@@ -1806,3 +1806,14 @@ input:checked + .slider:before {
     font-weight: 400;
     font-size: 12px;
 }
+
+#spotfix_widget_task_send_message_container span {
+    color: #40484F;
+    font-weight: 400;
+    font-size: 16px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 32px 0 32px;
+    text-align: center;
+}
