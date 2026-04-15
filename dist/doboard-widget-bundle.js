@@ -10406,7 +10406,7 @@ class CleanTalkWidgetDoboard {
                             },
                         },
                     }).catch(function(error) {
-                        console.error('Failed to create message editor:', error);
+                        // console.error('Failed to create message editor:', error);
                     });
                 }
                 if (this.nonRequesting) {
