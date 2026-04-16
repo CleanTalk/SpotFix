@@ -178,6 +178,7 @@ class DescriptionEditorIframe {
             #editor-container { min-height: 190px; background: #fff; border-radius: 4px; }
             .tox-tinymce { border: none !important; position: absolute !important; height: 100% !important;}
             .tox-editor-header { border-bottom: none !important; }
+            .tox-toolbar__group {display: inline-flex !important; width: 90% !important; justify-content: space-around}
             </style>
             </head>
             <body>
@@ -208,13 +209,13 @@ class DescriptionEditorIframe {
                 window.tinymce.init({
                 target: document.getElementById("tinymce-editor"),
                 icons: "icon_pack_SpotFix",
-                plugins: "link lists",
+                plugins: 'link lists',
                 menubar: false,
                 statusbar: false,
                 toolbar_location: "bottom",
                 height: 200,
                 width: "100%",
-                toolbar: "emoticons bullist numlist bold italic strikethrough underline blockquote",
+                toolbar: "attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote",
                 file_picker_types: "file image media",
                 setup: function(editor) {
                 editor.ui.registry.addButton("attachmentButton", { icon: "paperclip", tooltip: "Add file", onAction: function() { window.parent.postMessage({ type: "spotfix:tinymce-action", source: "spotfix-description-editor-iframe", action: "attachment", eventData: { type: "attachment" } }, "*"); } });

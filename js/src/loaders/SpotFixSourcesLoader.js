@@ -6,7 +6,9 @@ class SpotFixSourcesLoader {
 
     getCSSCode() {
         // global gulp wrapper var
-        return spotFixCSS;
+        if(spotFixCSS) {
+            return spotFixCSS;
+        }
     }
 
     loadAll() {
