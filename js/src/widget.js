@@ -1263,8 +1263,7 @@ class CleanTalkWidgetDoboard {
                 }
 
                 // textarea (new comment) behaviour - using iframe editor
-            const mainThis = this;
-
+                const mainThis = this;
                 const fileUploader = this.fileUploader;
 
                 // Remove existing iframe editor if any
@@ -1364,30 +1363,6 @@ class CleanTalkWidgetDoboard {
                 // this._sendButtonClickHandler = clickHandler;
                 //
                 // sendButton.addEventListener('click', clickHandler);
-
-            if (meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath)) {
-                const concreteTaskEditorContainer = document.getElementById('spotfix_widget_task_send_message_container');
-                concreteTaskEditorContainer.style.minHeight = '150px';
-                concreteTaskEditorContainer.style.border = 'none';
-                concreteTaskEditorContainer.style.display = 'flex';
-                concreteTaskEditorContainer.style.flexDirection = 'column';
-                concreteTaskEditorContainer.innerHTML =
-                    `<span style="flex-grow: 1; border-bottom: 1px solid #bbc7d1">The link to the content has been lost because the content was changed, deleted, or moved to another URL.</span>
-                         <div style="height: 44px; background-color: #F3F6F9; display: grid; grid-template-columns: 90% 10%; align-items: center;">
-                         <span style="padding-left: 64px">No longer relevant</span>
-                         <img src="${SpotFixSVGLoader.getAsDataURI('iconSendMessageGray')}"></div>`;
-
-                if (!mainThis.nonRequesting) {
-                    const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
-                    if (container) {
-                        setTimeout(() => {
-                            const scrollPosition = container.scrollHeight;
-                            container.scrollTo({top: scrollPosition, behavior: 'smooth'});
-                        }, 50);
-                    }
-                }
-            }
-
                 break;
 
             default:
