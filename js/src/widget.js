@@ -1078,6 +1078,22 @@ class CleanTalkWidgetDoboard {
                             finishedHeader.addEventListener('click', () => {
                                 finishedContainer.classList.toggle('expanded');
                                 finishedHeader.classList.toggle('expanded');
+
+                                const timer = setTimeout(() => {
+                                    if(finishedContainer.classList.contains('expanded')) {
+                                        const children = finishedContainer.children;
+
+                                        if (children.length > 0) {
+                                            const targetIndex = Math.min(2, children.length - 1);
+                                            const targetElement = children[targetIndex];
+
+                                            targetElement.scrollIntoView({
+                                                behavior: 'smooth',
+                                                block: 'nearest',
+                                            });
+                                        }
+                                    }
+                                }, 350)
                             });
                         }
                     }
