@@ -9277,7 +9277,7 @@ class CleanTalkWidgetDoboard {
     /**
      * Binding events to create a task
      */
-    bindCreateTaskEvents() {
+    bindCreateTaskEvents(data) {
         const submitButton = document.getElementById('doboard_task_widget-submit_button');
 
         if (submitButton) {
@@ -9294,7 +9294,8 @@ class CleanTalkWidgetDoboard {
                     return;
                 }
                 const taskDescriptionElement = document.getElementById('doboard_task_widget-description')
-                const taskDescription = taskDescriptionElement.value;
+                const taskDescription = taskDescriptionElement.value || data.descriptionText;
+
                 if ( ! taskDescription ) {
                     taskDescriptionElement.style.borderColor = 'red';
                     taskDescriptionElement.focus();
@@ -9950,7 +9951,7 @@ class CleanTalkWidgetDoboard {
                     }
                 }
                 // bind creation events
-                this.bindCreateTaskEvents();
+                this.bindCreateTaskEvents(this);
                 this.bindShowLoginFormEvents();
 
                 this.fileUploader = new FileUploader(this.escapeHtml);
