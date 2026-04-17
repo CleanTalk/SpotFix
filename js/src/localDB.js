@@ -54,8 +54,26 @@ function openIndexedDB(name, version) {
             });
         };
 
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+            const db = request.result;
+
+            // Обработка закрытия для Safari
+            db.onversionchange = () => {
+                db.close();
+                dbPromise = null;
+            };
+
+            db.onclose = () => {
+                dbPromise = null;
+            };
+
+            resolve(db);
+        };
+
+        request.onerror = () => {
+            dbPromise = null;
+            reject(request.error);
+        };
     });
 }
 
@@ -67,7 +85,10 @@ function getDB() {
         dbPromise = openIndexedDB(
             getDBNameByKey(dbKey),
             spotfixIndexedDBVersion
-        );
+        ).catch((err) => {
+            dbPromise = null;
+            throw err;
+        });
     }
     return dbPromise;
 }
@@ -107,15 +128,28 @@ const spotfixIndexedDB = {
         const db = await getDB();
         if (!db) return;
 
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction(table, mode);
-            const store = tx.objectStore(table);
+        try {
+            return await new Promise((resolve, reject) => {
+                const tx = db.transaction(table, mode);
+                const store = tx.objectStore(table);
 
-            const result = callback(store);
+                const result = callback(store);
 
-            tx.oncomplete = () => resolve(result);
-            tx.onerror = () => reject(tx.error);
-        });
+                tx.oncomplete = () => resolve(result);
+                tx.onerror = () => reject(tx.error);
+                tx.onabort = () => reject(tx.error);
+            });
+        } catch (e) {
+            if (
+                e.name === 'InvalidStateError' ||
+                (e.message && e.message.includes('database connection is closed'))
+            ) {
+                console.warn('Очистка зависшего соединения IndexedDB (Safari fix)...');
+                dbPromise = null;
+                return spotfixIndexedDB.withStore(table, mode, callback);
+            }
+            throw e;
+        }
     },
 
     put: async (table, data) => {
