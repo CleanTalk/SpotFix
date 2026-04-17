@@ -1128,10 +1128,11 @@ class CleanTalkWidgetDoboard {
                     ? meta?.pageURL?.replace(/^https?:\/\//, '')
                     : taskFormattedPageUrl;
 
-                templateVariables.taskFormattedPageUrl
-
                 if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
-                    templateVariables.taskFormattedPageUrl = `<a rel="nofollow" style="word-break: break-all" href="${meta?.pageURL}">${taskFormattedPageUrl}</a>`;
+                    const safeUrl = escapeHtml(getSafeUrl(meta.pageURL));
+                    const safeText = escapeHtml(taskFormattedPageUrl);
+
+                    templateVariables.taskFormattedPageUrl = `<a rel="nofollow" style="word-break: break-all" href="${safeUrl}">${safeText}</a>`;
                 } else {
                     templateVariables.taskFormattedPageUrl = `<span>This spot not have link because it created without selecting a content.</span>`;
                 }
@@ -1141,7 +1142,10 @@ class CleanTalkWidgetDoboard {
 
             if (issueLinkElement) {
                 if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
-                    issueLinkElement.innerHTML = `<a rel="nofollow" href="${meta?.pageURL}">${templateVariables.taskFormattedPageUrl}</a>`;
+                    const safeUrl = escapeHtml(getSafeUrl(meta.pageURL));
+                    const safeText = escapeHtml(taskFormattedPageUrl);
+
+                    templateVariables.taskFormattedPageUrl = `<a rel="nofollow" style="word-break: break-all" href="${safeUrl}">${safeText}</a>`;
                 } else {
                     issueLinkElement.innerHTML = `<span>This spot not have link because it created without selecting a content.</span>`;
                 }
@@ -1297,7 +1301,7 @@ class CleanTalkWidgetDoboard {
                             },
                         },
                     }).catch(function(error) {
-                        // console.error('Failed to create message editor:', error);
+                        console.error('Failed to create message editor:', error);
                     });
                 }
                 if (this.nonRequesting) {
@@ -1360,9 +1364,6 @@ class CleanTalkWidgetDoboard {
                     if (input) input.disabled = false;
 
                 };
-                // this._sendButtonClickHandler = clickHandler;
-                //
-                // sendButton.addEventListener('click', clickHandler);
                 break;
 
             default:

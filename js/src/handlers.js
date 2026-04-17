@@ -211,7 +211,7 @@ function registerUser(taskDetails) {
     const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName)
         .then((response) => {
             if (response.accountExists) {
-         document.querySelector('.doboard_task_widget-accordion .doboard_task_widget-input-container').innerText = ksesFilter('Account already exists. Please, login using your password.');
+                document.querySelector('.doboard_task_widget-accordion .doboard_task_widget-input-container').innerText = ksesFilter('Account already exists. Please, login using your password.');
                 document.querySelector('.doboard_task_widget-accordion .doboard_task_widget-input-container.hidden')?.classList?.remove('hidden');
                 document.getElementById('doboard_task_widget-user_name')
                     .closest('.doboard_task_widget-input-container').classList.add('hidden-container');
@@ -452,8 +452,29 @@ function formatToDotMonthDate(dateString) {
     const date = new Date(dateString.replace(' ', 'T'));
 
     const day = String(date.getDate()).padStart(2, '0');
-    const month = date.toLocaleString('en-GB', { month: 'short' });
+    const month = date.toLocaleString('en-GB', {month: 'short'});
     const year = date.getFullYear();
 
     return `${day}.${month}.${year}`;
+}
+
+function escapeHtml(unsafeString) {
+    return (unsafeString || '').toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function getSafeUrl(url) {
+    try {
+        const parsed = new URL(url, 'https://dummy-base.com');
+
+        if (['http:', 'https:', 'mailto:'].includes(parsed.protocol)) {
+            return url;
+        }
+    } catch (e) {
+    }
+    return '#';
 }
