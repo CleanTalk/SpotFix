@@ -458,15 +458,6 @@ function formatToDotMonthDate(dateString) {
     return `${day}.${month}.${year}`;
 }
 
-function escapeHtml(unsafeString) {
-    return (unsafeString || '').toString()
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
-
 function getSafeUrl(url) {
     try {
         const parsed = new URL(url, 'https://dummy-base.com');

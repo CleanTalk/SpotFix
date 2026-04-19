@@ -9106,15 +9106,6 @@ function formatToDotMonthDate(dateString) {
     return `${day}.${month}.${year}`;
 }
 
-function escapeHtml(unsafeString) {
-    return (unsafeString || '').toString()
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
-
 function getSafeUrl(url) {
     try {
         const parsed = new URL(url, 'https://dummy-base.com');
@@ -10259,8 +10250,8 @@ class CleanTalkWidgetDoboard {
                     : taskFormattedPageUrl;
 
                 if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
-                    const safeUrl = escapeHtml(getSafeUrl(meta.pageURL));
-                    const safeText = escapeHtml(taskFormattedPageUrl);
+                    const safeUrl = this.escapeHtml(getSafeUrl(meta.pageURL));
+                    const safeText = this.escapeHtml(taskFormattedPageUrl);
 
                     templateVariables.taskFormattedPageUrl = `<a rel="nofollow" style="word-break: break-all" href="${safeUrl}">${safeText}</a>`;
                 } else {
@@ -10272,8 +10263,8 @@ class CleanTalkWidgetDoboard {
 
             if (issueLinkElement) {
                 if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
-                    const safeUrl = escapeHtml(getSafeUrl(meta.pageURL));
-                    const safeText = escapeHtml(taskFormattedPageUrl);
+                    const safeUrl = this.escapeHtml(getSafeUrl(meta.pageURL));
+                    const safeText = this.escapeHtml(taskFormattedPageUrl);
 
                     templateVariables.taskFormattedPageUrl = `<a rel="nofollow" style="word-break: break-all" href="${safeUrl}">${safeText}</a>`;
                 } else {

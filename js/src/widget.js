@@ -1130,8 +1130,8 @@ class CleanTalkWidgetDoboard {
                     : taskFormattedPageUrl;
 
                 if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
-                    const safeUrl = escapeHtml(getSafeUrl(meta.pageURL));
-                    const safeText = escapeHtml(taskFormattedPageUrl);
+                    const safeUrl = this.escapeHtml(getSafeUrl(meta.pageURL));
+                    const safeText = this.escapeHtml(taskFormattedPageUrl);
 
                     templateVariables.taskFormattedPageUrl = `<a rel="nofollow" style="word-break: break-all" href="${safeUrl}">${safeText}</a>`;
                 } else {
@@ -1143,8 +1143,8 @@ class CleanTalkWidgetDoboard {
 
             if (issueLinkElement) {
                 if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
-                    const safeUrl = escapeHtml(getSafeUrl(meta.pageURL));
-                    const safeText = escapeHtml(taskFormattedPageUrl);
+                    const safeUrl = this.escapeHtml(getSafeUrl(meta.pageURL));
+                    const safeText = this.escapeHtml(taskFormattedPageUrl);
 
                     templateVariables.taskFormattedPageUrl = `<a rel="nofollow" style="word-break: break-all" href="${safeUrl}">${safeText}</a>`;
                 } else {
