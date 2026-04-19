@@ -900,7 +900,7 @@ class CleanTalkWidgetDoboard {
                     const finishedTasks = sortedTasks.filter(task => task.taskStatus === 'DONE');
 
                     const container = document.querySelector(".doboard_task_widget-all_issues-container");
-
+                    container.innerHTML = '';
                     const generateTaskHtml = (elTask, isFinishedGroup) => {
                         const taskId = elTask.taskId;
                         const taskTitle = elTask.taskTitle;
@@ -1697,28 +1697,15 @@ class CleanTalkWidgetDoboard {
 
         let tasksCount;
 
-        if(tasksCountLS === undefined){
-            if(!this.nonRequesting) {
-                await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
-            }
-            const tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
-            storageSaveTasksCount(tasks);
-            const filteredTasks = tasks.filter(task => {
-                return task.taskMeta;
-            });
-            tasksCount = filteredTasks.length;
-        } else {
-            if (this.nonRequesting) {
-                const tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
-                storageSaveTasksCount(tasks);
-                const filteredTasks = tasks.filter(task => {
-                    return task.taskMeta;
-                });
-                tasksCount = filteredTasks.length;
-            } else {
-                tasksCount = tasksCountLS;
-            }
+        if (!this.nonRequesting) {
+            await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
         }
+        const tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+        storageSaveTasksCount(tasks);
+        const filteredTasks = tasks.filter(task => {
+            return task.taskMeta && task.taskStatus === 'ACTIVE';
+        });
+        tasksCount = filteredTasks.length;
 
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
         if ( taskCountElement && +tasksCount ) {
