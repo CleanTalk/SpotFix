@@ -41,6 +41,7 @@ class CleanTalkWidgetDoboard {
             iconSpotPrivate: SpotFixSVGLoader.getAsDataURI('iconSpotPrivate'),
             iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
             iconLinkChainDark: SpotFixSVGLoader.getAsDataURI('iconLinkChainDark'),
+            iconFinishedTitle: SpotFixSVGLoader.getAsDataURI('iconFinishedTitle'),
         };
         this.fileUploader = new FileUploader(this.escapeHtml);
         this.init(type);
@@ -116,12 +117,12 @@ class CleanTalkWidgetDoboard {
             const config = typeof window.spotfixConfig === 'object' && window.spotfixConfig ? window.spotfixConfig : null;
 
             // Fallback to spotfixConfig when URL has no params or they are incomplete (e.g. WordPress plugin)
-                    params = {
-                        ...params,
-                        projectToken: params.projectToken || config.projectToken || '',
-                        projectId: params.projectId || config.projectId || '',
-                        accountId: params.accountId || config.accountId || ''
-                    };
+            params = {
+                ...params,
+                projectToken: params.projectToken || config.projectToken || '',
+                projectId: params.projectId || config.projectId || '',
+                accountId: params.accountId || config.accountId || ''
+            };
 
         } else {
             const data = document.querySelector('script[data-spotfix="SpotFix"]')
@@ -425,7 +426,7 @@ class CleanTalkWidgetDoboard {
         }
         const forgotPasswordButtonBlackMenu = document.querySelector('.doboard_task_widget-input-container-login-menu ~ #doboard_task_widget-container-login-forgot-password-form #doboard_task_widget-forgot_password-black');
         if (forgotPasswordButtonBlackMenu) {
-             forgotPasswordButtonBlackMenu.addEventListener('click', async () => {
+            forgotPasswordButtonBlackMenu.addEventListener('click', async () => {
                 const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
                 const loginContainer = document.querySelector('.doboard_task_widget-input-container-login-menu');
 
@@ -483,14 +484,14 @@ class CleanTalkWidgetDoboard {
                         userEmail: userEmail,
                         userPassword: userPassword
                     })(this.registrationShowMessage);
-                        this.setUserMenuData();
+                    this.setUserMenuData();
 
-                        const submitButton = document.getElementById('doboard_task_widget-submit_button');
-                        if (submitButton) {
-                            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
-                        }
+                    const submitButton = document.getElementById('doboard_task_widget-submit_button');
+                    if (submitButton) {
+                        submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
+                    }
 
-                        await this.createWidgetElement('create_issue');
+                    await this.createWidgetElement('create_issue');
 
                 } catch (error) {
                     document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
@@ -646,110 +647,110 @@ class CleanTalkWidgetDoboard {
         const config = window.SpotfixWidgetConfig;
 
         switch (type) {
-            case 'create_issue':
-                templateName = 'create_issue';
-                this.type_name = templateName;
-                this.socket_type_name = templateName;
-                this.nonRequesting = nonRequesting;
-                templateVariables = {
-                    selectedText: this.selectedText || localStorage.getItem('spotfix-title-ls') || '',
-                    currentDomain: document.location.hostname || '',
-                    descriptionText: this.descriptionText || localStorage.getItem('spotfix-description-ls') || '',
-                    buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
-                    iconMaximize: +localStorage.getItem('maximize')
-                        ? SpotFixSVGLoader.getAsDataURI('iconMinimize')
-                        : SpotFixSVGLoader.getAsDataURI('iconMaximize'),
-                    iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
-                    iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
-                    ...this.srcVariables
-                };
-                storageGetUserIsDefined() && storageSetWidgetIsClosed(false);
-                break;
-            case 'wrap':
-                if (storageGetWidgetIsClosed()) {
-                    return;
-                }
+        case 'create_issue':
+            templateName = 'create_issue';
+            this.type_name = templateName;
+            this.socket_type_name = templateName;
+            this.nonRequesting = nonRequesting;
+            templateVariables = {
+                selectedText: this.selectedText || localStorage.getItem('spotfix-title-ls') || '',
+                currentDomain: document.location.hostname || '',
+                descriptionText: this.descriptionText || localStorage.getItem('spotfix-description-ls') || '',
+                buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
+                iconMaximize: +localStorage.getItem('maximize')
+                    ? SpotFixSVGLoader.getAsDataURI('iconMinimize')
+                    : SpotFixSVGLoader.getAsDataURI('iconMaximize'),
+                iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
+                iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
+                ...this.srcVariables
+            };
+            storageGetUserIsDefined() && storageSetWidgetIsClosed(false);
+            break;
+        case 'wrap':
+            if (storageGetWidgetIsClosed()) {
+                return;
+            }
 
-                templateName = 'wrap';
-                this.type_name = templateName;
-                this.socket_type_name = templateName;
-                this.nonRequesting = nonRequesting;
-                templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
-                        ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
-                break;
-            case 'wrap_review':
-                templateName = 'wrap_review';
-                this.type_name = templateName;
-                this.socket_type_name = templateName;
-                this.nonRequesting = nonRequesting;
-                templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
-                        ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
-                break;
-            case 'all_issues':
-                templateName = 'all_issues';
-                this.type_name = templateName;
-                this.socket_type_name = templateName;
-                this.nonRequesting = nonRequesting;
-                templateVariables = {...this.srcVariables};
-                break;
-            case 'user_menu':
-                templateName = 'user_menu';
-                this.socket_type_name = templateName;
-                this.nonRequesting = nonRequesting;
-                const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
-                templateVariables = {
-                    spotfixVersion: userMenuVersion ? 'Spotfix version ' + userMenuVersion + '.' : '',
-                    avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
-                    iconEye: SpotFixSVGLoader.getAsDataURI('iconEye'),
-                    iconDoor: SpotFixSVGLoader.getAsDataURI('iconDoor'),
-                    chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
-                    buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
-                    userName: 'Guest',
-                    email: getSpotfixEmail() || '',
-                    ...this.srcVariables};
-                break;
-            case 'spot_menu':
-                templateName = 'spot_menu';
-                this.socket_type_name = templateName;
-                this.nonRequesting = nonRequesting;
-                this.socket_type_name = templateName;
-                const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
-                templateVariables = {
-                    spotfixVersion: spotMenuVersion ? 'Spotfix version ' + spotMenuVersion + '.' : '',
-                    chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
-                    buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
-                    avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
-                    taskName: '',
-                    viewersCount: '',
-                    viewers: '',
-                    ...this.srcVariables};
-                break;
-            case 'concrete_issue':
-                templateName = 'concrete_issue';
-                this.type_name = templateName;
-                this.socket_type_name = templateName;
-                this.nonRequesting = nonRequesting;
-                // Update the number of tasks
-                this.savedIssuesQuantityAll = Array.isArray(this.allTasksData) ? this.allTasksData.length : 0;
-                // Calculate the number of issues on the current page
-                this.savedIssuesQuantityOnPage = Array.isArray(this.allTasksData)
-                    ? this.allTasksData.filter(task => {
-                        try {
-                            const meta = task.taskMeta ? JSON.parse(task.taskMeta) : {};
-                            return meta.pageURL === window.location.href;
-                        } catch (e) { return false; }
-                    }).length
-                    : 0;
+            templateName = 'wrap';
+            this.type_name = templateName;
+            this.socket_type_name = templateName;
+            this.nonRequesting = nonRequesting;
+            templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
+                    ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
+            break;
+        case 'wrap_review':
+            templateName = 'wrap_review';
+            this.type_name = templateName;
+            this.socket_type_name = templateName;
+            this.nonRequesting = nonRequesting;
+            templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
+                    ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
+            break;
+        case 'all_issues':
+            templateName = 'all_issues';
+            this.type_name = templateName;
+            this.socket_type_name = templateName;
+            this.nonRequesting = nonRequesting;
+            templateVariables = {...this.srcVariables};
+            break;
+        case 'user_menu':
+            templateName = 'user_menu';
+            this.socket_type_name = templateName;
+            this.nonRequesting = nonRequesting;
+            const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+            templateVariables = {
+                spotfixVersion: userMenuVersion ? 'Spotfix version ' + userMenuVersion + '.' : '',
+                avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
+                iconEye: SpotFixSVGLoader.getAsDataURI('iconEye'),
+                iconDoor: SpotFixSVGLoader.getAsDataURI('iconDoor'),
+                chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
+                buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
+                userName: 'Guest',
+                email: getSpotfixEmail() || '',
+                ...this.srcVariables};
+            break;
+        case 'spot_menu':
+            templateName = 'spot_menu';
+            this.socket_type_name = templateName;
+            this.nonRequesting = nonRequesting;
+            this.socket_type_name = templateName;
+            const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+            templateVariables = {
+                spotfixVersion: spotMenuVersion ? 'Spotfix version ' + spotMenuVersion + '.' : '',
+                chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
+                buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
+                avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
+                taskName: '',
+                viewersCount: '',
+                viewers: '',
+                ...this.srcVariables};
+            break;
+        case 'concrete_issue':
+            templateName = 'concrete_issue';
+            this.type_name = templateName;
+            this.socket_type_name = templateName;
+            this.nonRequesting = nonRequesting;
+            // Update the number of tasks
+            this.savedIssuesQuantityAll = Array.isArray(this.allTasksData) ? this.allTasksData.length : 0;
+            // Calculate the number of issues on the current page
+            this.savedIssuesQuantityOnPage = Array.isArray(this.allTasksData)
+                ? this.allTasksData.filter(task => {
+                    try {
+                        const meta = task.taskMeta ? JSON.parse(task.taskMeta) : {};
+                        return meta.pageURL === window.location.href;
+                    } catch (e) { return false; }
+                }).length
+                : 0;
 
-                templateVariables = {
-                    issueTitle: '...',
-                    issueComments: [],
-                    issuesCounter: getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll),
-                    ...this.srcVariables,
-                };
-                break;
-            default:
-                break;
+            templateVariables = {
+                issueTitle: '...',
+                issueComments: [],
+                issuesCounter: getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll),
+                ...this.srcVariables,
+            };
+            break;
+        default:
+            break;
         }
         if(!nonRequesting) {
             widgetContainer.innerHTML = this.loadTemplate(templateName, templateVariables);
@@ -760,274 +761,327 @@ class CleanTalkWidgetDoboard {
         }
         const container = document.querySelector('.doboard_task_widget-container');
         switch (type) {
-            case 'create_issue':
-                document.getElementById('spotfix-widget-create-task-visibility').checked = this.new_task_type === 'PUBLIC';
+        case 'create_issue':
+            document.getElementById('spotfix-widget-create-task-visibility').checked = this.new_task_type === 'PUBLIC';
 
-                if(container && +localStorage.getItem('maximize')){
-                    container.classList.add('doboard_task_widget-container-maximize');
-                } else if(container) {
-                    container.classList.remove('doboard_task_widget-container-maximize');
+            if(container && +localStorage.getItem('maximize')){
+                container.classList.add('doboard_task_widget-container-maximize');
+            } else if(container) {
+                container.classList.remove('doboard_task_widget-container-maximize');
+            }
+            // highlight selected item during task creation
+            const selection = window.getSelection();
+            const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+            const email = getSpotfixEmail();
+
+            if (sessionIdExists && email && !email.includes('spotfix_')) {
+                document.querySelector('.doboard_task_widget-login').classList.add('hidden');
+            }
+
+            const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
+            const titleContainer = document.getElementById('doboard_task_widget-title')?.closest('.doboard_task_widget-input-container');
+            const descriptionContainer = document.getElementById('doboard_task_widget-description-container');
+            const requireFullRegistrationMessage = document.getElementById('doboard_task_widget-require_full_registration');
+            const submitButtonContainer = document.getElementById('doboard_task_widget-submit_button')?.closest('.doboard_task_widget-field');
+            const visibilityToggle = document.querySelector('.doboard_task_widget-visibility-toggle');
+
+            const registerOnlyButton = document.getElementById('doboard_task_widget-register_only_button');
+
+            if (requireFullRegistration && !sessionIdExists) {
+                if (titleContainer) titleContainer.style.display = '';
+                if (descriptionContainer) descriptionContainer.style.display = '';
+                if (submitButtonContainer) submitButtonContainer.style.display = 'none';
+                if (visibilityToggle) visibilityToggle.style.display = 'none';
+                if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.remove('doboard_task_widget-hidden');
+                const loginSection = document.querySelector('.doboard_task_widget-login');
+                if (loginSection) loginSection.classList.add('active');
+                // Hide login accordion icon when require_full_registration
+                const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
+                if (loginIcon) loginIcon.classList.add('doboard_task_widget-login-icon-hidden');
+                // Show register only button
+                if (registerOnlyButton) registerOnlyButton.classList.remove('doboard_task_widget-hidden');
+            } else {
+                if (titleContainer) titleContainer.style.display = '';
+                if (descriptionContainer) descriptionContainer.style.display = '';
+                if (submitButtonContainer) submitButtonContainer.style.display = '';
+                if (visibilityToggle) visibilityToggle.style.display = '';
+                if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.add('doboard_task_widget-hidden');
+                // Show login accordion icon when not require_full_registration
+                const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
+                if (loginIcon) loginIcon.classList.remove('doboard_task_widget-login-icon-hidden');
+                // Hide register only button
+                if (registerOnlyButton) registerOnlyButton.classList.add('doboard_task_widget-hidden');
+            }
+
+            if (
+                selection.type === 'Range'
+            ) {
+                const selectedData = spotFixGetSelectedData(selection);
+                if (selectedData) {
+                    spotFixScrollToNodePath(selectedData.nodePath);
+                    this.positionWidgetContainer();
                 }
-                // highlight selected item during task creation
-                const selection = window.getSelection();
-                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
-                const email = getSpotfixEmail();
+            }
+            // bind creation events
+            this.bindCreateTaskEvents(this);
+            this.bindShowLoginFormEvents();
 
-                if (sessionIdExists && email && !email.includes('spotfix_')) {
-                    document.querySelector('.doboard_task_widget-login').classList.add('hidden');
-                }
+            this.fileUploader = new FileUploader(this.escapeHtml);
+            this.fileUploader.init();
 
-                const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
-                const titleContainer = document.getElementById('doboard_task_widget-title')?.closest('.doboard_task_widget-input-container');
-                const descriptionContainer = document.getElementById('doboard_task_widget-description-container');
-                const requireFullRegistrationMessage = document.getElementById('doboard_task_widget-require_full_registration');
-                const submitButtonContainer = document.getElementById('doboard_task_widget-submit_button')?.closest('.doboard_task_widget-field');
-                const visibilityToggle = document.querySelector('.doboard_task_widget-visibility-toggle');
-
-                const registerOnlyButton = document.getElementById('doboard_task_widget-register_only_button');
-
-                if (requireFullRegistration && !sessionIdExists) {
-                    if (titleContainer) titleContainer.style.display = '';
-                    if (descriptionContainer) descriptionContainer.style.display = '';
-                    if (submitButtonContainer) submitButtonContainer.style.display = 'none';
-                    if (visibilityToggle) visibilityToggle.style.display = 'none';
-                    if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.remove('doboard_task_widget-hidden');
-                    const loginSection = document.querySelector('.doboard_task_widget-login');
-                    if (loginSection) loginSection.classList.add('active');
-                    // Hide login accordion icon when require_full_registration
-                    const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
-                    if (loginIcon) loginIcon.classList.add('doboard_task_widget-login-icon-hidden');
-                    // Show register only button
-                    if (registerOnlyButton) registerOnlyButton.classList.remove('doboard_task_widget-hidden');
-                } else {
-                    if (titleContainer) titleContainer.style.display = '';
-                    if (descriptionContainer) descriptionContainer.style.display = '';
-                    if (submitButtonContainer) submitButtonContainer.style.display = '';
-                    if (visibilityToggle) visibilityToggle.style.display = '';
-                    if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.add('doboard_task_widget-hidden');
-                    // Show login accordion icon when not require_full_registration
-                    const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
-                    if (loginIcon) loginIcon.classList.remove('doboard_task_widget-login-icon-hidden');
-                    // Hide register only button
-                    if (registerOnlyButton) registerOnlyButton.classList.add('doboard_task_widget-hidden');
-                }
-
-                if (
-                    selection.type === 'Range'
-                ) {
-                    const selectedData = spotFixGetSelectedData(selection);
-                    if (selectedData) {
-                        spotFixScrollToNodePath(selectedData.nodePath);
-                        this.positionWidgetContainer();
-                    }
-                }
-                // bind creation events
-                this.bindCreateTaskEvents(this);
-                this.bindShowLoginFormEvents();
-
-                this.fileUploader = new FileUploader(this.escapeHtml);
-                this.fileUploader.init();
-
-                const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
-                const fileUploaderDesc = this.fileUploader;
+            const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
+            const fileUploaderDesc = this.fileUploader;
 
 
-                if (window.DescriptionEditorIframe.iframe && !this.nonRequesting) {
-                    window.DescriptionEditorIframe.remove();
-                }
-                if(!this.nonRequesting) {
-                    // Create description editor iframe
-                    window.DescriptionEditorIframe.create({
-                        savedContent: savedDescription,
-                        onChange: function(content) {
-                            localStorage.setItem('spotfix-description-ls', content);
+            if (window.DescriptionEditorIframe.iframe && !this.nonRequesting) {
+                window.DescriptionEditorIframe.remove();
+            }
+            if(!this.nonRequesting) {
+                // Create description editor iframe
+                window.DescriptionEditorIframe.create({
+                    savedContent: savedDescription,
+                    onChange: function(content) {
+                        localStorage.setItem('spotfix-description-ls', content);
+                    },
+                    handlers: {
+                        onAttachmentClick: function() {
+                            fileUploaderDesc?.fileInput?.click();
                         },
-                        handlers: {
-                            onAttachmentClick: function() {
-                                fileUploaderDesc?.fileInput?.click();
-                            },
-                            onScreenshotClick: function() {
-                                fileUploaderDesc?.makeScreenshot();
-                            },
-                        }
-                    }).catch(function(error) {
-                        console.error('Failed to create description editor:', error);
-                    });
-                }
-
-
-                break;
-            case 'wrap':
-                await this.getTaskCount();
-                document.querySelector('.doboard_task_widget-wrap').addEventListener('click', async (e) => {
-                    const widgetElementClasses = e.currentTarget.classList;
-                    if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
-                        if(this.type_name !== 'all_issues') await this.createWidgetElement('all_issues');
+                        onScreenshotClick: function() {
+                            fileUploaderDesc?.makeScreenshot();
+                        },
                     }
+                }).catch(function(error) {
+                    console.error('Failed to create description editor:', error);
                 });
-                hideContainersSpinner(false);
-                break;
-            case 'wrap_review':
-                document.querySelector('#doboard_task_widget_button').addEventListener('click', (e) => {
-                    spotFixOpenWidget(this.selectedData, 'create_issue');
-                });
-                break;
-            case 'all_issues':
-                if (this.nonRequesting) {
-                    hideContainersSpinner();
-                } else {
-                    changeSize(container);
+            }
+
+
+            break;
+        case 'wrap':
+            await this.getTaskCount();
+            document.querySelector('.doboard_task_widget-wrap').addEventListener('click', async (e) => {
+                const widgetElementClasses = e.currentTarget.classList;
+                if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
+                    if(this.type_name !== 'all_issues') await this.createWidgetElement('all_issues');
                 }
-                spotFixRemoveHighlights();
-                let issuesQuantityOnPage = 0;
-                const sessionId = localStorage.getItem('spotfix_session_id');
+            });
+            hideContainersSpinner(false);
+            break;
+        case 'wrap_review':
+            document.querySelector('#doboard_task_widget_button').addEventListener('click', (e) => {
+                spotFixOpenWidget(this.selectedData, 'create_issue');
+            });
+            break;
+        case 'all_issues':
+            if (this.nonRequesting) {
+                hideContainersSpinner();
+            } else {
+                changeSize(container);
+            }
+            spotFixRemoveHighlights();
+            let issuesQuantityOnPage = 0;
+            const sessionId = localStorage.getItem('spotfix_session_id');
 
-                const notifications = this.nonRequesting ? [] : await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
+            const notifications = this.nonRequesting ? [] : await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
 
-                this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
-                const tasks = this.allTasksData;
-                tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId, this.nonRequesting);
-                let spotsToBeHighlighted = [];
-                if (tasks.length > 0) {
-                    const currentURL = window.location.href;
-                    const sortedTasks = tasks.sort((a, b) => {
-                        const aIsHere = JSON.parse(a.taskMeta)?.pageURL === currentURL ? 1 : 0;
-                        const bIsHere = JSON.parse(b.taskMeta)?.pageURL === currentURL ? 1 : 0;
-                        return bIsHere - aIsHere;
-                    });
+            this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
+            const tasks = this.allTasksData;
+            tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId, this.nonRequesting);
+            let spotsToBeHighlighted = [];
+            if (tasks.length > 0) {
+                const currentURL = window.location.href;
+                const sortedTasks = tasks.sort((a, b) => {
+                    const aIsHere = JSON.parse(a.taskMeta)?.pageURL === currentURL ? 1 : 0;
+                    const bIsHere = JSON.parse(b.taskMeta)?.pageURL === currentURL ? 1 : 0;
+                    return bIsHere - aIsHere;
+                });
 
-                    document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
+                const activeTasks = sortedTasks.filter(task => task.taskStatus !== 'DONE');
+                const finishedTasks = sortedTasks.filter(task => task.taskStatus === 'DONE');
 
-                    for (let i = 0; i < sortedTasks.length; i++) {
-                        const elTask = sortedTasks[i];
+                const container = document.querySelector(".doboard_task_widget-all_issues-container");
+                container.innerHTML = '';
+                const generateTaskHtml = (elTask, isFinishedGroup) => {
+                    const taskId = elTask.taskId;
+                    const taskTitle = elTask.taskTitle;
+                    const taskMetaString = elTask.taskMeta;
+                    let taskData = null;
 
-                        // Data from api
-                        const taskId = elTask.taskId;
-                        const taskTitle = elTask.taskTitle;
-                        const taskMetaString = elTask.taskMeta;
-                        let taskData = null;
-                        if (taskMetaString) {
-                            try {
-                                taskData = JSON.parse(taskMetaString);
-                                taskData.isFixed = elTask.taskStatus === 'DONE';
-                                taskData.taskId = elTask.taskId;
-                            } catch (error) {
-                                taskData = null;
-                            }
-                        }
-                        const currentPageURL = taskData ? taskData?.pageURL : '';
-                        let taskNodePath = ''; // nodePath need for only current page's spots
-
-                        // Define publicity details
-                        let taskPublicStatusImgSrc = '';
-                        let taskPublicStatusHint = 'Task publicity is unknown'
-                        if (taskData && taskData.isPublic !== undefined) {
-                            if (taskData.isPublic) {
-                                taskPublicStatusImgSrc = this.srcVariables.iconSpotPublic;
-                                taskPublicStatusHint = 'The task is public';
-                            } else {
-                                taskPublicStatusImgSrc = this.srcVariables.iconSpotPrivate;
-                                taskPublicStatusHint = 'The task is private and visible only for registered DoBoard users';
-                            }
-                        }
-
-                        if(currentPageURL === window.location.href){
-                            issuesQuantityOnPage++;
-                            taskNodePath = taskData ? taskData.nodePath : '';
-                        }
-
-                        if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
-
-                            const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId)
-
-                            const avatarData = getAvatarData(taskFullDetails);
-                            const hasUpdates = !!(notifications?.find(item => +item?.task_id === elTask?.taskId));
-                            const meta = JSON.parse(elTask.taskMeta);
-                            const isNoRelevant = meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath);
-                            const isTaskWithoutReference = !((meta.nodePath || meta.selectedText) && meta?.pageURL);
-
-                            const listIssuesTemplateVariables = {
-                                taskTitle: taskTitle || '',
-                                taskAuthorAvatarImgSrc: taskFullDetails.taskAuthorAvatarImgSrc,
-                                taskAuthorName: taskFullDetails.taskAuthorName,
-                                taskPublicStatusImgSrc: taskPublicStatusImgSrc,
-                                taskPublicStatusHint: taskPublicStatusHint,
-                                taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
-                                taskPageUrlFull: currentPageURL,
-                                iconOfVisibility: elTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicSmall : this.srcVariables.iconLockSmall,
-                                iconLinkChain: isTaskWithoutReference ? SpotFixSVGLoader.getAsDataURI('iconCrossedLinkChain') : this.srcVariables.iconLinkChain,
-                                taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
-                                taskPageUrl: isTaskWithoutReference ? 'No link with content' : localStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
-                                // taskLastUpdate: taskFullDetails.lastMessageTime,
-                                taskLastUpdate: formatToDotMonthDate(elTask.taskLastUpdate),
-                                nodePath: this.sanitizeNodePath(taskNodePath),
-                                taskId: taskId,
-                                avatarCSSClass: avatarData.avatarCSSClass,
-                                avatarStyle: avatarData.avatarStyle,
-                                taskAuthorInitials: avatarData.taskAuthorInitials,
-                                initialsClass: avatarData.initialsClass,
-                                classUnread: '',
-                                elementBgCSSClass: isNoRelevant || elTask.taskStatus !== 'DONE' ? '' : 'doboard_task_widget-task_row-green',
-                                statusFixedHtml: isNoRelevant || elTask.taskStatus !== 'DONE' ? '' : this.loadTemplate('fixedHtml'),
-                                noRelevantHtml: isNoRelevant ? this.loadTemplate('noRelevantHtml') : '',
-                                amountOfComments: isNoRelevant || elTask.taskStatus === 'DONE' ? ''
-                                    : `<span style="background-color: ${hasUpdates ? '#F08C43' : '#D6DDE3'}" 
-                                        class="doboard_task_widget-commentsIndicator">${elTask.commentsCount}</span>`,
-                            };
-
-                            const taskOwnerReplyIsUnread = storageProvidedTaskHasUnreadUpdates(taskFullDetails.taskId);
-                            if (taskOwnerReplyIsUnread) {
-                                listIssuesTemplateVariables.classUnread = 'unread';
-                            }
-                            document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += this.loadTemplate('list_issues', listIssuesTemplateVariables);
-
-                            if ( this.isSpotHaveToBeHighlighted(taskData) ) {
-                                spotsToBeHighlighted.push(taskData);
-                            }
+                    if (taskMetaString) {
+                        try {
+                            taskData = JSON.parse(taskMetaString);
+                            taskData.isFixed = elTask.taskStatus === 'DONE';
+                            taskData.taskId = elTask.taskId;
+                        } catch (error) {
+                            taskData = null;
                         }
                     }
-                    this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
-                    this.savedIssuesQuantityAll = tasks.length;
-                    spotFixHighlightElements(spotsToBeHighlighted, this);
-                    document.querySelector('.doboard_task_widget-header span').innerHTML = ksesFilter('All spots ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
+
+                    const currentPageURL = taskData ? taskData?.pageURL : '';
+                    let taskNodePath = '';
+
+                    let taskPublicStatusImgSrc = '';
+                    let taskPublicStatusHint = 'Task publicity is unknown';
+                    if (taskData && taskData.isPublic !== undefined) {
+                        if (taskData.isPublic) {
+                            taskPublicStatusImgSrc = this.srcVariables.iconSpotPublic;
+                            taskPublicStatusHint = 'The task is public';
+                        } else {
+                            taskPublicStatusImgSrc = this.srcVariables.iconSpotPrivate;
+                            taskPublicStatusHint = 'The task is private and visible only for registered DoBoard users';
+                        }
+                    }
+
+                    if (currentPageURL === window.location.href) {
+                        issuesQuantityOnPage++;
+                        taskNodePath = taskData ? taskData.nodePath : '';
+                    }
+
+                    if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
+                        const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId);
+                        const avatarData = getAvatarData(taskFullDetails);
+                        const hasUpdates = !!(notifications?.find(item => +item?.task_id === elTask?.taskId));
+                        const isDone = elTask.taskStatus === 'DONE';
+                        const meta = JSON.parse(elTask.taskMeta);
+                        const isNoRelevant = meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath);
+                        const isTaskWithoutReference = !((meta.nodePath || meta.selectedText) && meta?.pageURL);
+
+                        const elementBgCSSClass = isFinishedGroup
+                            ? 'doboard_task_widget-task_row-grey'
+                            : (isDone ? 'doboard_task_widget-task_row-green' : '');
+
+                        const statusFixedHtml = !isNoRelevant ? (isFinishedGroup || isDone)
+                            ? this.loadTemplate('fixedHtml')
+                            : '' : '';
+
+                        const amountOfComments = !isNoRelevant ? (isFinishedGroup || isDone)
+                                ? ''
+                                : `<span style="background-color: ${hasUpdates ? '#F08C43' : '#D6DDE3'}" class="doboard_task_widget-commentsIndicator">${elTask.commentsCount}</span>`
+                            : '';
+
+                        const listIssuesTemplateVariables = {
+                            taskTitle: taskTitle || '',
+                            taskAuthorAvatarImgSrc: taskFullDetails.taskAuthorAvatarImgSrc,
+                            taskAuthorName: taskFullDetails.taskAuthorName,
+                            taskPublicStatusImgSrc: taskPublicStatusImgSrc,
+                            taskPublicStatusHint: taskPublicStatusHint,
+                            taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
+                            taskPageUrlFull: currentPageURL,
+                            iconOfVisibility: elTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicSmall : this.srcVariables.iconLockSmall,
+                            iconLinkChain: isTaskWithoutReference ? SpotFixSVGLoader.getAsDataURI('iconCrossedLinkChain') : this.srcVariables.iconLinkChain,
+                            taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
+                            taskPageUrl: isTaskWithoutReference ? 'No link with content' : localStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
+                            taskLastUpdate: formatToDotMonthDate(elTask.taskLastUpdate),
+                            nodePath: this.sanitizeNodePath(taskNodePath),
+                            taskId: taskId,
+                            avatarCSSClass: avatarData.avatarCSSClass,
+                            avatarStyle: avatarData.avatarStyle,
+                            taskAuthorInitials: avatarData.taskAuthorInitials,
+                            initialsClass: avatarData.initialsClass,
+                            classUnread: storageProvidedTaskHasUnreadUpdates(taskFullDetails.taskId) ? 'unread' : '',
+                            noRelevantHtml: isNoRelevant ? this.loadTemplate('noRelevantHtml') : '',
+                            elementBgCSSClass,
+                            statusFixedHtml,
+                            amountOfComments
+                        };
+
+                        if (this.isSpotHaveToBeHighlighted(taskData)) {
+                            spotsToBeHighlighted.push(taskData);
+                        }
+
+                        return this.loadTemplate('list_issues', listIssuesTemplateVariables);
+                    }
+
+                    return '';
+                };
+
+                let activeTasksHtml = '';
+                for (const elTask of activeTasks) {
+                    activeTasksHtml += generateTaskHtml(elTask, false);
+                }
+                if (activeTasksHtml) {
+                    container.innerHTML += activeTasksHtml;
                 }
 
-                if (tasks.length === 0) {
-                    document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = ksesFilter('<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>');
+
+                if (finishedTasks.length > 0) {
+                    let finishedTasksContent = '';
+                    for (const elTask of finishedTasks) {
+                        finishedTasksContent += generateTaskHtml(elTask, true);
+                    }
+
+                    const finishedSectionHTML = this.loadTemplate('finishedTasksSection', {
+                        finishedCount: finishedTasks.length,
+                        iconFinishedTitle: this.srcVariables.iconFinishedTitle,
+                        finishedTasksContent: finishedTasksContent
+                    });
+                    container.innerHTML += finishedSectionHTML;
+
+                    const finishedHeader = document.getElementById('finishedTasksHeader');
+                    const finishedContainer = document.getElementById('finishedTasksContainer');
+                    if (finishedHeader && finishedContainer) {
+                        finishedHeader.addEventListener('click', () => {
+                            finishedContainer.classList.toggle('expanded');
+                            finishedHeader.classList.toggle('expanded');
+
+                            setTimeout(() => {
+                                if (finishedContainer.classList.contains('expanded')) {
+                                    const children = finishedContainer.children;
+                                    if (children.length > 0) {
+                                        const targetIndex = Math.min(2, children.length - 1);
+                                        children[targetIndex].scrollIntoView({
+                                            behavior: 'smooth',
+                                            block: 'nearest',
+                                        });
+                                    }
+                                }
+                            }, 350);
+                        });
+                    }
                 }
 
-                // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
-                this.bindIssuesClick();
-                hideContainersSpinner(false);
+                this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
+                this.savedIssuesQuantityAll = tasks.length;
+                spotFixHighlightElements(spotsToBeHighlighted, this);
+                document.querySelector('.doboard_task_widget-header span').innerHTML = ksesFilter('All spots ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
+            }
 
-                break;
+            if (tasks.length === 0) {
+                document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = ksesFilter('<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>');
+            }
+
+            // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
+            this.bindIssuesClick();
+            hideContainersSpinner(false);
+            break;
         case 'user_menu':
 
-                setToggleStatus(this);
+            setToggleStatus(this);
 
-                const user = await getUserDetails(this.params, this.nonRequesting);
-                if(!this.nonRequesting) await getReleaseVersion();
-                let userMenuSpotfixVersion = '';
-                const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
-                userMenuSpotfixVersion = userMenuVersion ? `Spotfix version ${userMenuVersion}.` : '';
+            const user = await getUserDetails(this.params, this.nonRequesting);
+            if(!this.nonRequesting) await getReleaseVersion();
+            let userMenuSpotfixVersion = '';
+            const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+            userMenuSpotfixVersion = userMenuVersion ? `Spotfix version ${userMenuVersion}.` : '';
 
-                templateVariables.spotfixVersion = userMenuSpotfixVersion || '';
+            templateVariables.spotfixVersion = userMenuSpotfixVersion || '';
 
-                if(user){
-                    templateVariables.userName = user.name || 'Guest';
-                    templateVariables.email = user.email || getSpotfixEmail() || '';
-                    if(user?.avatar?.s) templateVariables.avatar = user?.avatar?.s;
-                }
+            if(user){
+                templateVariables.userName = user.name || 'Guest';
+                templateVariables.email = user.email || getSpotfixEmail() || '';
+                if(user?.avatar?.s) templateVariables.avatar = user?.avatar?.s;
+            }
 
-                widgetContainer.innerHTML = this.loadTemplate('user_menu', templateVariables);
+            widgetContainer.innerHTML = this.loadTemplate('user_menu', templateVariables);
 
-                document.body.appendChild(widgetContainer);
-                setToggleStatus(this);
-                checkLogInOutButtonsVisible();
-                this.bindShowLoginFormEvents();
-                this.bindWidgetInputsInteractive();
+            document.body.appendChild(widgetContainer);
+            setToggleStatus(this);
+            checkLogInOutButtonsVisible();
+            this.bindShowLoginFormEvents();
+            this.bindWidgetInputsInteractive();
 
-                break;
+            break;
         case 'spot_menu':
             if(!this.nonRequesting) await getReleaseVersion();
             let spotfixVersion = '';
@@ -1086,69 +1140,63 @@ class CleanTalkWidgetDoboard {
 
             break;
         case 'concrete_issue':
-                if(this.nonRequesting) {
-                    hideContainersSpinner();
-                    this.allTasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
-                } else {
-                    changeSize(container);
-                }
-                if(!this.nonRequesting && this.currentActiveTaskId) {
-                    updateNotificationsDoboard(this.currentActiveTaskId, this.params.projectToken, this.params.accountId)
-                }
-                tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId, this.nonRequesting);
-                const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId, this.nonRequesting);
-                // Update issue title in the interface
-                const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
-                if (issueTitleElement) {
-                    issueTitleElement.innerText = ksesFilter(tasksFullDetails.taskName || taskDetails?.issueTitle);
-                }
+            if(this.nonRequesting) {
+                hideContainersSpinner();
+                this.allTasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+            } else {
+                changeSize(container);
+            }
+            if(!this.nonRequesting && this.currentActiveTaskId) {
+                updateNotificationsDoboard(this.currentActiveTaskId, this.params.projectToken, this.params.accountId)
+            }
+            tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId, this.nonRequesting);
+            const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId, this.nonRequesting);
+            // Update issue title in the interface
+            const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
+            if (issueTitleElement) {
+                issueTitleElement.innerText = ksesFilter(tasksFullDetails.taskName || taskDetails?.issueTitle);
+            }
 
-                templateVariables.issueTitle = tasksFullDetails.taskName || taskDetails?.issueTitle;
-                templateVariables.issueComments = taskDetails?.issueComments;
-                templateVariables.amountOfComments = `${taskDetails?.issueComments.length || 0} messages`;
-                // Highlight the task's selected text
-                let nodePath = null;
-                    const currentTaskData = this.allTasksData.find((element) => String(element.taskId) === String(taskDetails.taskId));
-                    let meta = null;
+            templateVariables.issueTitle = tasksFullDetails.taskName || taskDetails?.issueTitle;
+            templateVariables.issueComments = taskDetails?.issueComments;
+            templateVariables.amountOfComments = `${taskDetails?.issueComments.length || 0} messages`;
+            // Highlight the task's selected text
+            let nodePath = null;
+            const currentTaskData = this.allTasksData.find((element) => String(element.taskId) === String(taskDetails.taskId));
+            let meta = null;
 
-                    if (currentTaskData && currentTaskData.taskMeta) {
-                        try {
-                            meta = JSON.parse(currentTaskData.taskMeta);
-                            nodePath = meta.nodePath || null;
-                        } catch (e) { nodePath = null; meta = null; }
-                    }
+            if (currentTaskData && currentTaskData.taskMeta) {
+                try {
+                    meta = JSON.parse(currentTaskData.taskMeta);
+                    nodePath = meta.nodePath || null;
+                } catch (e) { nodePath = null; meta = null; }
+            }
 
             templateVariables.taskPageUrl = meta?.pageURL;
             templateVariables.taskFormattedPageUrl = '';
 
             let taskFormattedPageUrl = '';
 
-            if (typeof meta?.pageURL === 'string'){
-                taskFormattedPageUrl = meta?.pageURL?.replace(window.location.origin, '');
-                taskFormattedPageUrl = taskFormattedPageUrl.length < 2
-                    ? meta?.pageURL?.replace(/^https?:\/\//, '')
-                    : taskFormattedPageUrl;
+            const issueLinkElement = document.getElementById('spotfix_doboard_task_widget_url');
+            const isPageUrlString = typeof meta?.pageURL === 'string';
 
-                if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
+            if (isPageUrlString) {
+                taskFormattedPageUrl = meta.pageURL.replace(window.location.origin, '');
+                taskFormattedPageUrl = taskFormattedPageUrl.length < 2
+                    ? meta.pageURL.replace(/^https?:\/\//, '')
+                    : taskFormattedPageUrl;
+            }
+
+            if (isPageUrlString || issueLinkElement) {
+                if (meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath)) {
+                    templateVariables.taskFormattedPageUrl = `<span>The link to the content has been lost because the content was changed, deleted, or moved to another URL.</span>`;
+                } else if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
                     const safeUrl = this.escapeHtml(getSafeUrl(meta.pageURL));
                     const safeText = this.escapeHtml(taskFormattedPageUrl);
 
                     templateVariables.taskFormattedPageUrl = `<a rel="nofollow" style="word-break: break-all" href="${safeUrl}">${safeText}</a>`;
                 } else {
                     templateVariables.taskFormattedPageUrl = `<span>This spot not have link because it created without selecting a content.</span>`;
-                }
-            }
-
-            const issueLinkElement = document.getElementById('spotfix_doboard_task_widget_url');
-
-            if (issueLinkElement) {
-                if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
-                    const safeUrl = this.escapeHtml(getSafeUrl(meta.pageURL));
-                    const safeText = this.escapeHtml(taskFormattedPageUrl);
-
-                    templateVariables.taskFormattedPageUrl = `<a rel="nofollow" style="word-break: break-all" href="${safeUrl}">${safeText}</a>`;
-                } else {
-                    issueLinkElement.innerHTML = `<span>This spot not have link because it created without selecting a content.</span>`;
                 }
             }
 
@@ -1165,210 +1213,215 @@ class CleanTalkWidgetDoboard {
                 document.body.appendChild(widgetContainer);
             }
 
-                    // remove old highlights before adding new ones
-                    spotFixRemoveHighlights();
+            // remove old highlights before adding new ones
+            spotFixRemoveHighlights();
 
-                    if (meta && nodePath) {
-                        // Pass the task meta object as an array
-                        spotFixHighlightElements([{...meta, taskId: currentTaskData.taskId}], this);
-                        if (typeof spotFixScrollToNodePath === 'function') {
-                            spotFixScrollToNodePath(nodePath);
-                        }
-                    }
-
-                const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
-                if (!issuesCommentsContainer) return;
-
-                const currentScrollTop = issuesCommentsContainer.scrollTop;
-                const wasAtBottom = currentScrollTop + issuesCommentsContainer.clientHeight >= issuesCommentsContainer.scrollHeight - 10;
-
-                let dayMessagesData = [];
-                const initIssuerID = localStorage.getItem('spotfix_user_id');
-                let userIsIssuer = false;
-                if ( taskDetails.issueComments.length > 0 ) {
-                    storageRemoveUnreadUpdateForTaskID(taskDetails.taskId);
-                    issuesCommentsContainer.innerHTML = ksesFilter('');
-                    for (const comment of taskDetails.issueComments) {
-                        userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
-                        const avatarData = getAvatarData({
-                            taskAuthorAvatarImgSrc: comment.commentAuthorAvatarSrc,
-                            taskAuthorName: comment.commentAuthorName,
-                        });
-                        let attachmentsHTML = '';
-                        if (comment.commentAttachments && comment.commentAttachments.length > 0) {
-                            for (const att of comment.commentAttachments) {
-                                const attFilename = att.filename || att.URL?.split('/').pop() || 'File';
-                                const attUrl = att.URL || '#';
-                                const attThumbnailUrl = att.URL_thumbnail || att.URL || '#';
-                                const attIcon = SpotFixSVGLoader.getAttachmentIcon(attFilename, attUrl, attThumbnailUrl);
-                                const attIsImage = this.isImageFile(attFilename);
-                                const attClass = attIsImage ? 'image-attachment' : '';
-                                attachmentsHTML += this.loadTemplate('concrete_issue_attachment', {
-                                    attachmentUrl: attUrl,
-                                    attachmentFilename: attFilename,
-                                    attachmentIcon: attIcon,
-                                    attachmentClass: attClass,
-                                    attachmentIsImage: attIsImage ? 'true' : 'false',
-                                });
-                            }
-                        }
-
-                        const commentData = {
-                            commentAuthorName: comment.commentAuthorName,
-                            commentBody: comment.commentBody,
-                            commentDate: comment.commentDate,
-                            commentTime: comment.commentTime,
-                            commentAttachments: attachmentsHTML,
-                            issueTitle: templateVariables.issueTitle,
-                            avatarCSSClass: avatarData.avatarCSSClass,
-                            avatarStyle: avatarData.avatarStyle,
-                            taskAuthorInitials: avatarData.taskAuthorInitials,
-                            initialsClass: avatarData.initialsClass,
-                            issueMessageClassOwner: userIsIssuer ? 'owner' : 'guest',
-                        };
-                        if (dayMessagesData[comment.commentDate] === undefined) {
-                            dayMessagesData[comment.commentDate] = [];
-                            dayMessagesData[comment.commentDate].push(commentData);
-                        } else {
-                            dayMessagesData[comment.commentDate].push(commentData);
-                        }
-                    }
-                    let daysWrapperHTML = '';
-
-                    for (const day in dayMessagesData) {
-                        let currentDayMessages = dayMessagesData[day];
-                        let dayMessagesWrapperHTML = '';
-                        currentDayMessages.sort((a, b) => a.commentTime.localeCompare(b.commentTime));
-                        for (const messageId in currentDayMessages) {
-                            let currentMessageTemplateVariables = currentDayMessages[messageId];
-                            dayMessagesWrapperHTML += this.loadTemplate('concrete_issue_messages', currentMessageTemplateVariables);
-                        }
-                        daysWrapperHTML += this.loadTemplate('concrete_issue_day_content',
-                            {
-                                dayContentMonthDay: day,
-                                dayContentMessages: dayMessagesWrapperHTML,
-                                statusFixedHtml: tasksFullDetails?.taskStatus !== 'DONE' ? '' : this.loadTemplate('fixedTaskHtml')
-                            },
-                        );
-                    }
-
-                    if (!this.nonRequesting) {
-                        issuesCommentsContainer.innerHTML = daysWrapperHTML;
-                    } else {
-                        if (issuesCommentsContainer.innerHTML !== daysWrapperHTML) {
-                            issuesCommentsContainer.innerHTML = daysWrapperHTML;
-                        }
-                    }
-
-                    // Bind click events to image attachments for lightbox
-                    this.bindImageAttachmentClicks();
-
-                } else {
-                    issuesCommentsContainer.innerHTML = ksesFilter('No comments');
+            if (meta && nodePath) {
+                // Pass the task meta object as an array
+                spotFixHighlightElements([{...meta, taskId: currentTaskData.taskId}], this);
+                if (typeof spotFixScrollToNodePath === 'function') {
+                    spotFixScrollToNodePath(nodePath);
                 }
+            }
 
-                // textarea (new comment) behaviour - using iframe editor
-                const mainThis = this;
-                const fileUploader = this.fileUploader;
+            const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
+            if (!issuesCommentsContainer) return;
 
-                // Remove existing iframe editor if any
-                if (window.MessageEditorIframe.iframe && !this.nonRequesting) {
-                    window.MessageEditorIframe.remove();
-                }
-                if (!this.nonRequesting) {
-                    // Create message editor iframe
-                    window.MessageEditorIframe.create({
-                        onReady: function() {
-                            // Scroll to the bottom comments
-                            if (!mainThis.nonRequesting) {
-                                const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
-                                if (container) {
-                                    setTimeout(() => {
-                                        const scrollPosition = container.scrollHeight;
-                                        container.scrollTo({top: scrollPosition, behavior: 'smooth'});
-                                    }, 50);
-                                }
-                            }
-                        },
-                        handlers: {
-                            onAttachmentClick: function() {
-                                fileUploader?.fileInput?.click();
-                            },
-                            onScreenshotClick: function() {
-                                fileUploader?.makeScreenshot();
-                            },
-                            onSendComment: function(eventData) {
-                                clickHandler(mainThis, null, eventData.content);
-                            },
-                        },
-                    }).catch(function(error) {
-                        console.error('Failed to create message editor:', error);
+            const currentScrollTop = issuesCommentsContainer.scrollTop;
+            const wasAtBottom = currentScrollTop + issuesCommentsContainer.clientHeight >= issuesCommentsContainer.scrollHeight - 10;
+
+            let dayMessagesData = [];
+            const initIssuerID = localStorage.getItem('spotfix_user_id');
+            let userIsIssuer = false;
+            if ( taskDetails.issueComments.length > 0 ) {
+                storageRemoveUnreadUpdateForTaskID(taskDetails.taskId);
+                issuesCommentsContainer.innerHTML = ksesFilter('');
+                for (const comment of taskDetails.issueComments) {
+                    userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
+                    const avatarData = getAvatarData({
+                        taskAuthorAvatarImgSrc: comment.commentAuthorAvatarSrc,
+                        taskAuthorName: comment.commentAuthorName,
                     });
-                }
-                if (this.nonRequesting) {
-                    const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
-
-                    if (container) {
-                        setTimeout(() => {
-                            const scrollPosition = container.scrollHeight;
-                            container.scrollTo({top: scrollPosition, behavior: 'smooth'});
-                        }, 50);
-                    }
-                }
-
-                // Hide spinner preloader
-                hideContainersSpinner();
-
-
-                this.fileUploader.init();
-
-                async function clickHandler(mainThis, editor, contentFromIframe) {
-                    const sendButton = document.querySelector('.doboard_task_widget-send_message_button');
-                    const sendMessageContainer = sendButton?.closest('.doboard_task_widget-send_message');
-                    const input = sendMessageContainer?.querySelector('.doboard_task_widget-send_message_input');
-
-                    // Get content from iframe or from editor parameter
-                    let commentText;
-                    if (contentFromIframe) {
-                        commentText = contentFromIframe.trim();
-                    } else if (editor) {
-                        commentText = editor?.getContent({format: 'html'})?.trim();
-                    }
-
-                    if (!commentText) return;
-
-                    // Add other fields handling here
-                    if (input) input.disabled = true;
-                    if (sendButton) sendButton.disabled = true;
-
-                    let newCommentResponse = null;
-
-                    try {
-                        newCommentResponse = await addTaskComment(mainThis.params, mainThis.currentActiveTaskId, commentText);
-                        if (input) input.value = '';
-                        await mainThis.createWidgetElement('concrete_issue');
-                        hideContainersSpinner(false);
-                    } catch (err) {
-                        alert('Error when adding a comment: ' + err?.message);
-                    }
-
-                    if (mainThis && mainThis?.fileUploader?.hasFiles() && newCommentResponse !== null && newCommentResponse?.hasOwnProperty('commentId')) {
-                        const sessionId = localStorage.getItem('spotfix_session_id');
-                        const attachmentsSendResult = await mainThis?.fileUploader?.sendAttachmentsForComment(mainThis?.params, sessionId, newCommentResponse?.commentId);
-                        if (!attachmentsSendResult.success) {
-                            mainThis?.fileUploader?.showError('Some files where no sent, see details in the console.');
-                            const toConsole = JSON.stringify(attachmentsSendResult);
-                            console.log(toConsole);
+                    let attachmentsHTML = '';
+                    if (comment.commentAttachments && comment.commentAttachments.length > 0) {
+                        for (const att of comment.commentAttachments) {
+                            const attFilename = att.filename || att.URL?.split('/').pop() || 'File';
+                            const attUrl = att.URL || '#';
+                            const attThumbnailUrl = att.URL_thumbnail || att.URL || '#';
+                            const attIcon = SpotFixSVGLoader.getAttachmentIcon(attFilename, attUrl, attThumbnailUrl);
+                            const attIsImage = this.isImageFile(attFilename);
+                            const attClass = attIsImage ? 'image-attachment' : '';
+                            attachmentsHTML += this.loadTemplate('concrete_issue_attachment', {
+                                attachmentUrl: attUrl,
+                                attachmentFilename: attFilename,
+                                attachmentIcon: attIcon,
+                                attachmentClass: attClass,
+                                attachmentIsImage: attIsImage ? 'true' : 'false',
+                            });
                         }
                     }
 
-                    if (input) input.disabled = false;
+                    const commentData = {
+                        commentAuthorName: comment.commentAuthorName,
+                        commentBody: comment.commentBody,
+                        commentDate: comment.commentDate,
+                        commentTime: comment.commentTime,
+                        commentAttachments: attachmentsHTML,
+                        issueTitle: templateVariables.issueTitle,
+                        avatarCSSClass: avatarData.avatarCSSClass,
+                        avatarStyle: avatarData.avatarStyle,
+                        taskAuthorInitials: avatarData.taskAuthorInitials,
+                        initialsClass: avatarData.initialsClass,
+                        issueMessageClassOwner: userIsIssuer ? 'owner' : 'guest',
+                    };
+                    if (dayMessagesData[comment.commentDate] === undefined) {
+                        dayMessagesData[comment.commentDate] = [];
+                        dayMessagesData[comment.commentDate].push(commentData);
+                    } else {
+                        dayMessagesData[comment.commentDate].push(commentData);
+                    }
+                }
+                let daysWrapperHTML = '';
 
-                };
-                break;
+                for (const day in dayMessagesData) {
+                    let currentDayMessages = dayMessagesData[day];
+                    let dayMessagesWrapperHTML = '';
+                    currentDayMessages.sort((a, b) => a.commentTime.localeCompare(b.commentTime));
+                    for (const messageId in currentDayMessages) {
+                        let currentMessageTemplateVariables = currentDayMessages[messageId];
+                        dayMessagesWrapperHTML += this.loadTemplate('concrete_issue_messages', currentMessageTemplateVariables);
+                    }
+                    daysWrapperHTML += this.loadTemplate('concrete_issue_day_content',
+                        {
+                            dayContentMonthDay: day,
+                            dayContentMessages: dayMessagesWrapperHTML,
+                            statusFixedHtml: tasksFullDetails?.taskStatus !== 'DONE' ? '' : this.loadTemplate('fixedTaskHtml')
+                        },
+                    );
+                }
 
-            default:
-                break;
+                if (!this.nonRequesting) {
+                    issuesCommentsContainer.innerHTML = daysWrapperHTML;
+                } else {
+                    if (issuesCommentsContainer.innerHTML !== daysWrapperHTML) {
+                        issuesCommentsContainer.innerHTML = daysWrapperHTML;
+                    }
+                }
+
+                // Bind click events to image attachments for lightbox
+                this.bindImageAttachmentClicks();
+
+            } else {
+                issuesCommentsContainer.innerHTML = ksesFilter('No comments');
+            }
+
+            // textarea (new comment) behaviour - using iframe editor
+            const mainThis = this;
+            const fileUploader = this.fileUploader;
+
+            // Remove existing iframe editor if any
+            if (window.MessageEditorIframe.iframe && !this.nonRequesting) {
+                window.MessageEditorIframe.remove();
+            }
+            if(!this.nonRequesting) {
+                // Create message editor iframe
+                window.MessageEditorIframe.create({
+                    onReady: function() {
+                        // Scroll to the bottom comments
+                        if (!mainThis.nonRequesting) {
+                            const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
+                            if (container) {
+                                setTimeout(() => {
+                                    const scrollPosition = container.scrollHeight;
+                                    container.scrollTo({top: scrollPosition, behavior: 'smooth'});
+                                }, 50);
+                            }
+                        }
+                    },
+                    handlers: {
+                        onAttachmentClick: function() {
+                            fileUploader?.fileInput?.click();
+                        },
+                        onScreenshotClick: function() {
+                            fileUploader?.makeScreenshot();
+                        },
+                        onSendComment: function(eventData) {
+                            clickHandler(mainThis, null, eventData.content);
+                        },
+                    },
+                }).catch(function(error) {
+                    console.error('Failed to create message editor:', error);
+                });
+            }
+            if(this.nonRequesting) {
+                const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
+
+                if (container) {
+                    setTimeout(() => {
+                        const scrollPosition = container.scrollHeight;
+                        container.scrollTo({ top: scrollPosition, behavior: 'smooth' });
+                    }, 50);
+                }
+            }
+
+            // Hide spinner preloader
+            hideContainersSpinner();
+
+
+            this.fileUploader.init();
+
+        async function clickHandler(mainThis, editor, contentFromIframe)  {
+            const sendButton = document.querySelector('.doboard_task_widget-send_message_button');
+            const sendMessageContainer = sendButton?.closest('.doboard_task_widget-send_message');
+            const input = sendMessageContainer?.querySelector('.doboard_task_widget-send_message_input');
+
+            // Get content from iframe or from editor parameter
+            let commentText;
+            if (contentFromIframe) {
+                commentText = contentFromIframe.trim();
+            } else if (editor) {
+                commentText = editor?.getContent({ format: 'html' })?.trim();
+            }
+
+            if (!commentText) return;
+
+            // Add other fields handling here
+            if(input) input.disabled = true;
+            if(sendButton) sendButton.disabled = true;
+
+            let newCommentResponse = null;
+
+            try {
+                newCommentResponse = await addTaskComment(mainThis.params, mainThis.currentActiveTaskId, commentText);
+                if(input) input.value = '';
+                await mainThis.createWidgetElement('concrete_issue');
+                hideContainersSpinner(false);
+            } catch (err) {
+                alert('Error when adding a comment: ' + err?.message);
+            }
+
+            if (mainThis && mainThis?.fileUploader?.hasFiles() && newCommentResponse !== null && newCommentResponse?.hasOwnProperty('commentId')) {
+                const sessionId = localStorage.getItem('spotfix_session_id');
+                const attachmentsSendResult = await mainThis?.fileUploader?.sendAttachmentsForComment(mainThis?.params, sessionId, newCommentResponse?.commentId);
+                if (!attachmentsSendResult.success) {
+                    mainThis?.fileUploader?.showError('Some files where no sent, see details in the console.');
+                    const toConsole = JSON.stringify(attachmentsSendResult);
+                    console.log(toConsole);
+                }
+            }
+
+            if(input) input.disabled = false;
+
+        };
+            // this._sendButtonClickHandler = clickHandler;
+            //
+            // sendButton.addEventListener('click', clickHandler);
+
+
+            break;
+
+        default:
+            break;
         }
 
         const backToAllIssuesController = document.querySelector('.doboard_task_widget_return_to_all');
@@ -1662,28 +1715,15 @@ class CleanTalkWidgetDoboard {
 
         let tasksCount;
 
-        if(tasksCountLS === undefined){
-            if(!this.nonRequesting) {
-                await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
-            }
-            const tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
-            storageSaveTasksCount(tasks);
-            const filteredTasks = tasks.filter(task => {
-                return task.taskMeta;
-            });
-            tasksCount = filteredTasks.length;
-        } else {
-            if (this.nonRequesting) {
-                const tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
-                storageSaveTasksCount(tasks);
-                const filteredTasks = tasks.filter(task => {
-                    return task.taskMeta;
-                });
-                tasksCount = filteredTasks.length;
-            } else {
-                tasksCount = tasksCountLS;
-            }
+        if (!this.nonRequesting) {
+            await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
         }
+        const tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+        storageSaveTasksCount(tasks);
+        const filteredTasks = tasks.filter(task => {
+            return task.taskMeta && task.taskStatus === 'ACTIVE';
+        });
+        tasksCount = filteredTasks.length;
 
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
         if ( taskCountElement && +tasksCount ) {
@@ -1908,168 +1948,168 @@ class CleanTalkWidgetDoboard {
     }
 
     sanitizeNodePath(nodePath) {
-    let str = Array.isArray(nodePath) ? JSON.stringify(nodePath) : String(nodePath);
-    // Allow only digits, commas, spaces, and square brackets
-    if (/^[\[\]0-9,\s]*$/.test(str)) {
-        return str;
-    }
-    return '';
-}
-
-/**
- * Check if file is an image based on extension
- * @param {string} filename - The filename to check
- * @return {boolean}
- */
-isImageFile(filename) {
-    if (!filename) return false;
-    const ext = filename.split('.').pop().toLowerCase();
-    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg', 'ico'];
-    return imageExtensions.includes(ext);
-}
-
-/**
- * Show image in lightbox
- * @param {string} imageUrl - The image URL to show
- * @param {string} imageAlt - The image alt text
- */
-showImageLightbox(imageUrl, imageAlt = '') {
-    // Remove existing lightbox if any
-    this.hideImageLightbox();
-
-    // Create lightbox
-    const lightboxHTML = this.loadTemplate('imageLightbox', {
-        imageUrl: imageUrl,
-        imageAlt: imageAlt || 'Image',
-        buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen')
-    });
-
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = lightboxHTML;
-    const lightbox = tempDiv.firstElementChild;
-
-    document.body.appendChild(lightbox);
-
-    // Force reflow then add active class for animation
-    lightbox.offsetHeight;
-    lightbox.classList.add('active');
-
-    // Bind close events
-    const closeBtn = lightbox.querySelector('.doboard_task_widget-lightbox-close');
-    const overlay = lightbox.querySelector('.doboard_task_widget-lightbox-overlay');
-
-    const closeHandler = () => this.hideImageLightbox();
-
-    if (closeBtn) closeBtn.addEventListener('click', closeHandler);
-    if (overlay) overlay.addEventListener('click', closeHandler);
-
-    // Close on Escape key
-    const escHandler = (e) => {
-        if (e.key === 'Escape') {
-            this.hideImageLightbox();
-            document.removeEventListener('keydown', escHandler);
+        let str = Array.isArray(nodePath) ? JSON.stringify(nodePath) : String(nodePath);
+        // Allow only digits, commas, spaces, and square brackets
+        if (/^[\[\]0-9,\s]*$/.test(str)) {
+            return str;
         }
-    };
-    document.addEventListener('keydown', escHandler);
-}
-
-/**
- * Hide image lightbox
- */
-hideImageLightbox() {
-    const lightbox = document.getElementById('doboard_task_widget-lightbox');
-    if (lightbox) {
-        lightbox.classList.remove('active');
-        setTimeout(() => {
-            lightbox.remove();
-        }, 300);
+        return '';
     }
-}
 
-/**
- * Bind click events to attachments - images show lightbox, other files download
- */
-bindImageAttachmentClicks() {
-    const allAttachments = document.querySelectorAll('.doboard_task_widget-attachment_item');
-    allAttachments.forEach(item => {
-        const newItem = item.cloneNode(true);
-        item.parentNode.replaceChild(newItem, item);
+    /**
+     * Check if file is an image based on extension
+     * @param {string} filename - The filename to check
+     * @return {boolean}
+     */
+    isImageFile(filename) {
+        if (!filename) return false;
+        const ext = filename.split('.').pop().toLowerCase();
+        const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg', 'ico'];
+        return imageExtensions.includes(ext);
+    }
 
-        newItem.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const fileUrl = newItem.getAttribute('data-attachment-url');
-            const fileName = newItem.querySelector('.doboard_task_widget-attachment_filename')?.textContent || 'file';
-            const isImage = newItem.classList.contains('image-attachment');
+    /**
+     * Show image in lightbox
+     * @param {string} imageUrl - The image URL to show
+     * @param {string} imageAlt - The image alt text
+     */
+    showImageLightbox(imageUrl, imageAlt = '') {
+        // Remove existing lightbox if any
+        this.hideImageLightbox();
 
-            if (isImage && fileUrl) {
-                this.showImageLightbox(fileUrl, fileName);
-            } else if (fileUrl) {
-                this.downloadFile(fileUrl, fileName);
-            }
+        // Create lightbox
+        const lightboxHTML = this.loadTemplate('imageLightbox', {
+            imageUrl: imageUrl,
+            imageAlt: imageAlt || 'Image',
+            buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen')
         });
-    });
-}
 
-/**
- * Download a file
- * @param {string} fileUrl - The file URL to download
- * @param {string} fileName - The file name
- */
-downloadFile(fileUrl, fileName) {
-    const link = document.createElement('a');
-    link.href = fileUrl;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = lightboxHTML;
+        const lightbox = tempDiv.firstElementChild;
 
-/**
- * Set user menu data with current user information
- */
-async setUserMenuData() {
-    const params = this.params;
+        document.body.appendChild(lightbox);
 
-    // Get user data
-    let userData = null;
-    if (localStorage.getItem('spotfix_session_id')) {
-        try {
-            userData = await getUserDetails(params);
-        } catch (error) {
-            console.error('Error fetching user details:', error);
+        // Force reflow then add active class for animation
+        lightbox.offsetHeight;
+        lightbox.classList.add('active');
+
+        // Bind close events
+        const closeBtn = lightbox.querySelector('.doboard_task_widget-lightbox-close');
+        const overlay = lightbox.querySelector('.doboard_task_widget-lightbox-overlay');
+
+        const closeHandler = () => this.hideImageLightbox();
+
+        if (closeBtn) closeBtn.addEventListener('click', closeHandler);
+        if (overlay) overlay.addEventListener('click', closeHandler);
+
+        // Close on Escape key
+        const escHandler = (e) => {
+            if (e.key === 'Escape') {
+                this.hideImageLightbox();
+                document.removeEventListener('keydown', escHandler);
+            }
+        };
+        document.addEventListener('keydown', escHandler);
+    }
+
+    /**
+     * Hide image lightbox
+     */
+    hideImageLightbox() {
+        const lightbox = document.getElementById('doboard_task_widget-lightbox');
+        if (lightbox) {
+            lightbox.classList.remove('active');
+            setTimeout(() => {
+                lightbox.remove();
+            }, 300);
         }
     }
 
-    // Update user menu header
-    const userNameElement = document.querySelector('.doboard_task_widget-user_menu-header span[style*="font-size: 16px"]');
-    const emailElement = document.querySelector('.doboard_task_widget-user_menu-header span[style*="font-size: 12px"]');
-    const avatarElement = document.querySelector('.doboard_task_widget-user_menu-header-avatar');
+    /**
+     * Bind click events to attachments - images show lightbox, other files download
+     */
+    bindImageAttachmentClicks() {
+        const allAttachments = document.querySelectorAll('.doboard_task_widget-attachment_item');
+        allAttachments.forEach(item => {
+            const newItem = item.cloneNode(true);
+            item.parentNode.replaceChild(newItem, item);
 
-    if (userNameElement) {
-        if (userData && userData.name) {
-            userNameElement.innerText = userData.name;
-        } else {
-            userNameElement.innerText = 'Guest';
-        }
+            newItem.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const fileUrl = newItem.getAttribute('data-attachment-url');
+                const fileName = newItem.querySelector('.doboard_task_widget-attachment_filename')?.textContent || 'file';
+                const isImage = newItem.classList.contains('image-attachment');
+
+                if (isImage && fileUrl) {
+                    this.showImageLightbox(fileUrl, fileName);
+                } else if (fileUrl) {
+                    this.downloadFile(fileUrl, fileName);
+                }
+            });
+        });
     }
 
-    if (emailElement) {
-        if (userData && userData.email) {
-            emailElement.innerText = userData.email;
-        } else {
-            const email = getSpotfixEmail() || '';
-            emailElement.innerText = email.includes('spotfix_') ? '' : email;
-        }
+    /**
+     * Download a file
+     * @param {string} fileUrl - The file URL to download
+     * @param {string} fileName - The file name
+     */
+    downloadFile(fileUrl, fileName) {
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
-    if (avatarElement) {
-        if (userData && userData.avatar && userData.avatar.s) {
-            avatarElement.src = userData.avatar.s;
-        } else {
-            // Reset to default avatar or remove src
-            avatarElement.src = '';
+    /**
+     * Set user menu data with current user information
+     */
+    async setUserMenuData() {
+        const params = this.params;
+
+        // Get user data
+        let userData = null;
+        if (localStorage.getItem('spotfix_session_id')) {
+            try {
+                userData = await getUserDetails(params);
+            } catch (error) {
+                console.error('Error fetching user details:', error);
+            }
+        }
+
+        // Update user menu header
+        const userNameElement = document.querySelector('.doboard_task_widget-user_menu-header span[style*="font-size: 16px"]');
+        const emailElement = document.querySelector('.doboard_task_widget-user_menu-header span[style*="font-size: 12px"]');
+        const avatarElement = document.querySelector('.doboard_task_widget-user_menu-header-avatar');
+
+        if (userNameElement) {
+            if (userData && userData.name) {
+                userNameElement.innerText = userData.name;
+            } else {
+                userNameElement.innerText = 'Guest';
+            }
+        }
+
+        if (emailElement) {
+            if (userData && userData.email) {
+                emailElement.innerText = userData.email;
+            } else {
+                const email = getSpotfixEmail() || '';
+                emailElement.innerText = email.includes('spotfix_') ? '' : email;
+            }
+        }
+
+        if (avatarElement) {
+            if (userData && userData.avatar && userData.avatar.s) {
+                avatarElement.src = userData.avatar.s;
+            } else {
+                // Reset to default avatar or remove src
+                avatarElement.src = '';
+            }
         }
     }
-}
 }

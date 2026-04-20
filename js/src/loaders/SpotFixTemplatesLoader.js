@@ -509,4 +509,20 @@ class SpotFixTemplatesLoader {
     `;
     }
 
+    static finishedTasksSection() {
+        return `
+<div class="doboard_task_widget-finished_tasks_section">
+    <div class="doboard_task_widget-finished_tasks_header" id="finishedTasksHeader">
+        <span class="doboard_task_widget-finished_tasks_title">Finished spots {{finishedCount}}</span>
+        <span class="doboard_task_widget-finished_tasks_chevron">
+       <img src="{{iconFinishedTitle}}"  alt="">
+        </span>
+    </div>
+    <div class="doboard_task_widget-finished_tasks_container" id="finishedTasksContainer">
+        {{finishedTasksContent}}
+    </div>
+</div>
+`;
+    }
+
 }

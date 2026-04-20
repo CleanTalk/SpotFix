@@ -469,3 +469,4 @@ function getSafeUrl(url) {
     }
     return '#';
 }
+
