@@ -8004,7 +8004,7 @@ const spotfixIndexedDB = {
     },
 };
 
-let spotFixCSS = `.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after{content:"";position:absolute;left:8%;top:100%;transform:translateX(-50%);pointer-events:none;background:0 0}.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after{border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid #545b61;display:block}.doboard_task_widget-send_message_paperclip{position:relative}.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip{display:none;position:absolute;left:0;bottom:0;transform:translateX(-3%) translateY(-43px);background:#545b61;color:#fff;border:none;border-radius:3px;padding:10px 16px;font-size:13px;line-height:1.4;z-index:100;min-width:220px;max-width:320px;text-align:left;pointer-events:none;text-transform:none}.doboard_task_widget-send_message_paperclip:hover .doboard_task_widget-paperclip-tooltip{display:block}.doboard_task_widget *{font-family:Inter,sans-serif;font-weight:400;font-size:14px;line-height:130%;color:#40484f}.doboard_task_widget-header *{color:#252a2f;margin:0}.doboard_task_widget-header-icons{display:flex;gap:12px}.doboard_task_widget-close_btn{transform:translateY(-2px)}#openUserMenuButton{transform:scale(.85)}#maximizeWidgetContainer{transform:scale(.8)}.doboard_task_widget a{text-decoration:underline;color:#2f68b7}.doboard_task_widget a:hover{text-decoration:none}.doboard_task_widget{position:fixed;right:50px;bottom:20px;z-index:9999;vertical-align:middle;transition:top .1s;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}.doboard_task_widget_cursor-pointer{cursor:pointer}.doboard_task_widget-container-maximize .doboard_task_widget-field{display:flex;justify-content:space-between;flex-wrap:wrap;column-gap:32px}.doboard_task_widget-container-maximize .doboard_task_widget-field .doboard_task_widget-submit_button{flex-grow:1;width:none;max-width:40%;min-width:300px!important}.doboard_task_widget-input-container-textarea .tox-tinymce{position:absolute}.doboard_task_widget-container-maximize{width:80vw!important;max-width:1120px!important;max-height:75vh!important;min-height:75vh!important;display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-container{width:430px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-header{display:flex;min-height:41px;padding:0 16px;background-color:#f3f6f9;border-radius:8px 8px 0 0;border:1px solid #bbc7d1;border-bottom:none;justify-content:space-between;align-items:center;color:#fff}.doboard_task_widget-user_menu-header{display:flex;padding:16px 16px;border:1px #bbc7d1 solid;border-bottom-color:#ebf0f4;border-radius:8px 8px 0 0;flex-direction:column;align-items:center;color:#252a2f;background-color:#f3f6f9}.doboard_task_widget-user_menu-header-top{display:flex;height:fit-content;align-items:center;width:100%;justify-content:space-between}.doboard_task_widget-user_menu-header-avatar{max-width:60px;max-height:60px;width:60px;height:60px;border-radius:50%;margin-bottom:4px}.doboard_task_widget-task_menu-item,.doboard_task_widget-user_menu-item{display:flex;align-items:center;border-bottom:1px #ebf0f4 solid;padding:0 16px;height:52px}.doboard_task_widget-content{flex:1;overflow-y:auto;background:#fff;border-radius:0 0 8px 8px;border:1px;border-style:none solid solid solid;border-color:#bbc7d1;box-shadow:0 4px 15px 8px #cacACA40;scrollbar-width:none;max-height:60vh}.doboard_task_widget-container-maximize .doboard_task_widget-content{max-height:inherit}.doboard_task_widget-element-container{margin-bottom:16px}.doboard_task_widget-element-container span{color:#707a83;font-size:12px;font-weight:400}.doboard_task_widget-wrap{box-shadow:none;position:fixed;right:-50px;padding:0;cursor:pointer;width:69px;height:52px;border-top-left-radius:4px;border-bottom-left-radius:4px;background-color:rgba(255,255,255,.9);border:1px #ebf0f4 solid;display:flex;align-items:center;justify-content:center}.doboard_task_widget-wrap img{width:32px;height:32px;transform:scaleX(-1)}.doboard_task_widget-wrap.hidden{display:none}.wrap_review{width:164px;min-width:164px;height:54px}.wrap_review img{width:28px;height:28px;transform:scaleX(-1)}.wrap_review:hover{background-color:#fff}@media (max-width:480px){.doboard_task_widget-wrap{right:-20px}}#review_content_button_text{color:#d5991a;margin-left:6px;font-weight:600;font-size:14px;text-transform:none!important}.wrap_review::after{display:none}#doboard_task_widget-task_count{position:absolute;top:-12px;right:4px;width:22px;height:22px;opacity:1;background:#ef8b43;border-radius:50%;color:#fff;text-align:center;line-height:22px}#doboard_task_widget-task_count.hidden{width:0;height:0;opacity:0}.doboard_task_widget-input-container{position:relative;margin-bottom:16px}.doboard_task_widget-hidden,.doboard_task_widget-input-container.hidden{display:none}.doboard_task_widget-input-container .doboard_task_widget-field{padding:0 8px;border-radius:4px;border:1px solid #bbc7d1;outline:0!important;appearance:none;width:100%;height:40px;background:#fff;color:#000;max-width:-webkit-fill-available;max-width:-moz-available}.doboard_task_widget-field:focus{border-color:#2f68b7}.doboard_task_widget-input-container textarea.doboard_task_widget-field{min-height:94px;padding-top:11px;padding-bottom:11px}.doboard_task_widget-field+label{color:#252a2f;background:#fff;position:absolute;top:20px;left:8px;transform:translateY(-50%);transition:all .2s ease-in-out}.doboard_task_widget-field.has-value+label,.doboard_task_widget-field:focus+label{font-size:10px;top:0;left:12px;padding:0 4px;z-index:5}.doboard_task_widget-field:focus+label{color:#2f68b7}.doboard_task_widget-login{margin-bottom:16px;border:1px solid #bbc7d1;border-radius:4px;padding:11px 8px 8px 8px}.doboard_task_widget-login.hidden{display:none}.doboard_task_widget-login .doboard_task_widget-accordion{height:0;overflow:hidden;opacity:0;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-accordion{height:auto;overflow:visible;opacity:1}.doboard_task_widget-accordion i{font-size:12px}.doboard_task_widget-login .doboard_task_widget-input-container:last-child{margin-bottom:0}.doboard_task_widget-login .doboard_task_widget-login-icon{display:block;position:relative;padding-right:24px;cursor:pointer}.doboard_task_widget-login .doboard_task_widget-login-icon::after{position:absolute;top:0;right:4px;content:"";display:block;width:10px;height:10px;transform:rotate(45deg);border:2px solid #40484f;border-radius:1px;border-top:none;border-left:none;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-login-icon::after{transform:rotate(-135deg);top:7px}.doboard_task_widget-login-icon.doboard_task_widget-login-icon-hidden::after{display:none}.doboard_task_widget-login .doboard_task_widget-field+label,.doboard_task_widget-login .doboard_task_widget-input-container .doboard_task_widget-field{background:#f9fbfd}.doboard_task_widget-submit_button{min-height:48px;width:100%;max-width:500px;border-radius:6px;font-family:Inter,sans-serif;font-size:16px;line-height:150%;cursor:pointer;transition:all .2s ease-in-out;background:0 0;border:1px solid #22a475;color:#22a475;font-weight:600}.doboard_task_widget-submit_button:hover{background:#22a475;color:#fff}.doboard_task_widget-submit_button:disabled{background:rgba(117,148,138,.92);color:#fff;cursor:wait}.doboard_task_widget-login-buttons-wrapper{display:flex;gap:10px;margin-bottom:10px}.doboard_task_widget-login-buttons-wrapper .doboard_task_widget-submit_button{margin-bottom:0;width:auto;min-height:32px;font-size:14px;padding:4px 12px}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-forgot_password-black,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-on_phantom_login_page{flex:1;background:#fff;border:1px solid #22a475;color:#22a475}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-forgot_password-black:hover,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-on_phantom_login_page:hover{background:#f0fdf4;color:#1c7857}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-login_button,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-restore_password_button{flex:2}.doboard_task_widget-issue-title{display:inline-flex;flex-direction:column;transform:translateY(-2px);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-issue-title>:last-child{color:#707a83;text-align:center;font-size:10px;font-weight:400}.doboard_task_widget-hidden_element{opacity:0}.doboard_task_widget-message-wrapper{border-radius:4px;padding:8px;margin-bottom:14px;display:grid;justify-items:center}.doboard_task_widget-message-wrapper.hidden{display:none}.doboard_task_widget-error_message{background:#fdd;border:1px solid #cf6868}.doboard_task_widget-notice_message{background:#dde9ff;border:1px solid #68a6cf}.doboard_task_widget-error_message-wrapper.hidden{display:none}#doboard_task_widget-error_message-header{font-weight:600}#doboard_task_widget-error_message{text-align:center}.doboard_task_widget-task_row{display:flex;max-height:67px;cursor:pointer;align-items:center;justify-content:space-between;padding:0 15px}.doboard_task_widget-task_row:last-child{margin-bottom:0}.doboard_task_widget-task-text_bold{font-weight:700}.doboard_task_widget-element_selection,.doboard_task_widget-image_selection,.doboard_task_widget-text_selection,.doboard_task_widget-text_selection.image-highlight>img{background:#fff07e}.doboard_task_widget-issues_list_empty{text-align:center;margin:20px 0}.doboard_task_widget-avatar_container{display:flex;height:44px;width:44px;border-radius:50%;background-repeat:no-repeat;background-position:center;background-size:100%}.doboard_task_widget-comment_data_owner .doboard_task_widget-avatar_container{opacity:0}.doboard_task_widget-avatar_placeholder{min-height:44px;min-width:44px;border-radius:50%;font-size:24px;line-height:1.2083333333;padding:0;background:#1c7857;display:inline-grid;align-content:center;justify-content:center}.doboard_task_widget-avatar-initials{color:#fff;width:inherit;text-align:center}.doboard_task_widget-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover}.doboard_task_widget-description_container{height:62px;width:calc(100% - 44px - 8px);border-bottom:1px solid #ebf0f4;margin-left:8px;padding-top:4px;cursor:default;display:flex;flex-direction:column;justify-content:center}.doboard_task_widget-task_row:last-child .doboard_task_widget-description_container{border-bottom:none}.doboard_task_widget-all_issues{padding-bottom:0}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{overflow:auto;max-height:85vh;display:none}.doboard_task_widget-all_issues-container{scrollbar-width:none;margin-top:10px;min-height:60vh}.doboard_task_widget-content.doboard_task_widget-concrete_issue{padding:0;display:flex;flex-direction:column}.doboard_task_widget-concrete_issues-container{padding:10px 16px 5px;flex-grow:1}.doboard_task_widget-all_issues-container::-webkit-scrollbar,.doboard_task_widget-all_issues::-webkit-scrollbar,.doboard_task_widget-concrete_issues-container::-webkit-scrollbar,.doboard_task_widget-content::-webkit-scrollbar{width:0}.doboard_task_widget-task_title{font-weight:700;display:flex;justify-content:space-between;align-items:center}.doboard_task_widget-task_title span{font-weight:700;display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-task_title-details{display:flex;max-width:calc(100% - 65px);align-items:center}.doboard_task_widget-task_title-unread_block{opacity:0;height:8px;width:8px;background:#f08c43;border-radius:50%;display:inline-block;font-size:8px;font-weight:600;position:relative}.doboard_task_widget-task_title-unread_block.unread{opacity:1}.doboard_task_widget-task_last_message{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:85%;height:36px}.doboard_task_widget-task_page_url{max-width:70%;height:30px;display:flex;align-items:flex-end}.doboard_task_widget-task_page_url a{color:#40484f;text-decoration:none;margin-left:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.doboard_task_widget-bottom{display:flex;justify-content:space-between;align-items:flex-end}.doboard_task_widget-bottom-is-fixed{border-radius:10px;font-size:10px;font-weight:400;color:#1c7857;background:#ebfaf4 url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkiIGhlaWdodD0iMTkiIHZpZXdCb3g9IjAgMCAxOSAxOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCjxwYXRoIGQ9Ik03LjA4MTE5IDAuMjIzNDM0QzguOTkxNjkgLTAuMjA4MTY3IDEwLjk5MTMgLTAuMDExMjE5NCAxMi43ODA0IDAuNzg1OTM0QzEzLjE1ODQgMC45NTQ2MjQgMTMuMzI4NiAxLjM5ODAzIDEzLjE2MDMgMS43NzYxN0MxMi45OTE3IDIuMTU0MTkgMTIuNTQ4MiAyLjMyNDI0IDEyLjE3MDEgMi4xNTYwNUMxMC42NzY0IDEuNDkwNTIgOS4wMDcyNiAxLjMyNiA3LjQxMjI1IDEuNjg2MzJDNS44MTcxNyAyLjA0NjcxIDQuMzgwOTcgMi45MTI5NiAzLjMxODUgNC4xNTYwNUMyLjI1NjIzIDUuMzk5MDEgMS42MjQ0MSA2Ljk1MjI5IDEuNTE2NzQgOC41ODM3OUMxLjQwOTI0IDEwLjIxNTQgMS44MzE4NCAxMS44MzkgMi43MjE4MiAxMy4yMTA3QzMuNjExNzkgMTQuNTgyMiA0LjkyMTY0IDE1LjYyOTQgNi40NTUyMSAxNi4xOTYxQzcuOTg5MDIgMTYuNzYyNiA5LjY2NTUzIDE2LjgxODkgMTEuMjMzNSAxNi4zNTUzQzEyLjgwMTYgMTUuODkxNiAxNC4xNzgzIDE0LjkzMzUgMTUuMTU3NCAxMy42MjM4QzE2LjEzNjQgMTIuMzE0MiAxNi42NjYxIDEwLjcyMjcgMTYuNjY3MSA5LjA4NzY5TDE4LjE2NzEgOS4wODg2N0MxOC4xNjU4IDExLjA0NzEgMTcuNTMxMiAxMi45NTM2IDE2LjM1ODUgMTQuNTIyM0MxNS4xODU5IDE2LjA5MDcgMTMuNTM3MyAxNy4yMzg0IDExLjY1OTMgMTcuNzkzN0M5Ljc4MTEgMTguMzQ5MSA3Ljc3MjkzIDE4LjI4MiA1LjkzNTY4IDE3LjYwMzNDNC4wOTg1IDE2LjkyNDYgMi41MjkxMiAxNS42NzAxIDEuNDYzMDMgMTQuMDI3MUMwLjM5NzAzNSAxMi4zODQxIC0wLjEwOTEwOSAxMC40Mzk1IDAuMDE5NjY4MyA4LjQ4NTE1QzAuMTQ4NjA3IDYuNTMwOCAwLjkwNjMyMyA0LjY3MDMzIDIuMTc4ODUgMy4xODE0NEMzLjQ1MTM2IDEuNjkyNjggNS4xNzA4OCAwLjY1NTE2MiA3LjA4MTE5IDAuMjIzNDM0WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPHBhdGggZD0iTTE2Ljg4NTkgMS44OTA0M0MxNy4xNzg2IDEuNTk3NTMgMTcuNjUzNCAxLjU5Nzg0IDE3Ljk0NjQgMS44OTA0M0MxOC4yMzkzIDIuMTgzMTYgMTguMjQwMSAyLjY1Nzk2IDE3Ljk0NzQgMi45NTA5N0w5LjYxMzQyIDExLjI5MjhDOS40NzI4MiAxMS40MzMzIDkuMjgxOTYgMTEuNTEyNCA5LjA4MzE1IDExLjUxMjVDOC44ODQzMiAxMS41MTI1IDguNjkzNDggMTEuNDMzMyA4LjU1Mjg3IDExLjI5MjhMNi4wNTI4NyA4Ljc5Mjc3QzUuNzYwMTQgOC40OTk5IDUuNzYwMTEgOC4wMjUwOCA2LjA1Mjg3IDcuNzMyMjJDNi4zNDU3MiA3LjQzOTM3IDYuODIwNTEgNy40Mzk0NiA3LjExMzQyIDcuNzMyMjJMOS4wODIxNyA5LjcwMDk3TDE2Ljg4NTkgMS44OTA0M1oiIGZpbGw9IiMyMkE0NzUiLz4NCjxwYXRoIGQ9Ik0xNy40MTcxIDcuNTcxMDlDMTcuODMxIDcuNTcxNDQgMTguMTY3IDcuOTA3MTYgMTguMTY3MSA4LjMyMTA5VjkuMDg4NjdMMTcuNDE3MSA5LjA4NzY5SDE2LjY2NzFWOC4zMjEwOUMxNi42NjcyIDcuOTA2OTQgMTcuMDAzIDcuNTcxMDkgMTcuNDE3MSA3LjU3MTA5WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPC9zdmc+) no-repeat 8px center;padding:4px 4px 4px 30px}.doboard_task_widget-bottom-is-fixed-task-block{text-align:center}.doboard_task_widget-bottom-is-fixed-task{background:#f3f6f9;color:#1c7857;display:inline-block;border-radius:10px;padding:5px 8px;margin:0 auto}.doboard_task_widget-task_row-green{background:#f3f6f9}.doboard_task_widget-task_row-green .doboard_task_widget-description_container{border-bottom:1px solid #e5e5e5}.doboard_task_widget_return_to_all{display:flex;gap:8px;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:wrap}.doboard_task_widget-task_title-last_update_time{font-family:Inter,serif;font-weight:400;font-style:normal;font-size:11px;leading-trim:NONE;line-height:100%}.doboard_task_widget-task_title_public_status_img{opacity:50%;margin-left:5px;scale:90%}.doboard_task_widget-description-textarea{resize:none}.doboard_task_widget-switch_row{display:flex;align-items:center;gap:12px;margin:16px 0;justify-content:space-between}.doboard_task_widget-switch-label{font-weight:600;font-size:16px;height:24px;align-content:center}.doboard_task_widget-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}.doboard_task_widget-switch input{opacity:0;width:0;height:0}.doboard_task_widget-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;border-radius:24px;transition:.2s}.doboard_task_widget-slider:before{position:absolute;content:"";height:20px;width:20px;left:2px;bottom:2px;background-color:#fff;border-radius:50%;transition:.2s}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider{background-color:#65d4ac}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider:before{transform:translateX(20px)}.doboard_task_widget-switch-img{width:24px;height:24px;flex-shrink:0}.doboard_task_widget-switch-center{display:flex;gap:2px;flex-direction:column;-moz-flex-direction:column;flex:1 1 auto;min-width:0}.doboard_task_widget-switch-desc{display:block;font-size:12px;color:#707a83;margin:0;line-height:1.2;max-width:180px;word-break:break-word}.doboard_task_widget-concrete_issue-day_content{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-concrete_issue_day_content-month_day{text-align:center;font-weight:400;font-size:12px;line-height:100%;padding:8px;opacity:.75}.doboard_task_widget-concrete_issue_day_content-messages_wrapper{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-comment_data_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;margin-bottom:15px;align-items:flex-end}.doboard_task_widget-comment_text_container{position:relative;width:calc(100% - 44px - 5px);height:auto;margin-left:5px;background:#f3f6f9;border-radius:16px}.doboard_task_widget-comment_text_container:after{content:"";position:absolute;bottom:0;left:-5px;width:13px;height:19px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAxMyAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAuMTEyNTggMTkuMDMzNEM1LjI5NDg2IDE5LjgyMDEgMTAuNjEwNSAxNy45NzQxIDEyLjI3MTUgMTYuMTcxM0MxMi4yNzE1IDE2LjE3MTMgMTAuOTYyMyAtMi43ODEyNCA1LjA5NTU0IDAuMzQ5MDc5QzUuMDc0NCAxLjYxNDU0IDUuMDk1NTQgNS45OTQ5IDUuMDk1NTQgNi43NDA2OUM1LjA5NTU0IDE3LjA2NjIgLTAuODg0MDEyIDE4LjQ0MDEgMC4xMTI1OCAxOS4wMzM0WiIgZmlsbD0iI0YzRjZGOSIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container{background:#ebfaf4}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container:after{left:auto;right:-5px;height:13px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMyAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjc3NzEgMTIuMzA2NkM3LjMzMTM1IDEzLjA5MzcgMS43NDU0NCAxMS4yNDY5IDAgOS40NDMxOUw3LjM5MTYgMEM3LjM5MTYgMTAuMzMwMyAxMy44MjQ0IDExLjcxMzEgMTIuNzc3MSAxMi4zMDY2WiIgZmlsbD0iI0VCRkFGNCIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_body,.doboard_task_widget-comment_time{position:relative;z-index:1}.doboard_task_widget-comment_body{padding:6px 8px;min-height:30px}.doboard_task_widget-comment_body strong{font-variation-settings:"wght" 700}.doboard_task_widget-comment_body blockquote{margin:0;border-left:3px solid #22a475}.doboard_task_widget-comment_body blockquote p{margin:0 10px}.doboard_task_widget-comment_body details .mce-accordion-body{padding-left:20px}.doboard_task_widget-comment_body details .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg transform='rotate(180 0 0)' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") no-repeat 0;padding-left:20px}.doboard_task_widget-comment_body .mce-accordion[open] .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") no-repeat 0}.doboard_task_widget-comment_body details .mce-accordion-summary::marker{content:""}.doboard_task_widget-comment_body pre{border:1px solid #d6dde3;border-left-width:8px;border-radius:4px;padding:13px 16px 14px 12px;white-space:pre-wrap}.doboard_task_widget-comment_time{font-weight:400;font-size:11px;opacity:.8;position:absolute;bottom:6px;right:6px}.doboard_task_widget-comment_body-img-strict{max-width:-webkit-fill-available;height:100px;margin-right:5px}.doboard_task_widget-send_message{border-top:1px solid #bbc7d1;position:sticky;background:#fff;bottom:0;z-index:4}.doboard_task_widget-send_message_elements_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:nowrap;justify-content:space-between;align-items:end}.doboard_task_widget-send_message_elements_wrapper img{margin:0}.doboard_task_widget-send_message_input_wrapper{position:relative;display:inline-grid;align-items:center;justify-items:center;flex-grow:1;padding:0 6px}.doboard_task_widget-send_message_input_wrapper textarea{position:relative;width:100%;height:37px;border:none;outline:0;box-shadow:none;border-radius:24px;background:#f3f6f9;resize:none;margin-bottom:0!important;transition:height .2s ease-in-out;padding:8px;box-sizing:border-box}.doboard_task_widget-send_message_input_wrapper textarea.high{height:170px}.doboard_task_widget-send_message_input_wrapper textarea:focus{background:#f3f6f9;border-color:#007bff;outline:0}.doboard_task_widget-send_message_button{display:inline-grid;border:none;cursor:pointer;padding:0;width:100%;align-items:center;margin:20px 0 0 0}.doboard_task_widget-send_message_paperclip{display:inline-grid;border:none;background:0 0;cursor:pointer;padding:0;align-items:center;margin:0}.doboard_task_widget-send_message_button:hover,.doboard_task_widget-send_message_paperclip:hover rect{fill:#45a049}.doboard_task_widget-send_message_button:active,.doboard_task_widget-send_message_paperclip:active{transform:scale(.98)}.doboard_task_widget-spinner_wrapper_for_containers{display:flex;justify-content:center;align-items:center;min-height:60px;width:100%}.spotfix_doboard_task_widget_url{background-color:#d6dde3;padding:12px 16px;display:none}.doboard_task_widget-spinner_for_containers{width:40px;height:40px;border-radius:50%;background:conic-gradient(transparent,#1c7857);mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#fff 0);animation:spin 1s linear infinite}.doboard_task_widget-create_issue{padding:10px}.doboard_task_widget__file-upload__wrapper{display:none;border:1px solid #bbc7d1;margin-top:14px;padding:0 10px 10px;border-radius:4px}.doboard_task_widget__file-upload__list-header{text-align:left;font-size:.9em;margin:5px 0;color:#444c529e}.doboard_task_widget__file-upload__file-input-button{display:none}.doboard_task_widget__file-upload__file-list{border:1px solid #ddd;border-radius:5px;padding:6px;max-height:200px;overflow-y:auto;background:#f3f6f9}.doboard_task_widget__file-upload__file-item{display:flex;justify-content:space-between;align-items:center;padding:4px;border-bottom:1px solid #bbc7d16b}.doboard_task_widget__file-upload__file-item:last-child{border-bottom:none}.doboard_task_widget__file-upload__file_info{display:inline-flex;align-items:center}.doboard_task_widget__file-upload__file-name{font-weight:700;font-size:.9em}.doboard_task_widget__file-upload__file-item-content{width:100%}.doboard_task_widget__file-upload__file_size{color:#666;font-size:.8em;margin-left:6px}.doboard_task_widget__file-upload__remove-btn{background:#22a475;color:#fff;border:none;border-radius:3px;cursor:pointer}.doboard_task_widget__file-upload__error{display:block;margin:7px 0 0;padding:7px;border-radius:4px;background:#fdd;border:1px solid #cf6868}.doboard_task_widget-show_button{position:fixed;background:#1c7857;color:#fff;padding:8px 12px;border-radius:4px;font-size:14px;z-index:10000;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);transform:translate(-50%,-100%);margin-top:-8px;white-space:nowrap;border:none;font-family:inherit}@keyframes spin{to{transform:rotate(1turn)}}@media (max-width:480px){.doboard_task_widget{position:fixed;right:0;top:auto;bottom:0;margin:0 20px 20px;box-sizing:border-box;transform:translateZ(0);-moz-transform:translateZ(0);will-change:transform;max-height:90vh}.doboard_task_widget-header{padding:8px}.doboard_task_widget-issue-title{max-width:70px}.doboard_task_widget-container{width:100%;max-width:290px;min-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-container-maximize{width:100%;max-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-content{height:auto;max-height:100%;min-height:100%;scrollbar-width:none}.doboard_task_widget-content::-webkit-scrollbar{display:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{max-height:80vh}}@supports (-webkit-overflow-scrolling:touch){.doboard_task_widget{position:fixed}}.doboard_task_widget_tasks_list{background-color:#fff;position:sticky;bottom:0;height:38px;min-height:24px;display:flex;flex-direction:column-reverse;align-items:center;padding-bottom:8px}#doboard_task_widget-user_menu-logout_button{display:inline-flex;align-items:center}.doboard_task_widget-text_selection{position:relative;display:inline-block}.doboard_task_widget-see-task{cursor:pointer;text-decoration:underline}.doboard_task_widget-text_selection_tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:4px 8px;border-radius:4px;font-size:12px;white-space:nowrap;font-weight:500;z-index:9000;border:1px solid #bbc7d1;margin-bottom:8px}.doboard_task_widget-text_selection_tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#fff}.doboard_task_widget-text_selection_tooltip::before{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#bbc7d1;z-index:-1}.doboard_task_widget-text_selection_tooltip_icon{background-image:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDEwMyAxMDAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDEwMyAxMDA7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtmaWxsOiMxNzcyNTA7fQ0KPC9zdHlsZT4NCjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik01MywwSDB2MTAwaDMwLjJINTNDMTE5LjYsMTAwLDExOS42LDAsNTMsMHogTTMwLjIsMTAwYy0xNi42LDAtMzAtMTMuNC0zMC0zMHMxMy40LTMwLDMwLTMwDQoJYzE2LjYsMCwzMCwxMy40LDMwLDMwUzQ2LjgsMTAwLDMwLjIsMTAweiIvPg0KPC9zdmc+DQo=);background-repeat:no-repeat;width:22px;height:22px;margin:5px 3px}.doboard_task_widget-text_selection_tooltip_element{display:flex;justify-content:space-between}.doboard_task_widget-content .tox .tox-toolbar__group{padding:0 8px!important}.doboard_task_widget-spotfix-editor .tox-tinymce{border:none!important}.doboard_task_widget-content .tox-tinymce{border:1px solid #bbc7d1;border-radius:4px}.doboard_task_widget-content ol,.doboard_task_widget-content ul{margin:0 0 0 1em!important}.toggle{position:relative;display:inline-block;width:46px;min-width:46px;height:20px}.toggle input{opacity:0;width:0;height:0;position:absolute}.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#d6dde3;border-radius:24px;transition:.3s;height:14px;width:37px}.slider:before{content:"";position:absolute;height:20px;width:20px;top:-3px;left:-2px;background-color:#fff;border-radius:50%;transition:.3s;box-shadow:0 0 4px rgba(0,0,0,.21)}input:checked+.slider{background-color:#65d4AC80}input:checked+.slider:before{transform:translateX(20px);box-shadow:none;background-color:#65d4ac}.logout_button{font-weight:500;font-size:14px;color:#707a83;cursor:pointer}.doboard_task_widget-forgot_password,.doboard_task_widget-on_phantom_login_page,.doboard_task_widget-show_login_form{display:inline-block;cursor:pointer;color:#2f68b7;margin-bottom:0}.doboard_task_widget-forgot_password{margin-bottom:20px}.doboard_task_widget-login-is-invalid{color:red}.doboard_task_widget-forgot_password_form-menu,.doboard_task_widget-input-container-login-menu{margin:20px}.doboard_task_widget-bottom-eye-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:20px;height:20px;background:#fff url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgMjAgMjAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDIwIDIwOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8cGF0aCBkPSJNMTAsMTcuNGMtNi4yLDAtOS43LTYuOC05LjgtNy4xYy0wLjEtMC4yLTAuMS0wLjUsMC0wLjdDMC4zLDkuNCwzLjgsMi42LDEwLDIuNmM2LjIsMCw5LjcsNi44LDkuOCw3LjENCgljMC4xLDAuMiwwLjEsMC41LDAsMC43QzE5LjcsMTAuNiwxNi4yLDE3LjQsMTAsMTcuNHogTTEuNywxMGMwLjgsMS4zLDMuNyw1LjksOC4zLDUuOWM0LjYsMCw3LjYtNC42LDguMy01LjkNCgljLTAuOC0xLjMtMy43LTUuOS04LjMtNS45QzUuNCw0LjEsMi40LDguNywxLjcsMTB6IE0xMCwxMy4zYy0xLjgsMC0zLjMtMS41LTMuMy0zLjNTOC4yLDYuOCwxMCw2LjhzMy4zLDEuNSwzLjMsMy4zDQoJUzExLjgsMTMuMywxMCwxMy4zeiBNMTAsOC4zQzksOC4zLDguMyw5LDguMywxMFM5LDExLjgsMTAsMTEuOHMxLjgtMC44LDEuOC0xLjhTMTEsOC4zLDEwLDguM3oiLz4NCjwvc3ZnPg0K) no-repeat center center;background-size:16px 16px;cursor:pointer;border-radius:50%;transition:all .2s ease;z-index:10}.doboard_task_widget-bottom-eye-off-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:20px;height:20px;background:#fff url(data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDIwIDIwIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAyMCAyMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggY2xhc3M9InN0MCIgZD0iTTE2LjgsMTMuMmMwLjEsMC4xLDAuMywwLjIsMC41LDAuMmMwLDAsMCwwLDAsMGMwLjIsMCwwLjQtMC4xLDAuNS0wLjNjMC43LTAuOSwxLjQtMS44LDEuOS0yLjgNCgljMC4xLTAuMiwwLjEtMC41LDAtMC43Yy0wLjEtMC4zLTMuNi03LjEtOS44LTcuMWMwLDAsMCwwLDAsMGMtMC42LDAtMS4zLDAuMS0xLjksMC4yQzcuOCwyLjksNy42LDMuMSw3LjUsMy4zczAsMC41LDAuMiwwLjcNCglMMTYuOCwxMy4yeiBNMTAsNC4xYzQuNiwwLDcuNiw0LjYsOC4zLDUuOWMtMC4zLDAuNS0wLjYsMS0xLDEuNUw5LjksNC4xQzkuOSw0LjEsMTAsNC4xLDEwLDQuMXogTTE5LjcsMTguNmwtNC4yLTQuMkw1LjYsNC41DQoJYzAsMCwwLDAsMCwwTDEuNCwwLjNDMS4xLDAsMC42LDAsMC4zLDAuM1MwLDEuMSwwLjMsMS40TDMuOSw1QzIuNCw2LjMsMS4xLDcuOSwwLjIsOS42Yy0wLjEsMC4yLTAuMSwwLjUsMCwwLjcNCgljMC4xLDAuMywzLjYsNy4xLDkuOSw3LjFjMS43LDAsMy40LTAuNSw0LjktMS41bDMuOCwzLjhjMC4xLDAuMSwwLjMsMC4yLDAuNSwwLjJzMC40LTAuMSwwLjUtMC4yQzIwLDE5LjQsMjAsMTguOSwxOS43LDE4LjZ6DQoJIE04LjMsOS40bDIuMywyLjNjLTAuMiwwLjEtMC40LDAuMS0wLjYsMC4xYy0wLjIsMC0wLjUsMC0wLjctMC4xYy0wLjItMC4xLTAuNC0wLjItMC42LTAuNGMtMC4yLTAuMi0wLjMtMC40LTAuNC0wLjYNCgljLTAuMS0wLjItMC4xLTAuNS0wLjEtMC43QzguMiw5LjgsOC4yLDkuNiw4LjMsOS40eiBNMTAsMTUuOWMtNC42LDAtNy42LTQuNi04LjMtNS45YzAuOS0xLjUsMi0yLjgsMy4zLTMuOWwyLjIsMi4yDQoJQzcuMSw4LjQsNyw4LjYsNyw4LjdDNi44LDkuMSw2LjcsOS42LDYuNywxMGMwLDAuNCwwLjEsMC45LDAuMiwxLjNjMC4yLDAuNCwwLjQsMC44LDAuNywxLjFjMC4zLDAuMywwLjcsMC42LDEuMSwwLjcNCgljMC40LDAuMiwwLjgsMC4yLDEuMywwLjJjMC40LDAsMC45LTAuMSwxLjMtMC4zYzAuMi0wLjEsMC4zLTAuMiwwLjUtMC4zbDIuMSwyLjFDMTIuNiwxNS41LDExLjMsMTUuOSwxMCwxNS45eiIvPg0KPC9zdmc+DQo=) no-repeat center center;background-size:16px 16px;cursor:pointer;border-radius:50%;transition:all .2s ease;opacity:.5;z-index:10}.doboard_task_widget-input-container-textarea{position:relative}.doboard_task_widget-field-textarea-label{position:absolute;left:10px;top:10px;padding:0 5px;color:#666;background-color:#fff;transition:.2s ease all;pointer-events:none}.doboard_task_widget-input-container-textarea .doboard_task_widget-field~label{top:-10px;left:14px;font-size:10px;color:#252a2f}.doboard_task_widget-concrete_issue .tox-tinymce .tox-toolbar__group{display:inline-flex!important;width:100%!important;justify-content:space-evenly}.doboard_task_widget-task_title-text{margin-right:6px}.doboard_task_widget-commentsIndicator{width:22px;height:22px;border-radius:50%;color:#fff;font-weight:400;font-size:11px;display:inline-flex;justify-content:center;align-items:center}.doboard_task_widget-visibility-toggle{display:flex;justify-content:space-between;align-items:center;min-width:270px;max-width:420px;margin-top:4px;margin-bottom:16px}.doboard_task_widget-require_full_registration{padding:16px;background-color:#65d4ac;border-radius:8px;margin-bottom:12px}.doboard_task_widget-require_full_registration-title{color:#252a2f;font-weight:500}.doboard_task_widget-auth-inputs-container{display:block;margin-bottom:8px}.doboard_task_widget-auth-inputs-container-maximized{display:flex;justify-content:space-between}.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container{display:flex;justify-content:space-between}.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container .doboard_task_widget-input-container{flex-grow:1}.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container #doboard_task_widget-user_name{margin-right:24px}.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container #doboard_task_widget-user_password{margin-right:24px}.doboard_task_widget-auth-inputs-container-maximized .doboard_task_widget-input-container{flex-grow:1}.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container .doboard_task_widget-input-container{margin-bottom:0}.doboard_task_widget-input-container-phantom{display:flex;flex-direction:column}.doboard_task_widget-auth-inputs-container-maximized #doboard_task_widget-user_name{margin-right:24px}.doboard_task_widget-auth-inputs-container-maximized #doboard_task_widget-user_password{margin-left:24px}.hidden-container{visibility:hidden!important;width:0!important;flex-grow:0!important;margin:0!important}.task-link{overflow-wrap:break-word}.doboard_task_widget-task_menu-item-viewers{display:flex;align-items:center;padding:0 16px;flex-direction:column;height:fit-content;padding-top:8px;max-height:200px;overflow:auto}#spotfix_widget-task-menu_name{color:#252a2f;font-size:16px;font-weight:500;display:inline-flex}#spotfix_widget-task-menu_users{font-size:12px;font-weight:400;color:#707a83}.spotfix_widget-task-menu_user{width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.spotfix_widget-task-menu_user img{height:24px;width:24px;border-radius:50%;margin-right:12px}.spotfix_widget-task-menu_user>:first-child{font-weight:400;font-size:14px;color:#000;display:inline-flex;align-items:center}.spotfix_widget-task-menu_user>:last-child{color:#40484f;font-size:12px;font-weight:400}.doboard_task_widget-comment_attachments{padding:8px 8px 30px 8px;display:flex;flex-direction:column;flex-wrap:nowrap;overflow-x:auto;gap:6px;scrollbar-width:thin;scrollbar-color:#bbc7d1 transparent;margin-bottom:2px}.doboard_task_widget-comment_attachments::-webkit-scrollbar{height:4px}.doboard_task_widget-comment_attachments::-webkit-scrollbar-track{background:0 0}.doboard_task_widget-comment_attachments::-webkit-scrollbar-thumb{background-color:#bbc7d1;border-radius:2px}.doboard_task_widget-attachment_item{display:flex}.doboard_task_widget-attachment_url{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(255,255,255,.8);border-radius:4px;text-decoration:none;color:#40484f!important;font-size:11px;transition:background-color .2s ease;border:1px solid #bbc7d1;flex-shrink:0;white-space:nowrap}.doboard_task_widget-attachment_item:hover{background:#fff;text-decoration:none}.doboard_task_widget-attachment_icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:12px;height:12px}.doboard_task_widget-attachment_filename{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#40484f}.doboard_task_widget-attachment_item.image-attachment{cursor:pointer}.doboard_task_widget-attachment_item:not(.image-attachment){cursor:pointer}.doboard_task_widget-attachment_item.image-attachment img{width:64px;height:64px;object-fit:cover;border-radius:4px;border:1px solid #bbc7d1;transition:transform .2s ease,box-shadow .2s ease}.doboard_task_widget-attachment_item.image-attachment:hover img{transform:scale(1.1);box-shadow:0 2px 8px rgba(0,0,0,.15)}.doboard_task_widget-lightbox{position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s ease}.doboard_task_widget-lightbox.active{opacity:1;visibility:visible}.doboard_task_widget-lightbox-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);cursor:pointer}.doboard_task_widget-lightbox-content{position:relative;max-width:90vw;max-height:90vh;z-index:1}.doboard_task_widget-lightbox-image{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:4px;box-shadow:0 4px 20px rgba(0,0,0,.5)}.doboard_task_widget-lightbox-close{position:absolute;top:20px;right:20px;width:40px;height:40px;background:rgba(255,255,255,.8);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s ease;z-index:2}.doboard_task_widget-lightbox-close:hover{background:rgba(255,255,255,.6)}.doboard_task_widget-lightbox-close img{width:24px;height:24px}.doboard_task_widget-finished_tasks_header{display:flex;justify-content:space-between;align-items:center;padding:16px 15px;cursor:pointer;background-color:#f3f6f9;transform:scaleY(1.1)}.doboard_task_widget-finished_tasks_header:hover{background-color:#f3f6f9}.doboard_task_widget-finished_tasks_title{font-weight:500;font-size:14px;color:#252a2f}.doboard_task_widget-finished_tasks_chevron{display:flex;align-items:center;justify-content:center;transition:transform .3s ease}.doboard_task_widget-finished_tasks_header.expanded .doboard_task_widget-finished_tasks_chevron{transform:rotate(180deg)}.doboard_task_widget-finished_tasks_container{background:#f3f6f9;max-height:0;overflow:hidden;transition:max-height .3s ease-out}.doboard_task_widget-finished_tasks_container.expanded{max-height:2000px;transition:max-height .5s ease-in;padding-bottom:4px}`;
+let spotFixCSS = `.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after{content:"";position:absolute;left:8%;top:100%;transform:translateX(-50%);pointer-events:none;background:0 0}.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after{border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid #545b61;display:block}.doboard_task_widget-send_message_paperclip{position:relative}.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip{display:none;position:absolute;left:0;bottom:0;transform:translateX(-3%) translateY(-43px);background:#545b61;color:#fff;border:none;border-radius:3px;padding:10px 16px;font-size:13px;line-height:1.4;z-index:100;min-width:220px;max-width:320px;text-align:left;pointer-events:none;text-transform:none}.doboard_task_widget-send_message_paperclip:hover .doboard_task_widget-paperclip-tooltip{display:block}.doboard_task_widget *{font-family:Inter,sans-serif;font-weight:400;font-size:14px;line-height:130%;color:#40484f}.doboard_task_widget-header *{color:#252a2f;margin:0}.doboard_task_widget-header-icons{display:flex;gap:12px}.doboard_task_widget-close_btn{transform:translateY(-2px)}#openUserMenuButton{transform:scale(.85)}#maximizeWidgetContainer{transform:scale(.8)}.doboard_task_widget a{text-decoration:underline;color:#2f68b7}.doboard_task_widget a:hover{text-decoration:none}.doboard_task_widget{position:fixed;right:50px;bottom:20px;z-index:9999;vertical-align:middle;transition:top .1s;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}.doboard_task_widget_cursor-pointer{cursor:pointer}.doboard_task_widget-container-maximize .doboard_task_widget-field{display:flex;justify-content:space-between;flex-wrap:wrap;column-gap:32px}.doboard_task_widget-container-maximize .doboard_task_widget-field .doboard_task_widget-submit_button{flex-grow:1;width:none;max-width:40%;min-width:300px!important}.doboard_task_widget-input-container-textarea .tox-tinymce{position:absolute}.doboard_task_widget-container-maximize{width:80vw!important;max-width:1120px!important;max-height:75vh!important;min-height:75vh!important;display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-container{width:430px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-header{display:flex;min-height:41px;padding:0 16px;background-color:#f3f6f9;border-radius:8px 8px 0 0;border:1px solid #bbc7d1;border-bottom:none;justify-content:space-between;align-items:center;color:#fff}.doboard_task_widget-user_menu-header{display:flex;padding:16px 16px;border:1px #bbc7d1 solid;border-bottom-color:#ebf0f4;border-radius:8px 8px 0 0;flex-direction:column;align-items:center;color:#252a2f;background-color:#f3f6f9}.doboard_task_widget-user_menu-header-top{display:flex;height:fit-content;align-items:center;width:100%;justify-content:space-between}.doboard_task_widget-user_menu-header-avatar{max-width:60px;max-height:60px;width:60px;height:60px;border-radius:50%;margin-bottom:4px}.doboard_task_widget-task_menu-item,.doboard_task_widget-user_menu-item{display:flex;align-items:center;border-bottom:1px #ebf0f4 solid;padding:0 16px;height:52px}.doboard_task_widget-content{flex:1;overflow-y:auto;background:#fff;border-radius:0 0 8px 8px;border:1px;border-style:none solid solid solid;border-color:#bbc7d1;box-shadow:0 4px 15px 8px #cacACA40;scrollbar-width:none;max-height:60vh}.doboard_task_widget-container-maximize .doboard_task_widget-content{max-height:inherit}.doboard_task_widget-element-container{margin-bottom:16px}.doboard_task_widget-element-container span{color:#707a83;font-size:12px;font-weight:400}.doboard_task_widget-wrap{box-shadow:none;position:fixed;right:-50px;padding:0;cursor:pointer;width:69px;height:52px;border-top-left-radius:4px;border-bottom-left-radius:4px;background-color:rgba(255,255,255,.9);border:1px #ebf0f4 solid;display:flex;align-items:center;justify-content:center}.doboard_task_widget-wrap img{width:32px;height:32px;transform:scaleX(-1)}.doboard_task_widget-wrap.hidden{display:none}.wrap_review{width:164px;min-width:164px;height:54px}.wrap_review img{width:28px;height:28px;transform:scaleX(-1)}.wrap_review:hover{background-color:#fff}@media (max-width:480px){.doboard_task_widget-wrap{right:-20px}}#review_content_button_text{color:#d5991a;margin-left:6px;font-weight:600;font-size:14px;text-transform:none!important}.wrap_review::after{display:none}#doboard_task_widget-task_count{position:absolute;top:-12px;right:4px;width:22px;height:22px;opacity:1;background:#ef8b43;border-radius:50%;color:#fff;text-align:center;line-height:22px}#doboard_task_widget-task_count.hidden{width:0;height:0;opacity:0}.doboard_task_widget-input-container{position:relative;margin-bottom:16px}.doboard_task_widget-hidden,.doboard_task_widget-input-container.hidden{display:none}.doboard_task_widget-input-container .doboard_task_widget-field{padding:0 8px;border-radius:4px;border:1px solid #bbc7d1;outline:0!important;appearance:none;width:100%;height:40px;background:#fff;color:#000;max-width:-webkit-fill-available;max-width:-moz-available}.doboard_task_widget-field:focus{border-color:#2f68b7}.doboard_task_widget-input-container textarea.doboard_task_widget-field{min-height:94px;padding-top:11px;padding-bottom:11px}.doboard_task_widget-field+label{color:#252a2f;background:#fff;position:absolute;top:20px;left:8px;transform:translateY(-50%);transition:all .2s ease-in-out;pointer-events:none}.doboard_task_widget-field:focus+label,.doboard_task_widget-field:not(:placeholder-shown)+label{font-size:10px;top:0;left:12px;padding:0 4px;z-index:5}.doboard_task_widget-field:focus+label{color:#2f68b7}.doboard_task_widget-login{margin-bottom:16px;border:1px solid #bbc7d1;border-radius:4px;padding:11px 8px 8px 8px}.doboard_task_widget-login.hidden{display:none}.doboard_task_widget-login .doboard_task_widget-accordion{height:0;overflow:hidden;opacity:0;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-accordion{height:auto;overflow:visible;opacity:1}.doboard_task_widget-accordion i{font-size:12px}.doboard_task_widget-login .doboard_task_widget-input-container:last-child{margin-bottom:0}.doboard_task_widget-login .doboard_task_widget-login-icon{display:block;position:relative;padding-right:24px;cursor:pointer}.doboard_task_widget-login .doboard_task_widget-login-icon::after{position:absolute;top:0;right:4px;content:"";display:block;width:10px;height:10px;transform:rotate(45deg);border:2px solid #40484f;border-radius:1px;border-top:none;border-left:none;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-login-icon::after{transform:rotate(-135deg);top:7px}.doboard_task_widget-login-icon.doboard_task_widget-login-icon-hidden::after{display:none}.doboard_task_widget-login .doboard_task_widget-field+label,.doboard_task_widget-login .doboard_task_widget-input-container .doboard_task_widget-field{background:#f9fbfd}.doboard_task_widget-submit_button{min-height:48px;width:100%;max-width:500px;border-radius:6px;font-family:Inter,sans-serif;font-size:16px;line-height:150%;cursor:pointer;transition:all .2s ease-in-out;background:0 0;border:1px solid #22a475;color:#22a475;font-weight:600}.doboard_task_widget-submit_button:hover{background:#22a475;color:#fff}.doboard_task_widget-submit_button:disabled{background:rgba(117,148,138,.92);color:#fff;cursor:wait}.doboard_task_widget-login-buttons-wrapper{display:flex;gap:10px;margin-bottom:10px}.doboard_task_widget-login-buttons-wrapper .doboard_task_widget-submit_button{margin-bottom:0;width:auto;min-height:32px;font-size:14px;padding:4px 12px}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-forgot_password-black,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-on_phantom_login_page{flex:1;background:#fff;border:1px solid #22a475;color:#22a475}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-forgot_password-black:hover,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-on_phantom_login_page:hover{background:#f0fdf4;color:#1c7857}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-login_button,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-restore_password_button{flex:2}.doboard_task_widget-issue-title{display:inline-flex;flex-direction:column;transform:translateY(-2px);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-issue-title>:last-child{color:#707a83;text-align:center;font-size:10px;font-weight:400}.doboard_task_widget-hidden_element{opacity:0}.doboard_task_widget-message-wrapper{border-radius:4px;padding:8px;margin-bottom:14px;display:grid;justify-items:center}.doboard_task_widget-message-wrapper.hidden{display:none}.doboard_task_widget-error_message{background:#fdd;border:1px solid #cf6868}.doboard_task_widget-notice_message{background:#dde9ff;border:1px solid #68a6cf}.doboard_task_widget-error_message-wrapper.hidden{display:none}#doboard_task_widget-error_message-header{font-weight:600}#doboard_task_widget-error_message{text-align:center}.doboard_task_widget-task_row{display:flex;max-height:67px;cursor:pointer;align-items:center;justify-content:space-between;padding:0 15px}.doboard_task_widget-task_row:last-child{margin-bottom:0}.doboard_task_widget-task-text_bold{font-weight:700}.doboard_task_widget-element_selection,.doboard_task_widget-image_selection,.doboard_task_widget-text_selection,.doboard_task_widget-text_selection.image-highlight>img{background:#fff07e}.doboard_task_widget-issues_list_empty{text-align:center;margin:20px 0}.doboard_task_widget-avatar_container{display:flex;height:44px;width:44px;border-radius:50%;background-repeat:no-repeat;background-position:center;background-size:100%}.doboard_task_widget-comment_data_owner .doboard_task_widget-avatar_container{opacity:0}.doboard_task_widget-avatar_placeholder{min-height:44px;min-width:44px;border-radius:50%;font-size:24px;line-height:1.2083333333;padding:0;background:#1c7857;display:inline-grid;align-content:center;justify-content:center}.doboard_task_widget-avatar-initials{color:#fff;width:inherit;text-align:center}.doboard_task_widget-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover}.doboard_task_widget-description_container{height:62px;width:calc(100% - 44px - 8px);border-bottom:1px solid #ebf0f4;margin-left:8px;padding-top:4px;cursor:default;display:flex;flex-direction:column;justify-content:center}.doboard_task_widget-task_row:last-child .doboard_task_widget-description_container{border-bottom:none}.doboard_task_widget-all_issues{padding-bottom:0}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{overflow:auto;max-height:85vh;display:none}.doboard_task_widget-all_issues-container{scrollbar-width:none;margin-top:10px;min-height:60vh}.doboard_task_widget-content.doboard_task_widget-concrete_issue{padding:0;display:flex;flex-direction:column}.doboard_task_widget-concrete_issues-container{padding:10px 16px 5px;flex-grow:1}.doboard_task_widget-all_issues-container::-webkit-scrollbar,.doboard_task_widget-all_issues::-webkit-scrollbar,.doboard_task_widget-concrete_issues-container::-webkit-scrollbar,.doboard_task_widget-content::-webkit-scrollbar{width:0}.doboard_task_widget-task_title{font-weight:700;display:flex;justify-content:space-between;align-items:center}.doboard_task_widget-task_title span{font-weight:700;display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-task_title-details{display:flex;max-width:calc(100% - 65px);align-items:center}.doboard_task_widget-task_title-unread_block{opacity:0;height:8px;width:8px;background:#f08c43;border-radius:50%;display:inline-block;font-size:8px;font-weight:600;position:relative}.doboard_task_widget-task_title-unread_block.unread{opacity:1}.doboard_task_widget-task_last_message{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:85%;height:36px}.doboard_task_widget-task_page_url{max-width:70%;height:30px;display:flex;align-items:flex-end}.doboard_task_widget-task_page_url a{color:#40484f;text-decoration:none;margin-left:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.doboard_task_widget-bottom{display:flex;justify-content:space-between;align-items:flex-end}.doboard_task_widget-bottom-is-norelevant{padding:4px;border-radius:16px;background-color:#f3f6f9;text-align:center;color:#707a83;font-size:10px;font-weight:400}.doboard_task_widget-bottom-is-fixed{border-radius:10px;font-size:10px;font-weight:400;color:#1c7857;background:#ebfaf4 url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkiIGhlaWdodD0iMTkiIHZpZXdCb3g9IjAgMCAxOSAxOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCjxwYXRoIGQ9Ik03LjA4MTE5IDAuMjIzNDM0QzguOTkxNjkgLTAuMjA4MTY3IDEwLjk5MTMgLTAuMDExMjE5NCAxMi43ODA0IDAuNzg1OTM0QzEzLjE1ODQgMC45NTQ2MjQgMTMuMzI4NiAxLjM5ODAzIDEzLjE2MDMgMS43NzYxN0MxMi45OTE3IDIuMTU0MTkgMTIuNTQ4MiAyLjMyNDI0IDEyLjE3MDEgMi4xNTYwNUMxMC42NzY0IDEuNDkwNTIgOS4wMDcyNiAxLjMyNiA3LjQxMjI1IDEuNjg2MzJDNS44MTcxNyAyLjA0NjcxIDQuMzgwOTcgMi45MTI5NiAzLjMxODUgNC4xNTYwNUMyLjI1NjIzIDUuMzk5MDEgMS42MjQ0MSA2Ljk1MjI5IDEuNTE2NzQgOC41ODM3OUMxLjQwOTI0IDEwLjIxNTQgMS44MzE4NCAxMS44MzkgMi43MjE4MiAxMy4yMTA3QzMuNjExNzkgMTQuNTgyMiA0LjkyMTY0IDE1LjYyOTQgNi40NTUyMSAxNi4xOTYxQzcuOTg5MDIgMTYuNzYyNiA5LjY2NTUzIDE2LjgxODkgMTEuMjMzNSAxNi4zNTUzQzEyLjgwMTYgMTUuODkxNiAxNC4xNzgzIDE0LjkzMzUgMTUuMTU3NCAxMy42MjM4QzE2LjEzNjQgMTIuMzE0MiAxNi42NjYxIDEwLjcyMjcgMTYuNjY3MSA5LjA4NzY5TDE4LjE2NzEgOS4wODg2N0MxOC4xNjU4IDExLjA0NzEgMTcuNTMxMiAxMi45NTM2IDE2LjM1ODUgMTQuNTIyM0MxNS4xODU5IDE2LjA5MDcgMTMuNTM3MyAxNy4yMzg0IDExLjY1OTMgMTcuNzkzN0M5Ljc4MTEgMTguMzQ5MSA3Ljc3MjkzIDE4LjI4MiA1LjkzNTY4IDE3LjYwMzNDNC4wOTg1IDE2LjkyNDYgMi41MjkxMiAxNS42NzAxIDEuNDYzMDMgMTQuMDI3MUMwLjM5NzAzNSAxMi4zODQxIC0wLjEwOTEwOSAxMC40Mzk1IDAuMDE5NjY4MyA4LjQ4NTE1QzAuMTQ4NjA3IDYuNTMwOCAwLjkwNjMyMyA0LjY3MDMzIDIuMTc4ODUgMy4xODE0NEMzLjQ1MTM2IDEuNjkyNjggNS4xNzA4OCAwLjY1NTE2MiA3LjA4MTE5IDAuMjIzNDM0WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPHBhdGggZD0iTTE2Ljg4NTkgMS44OTA0M0MxNy4xNzg2IDEuNTk3NTMgMTcuNjUzNCAxLjU5Nzg0IDE3Ljk0NjQgMS44OTA0M0MxOC4yMzkzIDIuMTgzMTYgMTguMjQwMSAyLjY1Nzk2IDE3Ljk0NzQgMi45NTA5N0w5LjYxMzQyIDExLjI5MjhDOS40NzI4MiAxMS40MzMzIDkuMjgxOTYgMTEuNTEyNCA5LjA4MzE1IDExLjUxMjVDOC44ODQzMiAxMS41MTI1IDguNjkzNDggMTEuNDMzMyA4LjU1Mjg3IDExLjI5MjhMNi4wNTI4NyA4Ljc5Mjc3QzUuNzYwMTQgOC40OTk5IDUuNzYwMTEgOC4wMjUwOCA2LjA1Mjg3IDcuNzMyMjJDNi4zNDU3MiA3LjQzOTM3IDYuODIwNTEgNy40Mzk0NiA3LjExMzQyIDcuNzMyMjJMOS4wODIxNyA5LjcwMDk3TDE2Ljg4NTkgMS44OTA0M1oiIGZpbGw9IiMyMkE0NzUiLz4NCjxwYXRoIGQ9Ik0xNy40MTcxIDcuNTcxMDlDMTcuODMxIDcuNTcxNDQgMTguMTY3IDcuOTA3MTYgMTguMTY3MSA4LjMyMTA5VjkuMDg4NjdMMTcuNDE3MSA5LjA4NzY5SDE2LjY2NzFWOC4zMjEwOUMxNi42NjcyIDcuOTA2OTQgMTcuMDAzIDcuNTcxMDkgMTcuNDE3MSA3LjU3MTA5WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPC9zdmc+) no-repeat 8px center;padding:4px 4px 4px 30px}.doboard_task_widget-bottom-is-fixed-task-block{text-align:center}.doboard_task_widget-bottom-is-fixed-task{background:#f3f6f9;color:#1c7857;display:inline-block;border-radius:10px;padding:5px 8px;margin:0 auto}.doboard_task_widget-task_row-green{background:#f3f6f9}.doboard_task_widget-task_row-green .doboard_task_widget-description_container{border-bottom:1px solid #e5e5e5}.doboard_task_widget_return_to_all{display:flex;gap:8px;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:wrap}.doboard_task_widget-task_title-last_update_time{font-family:Inter,serif;font-weight:400;font-style:normal;font-size:11px;leading-trim:NONE;line-height:100%}.doboard_task_widget-task_title_public_status_img{opacity:50%;margin-left:5px;scale:90%}.doboard_task_widget-description-textarea{resize:none}.doboard_task_widget-switch_row{display:flex;align-items:center;gap:12px;margin:16px 0;justify-content:space-between}.doboard_task_widget-switch-label{font-weight:600;font-size:16px;height:24px;align-content:center}.doboard_task_widget-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}.doboard_task_widget-switch input{opacity:0;width:0;height:0}.doboard_task_widget-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;border-radius:24px;transition:.2s}.doboard_task_widget-slider:before{position:absolute;content:"";height:20px;width:20px;left:2px;bottom:2px;background-color:#fff;border-radius:50%;transition:.2s}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider{background-color:#65d4ac}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider:before{transform:translateX(20px)}.doboard_task_widget-switch-img{width:24px;height:24px;flex-shrink:0}.doboard_task_widget-switch-center{display:flex;gap:2px;flex-direction:column;-moz-flex-direction:column;flex:1 1 auto;min-width:0}.doboard_task_widget-switch-desc{display:block;font-size:12px;color:#707a83;margin:0;line-height:1.2;max-width:180px;word-break:break-word}.doboard_task_widget-concrete_issue-day_content{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-concrete_issue_day_content-month_day{text-align:center;font-weight:400;font-size:12px;line-height:100%;padding:8px;opacity:.75}.doboard_task_widget-concrete_issue_day_content-messages_wrapper{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-comment_data_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;margin-bottom:15px;align-items:flex-end}.doboard_task_widget-comment_text_container{position:relative;width:calc(100% - 44px - 5px);height:auto;margin-left:5px;background:#f3f6f9;border-radius:16px}.doboard_task_widget-comment_text_container:after{content:"";position:absolute;bottom:0;left:-5px;width:13px;height:19px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAxMyAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAuMTEyNTggMTkuMDMzNEM1LjI5NDg2IDE5LjgyMDEgMTAuNjEwNSAxNy45NzQxIDEyLjI3MTUgMTYuMTcxM0MxMi4yNzE1IDE2LjE3MTMgMTAuOTYyMyAtMi43ODEyNCA1LjA5NTU0IDAuMzQ5MDc5QzUuMDc0NCAxLjYxNDU0IDUuMDk1NTQgNS45OTQ5IDUuMDk1NTQgNi43NDA2OUM1LjA5NTU0IDE3LjA2NjIgLTAuODg0MDEyIDE4LjQ0MDEgMC4xMTI1OCAxOS4wMzM0WiIgZmlsbD0iI0YzRjZGOSIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container{background:#ebfaf4}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container:after{left:auto;right:-5px;height:13px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMyAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjc3NzEgMTIuMzA2NkM3LjMzMTM1IDEzLjA5MzcgMS43NDU0NCAxMS4yNDY5IDAgOS40NDMxOUw3LjM5MTYgMEM3LjM5MTYgMTAuMzMwMyAxMy44MjQ0IDExLjcxMzEgMTIuNzc3MSAxMi4zMDY2WiIgZmlsbD0iI0VCRkFGNCIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_body,.doboard_task_widget-comment_time{position:relative;z-index:1}.doboard_task_widget-comment_body{padding:6px 8px;min-height:30px}.doboard_task_widget-comment_body strong{font-variation-settings:"wght" 700}.doboard_task_widget-comment_body blockquote{margin:0;border-left:3px solid #22a475}.doboard_task_widget-comment_body blockquote p{margin:0 10px}.doboard_task_widget-comment_body details .mce-accordion-body{padding-left:20px}.doboard_task_widget-comment_body details .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg transform='rotate(180 0 0)' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") no-repeat 0;padding-left:20px}.doboard_task_widget-comment_body .mce-accordion[open] .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") no-repeat 0}.doboard_task_widget-comment_body details .mce-accordion-summary::marker{content:""}.doboard_task_widget-comment_body pre{border:1px solid #d6dde3;border-left-width:8px;border-radius:4px;padding:13px 16px 14px 12px;white-space:pre-wrap}.doboard_task_widget-comment_time{font-weight:400;font-size:11px;opacity:.8;position:absolute;bottom:6px;right:6px}.doboard_task_widget-comment_body-img-strict{max-width:-webkit-fill-available;height:100px;margin-right:5px}.doboard_task_widget-send_message{border-top:1px solid #bbc7d1;position:sticky;background:#fff;bottom:0;z-index:4}.doboard_task_widget-send_message_elements_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:nowrap;justify-content:space-between;align-items:end}.doboard_task_widget-send_message_elements_wrapper img{margin:0}.doboard_task_widget-send_message_input_wrapper{position:relative;display:inline-grid;align-items:center;justify-items:center;flex-grow:1;padding:0 6px}.doboard_task_widget-send_message_input_wrapper textarea{position:relative;width:100%;height:37px;border:none;outline:0;box-shadow:none;border-radius:24px;background:#f3f6f9;resize:none;margin-bottom:0!important;transition:height .2s ease-in-out;padding:8px;box-sizing:border-box}.doboard_task_widget-send_message_input_wrapper textarea.high{height:170px}.doboard_task_widget-send_message_input_wrapper textarea:focus{background:#f3f6f9;border-color:#007bff;outline:0}.doboard_task_widget-send_message_button{display:inline-grid;border:none;cursor:pointer;padding:0;width:100%;align-items:center;margin:20px 0 0 0}.doboard_task_widget-send_message_paperclip{display:inline-grid;border:none;background:0 0;cursor:pointer;padding:0;align-items:center;margin:0}.doboard_task_widget-send_message_button:hover,.doboard_task_widget-send_message_paperclip:hover rect{fill:#45a049}.doboard_task_widget-send_message_button:active,.doboard_task_widget-send_message_paperclip:active{transform:scale(.98)}.doboard_task_widget-spinner_wrapper_for_containers{display:flex;justify-content:center;align-items:center;min-height:60px;width:100%}.spotfix_doboard_task_widget_url{background-color:#d6dde3;padding:12px 16px;display:none}.doboard_task_widget-spinner_for_containers{width:40px;height:40px;border-radius:50%;background:conic-gradient(transparent,#1c7857);mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#fff 0);animation:spin 1s linear infinite}.doboard_task_widget-create_issue{padding:10px}.doboard_task_widget__file-upload__wrapper{display:none;border:1px solid #bbc7d1;margin-top:14px;padding:0 10px 10px;border-radius:4px}.doboard_task_widget__file-upload__list-header{text-align:left;font-size:.9em;margin:5px 0;color:#444c529e}.doboard_task_widget__file-upload__file-input-button{display:none}.doboard_task_widget__file-upload__file-list{border:1px solid #ddd;border-radius:5px;padding:6px;max-height:200px;overflow-y:auto;background:#f3f6f9}.doboard_task_widget__file-upload__file-item{display:flex;justify-content:space-between;align-items:center;padding:4px;border-bottom:1px solid #bbc7d16b}.doboard_task_widget__file-upload__file-item:last-child{border-bottom:none}.doboard_task_widget__file-upload__file_info{display:inline-flex;align-items:center}.doboard_task_widget__file-upload__file-name{font-weight:700;font-size:.9em}.doboard_task_widget__file-upload__file-item-content{width:100%}.doboard_task_widget__file-upload__file_size{color:#666;font-size:.8em;margin-left:6px}.doboard_task_widget__file-upload__remove-btn{background:#22a475;color:#fff;border:none;border-radius:3px;cursor:pointer}.doboard_task_widget__file-upload__error{display:block;margin:7px 0 0;padding:7px;border-radius:4px;background:#fdd;border:1px solid #cf6868}.doboard_task_widget-show_button{position:fixed;background:#1c7857;color:#fff;padding:8px 12px;border-radius:4px;font-size:14px;z-index:10000;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);transform:translate(-50%,-100%);margin-top:-8px;white-space:nowrap;border:none;font-family:inherit}@keyframes spin{to{transform:rotate(1turn)}}@media (max-width:480px){.doboard_task_widget{position:fixed;right:0;top:auto;bottom:0;margin:0 20px 20px;box-sizing:border-box;transform:translateZ(0);-moz-transform:translateZ(0);will-change:transform;max-height:90vh}.doboard_task_widget-header{padding:8px}.doboard_task_widget-issue-title{max-width:70px}.doboard_task_widget-container{width:100%;max-width:290px;min-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-container-maximize{width:100%;max-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-content{height:auto;max-height:100%;min-height:100%;scrollbar-width:none}.doboard_task_widget-content::-webkit-scrollbar{display:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{max-height:80vh}}@supports (-webkit-overflow-scrolling:touch){.doboard_task_widget{position:fixed}}.doboard_task_widget_tasks_list{background-color:#fff;position:sticky;bottom:0;height:38px;min-height:24px;display:flex;flex-direction:column-reverse;align-items:center;padding-bottom:8px}#doboard_task_widget-user_menu-logout_button{display:inline-flex;align-items:center}.doboard_task_widget-text_selection{position:relative;display:inline-block}.doboard_task_widget-see-task{cursor:pointer;text-decoration:underline}.doboard_task_widget-text_selection_tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:4px 8px;border-radius:4px;font-size:12px;white-space:nowrap;font-weight:500;z-index:9000;border:1px solid #bbc7d1;margin-bottom:8px}.doboard_task_widget-text_selection_tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#fff}.doboard_task_widget-text_selection_tooltip::before{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#bbc7d1;z-index:-1}.doboard_task_widget-text_selection_tooltip_icon{background-image:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDEwMyAxMDAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDEwMyAxMDA7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtmaWxsOiMxNzcyNTA7fQ0KPC9zdHlsZT4NCjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik01MywwSDB2MTAwaDMwLjJINTNDMTE5LjYsMTAwLDExOS42LDAsNTMsMHogTTMwLjIsMTAwYy0xNi42LDAtMzAtMTMuNC0zMC0zMHMxMy40LTMwLDMwLTMwDQoJYzE2LjYsMCwzMCwxMy40LDMwLDMwUzQ2LjgsMTAwLDMwLjIsMTAweiIvPg0KPC9zdmc+DQo=);background-repeat:no-repeat;width:22px;height:22px;margin:5px 3px}.doboard_task_widget-text_selection_tooltip_element{display:flex;justify-content:space-between}.doboard_task_widget-content .tox .tox-toolbar__group{padding:0 8px!important}.doboard_task_widget-spotfix-editor .tox-tinymce{border:none!important}.doboard_task_widget-content .tox-tinymce{border:1px solid #bbc7d1;border-radius:4px}.doboard_task_widget-content ol,.doboard_task_widget-content ul{margin:0 0 0 1em!important}.toggle{position:relative;display:inline-block;width:46px;min-width:46px;height:20px}.toggle input{opacity:0;width:0;height:0;position:absolute}.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#d6dde3;border-radius:24px;transition:.3s;height:14px;width:37px}.slider:before{content:"";position:absolute;height:20px;width:20px;top:-3px;left:-2px;background-color:#fff;border-radius:50%;transition:.3s;box-shadow:0 0 4px rgba(0,0,0,.21)}input:checked+.slider{background-color:#65d4AC80}input:checked+.slider:before{transform:translateX(20px);box-shadow:none;background-color:#65d4ac}.logout_button{font-weight:500;font-size:14px;color:#707a83;cursor:pointer}.doboard_task_widget-forgot_password,.doboard_task_widget-on_phantom_login_page,.doboard_task_widget-show_login_form{display:inline-block;cursor:pointer;color:#2f68b7;margin-bottom:0}.doboard_task_widget-forgot_password{margin-bottom:20px}.doboard_task_widget-login-is-invalid{color:red}.doboard_task_widget-forgot_password_form-menu,.doboard_task_widget-input-container-login-menu{margin:20px}.doboard_task_widget-bottom-eye-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:20px;height:20px;background:#fff url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgMjAgMjAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDIwIDIwOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8cGF0aCBkPSJNMTAsMTcuNGMtNi4yLDAtOS43LTYuOC05LjgtNy4xYy0wLjEtMC4yLTAuMS0wLjUsMC0wLjdDMC4zLDkuNCwzLjgsMi42LDEwLDIuNmM2LjIsMCw5LjcsNi44LDkuOCw3LjENCgljMC4xLDAuMiwwLjEsMC41LDAsMC43QzE5LjcsMTAuNiwxNi4yLDE3LjQsMTAsMTcuNHogTTEuNywxMGMwLjgsMS4zLDMuNyw1LjksOC4zLDUuOWM0LjYsMCw3LjYtNC42LDguMy01LjkNCgljLTAuOC0xLjMtMy43LTUuOS04LjMtNS45QzUuNCw0LjEsMi40LDguNywxLjcsMTB6IE0xMCwxMy4zYy0xLjgsMC0zLjMtMS41LTMuMy0zLjNTOC4yLDYuOCwxMCw2LjhzMy4zLDEuNSwzLjMsMy4zDQoJUzExLjgsMTMuMywxMCwxMy4zeiBNMTAsOC4zQzksOC4zLDguMyw5LDguMywxMFM5LDExLjgsMTAsMTEuOHMxLjgtMC44LDEuOC0xLjhTMTEsOC4zLDEwLDguM3oiLz4NCjwvc3ZnPg0K) no-repeat center center;background-size:16px 16px;cursor:pointer;border-radius:50%;transition:all .2s ease;z-index:10}.doboard_task_widget-bottom-eye-off-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:20px;height:20px;background:#fff url(data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDIwIDIwIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAyMCAyMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggY2xhc3M9InN0MCIgZD0iTTE2LjgsMTMuMmMwLjEsMC4xLDAuMywwLjIsMC41LDAuMmMwLDAsMCwwLDAsMGMwLjIsMCwwLjQtMC4xLDAuNS0wLjNjMC43LTAuOSwxLjQtMS44LDEuOS0yLjgNCgljMC4xLTAuMiwwLjEtMC41LDAtMC43Yy0wLjEtMC4zLTMuNi03LjEtOS44LTcuMWMwLDAsMCwwLDAsMGMtMC42LDAtMS4zLDAuMS0xLjksMC4yQzcuOCwyLjksNy42LDMuMSw3LjUsMy4zczAsMC41LDAuMiwwLjcNCglMMTYuOCwxMy4yeiBNMTAsNC4xYzQuNiwwLDcuNiw0LjYsOC4zLDUuOWMtMC4zLDAuNS0wLjYsMS0xLDEuNUw5LjksNC4xQzkuOSw0LjEsMTAsNC4xLDEwLDQuMXogTTE5LjcsMTguNmwtNC4yLTQuMkw1LjYsNC41DQoJYzAsMCwwLDAsMCwwTDEuNCwwLjNDMS4xLDAsMC42LDAsMC4zLDAuM1MwLDEuMSwwLjMsMS40TDMuOSw1QzIuNCw2LjMsMS4xLDcuOSwwLjIsOS42Yy0wLjEsMC4yLTAuMSwwLjUsMCwwLjcNCgljMC4xLDAuMywzLjYsNy4xLDkuOSw3LjFjMS43LDAsMy40LTAuNSw0LjktMS41bDMuOCwzLjhjMC4xLDAuMSwwLjMsMC4yLDAuNSwwLjJzMC40LTAuMSwwLjUtMC4yQzIwLDE5LjQsMjAsMTguOSwxOS43LDE4LjZ6DQoJIE04LjMsOS40bDIuMywyLjNjLTAuMiwwLjEtMC40LDAuMS0wLjYsMC4xYy0wLjIsMC0wLjUsMC0wLjctMC4xYy0wLjItMC4xLTAuNC0wLjItMC42LTAuNGMtMC4yLTAuMi0wLjMtMC40LTAuNC0wLjYNCgljLTAuMS0wLjItMC4xLTAuNS0wLjEtMC43QzguMiw5LjgsOC4yLDkuNiw4LjMsOS40eiBNMTAsMTUuOWMtNC42LDAtNy42LTQuNi04LjMtNS45YzAuOS0xLjUsMi0yLjgsMy4zLTMuOWwyLjIsMi4yDQoJQzcuMSw4LjQsNyw4LjYsNyw4LjdDNi44LDkuMSw2LjcsOS42LDYuNywxMGMwLDAuNCwwLjEsMC45LDAuMiwxLjNjMC4yLDAuNCwwLjQsMC44LDAuNywxLjFjMC4zLDAuMywwLjcsMC42LDEuMSwwLjcNCgljMC40LDAuMiwwLjgsMC4yLDEuMywwLjJjMC40LDAsMC45LTAuMSwxLjMtMC4zYzAuMi0wLjEsMC4zLTAuMiwwLjUtMC4zbDIuMSwyLjFDMTIuNiwxNS41LDExLjMsMTUuOSwxMCwxNS45eiIvPg0KPC9zdmc+DQo=) no-repeat center center;background-size:16px 16px;cursor:pointer;border-radius:50%;transition:all .2s ease;opacity:.5;z-index:10}.doboard_task_widget-input-container-textarea{position:relative}.doboard_task_widget-field-textarea-label{position:absolute;left:10px;top:10px;padding:0 5px;color:#666;background-color:#fff;transition:.2s ease all;pointer-events:none}.doboard_task_widget-input-container-textarea .doboard_task_widget-field~label{top:-10px;left:14px;font-size:10px;color:#252a2f}.doboard_task_widget-concrete_issue .tox-tinymce .tox-toolbar__group{display:inline-flex!important;width:100%!important;justify-content:space-evenly}.doboard_task_widget-task_title-text{margin-right:6px}.doboard_task_widget-commentsIndicator{width:22px;height:22px;border-radius:50%;color:#fff;font-weight:400;font-size:11px;display:inline-flex;justify-content:center;align-items:center}.doboard_task_widget-visibility-toggle{display:flex;justify-content:space-between;align-items:center;min-width:270px;max-width:420px;margin-top:4px;margin-bottom:16px}.doboard_task_widget-require_full_registration{padding:16px;background-color:#65d4ac;border-radius:8px;margin-bottom:12px}.doboard_task_widget-require_full_registration-title{color:#252a2f;font-weight:500}.doboard_task_widget-auth-inputs-container{display:block;margin-bottom:8px}.doboard_task_widget-auth-inputs-container-maximized{display:flex;justify-content:space-between}.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container{display:flex;justify-content:space-between}.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container .doboard_task_widget-input-container{flex-grow:1}.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container #doboard_task_widget-user_name{margin-right:24px}.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container #doboard_task_widget-user_password{margin-right:24px}.doboard_task_widget-auth-inputs-container-maximized .doboard_task_widget-input-container{flex-grow:1}.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container .doboard_task_widget-input-container{margin-bottom:0}.doboard_task_widget-input-container-phantom{display:flex;flex-direction:column}.doboard_task_widget-auth-inputs-container-maximized #doboard_task_widget-user_name{margin-right:24px}.doboard_task_widget-auth-inputs-container-maximized #doboard_task_widget-user_password{margin-left:24px}.hidden-container{visibility:hidden!important;width:0!important;flex-grow:0!important;margin:0!important}.task-link{overflow-wrap:break-word}.doboard_task_widget-task_menu-item-viewers{display:flex;align-items:center;padding:0 16px;flex-direction:column;height:fit-content;padding-top:8px;max-height:200px;overflow:auto}#spotfix_widget-task-menu_name{color:#252a2f;font-size:16px;font-weight:500;display:inline-flex}#spotfix_widget-task-menu_users{font-size:12px;font-weight:400;color:#707a83}.spotfix_widget-task-menu_user{width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.spotfix_widget-task-menu_user img{height:24px;width:24px;border-radius:50%;margin-right:12px}.spotfix_widget-task-menu_user>:first-child{font-weight:400;font-size:14px;color:#000;display:inline-flex;align-items:center}.spotfix_widget-task-menu_user>:last-child{color:#40484f;font-size:12px;font-weight:400}.doboard_task_widget-comment_attachments{padding:8px 8px 30px 8px;display:flex;flex-direction:column;flex-wrap:nowrap;overflow-x:auto;gap:6px;scrollbar-width:thin;scrollbar-color:#bbc7d1 transparent;margin-bottom:2px}.doboard_task_widget-comment_attachments::-webkit-scrollbar{height:4px}.doboard_task_widget-comment_attachments::-webkit-scrollbar-track{background:0 0}.doboard_task_widget-comment_attachments::-webkit-scrollbar-thumb{background-color:#bbc7d1;border-radius:2px}.doboard_task_widget-attachment_item{display:flex}.doboard_task_widget-attachment_url{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(255,255,255,.8);border-radius:4px;text-decoration:none;color:#40484f!important;font-size:11px;transition:background-color .2s ease;border:1px solid #bbc7d1;flex-shrink:0;white-space:nowrap}.doboard_task_widget-attachment_item:hover{background:#fff;text-decoration:none}.doboard_task_widget-attachment_icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:12px;height:12px}.doboard_task_widget-attachment_filename{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#40484f}.doboard_task_widget-attachment_item.image-attachment{cursor:pointer}.doboard_task_widget-attachment_item:not(.image-attachment){cursor:pointer}.doboard_task_widget-attachment_item.image-attachment img{width:64px;height:64px;object-fit:cover;border-radius:4px;border:1px solid #bbc7d1;transition:transform .2s ease,box-shadow .2s ease}.doboard_task_widget-attachment_item.image-attachment:hover img{transform:scale(1.1);box-shadow:0 2px 8px rgba(0,0,0,.15)}.doboard_task_widget-lightbox{position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s ease}.doboard_task_widget-lightbox.active{opacity:1;visibility:visible}.doboard_task_widget-lightbox-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);cursor:pointer}.doboard_task_widget-lightbox-content{position:relative;max-width:90vw;max-height:90vh;z-index:1}.doboard_task_widget-lightbox-image{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:4px;box-shadow:0 4px 20px rgba(0,0,0,.5)}.doboard_task_widget-lightbox-close{position:absolute;top:20px;right:20px;width:40px;height:40px;background:rgba(255,255,255,.8);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s ease;z-index:2}.doboard_task_widget-lightbox-close:hover{background:rgba(255,255,255,.6)}.doboard_task_widget-lightbox-close img{width:24px;height:24px}.doboard_task_widget-finished_tasks_header{display:flex;justify-content:space-between;align-items:center;padding:16px 15px;cursor:pointer;background-color:#f3f6f9;transform:scaleY(1.1)}.doboard_task_widget-finished_tasks_header:hover{background-color:#f3f6f9}.doboard_task_widget-finished_tasks_title{font-weight:500;font-size:14px;color:#252a2f}.doboard_task_widget-finished_tasks_chevron{display:flex;align-items:center;justify-content:center;transition:transform .3s ease}.doboard_task_widget-finished_tasks_header.expanded .doboard_task_widget-finished_tasks_chevron{transform:rotate(180deg)}.doboard_task_widget-finished_tasks_container{background:#f3f6f9;max-height:0;overflow:hidden;transition:max-height .3s ease-out}.doboard_task_widget-finished_tasks_container.expanded{max-height:2000px;transition:max-height .5s ease-in;padding-bottom:4px}#spotfix_doboard_task_widget_url{display:flex;justify-content:center}#spotfix_doboard_task_widget_url span{color:#707a83;font-weight:400;font-size:12px}#spotfix_widget_task_send_message_container span{color:#40484f;font-weight:400;font-size:16px;display:inline-flex;justify-content:center;align-items:center;padding:0 32px 0 32px;text-align:center}`;
 const SPOTFIX_DOBOARD_API_URL = 'https://api.doboard.com';
 
 /**
@@ -8859,7 +8859,7 @@ function registerUser(taskDetails) {
     const resultRegisterUser = (showMessageCallback) => registerUserDoboard(projectToken, accountId, userEmail, userName)
         .then((response) => {
             if (response.accountExists) {
-         document.querySelector('.doboard_task_widget-accordion .doboard_task_widget-input-container').innerText = ksesFilter('Account already exists. Please, login using your password.');
+                document.querySelector('.doboard_task_widget-accordion .doboard_task_widget-input-container').innerText = ksesFilter('Account already exists. Please, login using your password.');
                 document.querySelector('.doboard_task_widget-accordion .doboard_task_widget-input-container.hidden')?.classList?.remove('hidden');
                 document.getElementById('doboard_task_widget-user_name')
                     .closest('.doboard_task_widget-input-container').classList.add('hidden-container');
@@ -9100,10 +9100,22 @@ function formatToDotMonthDate(dateString) {
     const date = new Date(dateString.replace(' ', 'T'));
 
     const day = String(date.getDate()).padStart(2, '0');
-    const month = date.toLocaleString('en-GB', { month: 'short' });
+    const month = date.toLocaleString('en-GB', {month: 'short'});
     const year = date.getFullYear();
 
     return `${day}.${month}.${year}`;
+}
+
+function getSafeUrl(url) {
+    try {
+        const parsed = new URL(url, 'https://dummy-base.com');
+
+        if (['http:', 'https:', 'mailto:'].includes(parsed.protocol)) {
+            return url;
+        }
+    } catch (e) {
+    }
+    return '#';
 }
 
 
@@ -9226,12 +9238,12 @@ class CleanTalkWidgetDoboard {
             const config = typeof window.spotfixConfig === 'object' && window.spotfixConfig ? window.spotfixConfig : null;
 
             // Fallback to spotfixConfig when URL has no params or they are incomplete (e.g. WordPress plugin)
-                    params = {
-                        ...params,
-                        projectToken: params.projectToken || config.projectToken || '',
-                        projectId: params.projectId || config.projectId || '',
-                        accountId: params.accountId || config.accountId || ''
-                    };
+            params = {
+                ...params,
+                projectToken: params.projectToken || config.projectToken || '',
+                projectId: params.projectId || config.projectId || '',
+                accountId: params.accountId || config.accountId || ''
+            };
 
         } else {
             const data = document.querySelector('script[data-spotfix="SpotFix"]')
@@ -9535,7 +9547,7 @@ class CleanTalkWidgetDoboard {
         }
         const forgotPasswordButtonBlackMenu = document.querySelector('.doboard_task_widget-input-container-login-menu ~ #doboard_task_widget-container-login-forgot-password-form #doboard_task_widget-forgot_password-black');
         if (forgotPasswordButtonBlackMenu) {
-             forgotPasswordButtonBlackMenu.addEventListener('click', async () => {
+            forgotPasswordButtonBlackMenu.addEventListener('click', async () => {
                 const forgotPasswordForm = document.getElementById('doboard_task_widget-container-login-forgot-password-form');
                 const loginContainer = document.querySelector('.doboard_task_widget-input-container-login-menu');
 
@@ -9593,14 +9605,14 @@ class CleanTalkWidgetDoboard {
                         userEmail: userEmail,
                         userPassword: userPassword
                     })(this.registrationShowMessage);
-                        this.setUserMenuData();
+                    this.setUserMenuData();
 
-                        const submitButton = document.getElementById('doboard_task_widget-submit_button');
-                        if (submitButton) {
-                            submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
-                        }
+                    const submitButton = document.getElementById('doboard_task_widget-submit_button');
+                    if (submitButton) {
+                        submitButton.closest('.doboard_task_widget-field').classList.remove('doboard_task_widget-hidden');
+                    }
 
-                        await this.createWidgetElement('create_issue');
+                    await this.createWidgetElement('create_issue');
 
                 } catch (error) {
                     document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
@@ -9756,110 +9768,110 @@ class CleanTalkWidgetDoboard {
         const config = window.SpotfixWidgetConfig;
 
         switch (type) {
-            case 'create_issue':
-                templateName = 'create_issue';
-                this.type_name = templateName;
-                this.socket_type_name = templateName;
-                this.nonRequesting = nonRequesting;
-                templateVariables = {
-                    selectedText: this.selectedText || localStorage.getItem('spotfix-title-ls') || '',
-                    currentDomain: document.location.hostname || '',
-                    descriptionText: this.descriptionText || localStorage.getItem('spotfix-description-ls') || '',
-                    buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
-                    iconMaximize: +localStorage.getItem('maximize')
-                        ? SpotFixSVGLoader.getAsDataURI('iconMinimize')
-                        : SpotFixSVGLoader.getAsDataURI('iconMaximize'),
-                    iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
-                    iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
-                    ...this.srcVariables
-                };
-                storageGetUserIsDefined() && storageSetWidgetIsClosed(false);
-                break;
-            case 'wrap':
-                if (storageGetWidgetIsClosed()) {
-                    return;
-                }
+        case 'create_issue':
+            templateName = 'create_issue';
+            this.type_name = templateName;
+            this.socket_type_name = templateName;
+            this.nonRequesting = nonRequesting;
+            templateVariables = {
+                selectedText: this.selectedText || localStorage.getItem('spotfix-title-ls') || '',
+                currentDomain: document.location.hostname || '',
+                descriptionText: this.descriptionText || localStorage.getItem('spotfix-description-ls') || '',
+                buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
+                iconMaximize: +localStorage.getItem('maximize')
+                    ? SpotFixSVGLoader.getAsDataURI('iconMinimize')
+                    : SpotFixSVGLoader.getAsDataURI('iconMaximize'),
+                iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
+                iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
+                ...this.srcVariables
+            };
+            storageGetUserIsDefined() && storageSetWidgetIsClosed(false);
+            break;
+        case 'wrap':
+            if (storageGetWidgetIsClosed()) {
+                return;
+            }
 
-                templateName = 'wrap';
-                this.type_name = templateName;
-                this.socket_type_name = templateName;
-                this.nonRequesting = nonRequesting;
-                templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
-                        ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
-                break;
-            case 'wrap_review':
-                templateName = 'wrap_review';
-                this.type_name = templateName;
-                this.socket_type_name = templateName;
-                this.nonRequesting = nonRequesting;
-                templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
-                        ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
-                break;
-            case 'all_issues':
-                templateName = 'all_issues';
-                this.type_name = templateName;
-                this.socket_type_name = templateName;
-                this.nonRequesting = nonRequesting;
-                templateVariables = {...this.srcVariables};
-                break;
-            case 'user_menu':
-                templateName = 'user_menu';
-                this.socket_type_name = templateName;
-                this.nonRequesting = nonRequesting;
-                const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
-                templateVariables = {
-                    spotfixVersion: userMenuVersion ? 'Spotfix version ' + userMenuVersion + '.' : '',
-                    avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
-                    iconEye: SpotFixSVGLoader.getAsDataURI('iconEye'),
-                    iconDoor: SpotFixSVGLoader.getAsDataURI('iconDoor'),
-                    chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
-                    buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
-                    userName: 'Guest',
-                    email: getSpotfixEmail() || '',
-                    ...this.srcVariables};
-                break;
-            case 'spot_menu':
-                templateName = 'spot_menu';
-                this.socket_type_name = templateName;
-                this.nonRequesting = nonRequesting;
-                this.socket_type_name = templateName;
-                const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
-                templateVariables = {
-                    spotfixVersion: spotMenuVersion ? 'Spotfix version ' + spotMenuVersion + '.' : '',
-                    chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
-                    buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
-                    avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
-                    taskName: '',
-                    viewersCount: '',
-                    viewers: '',
-                    ...this.srcVariables};
-                break;
-            case 'concrete_issue':
-                templateName = 'concrete_issue';
-                this.type_name = templateName;
-                this.socket_type_name = templateName;
-                this.nonRequesting = nonRequesting;
-                // Update the number of tasks
-                this.savedIssuesQuantityAll = Array.isArray(this.allTasksData) ? this.allTasksData.length : 0;
-                // Calculate the number of issues on the current page
-                this.savedIssuesQuantityOnPage = Array.isArray(this.allTasksData)
-                    ? this.allTasksData.filter(task => {
-                        try {
-                            const meta = task.taskMeta ? JSON.parse(task.taskMeta) : {};
-                            return meta.pageURL === window.location.href;
-                        } catch (e) { return false; }
-                    }).length
-                    : 0;
+            templateName = 'wrap';
+            this.type_name = templateName;
+            this.socket_type_name = templateName;
+            this.nonRequesting = nonRequesting;
+            templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
+                    ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
+            break;
+        case 'wrap_review':
+            templateName = 'wrap_review';
+            this.type_name = templateName;
+            this.socket_type_name = templateName;
+            this.nonRequesting = nonRequesting;
+            templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
+                    ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
+            break;
+        case 'all_issues':
+            templateName = 'all_issues';
+            this.type_name = templateName;
+            this.socket_type_name = templateName;
+            this.nonRequesting = nonRequesting;
+            templateVariables = {...this.srcVariables};
+            break;
+        case 'user_menu':
+            templateName = 'user_menu';
+            this.socket_type_name = templateName;
+            this.nonRequesting = nonRequesting;
+            const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+            templateVariables = {
+                spotfixVersion: userMenuVersion ? 'Spotfix version ' + userMenuVersion + '.' : '',
+                avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
+                iconEye: SpotFixSVGLoader.getAsDataURI('iconEye'),
+                iconDoor: SpotFixSVGLoader.getAsDataURI('iconDoor'),
+                chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
+                buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
+                userName: 'Guest',
+                email: getSpotfixEmail() || '',
+                ...this.srcVariables};
+            break;
+        case 'spot_menu':
+            templateName = 'spot_menu';
+            this.socket_type_name = templateName;
+            this.nonRequesting = nonRequesting;
+            this.socket_type_name = templateName;
+            const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+            templateVariables = {
+                spotfixVersion: spotMenuVersion ? 'Spotfix version ' + spotMenuVersion + '.' : '',
+                chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
+                buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
+                avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
+                taskName: '',
+                viewersCount: '',
+                viewers: '',
+                ...this.srcVariables};
+            break;
+        case 'concrete_issue':
+            templateName = 'concrete_issue';
+            this.type_name = templateName;
+            this.socket_type_name = templateName;
+            this.nonRequesting = nonRequesting;
+            // Update the number of tasks
+            this.savedIssuesQuantityAll = Array.isArray(this.allTasksData) ? this.allTasksData.length : 0;
+            // Calculate the number of issues on the current page
+            this.savedIssuesQuantityOnPage = Array.isArray(this.allTasksData)
+                ? this.allTasksData.filter(task => {
+                    try {
+                        const meta = task.taskMeta ? JSON.parse(task.taskMeta) : {};
+                        return meta.pageURL === window.location.href;
+                    } catch (e) { return false; }
+                }).length
+                : 0;
 
-                templateVariables = {
-                    issueTitle: '...',
-                    issueComments: [],
-                    issuesCounter: getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll),
-                    ...this.srcVariables,
-                };
-                break;
-            default:
-                break;
+            templateVariables = {
+                issueTitle: '...',
+                issueComments: [],
+                issuesCounter: getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll),
+                ...this.srcVariables,
+            };
+            break;
+        default:
+            break;
         }
         if(!nonRequesting) {
             widgetContainer.innerHTML = this.loadTemplate(templateName, templateVariables);
@@ -9870,322 +9882,327 @@ class CleanTalkWidgetDoboard {
         }
         const container = document.querySelector('.doboard_task_widget-container');
         switch (type) {
-            case 'create_issue':
-                document.getElementById('spotfix-widget-create-task-visibility').checked = this.new_task_type === 'PUBLIC';
+        case 'create_issue':
+            document.getElementById('spotfix-widget-create-task-visibility').checked = this.new_task_type === 'PUBLIC';
 
-                if(container && +localStorage.getItem('maximize')){
-                    container.classList.add('doboard_task_widget-container-maximize');
-                } else if(container) {
-                    container.classList.remove('doboard_task_widget-container-maximize');
+            if(container && +localStorage.getItem('maximize')){
+                container.classList.add('doboard_task_widget-container-maximize');
+            } else if(container) {
+                container.classList.remove('doboard_task_widget-container-maximize');
+            }
+            // highlight selected item during task creation
+            const selection = window.getSelection();
+            const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+            const email = getSpotfixEmail();
+
+            if (sessionIdExists && email && !email.includes('spotfix_')) {
+                document.querySelector('.doboard_task_widget-login').classList.add('hidden');
+            }
+
+            const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
+            const titleContainer = document.getElementById('doboard_task_widget-title')?.closest('.doboard_task_widget-input-container');
+            const descriptionContainer = document.getElementById('doboard_task_widget-description-container');
+            const requireFullRegistrationMessage = document.getElementById('doboard_task_widget-require_full_registration');
+            const submitButtonContainer = document.getElementById('doboard_task_widget-submit_button')?.closest('.doboard_task_widget-field');
+            const visibilityToggle = document.querySelector('.doboard_task_widget-visibility-toggle');
+
+            const registerOnlyButton = document.getElementById('doboard_task_widget-register_only_button');
+
+            if (requireFullRegistration && !sessionIdExists) {
+                if (titleContainer) titleContainer.style.display = '';
+                if (descriptionContainer) descriptionContainer.style.display = '';
+                if (submitButtonContainer) submitButtonContainer.style.display = 'none';
+                if (visibilityToggle) visibilityToggle.style.display = 'none';
+                if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.remove('doboard_task_widget-hidden');
+                const loginSection = document.querySelector('.doboard_task_widget-login');
+                if (loginSection) loginSection.classList.add('active');
+                // Hide login accordion icon when require_full_registration
+                const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
+                if (loginIcon) loginIcon.classList.add('doboard_task_widget-login-icon-hidden');
+                // Show register only button
+                if (registerOnlyButton) registerOnlyButton.classList.remove('doboard_task_widget-hidden');
+            } else {
+                if (titleContainer) titleContainer.style.display = '';
+                if (descriptionContainer) descriptionContainer.style.display = '';
+                if (submitButtonContainer) submitButtonContainer.style.display = '';
+                if (visibilityToggle) visibilityToggle.style.display = '';
+                if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.add('doboard_task_widget-hidden');
+                // Show login accordion icon when not require_full_registration
+                const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
+                if (loginIcon) loginIcon.classList.remove('doboard_task_widget-login-icon-hidden');
+                // Hide register only button
+                if (registerOnlyButton) registerOnlyButton.classList.add('doboard_task_widget-hidden');
+            }
+
+            if (
+                selection.type === 'Range'
+            ) {
+                const selectedData = spotFixGetSelectedData(selection);
+                if (selectedData) {
+                    spotFixScrollToNodePath(selectedData.nodePath);
+                    this.positionWidgetContainer();
                 }
-                // highlight selected item during task creation
-                const selection = window.getSelection();
-                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
-                const email = getSpotfixEmail();
+            }
+            // bind creation events
+            this.bindCreateTaskEvents(this);
+            this.bindShowLoginFormEvents();
 
-                if (sessionIdExists && email && !email.includes('spotfix_')) {
-                    document.querySelector('.doboard_task_widget-login').classList.add('hidden');
-                }
+            this.fileUploader = new FileUploader(this.escapeHtml);
+            this.fileUploader.init();
 
-                const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
-                const titleContainer = document.getElementById('doboard_task_widget-title')?.closest('.doboard_task_widget-input-container');
-                const descriptionContainer = document.getElementById('doboard_task_widget-description-container');
-                const requireFullRegistrationMessage = document.getElementById('doboard_task_widget-require_full_registration');
-                const submitButtonContainer = document.getElementById('doboard_task_widget-submit_button')?.closest('.doboard_task_widget-field');
-                const visibilityToggle = document.querySelector('.doboard_task_widget-visibility-toggle');
-
-                const registerOnlyButton = document.getElementById('doboard_task_widget-register_only_button');
-
-                if (requireFullRegistration && !sessionIdExists) {
-                    if (titleContainer) titleContainer.style.display = '';
-                    if (descriptionContainer) descriptionContainer.style.display = '';
-                    if (submitButtonContainer) submitButtonContainer.style.display = 'none';
-                    if (visibilityToggle) visibilityToggle.style.display = 'none';
-                    if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.remove('doboard_task_widget-hidden');
-                    const loginSection = document.querySelector('.doboard_task_widget-login');
-                    if (loginSection) loginSection.classList.add('active');
-                    // Hide login accordion icon when require_full_registration
-                    const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
-                    if (loginIcon) loginIcon.classList.add('doboard_task_widget-login-icon-hidden');
-                    // Show register only button
-                    if (registerOnlyButton) registerOnlyButton.classList.remove('doboard_task_widget-hidden');
-                } else {
-                    if (titleContainer) titleContainer.style.display = '';
-                    if (descriptionContainer) descriptionContainer.style.display = '';
-                    if (submitButtonContainer) submitButtonContainer.style.display = '';
-                    if (visibilityToggle) visibilityToggle.style.display = '';
-                    if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.add('doboard_task_widget-hidden');
-                    // Show login accordion icon when not require_full_registration
-                    const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
-                    if (loginIcon) loginIcon.classList.remove('doboard_task_widget-login-icon-hidden');
-                    // Hide register only button
-                    if (registerOnlyButton) registerOnlyButton.classList.add('doboard_task_widget-hidden');
-                }
-
-                if (
-                    selection.type === 'Range'
-                ) {
-                    const selectedData = spotFixGetSelectedData(selection);
-                    if (selectedData) {
-                        spotFixScrollToNodePath(selectedData.nodePath);
-                        this.positionWidgetContainer();
-                    }
-                }
-                // bind creation events
-                this.bindCreateTaskEvents(this);
-                this.bindShowLoginFormEvents();
-
-                this.fileUploader = new FileUploader(this.escapeHtml);
-                this.fileUploader.init();
-
-                const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
-                const fileUploaderDesc = this.fileUploader;
+            const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
+            const fileUploaderDesc = this.fileUploader;
 
 
-                if (window.DescriptionEditorIframe.iframe && !this.nonRequesting) {
-                    window.DescriptionEditorIframe.remove();
-                }
-                if(!this.nonRequesting) {
-                    // Create description editor iframe
-                    window.DescriptionEditorIframe.create({
-                        savedContent: savedDescription,
-                        onChange: function(content) {
-                            localStorage.setItem('spotfix-description-ls', content);
+            if (window.DescriptionEditorIframe.iframe && !this.nonRequesting) {
+                window.DescriptionEditorIframe.remove();
+            }
+            if(!this.nonRequesting) {
+                // Create description editor iframe
+                window.DescriptionEditorIframe.create({
+                    savedContent: savedDescription,
+                    onChange: function(content) {
+                        localStorage.setItem('spotfix-description-ls', content);
+                    },
+                    handlers: {
+                        onAttachmentClick: function() {
+                            fileUploaderDesc?.fileInput?.click();
                         },
-                        handlers: {
-                            onAttachmentClick: function() {
-                                fileUploaderDesc?.fileInput?.click();
-                            },
-                            onScreenshotClick: function() {
-                                fileUploaderDesc?.makeScreenshot();
-                            },
-                        }
-                    }).catch(function(error) {
-                        console.error('Failed to create description editor:', error);
-                    });
-                }
-
-
-                break;
-            case 'wrap':
-                await this.getTaskCount();
-                document.querySelector('.doboard_task_widget-wrap').addEventListener('click', async (e) => {
-                    const widgetElementClasses = e.currentTarget.classList;
-                    if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
-                        if(this.type_name !== 'all_issues') await this.createWidgetElement('all_issues');
+                        onScreenshotClick: function() {
+                            fileUploaderDesc?.makeScreenshot();
+                        },
                     }
+                }).catch(function(error) {
+                    console.error('Failed to create description editor:', error);
                 });
-                hideContainersSpinner(false);
-                break;
-            case 'wrap_review':
-                document.querySelector('#doboard_task_widget_button').addEventListener('click', (e) => {
-                    spotFixOpenWidget(this.selectedData, 'create_issue');
-                });
-                break;
-            case 'all_issues':
-                if (this.nonRequesting) {
-                    hideContainersSpinner();
-                } else {
-                    changeSize(container);
+            }
+
+
+            break;
+        case 'wrap':
+            await this.getTaskCount();
+            document.querySelector('.doboard_task_widget-wrap').addEventListener('click', async (e) => {
+                const widgetElementClasses = e.currentTarget.classList;
+                if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
+                    if(this.type_name !== 'all_issues') await this.createWidgetElement('all_issues');
                 }
-                spotFixRemoveHighlights();
-                let issuesQuantityOnPage = 0;
-                const sessionId = localStorage.getItem('spotfix_session_id');
+            });
+            hideContainersSpinner(false);
+            break;
+        case 'wrap_review':
+            document.querySelector('#doboard_task_widget_button').addEventListener('click', (e) => {
+                spotFixOpenWidget(this.selectedData, 'create_issue');
+            });
+            break;
+        case 'all_issues':
+            if (this.nonRequesting) {
+                hideContainersSpinner();
+            } else {
+                changeSize(container);
+            }
+            spotFixRemoveHighlights();
+            let issuesQuantityOnPage = 0;
+            const sessionId = localStorage.getItem('spotfix_session_id');
 
-                const notifications = this.nonRequesting ? [] : await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
+            const notifications = this.nonRequesting ? [] : await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
 
-                this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
-                const tasks = this.allTasksData;
-                tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId, this.nonRequesting);
-                let spotsToBeHighlighted = [];
-                if (tasks.length > 0) {
-                    const currentURL = window.location.href;
-                    const sortedTasks = tasks.sort((a, b) => {
-                        const aIsHere = JSON.parse(a.taskMeta)?.pageURL === currentURL ? 1 : 0;
-                        const bIsHere = JSON.parse(b.taskMeta)?.pageURL === currentURL ? 1 : 0;
-                        return bIsHere - aIsHere;
-                    });
+            this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
+            const tasks = this.allTasksData;
+            tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId, this.nonRequesting);
+            let spotsToBeHighlighted = [];
+            if (tasks.length > 0) {
+                const currentURL = window.location.href;
+                const sortedTasks = tasks.sort((a, b) => {
+                    const aIsHere = JSON.parse(a.taskMeta)?.pageURL === currentURL ? 1 : 0;
+                    const bIsHere = JSON.parse(b.taskMeta)?.pageURL === currentURL ? 1 : 0;
+                    return bIsHere - aIsHere;
+                });
 
-                    const activeTasks = sortedTasks.filter(task => task.taskStatus !== 'DONE');
-                    const finishedTasks = sortedTasks.filter(task => task.taskStatus === 'DONE');
+                const activeTasks = sortedTasks.filter(task => task.taskStatus !== 'DONE');
+                const finishedTasks = sortedTasks.filter(task => task.taskStatus === 'DONE');
 
-                    const container = document.querySelector(".doboard_task_widget-all_issues-container");
-                    container.innerHTML = '';
-                    const generateTaskHtml = (elTask, isFinishedGroup) => {
-                        const taskId = elTask.taskId;
-                        const taskTitle = elTask.taskTitle;
-                        const taskMetaString = elTask.taskMeta;
-                        let taskData = null;
+                const container = document.querySelector(".doboard_task_widget-all_issues-container");
+                container.innerHTML = '';
+                const generateTaskHtml = (elTask, isFinishedGroup) => {
+                    const taskId = elTask.taskId;
+                    const taskTitle = elTask.taskTitle;
+                    const taskMetaString = elTask.taskMeta;
+                    let taskData = null;
 
-                        if (taskMetaString) {
-                            try {
-                                taskData = JSON.parse(taskMetaString);
-                                taskData.isFixed = elTask.taskStatus === 'DONE';
-                                taskData.taskId = elTask.taskId;
-                            } catch (error) {
-                                taskData = null;
-                            }
+                    if (taskMetaString) {
+                        try {
+                            taskData = JSON.parse(taskMetaString);
+                            taskData.isFixed = elTask.taskStatus === 'DONE';
+                            taskData.taskId = elTask.taskId;
+                        } catch (error) {
+                            taskData = null;
                         }
+                    }
 
-                        const currentPageURL = taskData ? taskData?.pageURL : '';
-                        let taskNodePath = '';
+                    const currentPageURL = taskData ? taskData?.pageURL : '';
+                    let taskNodePath = '';
 
-                        let taskPublicStatusImgSrc = '';
-                        let taskPublicStatusHint = 'Task publicity is unknown';
-                        if (taskData && taskData.isPublic !== undefined) {
-                            if (taskData.isPublic) {
-                                taskPublicStatusImgSrc = this.srcVariables.iconSpotPublic;
-                                taskPublicStatusHint = 'The task is public';
-                            } else {
-                                taskPublicStatusImgSrc = this.srcVariables.iconSpotPrivate;
-                                taskPublicStatusHint = 'The task is private and visible only for registered DoBoard users';
-                            }
+                    let taskPublicStatusImgSrc = '';
+                    let taskPublicStatusHint = 'Task publicity is unknown';
+                    if (taskData && taskData.isPublic !== undefined) {
+                        if (taskData.isPublic) {
+                            taskPublicStatusImgSrc = this.srcVariables.iconSpotPublic;
+                            taskPublicStatusHint = 'The task is public';
+                        } else {
+                            taskPublicStatusImgSrc = this.srcVariables.iconSpotPrivate;
+                            taskPublicStatusHint = 'The task is private and visible only for registered DoBoard users';
                         }
+                    }
 
-                        if (currentPageURL === window.location.href) {
-                            issuesQuantityOnPage++;
-                            taskNodePath = taskData ? taskData.nodePath : '';
-                        }
+                    if (currentPageURL === window.location.href) {
+                        issuesQuantityOnPage++;
+                        taskNodePath = taskData ? taskData.nodePath : '';
+                    }
 
-                        if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
-                            const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId);
-                            const avatarData = getAvatarData(taskFullDetails);
-                            const hasUpdates = !!(notifications?.find(item => +item?.task_id === elTask?.taskId));
-                            const isDone = elTask.taskStatus === 'DONE';
+                    if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
+                        const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId);
+                        const avatarData = getAvatarData(taskFullDetails);
+                        const hasUpdates = !!(notifications?.find(item => +item?.task_id === elTask?.taskId));
+                        const isDone = elTask.taskStatus === 'DONE';
+                        const meta = JSON.parse(elTask.taskMeta);
+                        const isNoRelevant = meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath);
+                        const isTaskWithoutReference = !((meta.nodePath || meta.selectedText) && meta?.pageURL);
 
-                            const elementBgCSSClass = isFinishedGroup
-                                ? 'doboard_task_widget-task_row-grey'
-                                : (isDone ? 'doboard_task_widget-task_row-green' : '');
+                        const elementBgCSSClass = isFinishedGroup
+                            ? 'doboard_task_widget-task_row-grey'
+                            : (isDone ? 'doboard_task_widget-task_row-green' : '');
 
-                            const statusFixedHtml = (isFinishedGroup || isDone)
-                                ? this.loadTemplate('fixedHtml')
-                                : '';
+                        const statusFixedHtml = !isNoRelevant ? (isFinishedGroup || isDone)
+                            ? this.loadTemplate('fixedHtml')
+                            : '' : '';
 
-                            const amountOfComments = (isFinishedGroup || isDone)
+                        const amountOfComments = !isNoRelevant ? (isFinishedGroup || isDone)
                                 ? ''
-                                : `<span style="background-color: ${hasUpdates ? '#F08C43' : '#D6DDE3'}" class="doboard_task_widget-commentsIndicator">${elTask.commentsCount}</span>`;
+                                : `<span style="background-color: ${hasUpdates ? '#F08C43' : '#D6DDE3'}" class="doboard_task_widget-commentsIndicator">${elTask.commentsCount}</span>`
+                            : '';
 
-                            const listIssuesTemplateVariables = {
-                                taskTitle: taskTitle || '',
-                                taskAuthorAvatarImgSrc: taskFullDetails.taskAuthorAvatarImgSrc,
-                                taskAuthorName: taskFullDetails.taskAuthorName,
-                                taskPublicStatusImgSrc: taskPublicStatusImgSrc,
-                                taskPublicStatusHint: taskPublicStatusHint,
-                                taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
-                                taskPageUrlFull: currentPageURL,
-                                iconOfVisibility: elTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicSmall : this.srcVariables.iconLockSmall,
-                                iconLinkChain: this.srcVariables.iconLinkChain,
-                                taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
-                                taskPageUrl: localStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
-                                taskLastUpdate: formatToDotMonthDate(elTask.taskLastUpdate),
-                                nodePath: this.sanitizeNodePath(taskNodePath),
-                                taskId: taskId,
-                                avatarCSSClass: avatarData.avatarCSSClass,
-                                avatarStyle: avatarData.avatarStyle,
-                                taskAuthorInitials: avatarData.taskAuthorInitials,
-                                initialsClass: avatarData.initialsClass,
-                                classUnread: storageProvidedTaskHasUnreadUpdates(taskFullDetails.taskId) ? 'unread' : '',
-                                elementBgCSSClass,
-                                statusFixedHtml,
-                                amountOfComments
-                            };
+                        const listIssuesTemplateVariables = {
+                            taskTitle: taskTitle || '',
+                            taskAuthorAvatarImgSrc: taskFullDetails.taskAuthorAvatarImgSrc,
+                            taskAuthorName: taskFullDetails.taskAuthorName,
+                            taskPublicStatusImgSrc: taskPublicStatusImgSrc,
+                            taskPublicStatusHint: taskPublicStatusHint,
+                            taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
+                            taskPageUrlFull: currentPageURL,
+                            iconOfVisibility: elTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicSmall : this.srcVariables.iconLockSmall,
+                            iconLinkChain: isTaskWithoutReference ? SpotFixSVGLoader.getAsDataURI('iconCrossedLinkChain') : this.srcVariables.iconLinkChain,
+                            taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
+                            taskPageUrl: isTaskWithoutReference ? 'No link with content' : localStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
+                            taskLastUpdate: formatToDotMonthDate(elTask.taskLastUpdate),
+                            nodePath: this.sanitizeNodePath(taskNodePath),
+                            taskId: taskId,
+                            avatarCSSClass: avatarData.avatarCSSClass,
+                            avatarStyle: avatarData.avatarStyle,
+                            taskAuthorInitials: avatarData.taskAuthorInitials,
+                            initialsClass: avatarData.initialsClass,
+                            classUnread: storageProvidedTaskHasUnreadUpdates(taskFullDetails.taskId) ? 'unread' : '',
+                            noRelevantHtml: isNoRelevant ? this.loadTemplate('noRelevantHtml') : '',
+                            elementBgCSSClass,
+                            statusFixedHtml,
+                            amountOfComments
+                        };
 
-                            if (this.isSpotHaveToBeHighlighted(taskData)) {
-                                spotsToBeHighlighted.push(taskData);
-                            }
-
-                            return this.loadTemplate('list_issues', listIssuesTemplateVariables);
+                        if (this.isSpotHaveToBeHighlighted(taskData)) {
+                            spotsToBeHighlighted.push(taskData);
                         }
 
-                        return '';
-                    };
-
-                        let activeTasksHtml = '';
-                        for (const elTask of activeTasks) {
-                            activeTasksHtml += generateTaskHtml(elTask, false);
-                        }
-                        if (activeTasksHtml) {
-                            container.innerHTML += activeTasksHtml;
-                        }
-
-
-                    if (finishedTasks.length > 0) {
-                        let finishedTasksContent = '';
-                        for (const elTask of finishedTasks) {
-                            finishedTasksContent += generateTaskHtml(elTask, true);
-                        }
-
-                        const finishedSectionHTML = this.loadTemplate('finishedTasksSection', {
-                            finishedCount: finishedTasks.length,
-                            iconFinishedTitle: this.srcVariables.iconFinishedTitle,
-                            finishedTasksContent: finishedTasksContent
-                        });
-                        container.innerHTML += finishedSectionHTML;
-
-                        const finishedHeader = document.getElementById('finishedTasksHeader');
-                        const finishedContainer = document.getElementById('finishedTasksContainer');
-                        if (finishedHeader && finishedContainer) {
-                            finishedHeader.addEventListener('click', () => {
-                                finishedContainer.classList.toggle('expanded');
-                                finishedHeader.classList.toggle('expanded');
-
-                                setTimeout(() => {
-                                    if (finishedContainer.classList.contains('expanded')) {
-                                        const children = finishedContainer.children;
-                                        if (children.length > 0) {
-                                            const targetIndex = Math.min(2, children.length - 1);
-                                            children[targetIndex].scrollIntoView({
-                                                behavior: 'smooth',
-                                                block: 'nearest',
-                                            });
-                                        }
-                                    }
-                                }, 350);
-                            });
-                        }
+                        return this.loadTemplate('list_issues', listIssuesTemplateVariables);
                     }
 
-                    this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
-                    this.savedIssuesQuantityAll = tasks.length;
-                    spotFixHighlightElements(spotsToBeHighlighted, this);
-                    document.querySelector('.doboard_task_widget-header span').innerHTML = ksesFilter('All spots ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
+                    return '';
+                };
+
+                let activeTasksHtml = '';
+                for (const elTask of activeTasks) {
+                    activeTasksHtml += generateTaskHtml(elTask, false);
+                }
+                if (activeTasksHtml) {
+                    container.innerHTML += activeTasksHtml;
                 }
 
-                if (tasks.length === 0) {
-                    document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = ksesFilter('<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>');
+
+                if (finishedTasks.length > 0) {
+                    let finishedTasksContent = '';
+                    for (const elTask of finishedTasks) {
+                        finishedTasksContent += generateTaskHtml(elTask, true);
+                    }
+
+                    const finishedSectionHTML = this.loadTemplate('finishedTasksSection', {
+                        finishedCount: finishedTasks.length,
+                        iconFinishedTitle: this.srcVariables.iconFinishedTitle,
+                        finishedTasksContent: finishedTasksContent
+                    });
+                    container.innerHTML += finishedSectionHTML;
+
+                    const finishedHeader = document.getElementById('finishedTasksHeader');
+                    const finishedContainer = document.getElementById('finishedTasksContainer');
+                    if (finishedHeader && finishedContainer) {
+                        finishedHeader.addEventListener('click', () => {
+                            finishedContainer.classList.toggle('expanded');
+                            finishedHeader.classList.toggle('expanded');
+
+                            setTimeout(() => {
+                                if (finishedContainer.classList.contains('expanded')) {
+                                    const children = finishedContainer.children;
+                                    if (children.length > 0) {
+                                        const targetIndex = Math.min(2, children.length - 1);
+                                        children[targetIndex].scrollIntoView({
+                                            behavior: 'smooth',
+                                            block: 'nearest',
+                                        });
+                                    }
+                                }
+                            }, 350);
+                        });
+                    }
                 }
 
-                // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
-                this.bindIssuesClick();
-                hideContainersSpinner(false);
-                break;
+                this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
+                this.savedIssuesQuantityAll = tasks.length;
+                spotFixHighlightElements(spotsToBeHighlighted, this);
+                document.querySelector('.doboard_task_widget-header span').innerHTML = ksesFilter('All spots ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
+            }
+
+            if (tasks.length === 0) {
+                document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = ksesFilter('<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>');
+            }
+
+            // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
+            this.bindIssuesClick();
+            hideContainersSpinner(false);
+            break;
         case 'user_menu':
 
-                setToggleStatus(this);
+            setToggleStatus(this);
 
-                const user = await getUserDetails(this.params, this.nonRequesting);
-                if(!this.nonRequesting) await getReleaseVersion();
-                let userMenuSpotfixVersion = '';
-                const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
-                userMenuSpotfixVersion = userMenuVersion ? `Spotfix version ${userMenuVersion}.` : '';
+            const user = await getUserDetails(this.params, this.nonRequesting);
+            if(!this.nonRequesting) await getReleaseVersion();
+            let userMenuSpotfixVersion = '';
+            const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+            userMenuSpotfixVersion = userMenuVersion ? `Spotfix version ${userMenuVersion}.` : '';
 
-                templateVariables.spotfixVersion = userMenuSpotfixVersion || '';
+            templateVariables.spotfixVersion = userMenuSpotfixVersion || '';
 
-                if(user){
-                    templateVariables.userName = user.name || 'Guest';
-                    templateVariables.email = user.email || getSpotfixEmail() || '';
-                    if(user?.avatar?.s) templateVariables.avatar = user?.avatar?.s;
-                }
+            if(user){
+                templateVariables.userName = user.name || 'Guest';
+                templateVariables.email = user.email || getSpotfixEmail() || '';
+                if(user?.avatar?.s) templateVariables.avatar = user?.avatar?.s;
+            }
 
-                widgetContainer.innerHTML = this.loadTemplate('user_menu', templateVariables);
+            widgetContainer.innerHTML = this.loadTemplate('user_menu', templateVariables);
 
-                document.body.appendChild(widgetContainer);
-                setToggleStatus(this);
-                checkLogInOutButtonsVisible();
-                this.bindShowLoginFormEvents();
-                this.bindWidgetInputsInteractive();
+            document.body.appendChild(widgetContainer);
+            setToggleStatus(this);
+            checkLogInOutButtonsVisible();
+            this.bindShowLoginFormEvents();
+            this.bindWidgetInputsInteractive();
 
-                break;
+            break;
         case 'spot_menu':
             if(!this.nonRequesting) await getReleaseVersion();
             let spotfixVersion = '';
@@ -10244,52 +10261,64 @@ class CleanTalkWidgetDoboard {
 
             break;
         case 'concrete_issue':
-                if(this.nonRequesting) {
-                    hideContainersSpinner();
-                    this.allTasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
-                } else {
-                    changeSize(container);
-                }
-                if(!this.nonRequesting && this.currentActiveTaskId) {
-                    updateNotificationsDoboard(this.currentActiveTaskId, this.params.projectToken, this.params.accountId)
-                }
-                tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId, this.nonRequesting);
-                const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId, this.nonRequesting);
-                // Update issue title in the interface
-                const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
-                if (issueTitleElement) {
-                    issueTitleElement.innerText = ksesFilter(tasksFullDetails.taskName || taskDetails?.issueTitle);
-                }
+            if(this.nonRequesting) {
+                hideContainersSpinner();
+                this.allTasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+            } else {
+                changeSize(container);
+            }
+            if(!this.nonRequesting && this.currentActiveTaskId) {
+                updateNotificationsDoboard(this.currentActiveTaskId, this.params.projectToken, this.params.accountId)
+            }
+            tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId, this.nonRequesting);
+            const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId, this.nonRequesting);
+            // Update issue title in the interface
+            const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
+            if (issueTitleElement) {
+                issueTitleElement.innerText = ksesFilter(tasksFullDetails.taskName || taskDetails?.issueTitle);
+            }
 
-                templateVariables.issueTitle = tasksFullDetails.taskName || taskDetails?.issueTitle;
-                templateVariables.issueComments = taskDetails?.issueComments;
-                templateVariables.amountOfComments = `${taskDetails?.issueComments.length || 0} messages`;
-                // Highlight the task's selected text
-                let nodePath = null;
-                    const currentTaskData = this.allTasksData.find((element) => String(element.taskId) === String(taskDetails.taskId));
-                    let meta = null;
+            templateVariables.issueTitle = tasksFullDetails.taskName || taskDetails?.issueTitle;
+            templateVariables.issueComments = taskDetails?.issueComments;
+            templateVariables.amountOfComments = `${taskDetails?.issueComments.length || 0} messages`;
+            // Highlight the task's selected text
+            let nodePath = null;
+            const currentTaskData = this.allTasksData.find((element) => String(element.taskId) === String(taskDetails.taskId));
+            let meta = null;
 
-                    if (currentTaskData && currentTaskData.taskMeta) {
-                        try {
-                            meta = JSON.parse(currentTaskData.taskMeta);
-                            nodePath = meta.nodePath || null;
-                        } catch (e) { nodePath = null; meta = null; }
-                    }
+            if (currentTaskData && currentTaskData.taskMeta) {
+                try {
+                    meta = JSON.parse(currentTaskData.taskMeta);
+                    nodePath = meta.nodePath || null;
+                } catch (e) { nodePath = null; meta = null; }
+            }
 
             templateVariables.taskPageUrl = meta?.pageURL;
             templateVariables.taskFormattedPageUrl = '';
 
             let taskFormattedPageUrl = '';
 
-            if (typeof meta?.pageURL === 'string'){
-                taskFormattedPageUrl = meta?.pageURL?.replace(window.location.origin, '');
-                templateVariables.taskFormattedPageUrl = taskFormattedPageUrl.length < 2
-                    ? meta?.pageURL?.replace(/^https?:\/\//, '')
+            const issueLinkElement = document.getElementById('spotfix_doboard_task_widget_url');
+            const isPageUrlString = typeof meta?.pageURL === 'string';
+
+            if (isPageUrlString) {
+                taskFormattedPageUrl = meta.pageURL.replace(window.location.origin, '');
+                taskFormattedPageUrl = taskFormattedPageUrl.length < 2
+                    ? meta.pageURL.replace(/^https?:\/\//, '')
                     : taskFormattedPageUrl;
             }
-            const issueLinkElement = document.getElementById('spotfix_doboard_task_widget_url');
-            if (issueLinkElement) {
-                issueLinkElement.innerHTML = `<a rel="nofollow" href="${meta?.pageURL}">${templateVariables.taskFormattedPageUrl}</a>`;
+
+            if (isPageUrlString || issueLinkElement) {
+                if (meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath)) {
+                    templateVariables.taskFormattedPageUrl = `<span>The link to the content has been lost because the content was changed, deleted, or moved to another URL.</span>`;
+                } else if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
+                    const safeUrl = this.escapeHtml(getSafeUrl(meta.pageURL));
+                    const safeText = this.escapeHtml(taskFormattedPageUrl);
+
+                    templateVariables.taskFormattedPageUrl = `<a rel="nofollow" style="word-break: break-all" href="${safeUrl}">${safeText}</a>`;
+                } else {
+                    templateVariables.taskFormattedPageUrl = `<span>This spot not have link because it created without selecting a content.</span>`;
+                }
             }
 
             templateVariables.contenerClasess = +localStorage.getItem('maximize')
@@ -10305,146 +10334,146 @@ class CleanTalkWidgetDoboard {
                 document.body.appendChild(widgetContainer);
             }
 
-                    // remove old highlights before adding new ones
-                    spotFixRemoveHighlights();
+            // remove old highlights before adding new ones
+            spotFixRemoveHighlights();
 
-                    if (meta && nodePath) {
-                        // Pass the task meta object as an array
-                        spotFixHighlightElements([{...meta, taskId: currentTaskData.taskId}], this);
-                        if (typeof spotFixScrollToNodePath === 'function') {
-                            spotFixScrollToNodePath(nodePath);
-                        }
-                    }
-
-                const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
-                if (!issuesCommentsContainer) return;
-
-                const currentScrollTop = issuesCommentsContainer.scrollTop;
-                const wasAtBottom = currentScrollTop + issuesCommentsContainer.clientHeight >= issuesCommentsContainer.scrollHeight - 10;
-
-                let dayMessagesData = [];
-                const initIssuerID = localStorage.getItem('spotfix_user_id');
-                let userIsIssuer = false;
-                if ( taskDetails.issueComments.length > 0 ) {
-                    storageRemoveUnreadUpdateForTaskID(taskDetails.taskId);
-                    issuesCommentsContainer.innerHTML = ksesFilter('');
-                    for (const comment of taskDetails.issueComments) {
-                        userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
-                        const avatarData = getAvatarData({
-                            taskAuthorAvatarImgSrc: comment.commentAuthorAvatarSrc,
-                            taskAuthorName: comment.commentAuthorName,
-                        });
-                        let attachmentsHTML = '';
-                        if (comment.commentAttachments && comment.commentAttachments.length > 0) {
-                            for (const att of comment.commentAttachments) {
-                                const attFilename = att.filename || att.URL?.split('/').pop() || 'File';
-                                const attUrl = att.URL || '#';
-                                const attThumbnailUrl = att.URL_thumbnail || att.URL || '#';
-                                const attIcon = SpotFixSVGLoader.getAttachmentIcon(attFilename, attUrl, attThumbnailUrl);
-                                const attIsImage = this.isImageFile(attFilename);
-                                const attClass = attIsImage ? 'image-attachment' : '';
-                                attachmentsHTML += this.loadTemplate('concrete_issue_attachment', {
-                                    attachmentUrl: attUrl,
-                                    attachmentFilename: attFilename,
-                                    attachmentIcon: attIcon,
-                                    attachmentClass: attClass,
-                                    attachmentIsImage: attIsImage ? 'true' : 'false',
-                                });
-                            }
-                        }
-
-                        const commentData = {
-                            commentAuthorName: comment.commentAuthorName,
-                            commentBody: comment.commentBody,
-                            commentDate: comment.commentDate,
-                            commentTime: comment.commentTime,
-                            commentAttachments: attachmentsHTML,
-                            issueTitle: templateVariables.issueTitle,
-                            avatarCSSClass: avatarData.avatarCSSClass,
-                            avatarStyle: avatarData.avatarStyle,
-                            taskAuthorInitials: avatarData.taskAuthorInitials,
-                            initialsClass: avatarData.initialsClass,
-                            issueMessageClassOwner: userIsIssuer ? 'owner' : 'guest',
-                        };
-                        if (dayMessagesData[comment.commentDate] === undefined) {
-                            dayMessagesData[comment.commentDate] = [];
-                            dayMessagesData[comment.commentDate].push(commentData);
-                        } else {
-                            dayMessagesData[comment.commentDate].push(commentData);
-                        }
-                    }
-                    let daysWrapperHTML = '';
-
-                    for (const day in dayMessagesData) {
-                        let currentDayMessages = dayMessagesData[day];
-                        let dayMessagesWrapperHTML = '';
-                        currentDayMessages.sort((a, b) => a.commentTime.localeCompare(b.commentTime));
-                        for (const messageId in currentDayMessages) {
-                            let currentMessageTemplateVariables = currentDayMessages[messageId];
-                            dayMessagesWrapperHTML += this.loadTemplate('concrete_issue_messages', currentMessageTemplateVariables);
-                        }
-                        daysWrapperHTML += this.loadTemplate('concrete_issue_day_content',
-                            {
-                                dayContentMonthDay: day,
-                                dayContentMessages: dayMessagesWrapperHTML,
-                                statusFixedHtml: tasksFullDetails?.taskStatus !== 'DONE' ? '' : this.loadTemplate('fixedTaskHtml')
-                            },
-                        );
-                    }
-
-                    if (!this.nonRequesting) {
-                        issuesCommentsContainer.innerHTML = daysWrapperHTML;
-                    } else {
-                        if (issuesCommentsContainer.innerHTML !== daysWrapperHTML) {
-                            issuesCommentsContainer.innerHTML = daysWrapperHTML;
-                        }
-                    }
-
-                    // Bind click events to image attachments for lightbox
-                    this.bindImageAttachmentClicks();
-
-                } else {
-                    issuesCommentsContainer.innerHTML = ksesFilter('No comments');
+            if (meta && nodePath) {
+                // Pass the task meta object as an array
+                spotFixHighlightElements([{...meta, taskId: currentTaskData.taskId}], this);
+                if (typeof spotFixScrollToNodePath === 'function') {
+                    spotFixScrollToNodePath(nodePath);
                 }
+            }
 
-                // textarea (new comment) behaviour - using iframe editor
-                const mainThis = this;
-                const fileUploader = this.fileUploader;
+            const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
+            if (!issuesCommentsContainer) return;
 
-                // Remove existing iframe editor if any
-                if (window.MessageEditorIframe.iframe && !this.nonRequesting) {
-                    window.MessageEditorIframe.remove();
-                }
-                if(!this.nonRequesting) {
-                    // Create message editor iframe
-                    window.MessageEditorIframe.create({
-                        onReady: function() {
-                            // Scroll to the bottom comments
-                            if (!mainThis.nonRequesting) {
-                                const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
-                                if (container) {
-                                    setTimeout(() => {
-                                        const scrollPosition = container.scrollHeight;
-                                        container.scrollTo({top: scrollPosition, behavior: 'smooth'});
-                                    }, 50);
-                                }
-                            }
-                        },
-                        handlers: {
-                            onAttachmentClick: function() {
-                                fileUploader?.fileInput?.click();
-                            },
-                            onScreenshotClick: function() {
-                                fileUploader?.makeScreenshot();
-                            },
-                            onSendComment: function(eventData) {
-                                clickHandler(mainThis, null, eventData.content);
-                            },
-                        },
-                    }).catch(function(error) {
-                        console.error('Failed to create message editor:', error);
+            const currentScrollTop = issuesCommentsContainer.scrollTop;
+            const wasAtBottom = currentScrollTop + issuesCommentsContainer.clientHeight >= issuesCommentsContainer.scrollHeight - 10;
+
+            let dayMessagesData = [];
+            const initIssuerID = localStorage.getItem('spotfix_user_id');
+            let userIsIssuer = false;
+            if ( taskDetails.issueComments.length > 0 ) {
+                storageRemoveUnreadUpdateForTaskID(taskDetails.taskId);
+                issuesCommentsContainer.innerHTML = ksesFilter('');
+                for (const comment of taskDetails.issueComments) {
+                    userIsIssuer = Number(initIssuerID) === Number(comment.commentUserId);
+                    const avatarData = getAvatarData({
+                        taskAuthorAvatarImgSrc: comment.commentAuthorAvatarSrc,
+                        taskAuthorName: comment.commentAuthorName,
                     });
+                    let attachmentsHTML = '';
+                    if (comment.commentAttachments && comment.commentAttachments.length > 0) {
+                        for (const att of comment.commentAttachments) {
+                            const attFilename = att.filename || att.URL?.split('/').pop() || 'File';
+                            const attUrl = att.URL || '#';
+                            const attThumbnailUrl = att.URL_thumbnail || att.URL || '#';
+                            const attIcon = SpotFixSVGLoader.getAttachmentIcon(attFilename, attUrl, attThumbnailUrl);
+                            const attIsImage = this.isImageFile(attFilename);
+                            const attClass = attIsImage ? 'image-attachment' : '';
+                            attachmentsHTML += this.loadTemplate('concrete_issue_attachment', {
+                                attachmentUrl: attUrl,
+                                attachmentFilename: attFilename,
+                                attachmentIcon: attIcon,
+                                attachmentClass: attClass,
+                                attachmentIsImage: attIsImage ? 'true' : 'false',
+                            });
+                        }
+                    }
+
+                    const commentData = {
+                        commentAuthorName: comment.commentAuthorName,
+                        commentBody: comment.commentBody,
+                        commentDate: comment.commentDate,
+                        commentTime: comment.commentTime,
+                        commentAttachments: attachmentsHTML,
+                        issueTitle: templateVariables.issueTitle,
+                        avatarCSSClass: avatarData.avatarCSSClass,
+                        avatarStyle: avatarData.avatarStyle,
+                        taskAuthorInitials: avatarData.taskAuthorInitials,
+                        initialsClass: avatarData.initialsClass,
+                        issueMessageClassOwner: userIsIssuer ? 'owner' : 'guest',
+                    };
+                    if (dayMessagesData[comment.commentDate] === undefined) {
+                        dayMessagesData[comment.commentDate] = [];
+                        dayMessagesData[comment.commentDate].push(commentData);
+                    } else {
+                        dayMessagesData[comment.commentDate].push(commentData);
+                    }
                 }
+                let daysWrapperHTML = '';
+
+                for (const day in dayMessagesData) {
+                    let currentDayMessages = dayMessagesData[day];
+                    let dayMessagesWrapperHTML = '';
+                    currentDayMessages.sort((a, b) => a.commentTime.localeCompare(b.commentTime));
+                    for (const messageId in currentDayMessages) {
+                        let currentMessageTemplateVariables = currentDayMessages[messageId];
+                        dayMessagesWrapperHTML += this.loadTemplate('concrete_issue_messages', currentMessageTemplateVariables);
+                    }
+                    daysWrapperHTML += this.loadTemplate('concrete_issue_day_content',
+                        {
+                            dayContentMonthDay: day,
+                            dayContentMessages: dayMessagesWrapperHTML,
+                            statusFixedHtml: tasksFullDetails?.taskStatus !== 'DONE' ? '' : this.loadTemplate('fixedTaskHtml')
+                        },
+                    );
+                }
+
+                if (!this.nonRequesting) {
+                    issuesCommentsContainer.innerHTML = daysWrapperHTML;
+                } else {
+                    if (issuesCommentsContainer.innerHTML !== daysWrapperHTML) {
+                        issuesCommentsContainer.innerHTML = daysWrapperHTML;
+                    }
+                }
+
+                // Bind click events to image attachments for lightbox
+                this.bindImageAttachmentClicks();
+
+            } else {
+                issuesCommentsContainer.innerHTML = ksesFilter('No comments');
+            }
+
+            // textarea (new comment) behaviour - using iframe editor
+            const mainThis = this;
+            const fileUploader = this.fileUploader;
+
+            // Remove existing iframe editor if any
+            if (window.MessageEditorIframe.iframe && !this.nonRequesting) {
+                window.MessageEditorIframe.remove();
+            }
+            if(!this.nonRequesting) {
+                // Create message editor iframe
+                window.MessageEditorIframe.create({
+                    onReady: function() {
+                        // Scroll to the bottom comments
+                        if (!mainThis.nonRequesting) {
+                            const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
+                            if (container) {
+                                setTimeout(() => {
+                                    const scrollPosition = container.scrollHeight;
+                                    container.scrollTo({top: scrollPosition, behavior: 'smooth'});
+                                }, 50);
+                            }
+                        }
+                    },
+                    handlers: {
+                        onAttachmentClick: function() {
+                            fileUploader?.fileInput?.click();
+                        },
+                        onScreenshotClick: function() {
+                            fileUploader?.makeScreenshot();
+                        },
+                        onSendComment: function(eventData) {
+                            clickHandler(mainThis, null, eventData.content);
+                        },
+                    },
+                }).catch(function(error) {
+                    console.error('Failed to create message editor:', error);
+                });
+            }
             if(this.nonRequesting) {
                 const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
 
@@ -10456,64 +10485,64 @@ class CleanTalkWidgetDoboard {
                 }
             }
 
-                // Hide spinner preloader
-                hideContainersSpinner();
+            // Hide spinner preloader
+            hideContainersSpinner();
 
 
-                    this.fileUploader.init();
+            this.fileUploader.init();
 
-                    async function clickHandler(mainThis, editor, contentFromIframe)  {
-                        const sendButton = document.querySelector('.doboard_task_widget-send_message_button');
-                        const sendMessageContainer = sendButton?.closest('.doboard_task_widget-send_message');
-                        const input = sendMessageContainer?.querySelector('.doboard_task_widget-send_message_input');
+        async function clickHandler(mainThis, editor, contentFromIframe)  {
+            const sendButton = document.querySelector('.doboard_task_widget-send_message_button');
+            const sendMessageContainer = sendButton?.closest('.doboard_task_widget-send_message');
+            const input = sendMessageContainer?.querySelector('.doboard_task_widget-send_message_input');
 
-                        // Get content from iframe or from editor parameter
-                        let commentText;
-                        if (contentFromIframe) {
-                            commentText = contentFromIframe.trim();
-                        } else if (editor) {
-                            commentText = editor?.getContent({ format: 'html' })?.trim();
-                        }
+            // Get content from iframe or from editor parameter
+            let commentText;
+            if (contentFromIframe) {
+                commentText = contentFromIframe.trim();
+            } else if (editor) {
+                commentText = editor?.getContent({ format: 'html' })?.trim();
+            }
 
-                            if (!commentText) return;
+            if (!commentText) return;
 
-                        // Add other fields handling here
-                        if(input) input.disabled = true;
-                        if(sendButton) sendButton.disabled = true;
+            // Add other fields handling here
+            if(input) input.disabled = true;
+            if(sendButton) sendButton.disabled = true;
 
-                        let newCommentResponse = null;
+            let newCommentResponse = null;
 
-                        try {
-                            newCommentResponse = await addTaskComment(mainThis.params, mainThis.currentActiveTaskId, commentText);
-                            if(input) input.value = '';
-                            await mainThis.createWidgetElement('concrete_issue');
-                            hideContainersSpinner(false);
-                        } catch (err) {
-                            alert('Error when adding a comment: ' + err?.message);
-                        }
+            try {
+                newCommentResponse = await addTaskComment(mainThis.params, mainThis.currentActiveTaskId, commentText);
+                if(input) input.value = '';
+                await mainThis.createWidgetElement('concrete_issue');
+                hideContainersSpinner(false);
+            } catch (err) {
+                alert('Error when adding a comment: ' + err?.message);
+            }
 
-                        if (mainThis && mainThis?.fileUploader?.hasFiles() && newCommentResponse !== null && newCommentResponse?.hasOwnProperty('commentId')) {
-                            const sessionId = localStorage.getItem('spotfix_session_id');
-                            const attachmentsSendResult = await mainThis?.fileUploader?.sendAttachmentsForComment(mainThis?.params, sessionId, newCommentResponse?.commentId);
-                            if (!attachmentsSendResult.success) {
-                                mainThis?.fileUploader?.showError('Some files where no sent, see details in the console.');
-                                const toConsole = JSON.stringify(attachmentsSendResult);
-                                console.log(toConsole);
-                            }
-                        }
+            if (mainThis && mainThis?.fileUploader?.hasFiles() && newCommentResponse !== null && newCommentResponse?.hasOwnProperty('commentId')) {
+                const sessionId = localStorage.getItem('spotfix_session_id');
+                const attachmentsSendResult = await mainThis?.fileUploader?.sendAttachmentsForComment(mainThis?.params, sessionId, newCommentResponse?.commentId);
+                if (!attachmentsSendResult.success) {
+                    mainThis?.fileUploader?.showError('Some files where no sent, see details in the console.');
+                    const toConsole = JSON.stringify(attachmentsSendResult);
+                    console.log(toConsole);
+                }
+            }
 
-                        if(input) input.disabled = false;
+            if(input) input.disabled = false;
 
-                    };
-                    // this._sendButtonClickHandler = clickHandler;
-                    //
-                    // sendButton.addEventListener('click', clickHandler);
+        };
+            // this._sendButtonClickHandler = clickHandler;
+            //
+            // sendButton.addEventListener('click', clickHandler);
 
 
-                break;
+            break;
 
-            default:
-                break;
+        default:
+            break;
         }
 
         const backToAllIssuesController = document.querySelector('.doboard_task_widget_return_to_all');
@@ -11040,170 +11069,170 @@ class CleanTalkWidgetDoboard {
     }
 
     sanitizeNodePath(nodePath) {
-    let str = Array.isArray(nodePath) ? JSON.stringify(nodePath) : String(nodePath);
-    // Allow only digits, commas, spaces, and square brackets
-    if (/^[\[\]0-9,\s]*$/.test(str)) {
-        return str;
-    }
-    return '';
-}
-
-/**
- * Check if file is an image based on extension
- * @param {string} filename - The filename to check
- * @return {boolean}
- */
-isImageFile(filename) {
-    if (!filename) return false;
-    const ext = filename.split('.').pop().toLowerCase();
-    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg', 'ico'];
-    return imageExtensions.includes(ext);
-}
-
-/**
- * Show image in lightbox
- * @param {string} imageUrl - The image URL to show
- * @param {string} imageAlt - The image alt text
- */
-showImageLightbox(imageUrl, imageAlt = '') {
-    // Remove existing lightbox if any
-    this.hideImageLightbox();
-
-    // Create lightbox
-    const lightboxHTML = this.loadTemplate('imageLightbox', {
-        imageUrl: imageUrl,
-        imageAlt: imageAlt || 'Image',
-        buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen')
-    });
-
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = lightboxHTML;
-    const lightbox = tempDiv.firstElementChild;
-
-    document.body.appendChild(lightbox);
-
-    // Force reflow then add active class for animation
-    lightbox.offsetHeight;
-    lightbox.classList.add('active');
-
-    // Bind close events
-    const closeBtn = lightbox.querySelector('.doboard_task_widget-lightbox-close');
-    const overlay = lightbox.querySelector('.doboard_task_widget-lightbox-overlay');
-
-    const closeHandler = () => this.hideImageLightbox();
-
-    if (closeBtn) closeBtn.addEventListener('click', closeHandler);
-    if (overlay) overlay.addEventListener('click', closeHandler);
-
-    // Close on Escape key
-    const escHandler = (e) => {
-        if (e.key === 'Escape') {
-            this.hideImageLightbox();
-            document.removeEventListener('keydown', escHandler);
+        let str = Array.isArray(nodePath) ? JSON.stringify(nodePath) : String(nodePath);
+        // Allow only digits, commas, spaces, and square brackets
+        if (/^[\[\]0-9,\s]*$/.test(str)) {
+            return str;
         }
-    };
-    document.addEventListener('keydown', escHandler);
-}
-
-/**
- * Hide image lightbox
- */
-hideImageLightbox() {
-    const lightbox = document.getElementById('doboard_task_widget-lightbox');
-    if (lightbox) {
-        lightbox.classList.remove('active');
-        setTimeout(() => {
-            lightbox.remove();
-        }, 300);
+        return '';
     }
-}
 
-/**
- * Bind click events to attachments - images show lightbox, other files download
- */
-bindImageAttachmentClicks() {
-    const allAttachments = document.querySelectorAll('.doboard_task_widget-attachment_item');
-    allAttachments.forEach(item => {
-        const newItem = item.cloneNode(true);
-        item.parentNode.replaceChild(newItem, item);
+    /**
+     * Check if file is an image based on extension
+     * @param {string} filename - The filename to check
+     * @return {boolean}
+     */
+    isImageFile(filename) {
+        if (!filename) return false;
+        const ext = filename.split('.').pop().toLowerCase();
+        const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg', 'ico'];
+        return imageExtensions.includes(ext);
+    }
 
-        newItem.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const fileUrl = newItem.getAttribute('data-attachment-url');
-            const fileName = newItem.querySelector('.doboard_task_widget-attachment_filename')?.textContent || 'file';
-            const isImage = newItem.classList.contains('image-attachment');
+    /**
+     * Show image in lightbox
+     * @param {string} imageUrl - The image URL to show
+     * @param {string} imageAlt - The image alt text
+     */
+    showImageLightbox(imageUrl, imageAlt = '') {
+        // Remove existing lightbox if any
+        this.hideImageLightbox();
 
-            if (isImage && fileUrl) {
-                this.showImageLightbox(fileUrl, fileName);
-            } else if (fileUrl) {
-                this.downloadFile(fileUrl, fileName);
-            }
+        // Create lightbox
+        const lightboxHTML = this.loadTemplate('imageLightbox', {
+            imageUrl: imageUrl,
+            imageAlt: imageAlt || 'Image',
+            buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen')
         });
-    });
-}
 
-/**
- * Download a file
- * @param {string} fileUrl - The file URL to download
- * @param {string} fileName - The file name
- */
-downloadFile(fileUrl, fileName) {
-    const link = document.createElement('a');
-    link.href = fileUrl;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = lightboxHTML;
+        const lightbox = tempDiv.firstElementChild;
 
-/**
- * Set user menu data with current user information
- */
-async setUserMenuData() {
-    const params = this.params;
+        document.body.appendChild(lightbox);
 
-    // Get user data
-    let userData = null;
-    if (localStorage.getItem('spotfix_session_id')) {
-        try {
-            userData = await getUserDetails(params);
-        } catch (error) {
-            console.error('Error fetching user details:', error);
+        // Force reflow then add active class for animation
+        lightbox.offsetHeight;
+        lightbox.classList.add('active');
+
+        // Bind close events
+        const closeBtn = lightbox.querySelector('.doboard_task_widget-lightbox-close');
+        const overlay = lightbox.querySelector('.doboard_task_widget-lightbox-overlay');
+
+        const closeHandler = () => this.hideImageLightbox();
+
+        if (closeBtn) closeBtn.addEventListener('click', closeHandler);
+        if (overlay) overlay.addEventListener('click', closeHandler);
+
+        // Close on Escape key
+        const escHandler = (e) => {
+            if (e.key === 'Escape') {
+                this.hideImageLightbox();
+                document.removeEventListener('keydown', escHandler);
+            }
+        };
+        document.addEventListener('keydown', escHandler);
+    }
+
+    /**
+     * Hide image lightbox
+     */
+    hideImageLightbox() {
+        const lightbox = document.getElementById('doboard_task_widget-lightbox');
+        if (lightbox) {
+            lightbox.classList.remove('active');
+            setTimeout(() => {
+                lightbox.remove();
+            }, 300);
         }
     }
 
-    // Update user menu header
-    const userNameElement = document.querySelector('.doboard_task_widget-user_menu-header span[style*="font-size: 16px"]');
-    const emailElement = document.querySelector('.doboard_task_widget-user_menu-header span[style*="font-size: 12px"]');
-    const avatarElement = document.querySelector('.doboard_task_widget-user_menu-header-avatar');
+    /**
+     * Bind click events to attachments - images show lightbox, other files download
+     */
+    bindImageAttachmentClicks() {
+        const allAttachments = document.querySelectorAll('.doboard_task_widget-attachment_item');
+        allAttachments.forEach(item => {
+            const newItem = item.cloneNode(true);
+            item.parentNode.replaceChild(newItem, item);
 
-    if (userNameElement) {
-        if (userData && userData.name) {
-            userNameElement.innerText = userData.name;
-        } else {
-            userNameElement.innerText = 'Guest';
-        }
+            newItem.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const fileUrl = newItem.getAttribute('data-attachment-url');
+                const fileName = newItem.querySelector('.doboard_task_widget-attachment_filename')?.textContent || 'file';
+                const isImage = newItem.classList.contains('image-attachment');
+
+                if (isImage && fileUrl) {
+                    this.showImageLightbox(fileUrl, fileName);
+                } else if (fileUrl) {
+                    this.downloadFile(fileUrl, fileName);
+                }
+            });
+        });
     }
 
-    if (emailElement) {
-        if (userData && userData.email) {
-            emailElement.innerText = userData.email;
-        } else {
-            const email = getSpotfixEmail() || '';
-            emailElement.innerText = email.includes('spotfix_') ? '' : email;
-        }
+    /**
+     * Download a file
+     * @param {string} fileUrl - The file URL to download
+     * @param {string} fileName - The file name
+     */
+    downloadFile(fileUrl, fileName) {
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
-    if (avatarElement) {
-        if (userData && userData.avatar && userData.avatar.s) {
-            avatarElement.src = userData.avatar.s;
-        } else {
-            // Reset to default avatar or remove src
-            avatarElement.src = '';
+    /**
+     * Set user menu data with current user information
+     */
+    async setUserMenuData() {
+        const params = this.params;
+
+        // Get user data
+        let userData = null;
+        if (localStorage.getItem('spotfix_session_id')) {
+            try {
+                userData = await getUserDetails(params);
+            } catch (error) {
+                console.error('Error fetching user details:', error);
+            }
+        }
+
+        // Update user menu header
+        const userNameElement = document.querySelector('.doboard_task_widget-user_menu-header span[style*="font-size: 16px"]');
+        const emailElement = document.querySelector('.doboard_task_widget-user_menu-header span[style*="font-size: 12px"]');
+        const avatarElement = document.querySelector('.doboard_task_widget-user_menu-header-avatar');
+
+        if (userNameElement) {
+            if (userData && userData.name) {
+                userNameElement.innerText = userData.name;
+            } else {
+                userNameElement.innerText = 'Guest';
+            }
+        }
+
+        if (emailElement) {
+            if (userData && userData.email) {
+                emailElement.innerText = userData.email;
+            } else {
+                const email = getSpotfixEmail() || '';
+                emailElement.innerText = email.includes('spotfix_') ? '' : email;
+            }
+        }
+
+        if (avatarElement) {
+            if (userData && userData.avatar && userData.avatar.s) {
+                avatarElement.src = userData.avatar.s;
+            } else {
+                // Reset to default avatar or remove src
+                avatarElement.src = '';
+            }
         }
     }
-}
 }
 
 var spotFixShowDelayTimeout = null;
@@ -12924,14 +12953,14 @@ class SpotFixTemplatesLoader {
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-concrete_issue">
         <div id="spotfix_doboard_task_widget_url" class="spotfix_doboard_task_widget_url">
-                <a rel="nofollow" style="word-break: break-all" href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
+               {{taskFormattedPageUrl}}
         </div>
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
             <div class="doboard_task_widget-spinner_for_containers"></div>
         </div>
         <div class="doboard_task_widget-concrete_issues-container">
         </div>
-        <div class="doboard_task_widget-send_message doboard_task_widget-spotfix-editor">
+        <div id="spotfix_widget_task_send_message_container" class="doboard_task_widget-send_message doboard_task_widget-spotfix-editor">
              <textarea name="doboard_task_widget_message" id="doboard_task_widget-send_message_input_SpotFix" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
             </div>
             <div class="doboard_task_widget__file-upload__wrapper" id="doboard_task_widget__file-upload__wrapper">
@@ -13008,7 +13037,7 @@ class SpotFixTemplatesLoader {
         </div>
 
         <div class="doboard_task_widget-input-container">
-            <input id="doboard_task_widget-title" class="doboard_task_widget-field" name="title" value="{{selectedText}}" required>
+            <input id="doboard_task_widget-title" placeholder=" " class="doboard_task_widget-field" name="title" value="{{selectedText}}" required>
             <label class="spotfix_placeholder_title" for="doboard_task_widget-title">Report name</label>
         </div>
 
@@ -13143,6 +13172,7 @@ class SpotFixTemplatesLoader {
              </div>
                 {{statusFixedHtml}}
                 {{amountOfComments}}
+                {{noRelevantHtml}}
         </div>
     </div>
 </div>
@@ -13341,6 +13371,10 @@ class SpotFixTemplatesLoader {
     static fixedHtml() {
         return `<p style="margin: 0"><span class="doboard_task_widget-bottom-is-fixed">Finished</span></p>`;
     }
+
+    static noRelevantHtml() {
+        return `<p style="margin: 0"><span class="doboard_task_widget-bottom-is-norelevant">No longer relevant</span></p>`;
+    }
     static fixedTaskHtml() {
         return `<p class="doboard_task_widget-bottom-is-fixed-task-block"><span class="doboard_task_widget-bottom-is-fixed-task">This issue already fixed</span></p>`;
     }
@@ -13499,6 +13533,14 @@ class SpotFixSVGLoader {
 </svg>`;
     }
 
+    static iconCrossedLinkChain() {
+        return `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.6657 5.39373C14.2155 5.54701 14.703 5.78092 15.1156 6.14467C16.2935 7.18248 16.7332 8.48607 16.3235 9.99498C15.9138 11.5025 14.8793 12.4137 13.3357 12.7006C12.6199 12.8337 11.8891 12.7681 11.1663 12.7494C10.7384 12.7386 10.4604 12.3739 10.4857 11.9501C10.5091 11.5592 10.834 11.2658 11.2521 11.2634C11.7373 11.2606 12.2224 11.2648 12.7076 11.2625C13.842 11.2573 14.8212 10.415 14.9459 9.3392C15.0855 8.13357 14.3693 7.0981 13.2082 6.82576C12.926 6.75967 12.6391 6.7756 12.3532 6.77279C12.3096 6.77232 12.2754 6.78404 12.244 6.81545C11.7687 7.28982 11.2929 7.76326 10.781 8.27326C11.051 8.27326 11.2746 8.27326 11.4982 8.27326C11.6562 8.27326 11.8137 8.26998 11.9716 8.2742C12.3996 8.28451 12.7216 8.60185 12.7259 9.01295C12.7301 9.42873 12.4024 9.7592 11.9651 9.76201C11.1293 9.76717 10.2935 9.76576 9.45774 9.76107C9.34336 9.7606 9.26274 9.79342 9.18258 9.87451C8.62383 10.4398 8.06086 11.0009 7.49742 11.5615C7.43555 11.6234 7.40649 11.6703 7.4393 11.7678C7.60571 12.2633 7.27242 12.7658 6.74414 12.7498C6.38883 12.739 6.16852 12.8797 5.93696 13.1154C4.90524 14.1664 3.85946 15.2033 2.81602 16.2429C2.47336 16.5847 1.97836 16.5814 1.68539 16.2434C1.45102 15.9729 1.43977 15.5736 1.66008 15.2914C1.69571 15.2454 1.73789 15.2042 1.77914 15.1629C6.22617 10.7159 10.6737 6.26982 15.1184 1.82138C15.3481 1.59123 15.6059 1.47826 15.9241 1.56779C16.4398 1.7131 16.6329 2.33232 16.2991 2.75232C16.2485 2.81607 16.1885 2.87279 16.1309 2.93045C15.3171 3.7442 14.5029 4.55795 13.6662 5.3942L13.6657 5.39373Z" fill="#707A83"/>
+<path d="M5.9074 5.27293C6.17036 5.27293 6.43333 5.27011 6.6963 5.27339C7.16083 5.27949 7.48615 5.59589 7.4824 6.03277C7.47865 6.45933 7.14958 6.77011 6.69583 6.77152C6.21677 6.77339 5.73771 6.77058 5.25865 6.77246C4.28318 6.77621 3.4413 7.36824 3.1249 8.26964C2.8038 9.18464 3.08974 10.169 3.86318 10.7831C3.95412 10.8553 3.9649 10.8895 3.87771 10.9729C3.59552 11.2439 3.3138 11.5167 3.04896 11.8045C2.9313 11.9325 2.86615 11.9146 2.74849 11.8101C0.814896 10.094 1.19224 6.93605 3.47833 5.71683C4.07974 5.39621 4.7224 5.26214 5.39974 5.27199C5.56896 5.27433 5.73865 5.27199 5.90787 5.27199L5.9074 5.27293Z" fill="#707A83"/>
+<path d="M6.56685 8.2857C6.18528 8.66586 5.82763 9.01883 5.4756 9.37742C5.39591 9.45851 5.36544 9.44117 5.31903 9.35023C5.102 8.92273 5.36638 8.3607 5.83981 8.2918C6.06622 8.25851 6.30153 8.28617 6.56685 8.28617V8.2857Z" fill="#707A83"/>
+</svg>
+`;}
+
     static iconEllipsesMore() {
         return `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M10.999 15.75C11.9193 15.7502 12.665 16.4966 12.665 17.417C12.6649 18.3372 11.9192 19.0828 10.999 19.083C10.0788 19.0828 9.33221 18.3372 9.33203 17.417C9.33203 16.4966 10.0787 15.7502 10.999 15.75ZM10.999 17.25C10.9071 17.2502 10.832 17.3251 10.832 17.417C10.8322 17.5088 10.9072 17.5828 10.999 17.583C11.0908 17.5828 11.1649 17.5088 11.165 17.417C11.165 17.3251 11.0909 17.2502 10.999 17.25Z" fill="#40484F"/>
@@ -13606,9 +13648,10 @@ height="100%" width="100%"/></svg>`;
 <path d="M12.8044 15.75C12.6056 15.75 12.4148 15.8291 12.2742 15.9697L8.52419 19.7197C8.41937 19.8246 8.34799 19.9583 8.31908 20.1037C8.29017 20.2492 8.30503 20.3999 8.36177 20.5369C8.41852 20.674 8.51461 20.7911 8.6379 20.8735C8.76119 20.9559 8.90614 20.9999 9.05444 21H20.2503C20.4492 21 20.64 20.921 20.7806 20.7803C20.9213 20.6397 21.0003 20.4489 21.0003 20.25V16.5C21.0003 16.3011 20.9213 16.1103 20.7806 15.9697C20.64 15.829 20.4492 15.75 20.2503 15.75H12.8044Z" fill="#252A2F"/>
 </svg>`}
 
-
-
-
+    static iconSendMessageGray() {
+        return `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M20.0693 0.0839539C21.2155 -0.316538 22.3165 0.784532 21.916 1.93073L15.2318 21.0302C14.7974 22.2689 13.0714 22.3389 12.5389 21.1397L9.31353 13.8834L13.8532 9.34265C14.0026 9.18225 14.084 8.97011 14.0801 8.75091C14.0763 8.53171 13.9875 8.32257 13.8325 8.16755C13.6774 8.01252 13.4683 7.92372 13.2491 7.91986C13.0299 7.91599 12.8178 7.99735 12.6574 8.14681L8.11657 12.6865L0.860336 9.4611C-0.338883 8.92749 -0.26781 7.20255 0.969766 6.76822L20.0693 0.0839539Z" fill="#BBC7D1"/>
+</svg>`}
 
 
     /**

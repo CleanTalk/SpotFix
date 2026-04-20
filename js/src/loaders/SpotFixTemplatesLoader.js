@@ -69,14 +69,14 @@ class SpotFixTemplatesLoader {
     </div>
     <div class="doboard_task_widget-content doboard_task_widget-concrete_issue">
         <div id="spotfix_doboard_task_widget_url" class="spotfix_doboard_task_widget_url">
-                <a rel="nofollow" style="word-break: break-all" href="{{taskPageUrl}}">{{taskFormattedPageUrl}}</a>
+               {{taskFormattedPageUrl}}
         </div>
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
             <div class="doboard_task_widget-spinner_for_containers"></div>
         </div>
         <div class="doboard_task_widget-concrete_issues-container">
         </div>
-        <div class="doboard_task_widget-send_message doboard_task_widget-spotfix-editor">
+        <div id="spotfix_widget_task_send_message_container" class="doboard_task_widget-send_message doboard_task_widget-spotfix-editor">
              <textarea name="doboard_task_widget_message" id="doboard_task_widget-send_message_input_SpotFix" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
             </div>
             <div class="doboard_task_widget__file-upload__wrapper" id="doboard_task_widget__file-upload__wrapper">
@@ -153,7 +153,7 @@ class SpotFixTemplatesLoader {
         </div>
 
         <div class="doboard_task_widget-input-container">
-            <input id="doboard_task_widget-title" class="doboard_task_widget-field" name="title" value="{{selectedText}}" required>
+            <input id="doboard_task_widget-title" placeholder=" " class="doboard_task_widget-field" name="title" value="{{selectedText}}" required>
             <label class="spotfix_placeholder_title" for="doboard_task_widget-title">Report name</label>
         </div>
 
@@ -288,6 +288,7 @@ class SpotFixTemplatesLoader {
              </div>
                 {{statusFixedHtml}}
                 {{amountOfComments}}
+                {{noRelevantHtml}}
         </div>
     </div>
 </div>
@@ -485,6 +486,10 @@ class SpotFixTemplatesLoader {
 
     static fixedHtml() {
         return `<p style="margin: 0"><span class="doboard_task_widget-bottom-is-fixed">Finished</span></p>`;
+    }
+
+    static noRelevantHtml() {
+        return `<p style="margin: 0"><span class="doboard_task_widget-bottom-is-norelevant">No longer relevant</span></p>`;
     }
     static fixedTaskHtml() {
         return `<p class="doboard_task_widget-bottom-is-fixed-task-block"><span class="doboard_task_widget-bottom-is-fixed-task">This issue already fixed</span></p>`;
