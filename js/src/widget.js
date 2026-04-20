@@ -41,6 +41,7 @@ class CleanTalkWidgetDoboard {
             iconSpotPrivate: SpotFixSVGLoader.getAsDataURI('iconSpotPrivate'),
             iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
             iconLinkChainDark: SpotFixSVGLoader.getAsDataURI('iconLinkChainDark'),
+            iconFinishedTitle: SpotFixSVGLoader.getAsDataURI('iconFinishedTitle'),
         };
         this.fileUploader = new FileUploader(this.escapeHtml);
         this.init(type);
@@ -896,16 +897,17 @@ class CleanTalkWidgetDoboard {
                         return bIsHere - aIsHere;
                     });
 
-                    document.querySelector(".doboard_task_widget-all_issues-container").innerHTML = '';
+                    const activeTasks = sortedTasks.filter(task => task.taskStatus !== 'DONE');
+                    const finishedTasks = sortedTasks.filter(task => task.taskStatus === 'DONE');
 
-                    for (let i = 0; i < sortedTasks.length; i++) {
-                        const elTask = sortedTasks[i];
-
-                        // Data from api
+                    const container = document.querySelector(".doboard_task_widget-all_issues-container");
+                    container.innerHTML = '';
+                    const generateTaskHtml = (elTask, isFinishedGroup) => {
                         const taskId = elTask.taskId;
                         const taskTitle = elTask.taskTitle;
                         const taskMetaString = elTask.taskMeta;
                         let taskData = null;
+
                         if (taskMetaString) {
                             try {
                                 taskData = JSON.parse(taskMetaString);
@@ -915,12 +917,12 @@ class CleanTalkWidgetDoboard {
                                 taskData = null;
                             }
                         }
-                        const currentPageURL = taskData ? taskData?.pageURL : '';
-                        let taskNodePath = ''; // nodePath need for only current page's spots
 
-                        // Define publicity details
+                        const currentPageURL = taskData ? taskData?.pageURL : '';
+                        let taskNodePath = '';
+
                         let taskPublicStatusImgSrc = '';
-                        let taskPublicStatusHint = 'Task publicity is unknown'
+                        let taskPublicStatusHint = 'Task publicity is unknown';
                         if (taskData && taskData.isPublic !== undefined) {
                             if (taskData.isPublic) {
                                 taskPublicStatusImgSrc = this.srcVariables.iconSpotPublic;
@@ -931,17 +933,29 @@ class CleanTalkWidgetDoboard {
                             }
                         }
 
-                        if(currentPageURL === window.location.href){
+                        if (currentPageURL === window.location.href) {
                             issuesQuantityOnPage++;
                             taskNodePath = taskData ? taskData.nodePath : '';
                         }
 
                         if (!showOnlyCurrentPage || currentPageURL === window.location.href) {
-
-                            const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId)
-
+                            const taskFullDetails = getTaskFullDetails(tasksFullDetails, taskId);
                             const avatarData = getAvatarData(taskFullDetails);
                             const hasUpdates = !!(notifications?.find(item => +item?.task_id === elTask?.taskId));
+                            const isDone = elTask.taskStatus === 'DONE';
+
+                            const elementBgCSSClass = isFinishedGroup
+                                ? 'doboard_task_widget-task_row-grey'
+                                : (isDone ? 'doboard_task_widget-task_row-green' : '');
+
+                            const statusFixedHtml = (isFinishedGroup || isDone)
+                                ? this.loadTemplate('fixedHtml')
+                                : '';
+
+                            const amountOfComments = (isFinishedGroup || isDone)
+                                ? ''
+                                : `<span style="background-color: ${hasUpdates ? '#F08C43' : '#D6DDE3'}" class="doboard_task_widget-commentsIndicator">${elTask.commentsCount}</span>`;
+
                             const listIssuesTemplateVariables = {
                                 taskTitle: taskTitle || '',
                                 taskAuthorAvatarImgSrc: taskFullDetails.taskAuthorAvatarImgSrc,
@@ -954,7 +968,6 @@ class CleanTalkWidgetDoboard {
                                 iconLinkChain: this.srcVariables.iconLinkChain,
                                 taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
                                 taskPageUrl: localStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
-                                // taskLastUpdate: taskFullDetails.lastMessageTime,
                                 taskLastUpdate: formatToDotMonthDate(elTask.taskLastUpdate),
                                 nodePath: this.sanitizeNodePath(taskNodePath),
                                 taskId: taskId,
@@ -962,25 +975,67 @@ class CleanTalkWidgetDoboard {
                                 avatarStyle: avatarData.avatarStyle,
                                 taskAuthorInitials: avatarData.taskAuthorInitials,
                                 initialsClass: avatarData.initialsClass,
-                                classUnread: '',
-                                elementBgCSSClass: elTask.taskStatus !== 'DONE' ? '' : 'doboard_task_widget-task_row-green',
-                                statusFixedHtml: elTask.taskStatus !== 'DONE' ? '' : this.loadTemplate('fixedHtml'),
-                                amountOfComments: elTask.taskStatus === 'DONE' ? ''
-                                    : `<span style="background-color: ${hasUpdates ? '#F08C43' : '#D6DDE3'}" 
-                                        class="doboard_task_widget-commentsIndicator">${elTask.commentsCount}</span>`,
+                                classUnread: storageProvidedTaskHasUnreadUpdates(taskFullDetails.taskId) ? 'unread' : '',
+                                elementBgCSSClass,
+                                statusFixedHtml,
+                                amountOfComments
                             };
 
-                            const taskOwnerReplyIsUnread = storageProvidedTaskHasUnreadUpdates(taskFullDetails.taskId);
-                            if (taskOwnerReplyIsUnread) {
-                                listIssuesTemplateVariables.classUnread = 'unread';
-                            }
-                            document.querySelector(".doboard_task_widget-all_issues-container").innerHTML += this.loadTemplate('list_issues', listIssuesTemplateVariables);
-
-                            if ( this.isSpotHaveToBeHighlighted(taskData) ) {
+                            if (this.isSpotHaveToBeHighlighted(taskData)) {
                                 spotsToBeHighlighted.push(taskData);
                             }
+
+                            return this.loadTemplate('list_issues', listIssuesTemplateVariables);
+                        }
+
+                        return '';
+                    };
+
+                        let activeTasksHtml = '';
+                        for (const elTask of activeTasks) {
+                            activeTasksHtml += generateTaskHtml(elTask, false);
+                        }
+                        if (activeTasksHtml) {
+                            container.innerHTML += activeTasksHtml;
+                        }
+
+
+                    if (finishedTasks.length > 0) {
+                        let finishedTasksContent = '';
+                        for (const elTask of finishedTasks) {
+                            finishedTasksContent += generateTaskHtml(elTask, true);
+                        }
+
+                        const finishedSectionHTML = this.loadTemplate('finishedTasksSection', {
+                            finishedCount: finishedTasks.length,
+                            iconFinishedTitle: this.srcVariables.iconFinishedTitle,
+                            finishedTasksContent: finishedTasksContent
+                        });
+                        container.innerHTML += finishedSectionHTML;
+
+                        const finishedHeader = document.getElementById('finishedTasksHeader');
+                        const finishedContainer = document.getElementById('finishedTasksContainer');
+                        if (finishedHeader && finishedContainer) {
+                            finishedHeader.addEventListener('click', () => {
+                                finishedContainer.classList.toggle('expanded');
+                                finishedHeader.classList.toggle('expanded');
+
+                                setTimeout(() => {
+                                    if (finishedContainer.classList.contains('expanded')) {
+                                        const children = finishedContainer.children;
+                                        if (children.length > 0) {
+                                            const targetIndex = Math.min(2, children.length - 1);
+                                            children[targetIndex].scrollIntoView({
+                                                behavior: 'smooth',
+                                                block: 'nearest',
+                                            });
+                                        }
+                                    }
+                                }, 350);
+                            });
                         }
                     }
+
                     this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                     this.savedIssuesQuantityAll = tasks.length;
                     spotFixHighlightElements(spotsToBeHighlighted, this);
@@ -1643,28 +1698,15 @@ class CleanTalkWidgetDoboard {
 
         let tasksCount;
 
-        if(tasksCountLS === undefined){
-            if(!this.nonRequesting) {
-                await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
-            }
-            const tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
-            storageSaveTasksCount(tasks);
-            const filteredTasks = tasks.filter(task => {
-                return task.taskMeta;
-            });
-            tasksCount = filteredTasks.length;
-        } else {
-            if (this.nonRequesting) {
-                const tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
-                storageSaveTasksCount(tasks);
-                const filteredTasks = tasks.filter(task => {
-                    return task.taskMeta;
-                });
-                tasksCount = filteredTasks.length;
-            } else {
-                tasksCount = tasksCountLS;
-            }
+        if (!this.nonRequesting) {
+            await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
         }
+        const tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+        storageSaveTasksCount(tasks);
+        const filteredTasks = tasks.filter(task => {
+            return task.taskMeta && task.taskStatus === 'ACTIVE';
+        });
+        tasksCount = filteredTasks.length;
 
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
         if ( taskCountElement && +tasksCount ) {

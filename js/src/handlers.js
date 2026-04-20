@@ -457,3 +457,4 @@ function formatToDotMonthDate(dateString) {
 
     return `${day}.${month}.${year}`;
 }
+
