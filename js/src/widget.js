@@ -42,6 +42,10 @@ class CleanTalkWidgetDoboard {
             iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
             iconLinkChainDark: SpotFixSVGLoader.getAsDataURI('iconLinkChainDark'),
             iconFinishedTitle: SpotFixSVGLoader.getAsDataURI('iconFinishedTitle'),
+            iconMute: SpotFixSVGLoader.getAsDataURI('iconMute'),
+            iconHighlight: SpotFixSVGLoader.getAsDataURI('iconHighlight'),
+            iconLockDark: SpotFixSVGLoader.getAsDataURI('iconLockDark'),
+            iconPublicDark: SpotFixSVGLoader.getAsDataURI('iconPublicDark'),
         };
         this.fileUploader = new FileUploader(this.escapeHtml);
         this.init(type);
