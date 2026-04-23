@@ -492,7 +492,8 @@ class SpotFixTemplatesLoader {
 
     static wrap_review() {
         return `
-<button id="doboard_task_widget_button" class="doboard_task_widget-wrap wrap_review" style="bottom: {{position}};">
+<button id="doboard_task_widget_button" class="doboard_task_widget-wrap wrap_review" 
+style="bottom: {{position}}; background-color: rgba(255,255,255,.9) !important;">
 <img src="{{iconMarker}}" />
 <span id="review_content_button_text">Review content</span>
 </button>`;

@@ -1950,7 +1950,3 @@ input:checked + .slider:before {
     color: #2f68b7;
     text-decoration: underline;
 }
-
-.doboard_task_widget-wrap {
-    background-color: rgba(255,255,255,.9) !important;
-}
