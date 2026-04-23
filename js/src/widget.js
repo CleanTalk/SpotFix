@@ -1638,7 +1638,7 @@ class CleanTalkWidgetDoboard {
             });
         }
 
-        document.querySelector('.doboard_task_widget-issues_list_empty a')?.addEventListener('click', () => {
+        document.querySelector('.doboard_task_widget-issues_list_empty button')?.addEventListener('click', () => {
             if(this.type_name !== 'create_issue') this.createWidgetElement('create_issue');
         })
 
