@@ -1069,7 +1069,7 @@ class CleanTalkWidgetDoboard {
 
                 if (container) {
                     const messageHtml = ksesFilter('<div class="doboard_task_widget-issues_list_empty">You’re also welcome to review spelling, grammar, ' +
-                        'or ask a question related to this page. Mark any content on the page or post an <a style="cursor: pointer">open spot</a></div>');
+                        'or ask a question related to this page. Mark any content on the page or post an <button type="button">open spot</button></div>');
 
                     container.insertAdjacentHTML('afterbegin', messageHtml);
                 }

@@ -448,7 +448,7 @@ class SpotFixTemplatesLoader {
                 <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
                     <span style="font-weight: 400; font-size: 14px; color: #252A2F; display: inline-flex; flex-direction: column;">
                         Link the doBoard task
-                        <a href={{doboardLink}} target="_blank" style="font-weight: 400; font-size: 14px;">{{doboardLinkShort}}</a>
+                        <a href={{doboardLink}} target="_blank" rel="noopener noreferrer" style="font-weight: 400; font-size: 14px;">{{doboardLinkShort}}</a>
                         </span>
                 </div>
             </div>
