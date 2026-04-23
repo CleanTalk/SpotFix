@@ -156,7 +156,8 @@ function hideContainersSpinner() {
         const containers = document.getElementsByClassName(containerClassesToShow[i]);
         if (containers.length > 0) {
             for (let i = 0; i < containers.length ; i++) {
-                containers[i].style.display = 'block';
+                containers[i].style.display = 'flex';
+                containers[i].style.flexDirection = 'column';
             }
         }
     }

@@ -1940,3 +1940,13 @@ input:checked + .slider:before {
     color: black;
     text-decoration: none;
 }
+
+.doboard_task_widget-issues_list_empty button {
+    cursor: pointer;
+    background: none;
+    text-transform: none;
+    margin: 0px;
+    padding: 0px;
+    color: #2f68b7;
+    text-decoration: underline;
+}

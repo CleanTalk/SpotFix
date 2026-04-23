@@ -36,10 +36,11 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
             <div class="doboard_task_widget-spinner_for_containers"></div>
         </div>
-        <div class="doboard_task_widget-all_issues-container" style="margin-top: 0px; flex-grow: 1;">
-        </div>
-        <div class="doboard_task_widget_tasks_list">
+        <div class="doboard_task_widget-all_issues-container" style="margin-top: 0px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between">
+        <div class="doboard_task_widget-all_issues-container-active" style="flex-grow: 1"></div>
+        <div class="doboard_task_widget_tasks_list" style="min-height: 32px; max-height: 32px">
             <span>doBoard / SpotFix</span>
+        </div>
         </div>
     </div>
 </div>`;
@@ -460,7 +461,7 @@ class SpotFixTemplatesLoader {
                 <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
                     <span style="font-weight: 400; font-size: 14px; color: #252A2F; display: inline-flex; flex-direction: column;">
                         Link the doBoard task
-                        <a href={{doboardLink}} style="font-weight: 400; font-size: 14px;">{{doboardLinkShort}}</a>
+                        <a href={{doboardLink}} target="_blank" rel="noopener noreferrer" style="font-weight: 400; font-size: 14px;">{{doboardLinkShort}}</a>
                         </span>
                 </div>
             </div>
