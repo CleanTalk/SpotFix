@@ -10185,7 +10185,7 @@ class CleanTalkWidgetDoboard {
                     ksesFilter('<div class="doboard_task_widget-issues_list_empty">The issues list is empty</div>');
             }
 
-            if (activeTasks.length === 0 && finishedTasks.length !== 0) {
+            if (activeTasks?.length === 0 && finishedTasks?.length !== 0) {
                 const container = document.querySelector(".doboard_task_widget-all_issues-container");
 
                 if (container) {
