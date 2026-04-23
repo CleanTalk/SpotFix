@@ -470,3 +470,125 @@ function getSafeUrl(url) {
     return '#';
 }
 
+function initSpotfixWidget() {
+    const spotfixWrapedWidget = document.querySelector('.doboard_task_widget-wrap');
+    if (!spotfixWrapedWidget) return;
+
+    const state = {
+        isDragging: false,
+        hasDragged: false,
+        startY: 0,
+        startBottom: 0,
+    };
+
+    setupBaseWidgetStyles(spotfixWrapedWidget);
+    restoreWidgetPosition(spotfixWrapedWidget, 'doboardWidgetPosBottom');
+
+    const dragHandle = createDragHandle(spotfixWrapedWidget);
+
+    setupHoverEffects(spotfixWrapedWidget, dragHandle, state);
+    setupDragAndDropEvents(spotfixWrapedWidget, dragHandle, state, 'doboardWidgetPosBottom');
+}
+
+function setupBaseWidgetStyles(widget) {
+    widget.style.position = 'fixed';
+    widget.style.top = 'auto';
+    widget.style.cursor = 'pointer';
+    widget.style.userSelect = 'none';
+    widget.addEventListener('dragstart', (e) => e.preventDefault());
+}
+
+function restoreWidgetPosition(widget, storageKey) {
+    const savedBottom = localStorage.getItem(storageKey);
+    if (savedBottom && savedBottom !== 'NaNpx') {
+        widget.style.bottom = savedBottom;
+    }
+}
+
+function createDragHandle(widget) {
+    const dragHandle = document.createElement('div');
+    dragHandle.classList.add('spotfix-draganddrop-trigger');
+    dragHandle.innerHTML = `<img src='${SpotFixSVGLoader.getAsDataURI('iconDragAndDrop')}'/>`;
+
+    widget.appendChild(dragHandle);
+    return dragHandle;
+}
+
+function setupHoverEffects(widget, dragHandle, state) {
+    widget.addEventListener('mouseenter', () => {
+        dragHandle.style.opacity = '1';
+    });
+
+    widget.addEventListener('mouseleave', () => {
+        if (!state.isDragging) {
+            dragHandle.style.opacity = '0';
+        }
+    });
+}
+
+function setupDragAndDropEvents(widget, dragHandle, state, storageKey) {
+    widget.addEventListener('mousedown', () => {
+        state.hasDragged = false;
+    });
+
+    dragHandle.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        e.stopPropagation();
+
+        state.isDragging = true;
+        state.hasDragged = false;
+        state.startY = e.clientY;
+
+        const computedStyle = window.getComputedStyle(widget);
+        state.startBottom = parseFloat(computedStyle.bottom) || 0;
+
+        widget.style.top = 'auto';
+        widget.style.margin = '0';
+        widget.style.transform = 'none';
+        dragHandle.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!state.isDragging) return;
+
+        const deltaY = e.clientY - state.startY;
+        if (Math.abs(deltaY) > 3) {
+            state.hasDragged = true;
+        }
+
+        let newBottom = state.startBottom - deltaY;
+        const maxBottom = window.innerHeight - widget.offsetHeight;
+
+        if (newBottom < 0) newBottom = 0;
+        if (newBottom > maxBottom) newBottom = maxBottom;
+
+        widget.style.bottom = newBottom + 'px';
+    });
+
+    const stopDrag = () => {
+        if (state.isDragging) {
+            state.isDragging = false;
+            dragHandle.style.cursor = '';
+
+            if (!widget.matches(':hover')) {
+                dragHandle.style.opacity = '0';
+            }
+
+            localStorage.setItem(storageKey, widget.style.bottom);
+
+            setTimeout(() => {
+                state.hasDragged = false;
+            }, 50);
+        }
+    };
+
+    document.addEventListener('mouseup', stopDrag);
+    document.addEventListener('mouseleave', stopDrag);
+
+    widget.addEventListener('click', (e) => {
+        if (state.hasDragged) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }, true);
+}

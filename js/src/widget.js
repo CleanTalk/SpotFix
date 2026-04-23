@@ -645,6 +645,7 @@ class CleanTalkWidgetDoboard {
         let templateVariables = {};
 
         const config = window.SpotfixWidgetConfig;
+        const savedVerticalPosition = localStorage.getItem('doboardWidgetPosBottom');
 
         switch (type) {
         case 'create_issue':
@@ -670,12 +671,11 @@ class CleanTalkWidgetDoboard {
             if (storageGetWidgetIsClosed()) {
                 return;
             }
-
             templateName = 'wrap';
             this.type_name = templateName;
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
-            templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
+            templateVariables = {position: savedVerticalPosition ? savedVerticalPosition : !Number.isNaN(Number(config?.verticalPosition))
                     ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
             break;
         case 'wrap_review':
@@ -683,7 +683,7 @@ class CleanTalkWidgetDoboard {
             this.type_name = templateName;
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
-            templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
+            templateVariables = {position: savedVerticalPosition ? savedVerticalPosition : !Number.isNaN(Number(config?.verticalPosition))
                     ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
             break;
         case 'all_issues':
@@ -1586,6 +1586,8 @@ class CleanTalkWidgetDoboard {
                 document.querySelector('.spotfix_placeholder_title').style.display = 'block';
             }
         });
+
+        initSpotfixWidget();
 
         return widgetContainer;
     }
