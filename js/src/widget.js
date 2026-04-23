@@ -1833,7 +1833,7 @@ class CleanTalkWidgetDoboard {
         if ( taskCountElement && +tasksCount ) {
             taskCountElement.innerText = ksesFilter(tasksCount);
             taskCountElement.classList.remove('hidden');
-            if (window.SpotfixWidgetConfig?.horizontalPosition === 'left') taskCountElement.style.left = '10px';
+            if (localStorage.getItem('horizontalPosition') === 'left' || window.SpotfixWidgetConfig?.horizontalPosition === 'left') taskCountElement.style.left = '10px';
         }
     }
 
