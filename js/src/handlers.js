@@ -470,7 +470,7 @@ function getSafeUrl(url) {
     return '#';
 }
 
-function initSpotfixWidget() {
+function initSpotfixWidget({horizontalPosition}) {
     const spotfixWrapedWidget = document.querySelector('.doboard_task_widget-wrap');
     if (!spotfixWrapedWidget) return;
 
@@ -484,7 +484,7 @@ function initSpotfixWidget() {
     setupBaseWidgetStyles(spotfixWrapedWidget);
     restoreWidgetPosition(spotfixWrapedWidget, 'doboardWidgetPosBottom');
 
-    const dragHandle = createDragHandle(spotfixWrapedWidget);
+    const dragHandle = createDragHandle({widget: spotfixWrapedWidget, horizontalPosition});
 
     setupHoverEffects(spotfixWrapedWidget, dragHandle, state);
     setupDragAndDropEvents(spotfixWrapedWidget, dragHandle, state, 'doboardWidgetPosBottom');
@@ -505,9 +505,9 @@ function restoreWidgetPosition(widget, storageKey) {
     }
 }
 
-function createDragHandle(widget) {
+function createDragHandle({widget, horizontalPosition}) {
     const dragHandle = document.createElement('div');
-    dragHandle.classList.add('spotfix-draganddrop-trigger');
+    dragHandle.classList.add(horizontalPosition === 'left' ? 'spotfix-draganddrop-trigger-left' : 'spotfix-draganddrop-trigger');
     dragHandle.innerHTML = `<img src='${SpotFixSVGLoader.getAsDataURI('iconDragAndDrop')}'/>`;
 
     widget.appendChild(dragHandle);

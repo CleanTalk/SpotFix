@@ -42,6 +42,7 @@ class CleanTalkWidgetDoboard {
             iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
             iconLinkChainDark: SpotFixSVGLoader.getAsDataURI('iconLinkChainDark'),
             iconFinishedTitle: SpotFixSVGLoader.getAsDataURI('iconFinishedTitle'),
+            iconTwoSidesArrows: SpotFixSVGLoader.getAsDataURI('iconTwoSidesArrows'),
         };
         this.fileUploader = new FileUploader(this.escapeHtml);
         this.init(type);
@@ -646,6 +647,16 @@ class CleanTalkWidgetDoboard {
 
         const config = window.SpotfixWidgetConfig;
         const savedVerticalPosition = localStorage.getItem('doboardWidgetPosBottom');
+        const savedHorizontalPosition = localStorage.getItem('horizontalPosition');
+        const horizontalPosition = savedHorizontalPosition === 'left' || savedHorizontalPosition === 'right'
+        ? savedHorizontalPosition
+        : config.horizontalPosition;
+
+        if (horizontalPosition === 'left') {
+            widgetContainer.style.left = '15px';
+        } else {
+            widgetContainer.style.right = '50px';
+        }
 
         switch (type) {
         case 'create_issue':
@@ -713,7 +724,6 @@ class CleanTalkWidgetDoboard {
             templateName = 'spot_menu';
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
-            this.socket_type_name = templateName;
             const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
             templateVariables = {
                 spotfixVersion: spotMenuVersion ? 'Spotfix version ' + spotMenuVersion + '.' : '',
@@ -860,18 +870,29 @@ class CleanTalkWidgetDoboard {
             break;
         case 'wrap':
             await this.getTaskCount();
-            document.querySelector('.doboard_task_widget-wrap').addEventListener('click', async (e) => {
+            const wrap = document.querySelector('.doboard_task_widget-wrap');
+            wrap.addEventListener('click', async (e) => {
                 const widgetElementClasses = e.currentTarget.classList;
                 if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
                     if(this.type_name !== 'all_issues') await this.createWidgetElement('all_issues');
                 }
             });
             hideContainersSpinner(false);
+            if (horizontalPosition === 'left') {
+                wrap.style.borderTopRightRadius = '4px';
+                wrap.style.borderBottomRightRadius = '4px';
+            }
             break;
         case 'wrap_review':
-            document.querySelector('#doboard_task_widget_button').addEventListener('click', (e) => {
+            const wrapReview = document.querySelector('#doboard_task_widget_button');
+            wrapReview.addEventListener('click', (e) => {
                 spotFixOpenWidget(this.selectedData, 'create_issue');
             });
+            if (horizontalPosition === 'left') {
+                wrapReview.style.right = '-145px';
+                wrapReview.style.borderTopRightRadius = '4px';
+                wrapReview.style.borderBottomRightRadius = '4px';
+            }
             break;
         case 'all_issues':
             if (this.nonRequesting) {
@@ -1075,6 +1096,24 @@ class CleanTalkWidgetDoboard {
 
             widgetContainer.innerHTML = this.loadTemplate('user_menu', templateVariables);
 
+            const buttonLeft = document.getElementById('spotfix_widget-task-menu_left');
+            const buttonRight = document.getElementById('spotfix_widget-task-menu_right');
+
+            if (horizontalPosition === 'left' && buttonLeft) {
+                buttonLeft.style.color = '#2f68b7';
+            } else {
+                buttonRight.style.color = '#2f68b7';
+            }
+
+            buttonLeft.addEventListener('click', () => {
+                localStorage.setItem('horizontalPosition', 'left');
+                if(this.type_name !== 'user_menu') this.createWidgetElement('user_menu');
+            });
+            buttonRight.addEventListener('click', () => {
+                localStorage.setItem('horizontalPosition', 'right');
+                if(this.type_name !== 'user_menu') this.createWidgetElement('user_menu');
+            });
+
             document.body.appendChild(widgetContainer);
             setToggleStatus(this);
             checkLogInOutButtonsVisible();
@@ -1137,7 +1176,6 @@ class CleanTalkWidgetDoboard {
                 document.getElementById('unsubscribe_from_spot').disabled = true;
                 document.getElementById('highlight_the_spot').disabled = true;
             }
-
             break;
         case 'concrete_issue':
             if(this.nonRequesting) {
@@ -1587,7 +1625,7 @@ class CleanTalkWidgetDoboard {
             }
         });
 
-        initSpotfixWidget();
+        initSpotfixWidget({horizontalPosition});
 
         return widgetContainer;
     }
@@ -1731,6 +1769,7 @@ class CleanTalkWidgetDoboard {
         if ( taskCountElement && +tasksCount ) {
             taskCountElement.innerText = ksesFilter(tasksCount);
             taskCountElement.classList.remove('hidden');
+            if (window.SpotfixWidgetConfig.horizontalPosition === 'left') taskCountElement.style.left = '10px';
         }
     }
 
