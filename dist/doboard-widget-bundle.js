@@ -9893,7 +9893,7 @@ class CleanTalkWidgetDoboard {
         const savedHorizontalPosition = localStorage.getItem('horizontalPosition');
         const horizontalPosition = savedHorizontalPosition === 'left' || savedHorizontalPosition === 'right'
         ? savedHorizontalPosition
-        : config.horizontalPosition;
+        : config?.horizontalPosition;
 
         if (horizontalPosition === 'left') {
             widgetContainer.style.left = '15px';
