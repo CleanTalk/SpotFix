@@ -905,7 +905,10 @@ class CleanTalkWidgetDoboard {
                 const finishedTasks = sortedTasks.filter(task => task.taskStatus === 'DONE');
 
                 const container = document.querySelector(".doboard_task_widget-all_issues-container");
-                container.innerHTML = '';
+                container.innerHTML = `<div class="doboard_task_widget-all_issues-container-active" style="flex-grow: 1"></div>
+        <div class="doboard_task_widget_tasks_list" style="min-height: 32px; max-height: 32px">
+            <span>doBoard / SpotFix</span>
+        </div>`;
                 const generateTaskHtml = (elTask, isFinishedGroup) => {
                     const taskId = elTask.taskId;
                     const taskTitle = elTask.taskTitle;
@@ -1004,8 +1007,10 @@ class CleanTalkWidgetDoboard {
                 for (const elTask of activeTasks) {
                     activeTasksHtml += generateTaskHtml(elTask, false);
                 }
-                if (activeTasksHtml) {
-                    container.innerHTML += activeTasksHtml;
+                const activeTasksContainer = document.querySelector(".doboard_task_widget-all_issues-container-active");
+
+                if (activeTasksHtml && activeTasksContainer) {
+                    activeTasksContainer.innerHTML += activeTasksHtml;
                 }
 
 
@@ -1020,7 +1025,10 @@ class CleanTalkWidgetDoboard {
                         iconFinishedTitle: this.srcVariables.iconFinishedTitle,
                         finishedTasksContent: finishedTasksContent
                     });
-                    container.insertAdjacentHTML('beforeend', finishedSectionHTML);
+
+                    if (activeTasksContainer) {
+                        activeTasksContainer.insertAdjacentHTML('afterend', finishedSectionHTML);
+                    }
 
                     const finishedHeader = document.getElementById('finishedTasksHeader');
                     const finishedContainer = document.getElementById('finishedTasksContainer');

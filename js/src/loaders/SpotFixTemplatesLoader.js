@@ -36,10 +36,11 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-spinner_wrapper_for_containers">
             <div class="doboard_task_widget-spinner_for_containers"></div>
         </div>
-        <div class="doboard_task_widget-all_issues-container" style="margin-top: 0px; flex-grow: 1;">
-        </div>
-        <div class="doboard_task_widget_tasks_list" style="min-height: 32px">
+        <div class="doboard_task_widget-all_issues-container" style="margin-top: 0px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between">
+        <div class="doboard_task_widget-all_issues-container-active" style="flex-grow: 1"></div>
+        <div class="doboard_task_widget_tasks_list" style="min-height: 32px; max-height: 32px">
             <span>doBoard / SpotFix</span>
+        </div>
         </div>
     </div>
 </div>`;
