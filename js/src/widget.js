@@ -888,6 +888,8 @@ class CleanTalkWidgetDoboard {
             const sessionId = localStorage.getItem('spotfix_session_id');
 
             const notifications = this.nonRequesting ? [] : await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
+            let activeTasks = [];
+            let finishedTasks = [];
 
             this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
             const tasks = this.allTasksData;
@@ -901,8 +903,8 @@ class CleanTalkWidgetDoboard {
                     return bIsHere - aIsHere;
                 });
 
-                const activeTasks = sortedTasks.filter(task => task.taskStatus !== 'DONE');
-                const finishedTasks = sortedTasks.filter(task => task.taskStatus === 'DONE');
+                activeTasks = sortedTasks.filter(task => task.taskStatus !== 'DONE');
+                finishedTasks = sortedTasks.filter(task => task.taskStatus === 'DONE');
 
                 const container = document.querySelector(".doboard_task_widget-all_issues-container");
                 container.innerHTML = `<div class="doboard_task_widget-all_issues-container-active" style="flex-grow: 1"></div>
