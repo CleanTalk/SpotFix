@@ -9122,15 +9122,13 @@ function initSpotfixWidget() {
     const spotfixWrapedWidget = document.querySelector('.doboard_task_widget-wrap');
     if (!spotfixWrapedWidget) return;
 
-    // Объект состояния, который будет хранить текущие данные перетаскивания
     const state = {
         isDragging: false,
         hasDragged: false,
         startY: 0,
-        startBottom: 0
+        startBottom: 0,
     };
 
-    // Вызываем наши функции-помощники шаг за шагом
     setupBaseWidgetStyles(spotfixWrapedWidget);
     restoreWidgetPosition(spotfixWrapedWidget, 'doboardWidgetPosBottom');
 
@@ -9140,9 +9138,6 @@ function initSpotfixWidget() {
     setupDragAndDropEvents(spotfixWrapedWidget, dragHandle, state, 'doboardWidgetPosBottom');
 }
 
-// --- ФУНКЦИИ-ПОМОЩНИКИ ---
-
-// 1. Базовые настройки виджета
 function setupBaseWidgetStyles(widget) {
     widget.style.position = 'fixed';
     widget.style.top = 'auto';
@@ -9151,7 +9146,6 @@ function setupBaseWidgetStyles(widget) {
     widget.addEventListener('dragstart', (e) => e.preventDefault());
 }
 
-// 2. Восстановление позиции из localStorage
 function restoreWidgetPosition(widget, storageKey) {
     const savedBottom = localStorage.getItem(storageKey);
     if (savedBottom && savedBottom !== 'NaNpx') {
@@ -9159,7 +9153,6 @@ function restoreWidgetPosition(widget, storageKey) {
     }
 }
 
-// 3. Создание "хваталочки"
 function createDragHandle(widget) {
     const dragHandle = document.createElement('div');
     dragHandle.classList.add('spotfix-draganddrop-trigger');
@@ -9169,28 +9162,23 @@ function createDragHandle(widget) {
     return dragHandle;
 }
 
-// 4. Появление / исчезновение хваталочки
 function setupHoverEffects(widget, dragHandle, state) {
     widget.addEventListener('mouseenter', () => {
         dragHandle.style.opacity = '1';
     });
 
     widget.addEventListener('mouseleave', () => {
-        // Проверяем флаг из нашего объекта state
         if (!state.isDragging) {
             dragHandle.style.opacity = '0';
         }
     });
 }
 
-// 5. Вся логика перетаскивания и кликов
 function setupDragAndDropEvents(widget, dragHandle, state, storageKey) {
-    // Сбрасываем флаг при обычном клике на сам виджет
     widget.addEventListener('mousedown', () => {
         state.hasDragged = false;
     });
 
-    // Нажали на хваталочку
     dragHandle.addEventListener('mousedown', (e) => {
         if (e.button !== 0) return;
         e.stopPropagation();
@@ -9208,7 +9196,6 @@ function setupDragAndDropEvents(widget, dragHandle, state, storageKey) {
         dragHandle.style.cursor = 'grabbing';
     });
 
-    // Тянем мышку
     document.addEventListener('mousemove', (e) => {
         if (!state.isDragging) return;
 
@@ -9226,11 +9213,10 @@ function setupDragAndDropEvents(widget, dragHandle, state, storageKey) {
         widget.style.bottom = newBottom + 'px';
     });
 
-    // Отпустили мышку
     const stopDrag = () => {
         if (state.isDragging) {
             state.isDragging = false;
-            dragHandle.style.cursor = ''; // Сбросит на тот, что прописан в CSS класса .spotfix-draganddrop-trigger
+            dragHandle.style.cursor = '';
 
             if (!widget.matches(':hover')) {
                 dragHandle.style.opacity = '0';
@@ -9238,7 +9224,6 @@ function setupDragAndDropEvents(widget, dragHandle, state, storageKey) {
 
             localStorage.setItem(storageKey, widget.style.bottom);
 
-            // Жестко обнуляем флаг перетаскивания
             setTimeout(() => {
                 state.hasDragged = false;
             }, 50);
@@ -9248,7 +9233,6 @@ function setupDragAndDropEvents(widget, dragHandle, state, storageKey) {
     document.addEventListener('mouseup', stopDrag);
     document.addEventListener('mouseleave', stopDrag);
 
-    // Перехват ложного клика
     widget.addEventListener('click', (e) => {
         if (state.hasDragged) {
             e.preventDefault();
@@ -10845,7 +10829,6 @@ class CleanTalkWidgetDoboard {
                 document.querySelector('.spotfix_placeholder_title').style.display = 'block';
             }
         });
-
 
         initSpotfixWidget();
 
