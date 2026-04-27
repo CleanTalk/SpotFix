@@ -1950,3 +1950,7 @@ input:checked + .slider:before {
     color: #2f68b7;
     text-decoration: underline;
 }
+
+#spotfix_widget-task-menu_right {
+    cursor: default;
+}

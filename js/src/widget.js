@@ -16,8 +16,9 @@ class CleanTalkWidgetDoboard {
     /**
      * Constructor
      */
-    constructor(selectedData, type) {
+    constructor(selectedData, type, timerToOpenWrap) {
         this.selectedData = selectedData || '';
+        this.timerToOpenWrap = timerToOpenWrap;
         this.selectedText = selectedData?.selectedText || '';
         this.descriptionText = localStorage.getItem('spotfix-description-ls') || '';
         this.srcVariables = {
@@ -876,9 +877,13 @@ class CleanTalkWidgetDoboard {
             await this.getTaskCount();
             const wrap = document.querySelector('.doboard_task_widget-wrap');
             wrap.addEventListener('click', async (e) => {
-                const widgetElementClasses = e.currentTarget.classList;
-                if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
-                    if(this.type_name !== 'all_issues') await this.createWidgetElement('all_issues');
+                if (window.getSelection()?.type !== "Caret" && this.selectedData) {
+                    spotFixOpenWidget(this.selectedData, 'wrap_review');
+                } else {
+                    const widgetElementClasses = e.currentTarget.classList;
+                    if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
+                        if(this.type_name !== 'all_issues') await this.createWidgetElement('all_issues');
+                    }
                 }
             });
             hideContainersSpinner(false);
@@ -890,6 +895,7 @@ class CleanTalkWidgetDoboard {
         case 'wrap_review':
             const wrapReview = document.querySelector('#doboard_task_widget_button');
             wrapReview.addEventListener('click', (e) => {
+                clearTimeout(this.timerToOpenWrap);
                 spotFixOpenWidget(this.selectedData, 'create_issue');
             });
             if (horizontalPosition === 'left') {
@@ -928,10 +934,13 @@ class CleanTalkWidgetDoboard {
                 finishedTasks = sortedTasks.filter(task => task.taskStatus === 'DONE');
 
                 const container = document.querySelector(".doboard_task_widget-all_issues-container");
-                container.innerHTML = `<div class="doboard_task_widget-all_issues-container-active" style="flex-grow: 1"></div>
+                if (container) {
+                    container.innerHTML = `<div class="doboard_task_widget-all_issues-container-active" style="flex-grow: 1"></div>
         <div class="doboard_task_widget_tasks_list" style="min-height: 32px; max-height: 32px">
             <span>doBoard / SpotFix</span>
         </div>`;
+                }
+
                 const generateTaskHtml = (elTask, isFinishedGroup) => {
                     const taskId = elTask.taskId;
                     const taskTitle = elTask.taskTitle;
@@ -1079,8 +1088,11 @@ class CleanTalkWidgetDoboard {
                 this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                 this.savedIssuesQuantityAll = tasks.length;
                 spotFixHighlightElements(spotsToBeHighlighted, this);
-                document.querySelector('.doboard_task_widget-header span').innerHTML = ksesFilter('All spots ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
-            }
+                const headerSpan = document.querySelector('.doboard_task_widget-header span');
+                if (headerSpan) {
+                headerSpan.innerHTML = ksesFilter('All spots ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
+                }
+              }
 
             if (tasks.length === 0) {
                 document.querySelector(".doboard_task_widget-all_issues-container").innerHTML =

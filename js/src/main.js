@@ -84,7 +84,11 @@ document.addEventListener('selectionchange', function(e) {
 
              if ( selectedData ) {
                 // spotFixOpenWidget(selectedData, 'create_issue');
-                spotFixOpenWidget(selectedData, 'wrap_review');
+                 const timer = setTimeout(() => {
+                     clearTimeout(timer);
+                     spotFixOpenWidget(selectedData, 'wrap');
+                 }, 3000);
+                 spotFixOpenWidget(selectedData, 'wrap_review', timer);
             }
         }
     }, SPOTFIX_SHOW_DELAY);
@@ -120,9 +124,9 @@ function spotFixIsInsideWidget(node) {
  * @param {*} selectedData
  * @param {*} type
  */
-function spotFixOpenWidget(selectedData, type) {
+function spotFixOpenWidget(selectedData, type, timerToOpenWrap) {
     if (selectedData) {
-        new CleanTalkWidgetDoboard(selectedData, type);
+        new CleanTalkWidgetDoboard(selectedData, type, timerToOpenWrap);
     }
 }
 
