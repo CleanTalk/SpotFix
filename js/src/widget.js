@@ -1399,8 +1399,16 @@ class CleanTalkWidgetDoboard {
                 window.MessageEditorIframe.remove();
             }
             if(!this.nonRequesting) {
+                const draftKey =  mainThis.currentActiveTaskId ;
+                let savedComments = localStorage.getItem('spotfix_comment_draft')
+                let savedDraftText = '';
+                if (savedComments) {
+                    savedDraftText = JSON.parse(savedComments)[`${mainThis.currentActiveTaskId}`] || '';
+                }
+
                 // Create message editor iframe
                 window.MessageEditorIframe.create({
+                    savedContent: savedDraftText,
                     onReady: function() {
                         // Scroll to the bottom comments
                         if (!mainThis.nonRequesting) {
@@ -1414,6 +1422,15 @@ class CleanTalkWidgetDoboard {
                         }
                     },
                     handlers: {
+                        onChange: function(content) {
+                            let contentForSaving = localStorage.getItem('spotfix_comment_draft');
+                            if (contentForSaving) {
+                                contentForSaving = JSON.parse(contentForSaving);
+                            } else contentForSaving = {};
+
+                            contentForSaving[`${mainThis.currentActiveTaskId}`] = content;
+                            localStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
+                        },
                         onAttachmentClick: function() {
                             fileUploader?.fileInput?.click();
                         },
@@ -1422,6 +1439,12 @@ class CleanTalkWidgetDoboard {
                         },
                         onSendComment: function(eventData) {
                             clickHandler(mainThis, null, eventData.content);
+                            let contentForSaving = localStorage.getItem('spotfix_comment_draft');
+                            if (contentForSaving) {
+                                contentForSaving = JSON.parse(contentForSaving);
+                                delete contentForSaving[`${mainThis.currentActiveTaskId}`];
+                                localStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
+                            }
                         },
                     },
                 }).catch(function(error) {

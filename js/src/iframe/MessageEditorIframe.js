@@ -51,6 +51,9 @@ class MessageEditorIframe {
                     targetElement.value = data.content;
                     targetElement.dispatchEvent(new Event('change', {bubbles: true}));
                 }
+                if (this.handlers && this.handlers.onChange) {
+                    this.handlers.onChange(data.content);
+                }
                 break;
             case 'spotfix:tinymce-action':
                 this.handleEditorAction(data);
