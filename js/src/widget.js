@@ -1146,11 +1146,11 @@ class CleanTalkWidgetDoboard {
 
             buttonLeft.addEventListener('click', () => {
                 localStorage.setItem('horizontalPosition', 'left');
-                if(this.type_name !== 'user_menu') this.createWidgetElement('user_menu');
+                this.createWidgetElement('user_menu');
             });
             buttonRight.addEventListener('click', () => {
                 localStorage.setItem('horizontalPosition', 'right');
-                if(this.type_name !== 'user_menu') this.createWidgetElement('user_menu');
+                this.createWidgetElement('user_menu');
             });
 
             document.body.appendChild(widgetContainer);

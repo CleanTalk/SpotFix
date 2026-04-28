@@ -344,7 +344,7 @@ class SpotFixTemplatesLoader {
                         <span style="font-weight: 500; font-size: 14px; color: #252A2F; margin-bottom: 4px">
                         Show widget on screen side</span>
                     </span>
-                    <div style="padding-right: 16px">
+                    <div style="padding-right: 16px; display: flex">
                         <button id="spotfix_widget-task-menu_left" type="button">Left</button>
                         <button id="spotfix_widget-task-menu_right" style="margin-left: 16px" type="button">Right</button>
                     </div>
