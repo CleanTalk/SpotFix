@@ -10120,7 +10120,7 @@ class CleanTalkWidgetDoboard {
             await this.getTaskCount();
             const wrap = document.querySelector('.doboard_task_widget-wrap');
             wrap.addEventListener('click', async (e) => {
-                if (window.getSelection()?.type !== "Caret" && this.selectedData) {
+                if (window.getSelection()?.type === "Range" && this.selectedData) {
                     spotFixOpenWidget(this.selectedData, 'wrap_review');
                 } else {
                     const widgetElementClasses = e.currentTarget.classList;
