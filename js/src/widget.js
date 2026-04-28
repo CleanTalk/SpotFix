@@ -659,8 +659,10 @@ class CleanTalkWidgetDoboard {
 
         if (horizontalPosition === 'left') {
             widgetContainer.style.left = '15px';
+            widgetContainer.classList.add('left_mobile');
         } else {
             widgetContainer.style.right = '50px';
+            widgetContainer.classList.remove('left_mobile');
         }
 
         switch (type) {
