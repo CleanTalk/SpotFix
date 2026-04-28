@@ -470,3 +470,134 @@ function getSafeUrl(url) {
     return '#';
 }
 
+function initSpotfixWidget({horizontalPosition}) {
+    const spotfixWrapedWidget = document.querySelector('.doboard_task_widget-wrap');
+    if (!spotfixWrapedWidget) return () => {};
+
+    const state = {
+        isDragging: false,
+        hasDragged: false,
+        startY: 0,
+        startBottom: 0,
+    };
+
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    setupBaseWidgetStyles(spotfixWrapedWidget, signal);
+    restoreWidgetPosition(spotfixWrapedWidget, 'doboardWidgetPosBottom');
+
+    const dragHandle = createDragHandle({widget: spotfixWrapedWidget, horizontalPosition});
+
+    setupHoverEffects(spotfixWrapedWidget, dragHandle, state, signal);
+    setupDragAndDropEvents(spotfixWrapedWidget, dragHandle, state, 'doboardWidgetPosBottom', signal);
+
+    return function destroy() {
+        controller.abort();
+        dragHandle.remove();
+    };
+}
+
+function setupBaseWidgetStyles(widget, signal) {
+    widget.style.position = 'fixed';
+    widget.style.top = 'auto';
+    widget.style.cursor = 'pointer';
+    widget.style.userSelect = 'none';
+
+    widget.addEventListener('dragstart', (e) => e.preventDefault(), { signal });
+}
+
+function restoreWidgetPosition(widget, storageKey) {
+    const savedBottom = localStorage.getItem(storageKey);
+    if (savedBottom && savedBottom !== 'NaNpx') {
+        widget.style.bottom = savedBottom;
+    }
+}
+
+function createDragHandle({widget, horizontalPosition}) {
+    const dragHandle = document.createElement('div');
+    dragHandle.classList.add(horizontalPosition === 'left' ? 'spotfix-draganddrop-trigger-left' : 'spotfix-draganddrop-trigger');
+    dragHandle.innerHTML = `<img src='${SpotFixSVGLoader.getAsDataURI('iconDragAndDrop')}'/>`;
+
+    widget.appendChild(dragHandle);
+    return dragHandle;
+}
+
+function setupHoverEffects(widget, dragHandle, state, signal) {
+    widget.addEventListener('mouseenter', () => {
+        dragHandle.style.opacity = '1';
+    }, { signal });
+
+    widget.addEventListener('mouseleave', () => {
+        if (!state.isDragging) {
+            dragHandle.style.opacity = '0';
+        }
+    }, { signal });
+}
+
+function setupDragAndDropEvents(widget, dragHandle, state, storageKey, signal) {
+    widget.addEventListener('mousedown', () => {
+        state.hasDragged = false;
+    }, { signal });
+
+    dragHandle.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        e.stopPropagation();
+
+        state.isDragging = true;
+        state.hasDragged = false;
+        state.startY = e.clientY;
+
+        const computedStyle = window.getComputedStyle(widget);
+        state.startBottom = parseFloat(computedStyle.bottom) || 0;
+
+        widget.style.top = 'auto';
+        widget.style.margin = '0';
+        widget.style.transform = 'none';
+        dragHandle.style.cursor = 'grabbing';
+    }, { signal });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!state.isDragging) return;
+
+        const deltaY = e.clientY - state.startY;
+        if (Math.abs(deltaY) > 3) {
+            state.hasDragged = true;
+        }
+
+        let newBottom = state.startBottom - deltaY;
+        const maxBottom = window.innerHeight - widget.offsetHeight;
+
+        if (newBottom < 0) newBottom = 0;
+        if (newBottom > maxBottom) newBottom = maxBottom;
+
+        widget.style.bottom = newBottom + 'px';
+    }, { signal });
+
+    const stopDrag = () => {
+        if (state.isDragging) {
+            state.isDragging = false;
+            dragHandle.style.cursor = '';
+
+            if (!widget.matches(':hover')) {
+                dragHandle.style.opacity = '0';
+            }
+
+            localStorage.setItem(storageKey, widget.style.bottom);
+
+            setTimeout(() => {
+                state.hasDragged = false;
+            }, 50);
+        }
+    };
+
+    document.addEventListener('mouseup', stopDrag, { signal });
+    document.addEventListener('mouseleave', stopDrag, { signal });
+
+    widget.addEventListener('click', (e) => {
+        if (state.hasDragged) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }, { capture: true, signal });
+}
