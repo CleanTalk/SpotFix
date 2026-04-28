@@ -1139,16 +1139,16 @@ class CleanTalkWidgetDoboard {
             if (horizontalPosition === 'left' && buttonLeft) {
                 buttonLeft.style.color = '#2f68b7';
                 buttonLeft.style.cursor = 'default';
-            } else {
+            } else if(buttonRight) {
                 buttonRight.style.color = '#2f68b7';
                 buttonRight.style.cursor = 'default';
             }
 
-            buttonLeft.addEventListener('click', () => {
+            buttonLeft?.addEventListener('click', () => {
                 localStorage.setItem('horizontalPosition', 'left');
                 this.createWidgetElement('user_menu');
             });
-            buttonRight.addEventListener('click', () => {
+            buttonRight?.addEventListener('click', () => {
                 localStorage.setItem('horizontalPosition', 'right');
                 this.createWidgetElement('user_menu');
             });
@@ -1405,7 +1405,9 @@ class CleanTalkWidgetDoboard {
                 let savedComments = localStorage.getItem('spotfix_comment_draft')
                 let savedDraftText = '';
                 if (savedComments) {
-                    savedDraftText = JSON.parse(savedComments)[`${mainThis.currentActiveTaskId}`] || '';
+                    try {
+                        savedDraftText = JSON.parse(savedComments)[`${mainThis.currentActiveTaskId}`] || '';
+                    } catch (err){}
                 }
 
                 // Create message editor iframe
@@ -1537,12 +1539,19 @@ class CleanTalkWidgetDoboard {
             this.fileUploader.bindPaperClipAction(paperclipController);
         }
 
+        let destroyWidget;
+
+        if (this.type_name === 'wrap' || this.type_name === 'wrap_review') {
+            destroyWidget = initSpotfixWidget({horizontalPosition});
+        }
+
         document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', (e) => {
             const widgetContainer = e.target.closest('.doboard_task_widget-container');
             if (widgetContainer && widgetContainer.querySelector('.doboard_task_widget-create_issue')) {
                 // If it Create issue interface - do not close widget
                 storageSetWidgetIsClosed(false);
             }
+            if(destroyWidget) destroyWidget();
             this.hide();
         }) || '';
 
@@ -1725,8 +1734,6 @@ class CleanTalkWidgetDoboard {
                 document.querySelector('.spotfix_placeholder_title').style.display = 'block';
             }
         });
-
-        initSpotfixWidget({horizontalPosition});
 
         return widgetContainer;
     }

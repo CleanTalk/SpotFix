@@ -9120,7 +9120,7 @@ function getSafeUrl(url) {
 
 function initSpotfixWidget({horizontalPosition}) {
     const spotfixWrapedWidget = document.querySelector('.doboard_task_widget-wrap');
-    if (!spotfixWrapedWidget) return;
+    if (!spotfixWrapedWidget) return () => {};
 
     const state = {
         isDragging: false,
@@ -9129,21 +9129,30 @@ function initSpotfixWidget({horizontalPosition}) {
         startBottom: 0,
     };
 
-    setupBaseWidgetStyles(spotfixWrapedWidget);
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    setupBaseWidgetStyles(spotfixWrapedWidget, signal);
     restoreWidgetPosition(spotfixWrapedWidget, 'doboardWidgetPosBottom');
 
     const dragHandle = createDragHandle({widget: spotfixWrapedWidget, horizontalPosition});
 
-    setupHoverEffects(spotfixWrapedWidget, dragHandle, state);
-    setupDragAndDropEvents(spotfixWrapedWidget, dragHandle, state, 'doboardWidgetPosBottom');
+    setupHoverEffects(spotfixWrapedWidget, dragHandle, state, signal);
+    setupDragAndDropEvents(spotfixWrapedWidget, dragHandle, state, 'doboardWidgetPosBottom', signal);
+
+    return function destroy() {
+        controller.abort();
+        dragHandle.remove();
+    };
 }
 
-function setupBaseWidgetStyles(widget) {
+function setupBaseWidgetStyles(widget, signal) {
     widget.style.position = 'fixed';
     widget.style.top = 'auto';
     widget.style.cursor = 'pointer';
     widget.style.userSelect = 'none';
-    widget.addEventListener('dragstart', (e) => e.preventDefault());
+
+    widget.addEventListener('dragstart', (e) => e.preventDefault(), { signal });
 }
 
 function restoreWidgetPosition(widget, storageKey) {
@@ -9162,22 +9171,22 @@ function createDragHandle({widget, horizontalPosition}) {
     return dragHandle;
 }
 
-function setupHoverEffects(widget, dragHandle, state) {
+function setupHoverEffects(widget, dragHandle, state, signal) {
     widget.addEventListener('mouseenter', () => {
         dragHandle.style.opacity = '1';
-    });
+    }, { signal });
 
     widget.addEventListener('mouseleave', () => {
         if (!state.isDragging) {
             dragHandle.style.opacity = '0';
         }
-    });
+    }, { signal });
 }
 
-function setupDragAndDropEvents(widget, dragHandle, state, storageKey) {
+function setupDragAndDropEvents(widget, dragHandle, state, storageKey, signal) {
     widget.addEventListener('mousedown', () => {
         state.hasDragged = false;
-    });
+    }, { signal });
 
     dragHandle.addEventListener('mousedown', (e) => {
         if (e.button !== 0) return;
@@ -9194,7 +9203,7 @@ function setupDragAndDropEvents(widget, dragHandle, state, storageKey) {
         widget.style.margin = '0';
         widget.style.transform = 'none';
         dragHandle.style.cursor = 'grabbing';
-    });
+    }, { signal });
 
     document.addEventListener('mousemove', (e) => {
         if (!state.isDragging) return;
@@ -9211,7 +9220,7 @@ function setupDragAndDropEvents(widget, dragHandle, state, storageKey) {
         if (newBottom > maxBottom) newBottom = maxBottom;
 
         widget.style.bottom = newBottom + 'px';
-    });
+    }, { signal });
 
     const stopDrag = () => {
         if (state.isDragging) {
@@ -9230,15 +9239,15 @@ function setupDragAndDropEvents(widget, dragHandle, state, storageKey) {
         }
     };
 
-    document.addEventListener('mouseup', stopDrag);
-    document.addEventListener('mouseleave', stopDrag);
+    document.addEventListener('mouseup', stopDrag, { signal });
+    document.addEventListener('mouseleave', stopDrag, { signal });
 
     widget.addEventListener('click', (e) => {
         if (state.hasDragged) {
             e.preventDefault();
             e.stopPropagation();
         }
-    }, true);
+    }, { capture: true, signal });
 }
 
 /**
@@ -10382,16 +10391,16 @@ class CleanTalkWidgetDoboard {
             if (horizontalPosition === 'left' && buttonLeft) {
                 buttonLeft.style.color = '#2f68b7';
                 buttonLeft.style.cursor = 'default';
-            } else {
+            } else if(buttonRight) {
                 buttonRight.style.color = '#2f68b7';
                 buttonRight.style.cursor = 'default';
             }
 
-            buttonLeft.addEventListener('click', () => {
+            buttonLeft?.addEventListener('click', () => {
                 localStorage.setItem('horizontalPosition', 'left');
                 this.createWidgetElement('user_menu');
             });
-            buttonRight.addEventListener('click', () => {
+            buttonRight?.addEventListener('click', () => {
                 localStorage.setItem('horizontalPosition', 'right');
                 this.createWidgetElement('user_menu');
             });
@@ -10648,7 +10657,9 @@ class CleanTalkWidgetDoboard {
                 let savedComments = localStorage.getItem('spotfix_comment_draft')
                 let savedDraftText = '';
                 if (savedComments) {
-                    savedDraftText = JSON.parse(savedComments)[`${mainThis.currentActiveTaskId}`] || '';
+                    try {
+                        savedDraftText = JSON.parse(savedComments)[`${mainThis.currentActiveTaskId}`] || '';
+                    } catch (err){}
                 }
 
                 // Create message editor iframe
@@ -10780,12 +10791,19 @@ class CleanTalkWidgetDoboard {
             this.fileUploader.bindPaperClipAction(paperclipController);
         }
 
+        let destroyWidget;
+
+        if (this.type_name === 'wrap' || this.type_name === 'wrap_review') {
+            destroyWidget = initSpotfixWidget({horizontalPosition});
+        }
+
         document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', (e) => {
             const widgetContainer = e.target.closest('.doboard_task_widget-container');
             if (widgetContainer && widgetContainer.querySelector('.doboard_task_widget-create_issue')) {
                 // If it Create issue interface - do not close widget
                 storageSetWidgetIsClosed(false);
             }
+            if(destroyWidget) destroyWidget();
             this.hide();
         }) || '';
 
@@ -10968,8 +10986,6 @@ class CleanTalkWidgetDoboard {
                 document.querySelector('.spotfix_placeholder_title').style.display = 'block';
             }
         });
-
-        initSpotfixWidget({horizontalPosition});
 
         return widgetContainer;
     }
