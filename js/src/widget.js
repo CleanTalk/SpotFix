@@ -1138,8 +1138,10 @@ class CleanTalkWidgetDoboard {
 
             if (horizontalPosition === 'left' && buttonLeft) {
                 buttonLeft.style.color = '#2f68b7';
+                buttonLeft.style.cursor = 'default';
             } else {
                 buttonRight.style.color = '#2f68b7';
+                buttonRight.style.cursor = 'default';
             }
 
             buttonLeft.addEventListener('click', () => {
