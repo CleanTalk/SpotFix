@@ -9945,7 +9945,8 @@ class CleanTalkWidgetDoboard {
             this.type_name = templateName;
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
-            templateVariables = {position: savedVerticalPosition ? savedVerticalPosition : !Number.isNaN(Number(config?.verticalPosition))
+            templateVariables = {position: savedVerticalPosition && /^\d+px$/.test(savedVerticalPosition)
+                    ? savedVerticalPosition : !Number.isNaN(Number(config?.verticalPosition))
                     ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
             break;
         case 'wrap_review':
@@ -9953,7 +9954,8 @@ class CleanTalkWidgetDoboard {
             this.type_name = templateName;
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
-            templateVariables = {position: savedVerticalPosition ? savedVerticalPosition : !Number.isNaN(Number(config?.verticalPosition))
+            templateVariables = {position: savedVerticalPosition && /^\d+px$/.test(savedVerticalPosition)
+                    ? savedVerticalPosition : !Number.isNaN(Number(config?.verticalPosition))
                     ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
             break;
         case 'all_issues':
@@ -10687,7 +10689,10 @@ class CleanTalkWidgetDoboard {
                             } else contentForSaving = {};
 
                             contentForSaving[`${mainThis.currentActiveTaskId}`] = content;
-                            localStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
+                            try {
+                                localStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
+                            } catch (err){}
+
                         },
                         onAttachmentClick: function() {
                             fileUploader?.fileInput?.click();
