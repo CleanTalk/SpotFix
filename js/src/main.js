@@ -270,7 +270,7 @@ function isAnyTaskUpdated(allTasksData) {
         if (
             currentStateOfTask.taskId &&
             currentStateOfTask.taskLastUpdate &&
-            currentStateOfTask.taskCreatorTaskUser.toString() === issuerId.toString()
+            currentStateOfTask?.taskCreatorTaskUser?.toString() === issuerId?.toString()
         ) {
             result = storageCheckTaskUpdate(currentStateOfTask.taskId, currentStateOfTask.taskLastUpdate);
             if (result) {
