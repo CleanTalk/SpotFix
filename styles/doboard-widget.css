@@ -260,6 +260,10 @@
     padding-left: 16px;
 }
 
+#doboard_task_widget_goToListButton img {
+    transform: none;
+}
+
 #doboard_task_widget_goToListButton span {
     margin-left: 16px;
     color: #707A83 !important;
