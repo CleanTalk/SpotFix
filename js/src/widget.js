@@ -16,8 +16,9 @@ class CleanTalkWidgetDoboard {
     /**
      * Constructor
      */
-    constructor(selectedData, type) {
+    constructor(selectedData, type, timerToOpenWrap) {
         this.selectedData = selectedData || '';
+        this.timerToOpenWrap = timerToOpenWrap;
         this.selectedText = selectedData?.selectedText || '';
         this.descriptionText = localStorage.getItem('spotfix-description-ls') || '';
         this.srcVariables = {
@@ -42,6 +43,7 @@ class CleanTalkWidgetDoboard {
             iconLinkChain: SpotFixSVGLoader.getAsDataURI('iconLinkChain'),
             iconLinkChainDark: SpotFixSVGLoader.getAsDataURI('iconLinkChainDark'),
             iconFinishedTitle: SpotFixSVGLoader.getAsDataURI('iconFinishedTitle'),
+            iconTwoSidesArrows: SpotFixSVGLoader.getAsDataURI('iconTwoSidesArrows'),
             iconMute: SpotFixSVGLoader.getAsDataURI('iconMute'),
             iconHighlight: SpotFixSVGLoader.getAsDataURI('iconHighlight'),
             iconLockDark: SpotFixSVGLoader.getAsDataURI('iconLockDark'),
@@ -649,6 +651,19 @@ class CleanTalkWidgetDoboard {
         let templateVariables = {};
 
         const config = window.SpotfixWidgetConfig;
+        const savedVerticalPosition = localStorage.getItem('doboardWidgetPosBottom');
+        const savedHorizontalPosition = localStorage.getItem('horizontalPosition');
+        const horizontalPosition = savedHorizontalPosition === 'left' || savedHorizontalPosition === 'right'
+        ? savedHorizontalPosition
+        : config?.horizontalPosition;
+
+        if (horizontalPosition === 'left') {
+            widgetContainer.style.left = '15px';
+            widgetContainer.classList.add('left_mobile');
+        } else {
+            widgetContainer.style.right = '50px';
+            widgetContainer.classList.remove('left_mobile');
+        }
 
         switch (type) {
         case 'create_issue':
@@ -674,12 +689,12 @@ class CleanTalkWidgetDoboard {
             if (storageGetWidgetIsClosed()) {
                 return;
             }
-
             templateName = 'wrap';
             this.type_name = templateName;
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
-            templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
+            templateVariables = {position: savedVerticalPosition && /^\d+px$/.test(savedVerticalPosition)
+                    ? savedVerticalPosition : !Number.isNaN(Number(config?.verticalPosition))
                     ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
             break;
         case 'wrap_review':
@@ -687,7 +702,8 @@ class CleanTalkWidgetDoboard {
             this.type_name = templateName;
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
-            templateVariables = {position: !Number.isNaN(Number(config?.verticalPosition))
+            templateVariables = {position: savedVerticalPosition && /^\d+px$/.test(savedVerticalPosition)
+                    ? savedVerticalPosition : !Number.isNaN(Number(config?.verticalPosition))
                     ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
             break;
         case 'all_issues':
@@ -717,7 +733,6 @@ class CleanTalkWidgetDoboard {
             templateName = 'spot_menu';
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
-            this.socket_type_name = templateName;
             const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
             templateVariables = {
                 spotfixVersion: spotMenuVersion ? 'Spotfix version ' + spotMenuVersion + '.' : '',
@@ -864,18 +879,34 @@ class CleanTalkWidgetDoboard {
             break;
         case 'wrap':
             await this.getTaskCount();
-            document.querySelector('.doboard_task_widget-wrap').addEventListener('click', async (e) => {
-                const widgetElementClasses = e.currentTarget.classList;
-                if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
-                    if(this.type_name !== 'all_issues') await this.createWidgetElement('all_issues');
+            const wrap = document.querySelector('.doboard_task_widget-wrap');
+            wrap.addEventListener('click', async (e) => {
+                if (window.getSelection()?.type === "Range" && this.selectedData) {
+                    spotFixOpenWidget(this.selectedData, 'wrap_review');
+                } else {
+                    const widgetElementClasses = e.currentTarget.classList;
+                    if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
+                        if(this.type_name !== 'all_issues') await this.createWidgetElement('all_issues');
+                    }
                 }
             });
             hideContainersSpinner(false);
+            if (horizontalPosition === 'left') {
+                wrap.style.borderTopRightRadius = '4px';
+                wrap.style.borderBottomRightRadius = '4px';
+            }
             break;
         case 'wrap_review':
-            document.querySelector('#doboard_task_widget_button').addEventListener('click', (e) => {
+            const wrapReview = document.querySelector('#doboard_task_widget_button');
+            wrapReview.addEventListener('click', (e) => {
+                clearTimeout(this.timerToOpenWrap);
                 spotFixOpenWidget(this.selectedData, 'create_issue');
             });
+            if (horizontalPosition === 'left') {
+                wrapReview.style.right = '-145px';
+                wrapReview.style.borderTopRightRadius = '4px';
+                wrapReview.style.borderBottomRightRadius = '4px';
+            }
             break;
         case 'all_issues':
             if (this.nonRequesting) {
@@ -907,10 +938,13 @@ class CleanTalkWidgetDoboard {
                 finishedTasks = sortedTasks.filter(task => task.taskStatus === 'DONE');
 
                 const container = document.querySelector(".doboard_task_widget-all_issues-container");
-                container.innerHTML = `<div class="doboard_task_widget-all_issues-container-active" style="flex-grow: 1"></div>
+                if (container) {
+                    container.innerHTML = `<div class="doboard_task_widget-all_issues-container-active" style="flex-grow: 1"></div>
         <div class="doboard_task_widget_tasks_list" style="min-height: 32px; max-height: 32px">
             <span>doBoard / SpotFix</span>
         </div>`;
+                }
+
                 const generateTaskHtml = (elTask, isFinishedGroup) => {
                     const taskId = elTask.taskId;
                     const taskTitle = elTask.taskTitle;
@@ -1058,8 +1092,11 @@ class CleanTalkWidgetDoboard {
                 this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                 this.savedIssuesQuantityAll = tasks.length;
                 spotFixHighlightElements(spotsToBeHighlighted, this);
-                document.querySelector('.doboard_task_widget-header span').innerHTML = ksesFilter('All spots ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
-            }
+                const headerSpan = document.querySelector('.doboard_task_widget-header span');
+                if (headerSpan) {
+                headerSpan.innerHTML = ksesFilter('All spots ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
+                }
+              }
 
             if (tasks.length === 0) {
                 document.querySelector(".doboard_task_widget-all_issues-container").innerHTML =
@@ -1099,6 +1136,26 @@ class CleanTalkWidgetDoboard {
             }
 
             widgetContainer.innerHTML = this.loadTemplate('user_menu', templateVariables);
+
+            const buttonLeft = document.getElementById('spotfix_widget-task-menu_left');
+            const buttonRight = document.getElementById('spotfix_widget-task-menu_right');
+
+            if (horizontalPosition === 'left' && buttonLeft) {
+                buttonLeft.style.color = '#2f68b7';
+                buttonLeft.style.cursor = 'default';
+            } else if(buttonRight) {
+                buttonRight.style.color = '#2f68b7';
+                buttonRight.style.cursor = 'default';
+            }
+
+            buttonLeft?.addEventListener('click', () => {
+                localStorage.setItem('horizontalPosition', 'left');
+                this.createWidgetElement('user_menu');
+            });
+            buttonRight?.addEventListener('click', () => {
+                localStorage.setItem('horizontalPosition', 'right');
+                this.createWidgetElement('user_menu');
+            });
 
             document.body.appendChild(widgetContainer);
             setToggleStatus(this);
@@ -1162,7 +1219,6 @@ class CleanTalkWidgetDoboard {
                 document.getElementById('unsubscribe_from_spot').disabled = true;
                 document.getElementById('highlight_the_spot').disabled = true;
             }
-
             break;
         case 'concrete_issue':
             if(this.nonRequesting) {
@@ -1349,8 +1405,18 @@ class CleanTalkWidgetDoboard {
                 window.MessageEditorIframe.remove();
             }
             if(!this.nonRequesting) {
+                const draftKey =  mainThis.currentActiveTaskId ;
+                let savedComments = localStorage.getItem('spotfix_comment_draft')
+                let savedDraftText = '';
+                if (savedComments) {
+                    try {
+                        savedDraftText = JSON.parse(savedComments)[`${mainThis.currentActiveTaskId}`] || '';
+                    } catch (err){}
+                }
+
                 // Create message editor iframe
                 window.MessageEditorIframe.create({
+                    savedContent: savedDraftText,
                     onReady: function() {
                         // Scroll to the bottom comments
                         if (!mainThis.nonRequesting) {
@@ -1364,6 +1430,18 @@ class CleanTalkWidgetDoboard {
                         }
                     },
                     handlers: {
+                        onChange: function(content) {
+                            let contentForSaving = localStorage.getItem('spotfix_comment_draft');
+                            if (contentForSaving) {
+                                contentForSaving = JSON.parse(contentForSaving);
+                            } else contentForSaving = {};
+
+                            contentForSaving[`${mainThis.currentActiveTaskId}`] = content;
+                            try {
+                                localStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
+                            } catch (err){}
+
+                        },
                         onAttachmentClick: function() {
                             fileUploader?.fileInput?.click();
                         },
@@ -1372,6 +1450,12 @@ class CleanTalkWidgetDoboard {
                         },
                         onSendComment: function(eventData) {
                             clickHandler(mainThis, null, eventData.content);
+                            let contentForSaving = localStorage.getItem('spotfix_comment_draft');
+                            if (contentForSaving) {
+                                contentForSaving = JSON.parse(contentForSaving);
+                                delete contentForSaving[`${mainThis.currentActiveTaskId}`];
+                                localStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
+                            }
                         },
                     },
                 }).catch(function(error) {
@@ -1462,12 +1546,19 @@ class CleanTalkWidgetDoboard {
             this.fileUploader.bindPaperClipAction(paperclipController);
         }
 
+        let destroyWidget;
+
+        if (this.type_name === 'wrap' || this.type_name === 'wrap_review') {
+            destroyWidget = initSpotfixWidget({horizontalPosition});
+        }
+
         document.querySelector('.doboard_task_widget-close_btn')?.addEventListener('click', (e) => {
             const widgetContainer = e.target.closest('.doboard_task_widget-container');
             if (widgetContainer && widgetContainer.querySelector('.doboard_task_widget-create_issue')) {
                 // If it Create issue interface - do not close widget
                 storageSetWidgetIsClosed(false);
             }
+            if(destroyWidget) destroyWidget();
             this.hide();
         }) || '';
 
@@ -1793,6 +1884,7 @@ class CleanTalkWidgetDoboard {
         if ( taskCountElement && +tasksCount ) {
             taskCountElement.innerText = ksesFilter(tasksCount);
             taskCountElement.classList.remove('hidden');
+            if (localStorage.getItem('horizontalPosition') === 'left' || window.SpotfixWidgetConfig?.horizontalPosition === 'left') taskCountElement.style.left = '10px';
         }
     }
 

@@ -337,6 +337,19 @@ class SpotFixTemplatesLoader {
                     </label>
                 </div>
             </div>
+            <div class="doboard_task_widget-user_menu-item" style="padding-right: 12px">
+                <img src="{{iconTwoSidesArrows}}" alt="" style="margin-right: 12px">
+                <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
+                    <span style="display: inline-flex; padding-top: 4px">
+                        <span style="font-weight: 500; font-size: 14px; color: #252A2F; margin-bottom: 4px">
+                        Show widget on screen side</span>
+                    </span>
+                    <div style="padding-right: 16px; display: flex">
+                        <button id="spotfix_widget-task-menu_left" type="button">Left</button>
+                        <button id="spotfix_widget-task-menu_right" style="margin-left: 16px" type="button">Right</button>
+                    </div>
+                </div>
+            </div>
             <div class="doboard_task_widget-user_menu-item" style="display: none">
                 <span id="doboard_task_widget-user_menu-logout_button">
                     <img src="{{iconDoor}}" alt="" style="margin-right: 12px; cursor: pointer">
@@ -479,7 +492,8 @@ class SpotFixTemplatesLoader {
 
     static wrap_review() {
         return `
-<button id="doboard_task_widget_button" class="doboard_task_widget-wrap wrap_review" style="bottom: {{position}};">
+<button id="doboard_task_widget_button" class="doboard_task_widget-wrap wrap_review" 
+style="bottom: {{position}}; background-color: rgba(255,255,255,.9) !important;">
 <img src="{{iconMarker}}" />
 <span id="review_content_button_text">Review content</span>
 </button>`;
