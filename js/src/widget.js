@@ -57,8 +57,9 @@ class CleanTalkWidgetDoboard {
      * Initialize the widget
      */
     async init(type) {
+        const config = window.SpotfixWidgetConfig;
         this.params = this.getParams();
-
+        this.new_task_type = config?.taskDefaultMode === "PRIVATE" ? "PRIVATE" : "PUBLIC";
         // Check if email_confirmation_token is in URL
         const urlParams = new URLSearchParams(window.location.search);
         const emailToken = urlParams.get('email_confirmation_token');
