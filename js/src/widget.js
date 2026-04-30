@@ -59,7 +59,7 @@ class CleanTalkWidgetDoboard {
     async init(type) {
         const config = window.SpotfixWidgetConfig;
         this.params = this.getParams();
-        this.new_task_type = config?.taskDefaultMode === "PRIVATE" ? "PRIVATE" : "PUBLIC";
+        this.new_task_type = config?.taskDefaultMode === "PRIVATE" ? "REGULAR" : "PUBLIC";
         // Check if email_confirmation_token is in URL
         const urlParams = new URLSearchParams(window.location.search);
         const emailToken = urlParams.get('email_confirmation_token');
@@ -1059,9 +1059,8 @@ class CleanTalkWidgetDoboard {
                         if (this.isSpotHaveToBeHighlighted(taskData)) {
                             spotsToBeHighlighted.push(taskData);
                         }
-
-                        return this.loadTemplate('list_issues', listIssuesTemplateVariables);
                         clearTimeout(this.timerToOpenWrap);
+                        return this.loadTemplate('list_issues', listIssuesTemplateVariables);
                     }
 
                     return '';
