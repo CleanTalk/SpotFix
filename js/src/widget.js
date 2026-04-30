@@ -681,6 +681,7 @@ class CleanTalkWidgetDoboard {
                     : SpotFixSVGLoader.getAsDataURI('iconMaximize'),
                 iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
                 iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
+                iconListMinimalistic: SpotFixSVGLoader.getAsDataURI('iconListMinimalistic'),
                 ...this.srcVariables
             };
             storageGetUserIsDefined() && storageSetWidgetIsClosed(false);
@@ -702,7 +703,9 @@ class CleanTalkWidgetDoboard {
             this.type_name = templateName;
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
-            templateVariables = {position: savedVerticalPosition && /^\d+px$/.test(savedVerticalPosition)
+            templateVariables = {
+                iconList: SpotFixSVGLoader.getAsDataURI('iconList'),
+                position: savedVerticalPosition && /^\d+px$/.test(savedVerticalPosition)
                     ? savedVerticalPosition : !Number.isNaN(Number(config?.verticalPosition))
                     ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
             break;
@@ -795,6 +798,13 @@ class CleanTalkWidgetDoboard {
 
             if (sessionIdExists && email && !email.includes('spotfix_')) {
                 document.querySelector('.doboard_task_widget-login').classList.add('hidden');
+            }
+
+            const goToListButton = document.getElementById('openTasksList');
+            if (goToListButton) {
+                goToListButton.addEventListener('click', () => {
+                    if(this.type_name !== 'all_issues') this.createWidgetElement('all_issues');
+                });
             }
 
             const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
@@ -906,6 +916,14 @@ class CleanTalkWidgetDoboard {
                 wrapReview.style.right = '-145px';
                 wrapReview.style.borderTopRightRadius = '4px';
                 wrapReview.style.borderBottomRightRadius = '4px';
+            }
+            const wrapGoToListButton = document.getElementById('doboard_task_widget_goToListButton');
+            if (wrapGoToListButton) {
+                wrapGoToListButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if(this.type_name !== 'all_issues') this.createWidgetElement('all_issues');
+                })
             }
             break;
         case 'all_issues':

@@ -138,6 +138,9 @@ class SpotFixTemplatesLoader {
             <span id="maximizeWidgetContainer">
                 <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
+            <span id="openTasksList">
+                <img src="{{iconListMinimalistic}}"  alt="" class="doboard_task_widget_cursor-pointer">
+            </span>
             <span id="openUserMenuButton">
                  <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
@@ -491,12 +494,16 @@ class SpotFixTemplatesLoader {
     }
 
     static wrap_review() {
-        return `
-<button id="doboard_task_widget_button" class="doboard_task_widget-wrap wrap_review" 
-style="bottom: {{position}}; background-color: rgba(255,255,255,.9) !important;">
-<img src="{{iconMarker}}" />
-<span id="review_content_button_text">Review content</span>
-</button>`;
+        return `<button id="doboard_task_widget_button" class="doboard_task_widget-wrap wrap_review" style="bottom: {{position}}; background-color: rgba(255,255,255,.9) !important;">
+                    <span>
+                          <img src="{{iconMarker}}" />
+                    <span id="review_content_button_text">Review content</span>
+                    </span> 
+                    <span id="doboard_task_widget_goToListButton">
+                        <img src="{{iconList}}" />
+                        <span>View spot list</span>
+                    </span>
+                </button>`;
     }
 
     static fixedHtml() {

@@ -244,13 +244,35 @@
 .wrap_review {
     width: 164px;
     min-width: 164px;
-    height: 54px;
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
 }
 
 .wrap_review img {
     width: 28px;
     height: 28px;
     transform: scaleX(-1);
+}
+
+#doboard_task_widget_goToListButton {
+    width: 100%;
+    padding-left: 16px;
+}
+
+#doboard_task_widget_goToListButton span {
+    margin-left: 16px;
+    color: #707A83 !important;
+    font-weight: 400;
+    font-size: 12px;
+    text-transform: none !important;
+}
+
+.wrap_review span {
+    height: 54px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
 }
 
 .wrap_review:hover {

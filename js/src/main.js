@@ -85,8 +85,8 @@ document.addEventListener('selectionchange', function(e) {
              if ( selectedData ) {
                 // spotFixOpenWidget(selectedData, 'create_issue');
                  const timer = setTimeout(() => {
-                     clearTimeout(timer);
-                     spotFixOpenWidget(selectedData, 'wrap');
+                     // clearTimeout(timer);
+                     // spotFixOpenWidget(selectedData, 'wrap');
                  }, 3000);
                  spotFixOpenWidget(selectedData, 'wrap_review', timer);
             }
