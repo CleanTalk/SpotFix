@@ -923,8 +923,16 @@ class CleanTalkWidgetDoboard {
                 wrapGoToListButton.addEventListener('click', (e) => {
                     e.stopPropagation();
                     e.preventDefault();
+                    clearTimeout(this.timerToOpenWrap);
                     if(this.type_name !== 'all_issues') this.createWidgetElement('all_issues');
                 })
+            }
+
+            const spotfixWrapedWidget = document.querySelector('.wrap_review');
+            if (spotfixWrapedWidget) {
+                spotfixWrapedWidget.addEventListener('mouseenter', () => {
+                    clearTimeout(this.timerToOpenWrap);
+                });
             }
             break;
         case 'all_issues':
@@ -1053,6 +1061,7 @@ class CleanTalkWidgetDoboard {
                         }
 
                         return this.loadTemplate('list_issues', listIssuesTemplateVariables);
+                        clearTimeout(this.timerToOpenWrap);
                     }
 
                     return '';
