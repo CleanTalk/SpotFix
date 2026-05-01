@@ -117,7 +117,7 @@
 
 .doboard_task_widget-container-maximize {
     width: 80vw !important;
-    max-width: 1120px !important;
+    max-width: 780px !important;
     max-height: 75vh !important;
     min-height: 75vh !important;
     display: flex;
@@ -442,10 +442,6 @@
     display: none;
 }
 
-.doboard_task_widget-login .doboard_task_widget-input-container .doboard_task_widget-field,
-.doboard_task_widget-login .doboard_task_widget-field + label {
-    background: #F9FBFD;
-}
 .doboard_task_widget-submit_button {
     min-height: 48px;
     width: 100%;

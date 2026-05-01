@@ -169,20 +169,22 @@ class CleanTalkWidgetDoboard {
                     taskTitleElement.focus();
                     taskTitleElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${taskTitleElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${taskTitleElement.id}"]`).style.color = 'red';
                     return;
                 }
                 const taskDescriptionElement = document.getElementById('doboard_task_widget-description')
                 const taskDescription = taskDescriptionElement.value || data.descriptionText;
 
-                if ( ! taskDescription ) {
-                    taskDescriptionElement.style.borderColor = 'red';
-                    taskDescriptionElement.focus();
-                    taskDescriptionElement.addEventListener('input', function() {
-                        this.style.borderColor = '';
-                    });
-                    return;
-                }
+                // if ( ! taskDescription ) {
+                //     taskDescriptionElement.style.borderColor = 'red';
+                //     taskDescriptionElement.focus();
+                //     taskDescriptionElement.addEventListener('input', function() {
+                //         this.style.borderColor = '';
+                //     });
+                //     return;
+                // }
 
                 // If login section is open, check required fields: Nickname, Email
                 let userName = '';
@@ -202,7 +204,9 @@ class CleanTalkWidgetDoboard {
                         userEmailElement.focus();
                         userEmailElement.addEventListener('input', function() {
                             this.style.borderColor = '';
+                            document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = ''
                         });
+                        document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = 'red'
                         return;
                     }
 
@@ -214,7 +218,9 @@ class CleanTalkWidgetDoboard {
                             userNameElement.focus();
                             userNameElement.addEventListener('input', function() {
                                 this.style.borderColor = '';
+                                document.querySelector(`label[for="${userNameElement.id}"]`).style.color = ''
                             });
+                            document.querySelector(`label[for="${userNameElement.id}"]`).style.color = 'red'
                             return;
                         }
                     }
@@ -227,7 +233,9 @@ class CleanTalkWidgetDoboard {
                             userPasswordElement.focus();
                             userPasswordElement.addEventListener('input', function() {
                                 this.style.borderColor = '';
+                                document.querySelector(`label[for="${userPasswordElement.id}"]`).style.color = ''
                             });
+                            document.querySelector(`label[for="${userPasswordElement.id}"]`).style.color = 'red'
                             return;
                         }
                     }
@@ -352,7 +360,15 @@ class CleanTalkWidgetDoboard {
             showLoginButton.addEventListener('click', async () => {
                 const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
                 const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
+                const signupContainer = document.querySelector('.doboard_task_widget-auth-inputs-container');
                 const submitButton = document.getElementById('doboard_task_widget-submit_button');
+
+                if (signupContainer) {
+                    signupContainer.style.display = loginContainer.classList.contains('doboard_task_widget-hidden')
+                    ? 'none'
+                    : 'block'
+                }
+
                 if (loginContainer) {
                     loginContainer.classList.toggle('doboard_task_widget-hidden');
                     if (submitButton) {
@@ -362,7 +378,8 @@ class CleanTalkWidgetDoboard {
                             submitButton.closest('.doboard_task_widget-field').classList.add('doboard_task_widget-hidden');
                         }
                     }
-                }
+
+                } else
                 if (phantomContainer) {
                     phantomContainer.classList.toggle('doboard_task_widget-hidden');
                 }
@@ -458,14 +475,18 @@ class CleanTalkWidgetDoboard {
                     userEmailElement.focus();
                     userEmailElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = 'red'
                     return;
                 } else if (!emailRegex.test(userEmail)) {
                     userEmailElement.style.borderColor = 'red';
                     userEmailElement.focus();
                     userEmailElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = 'red'
                     return;
                 }
 
@@ -475,14 +496,18 @@ class CleanTalkWidgetDoboard {
                     userPasswordElement.focus();
                     userPasswordElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${userPasswordElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${userPasswordElement.id}"]`).style.color = 'red'
                     return;
                 } else if (userPassword.length < 6) {
                     userPasswordElement.style.borderColor = 'red';
                     userPasswordElement.focus();
                     userPasswordElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${userPasswordElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${userPasswordElement.id}"]`).style.color = 'red'
                     return;
                 }
 
@@ -534,13 +559,16 @@ class CleanTalkWidgetDoboard {
                     userEmailElement.focus();
                     userEmailElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = 'red'
                     return;
                 } else if (!emailRegex.test(userEmail)) {
 
                     userEmailElement.style.borderColor = 'red';
                     userEmailElement.focus();
 
+                    document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = 'red'
                     return;
                 }
 
@@ -567,7 +595,9 @@ class CleanTalkWidgetDoboard {
                     userNameElement.focus();
                     userNameElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${userNameElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${userNameElement.id}"]`).style.color = 'red'
                     return;
                 }
 
@@ -577,14 +607,18 @@ class CleanTalkWidgetDoboard {
                     userEmailElement.focus();
                     userEmailElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = 'red'
                     return;
                 } else if (!emailRegex.test(userEmail)) {
                     userEmailElement.style.borderColor = 'red';
                     userEmailElement.focus();
                     userEmailElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = 'red'
                     return;
                 }
 
