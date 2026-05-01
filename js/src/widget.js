@@ -364,7 +364,7 @@ class CleanTalkWidgetDoboard {
                 const submitButton = document.getElementById('doboard_task_widget-submit_button');
 
                 if (signupContainer) {
-                    signupContainer.style.display = loginContainer.classList.contains('doboard_task_widget-hidden')
+                    signupContainer.style.display = loginContainer?.classList?.contains('doboard_task_widget-hidden')
                     ? 'none'
                     : 'block'
                 }
