@@ -403,7 +403,11 @@ class FileUploader {
                 useCORS: true,
                 allowTaint: true,
                 logging: false,
-                scale: window.devicePixelRatio || 1
+                scale: window.devicePixelRatio || 1,
+                x: window.scrollX,
+                y: window.scrollY,
+                width: window.innerWidth,
+                height: window.innerHeight
             });
 
             const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
