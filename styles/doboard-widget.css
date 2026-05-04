@@ -1875,7 +1875,7 @@ input:checked + .slider:before {
 }
 
 .doboard_task_widget-finished_tasks_container.expanded {
-    max-height: 2000px;
+    max-height: max-content;
     transition: max-height 0.5s ease-in;
     padding-bottom: 4px;
 }
