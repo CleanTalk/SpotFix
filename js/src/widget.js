@@ -57,8 +57,9 @@ class CleanTalkWidgetDoboard {
      * Initialize the widget
      */
     async init(type) {
+        const config = window.SpotfixWidgetConfig;
         this.params = this.getParams();
-
+        this.new_task_type = config?.taskDefaultMode === "PRIVATE" ? "REGULAR" : "PUBLIC";
         // Check if email_confirmation_token is in URL
         const urlParams = new URLSearchParams(window.location.search);
         const emailToken = urlParams.get('email_confirmation_token');
@@ -168,20 +169,22 @@ class CleanTalkWidgetDoboard {
                     taskTitleElement.focus();
                     taskTitleElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${taskTitleElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${taskTitleElement.id}"]`).style.color = 'red';
                     return;
                 }
                 const taskDescriptionElement = document.getElementById('doboard_task_widget-description')
                 const taskDescription = taskDescriptionElement.value || data.descriptionText;
 
-                if ( ! taskDescription ) {
-                    taskDescriptionElement.style.borderColor = 'red';
-                    taskDescriptionElement.focus();
-                    taskDescriptionElement.addEventListener('input', function() {
-                        this.style.borderColor = '';
-                    });
-                    return;
-                }
+                // if ( ! taskDescription ) {
+                //     taskDescriptionElement.style.borderColor = 'red';
+                //     taskDescriptionElement.focus();
+                //     taskDescriptionElement.addEventListener('input', function() {
+                //         this.style.borderColor = '';
+                //     });
+                //     return;
+                // }
 
                 // If login section is open, check required fields: Nickname, Email
                 let userName = '';
@@ -201,7 +204,9 @@ class CleanTalkWidgetDoboard {
                         userEmailElement.focus();
                         userEmailElement.addEventListener('input', function() {
                             this.style.borderColor = '';
+                            document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = ''
                         });
+                        document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = 'red'
                         return;
                     }
 
@@ -213,7 +218,9 @@ class CleanTalkWidgetDoboard {
                             userNameElement.focus();
                             userNameElement.addEventListener('input', function() {
                                 this.style.borderColor = '';
+                                document.querySelector(`label[for="${userNameElement.id}"]`).style.color = ''
                             });
+                            document.querySelector(`label[for="${userNameElement.id}"]`).style.color = 'red'
                             return;
                         }
                     }
@@ -226,7 +233,9 @@ class CleanTalkWidgetDoboard {
                             userPasswordElement.focus();
                             userPasswordElement.addEventListener('input', function() {
                                 this.style.borderColor = '';
+                                document.querySelector(`label[for="${userPasswordElement.id}"]`).style.color = ''
                             });
+                            document.querySelector(`label[for="${userPasswordElement.id}"]`).style.color = 'red'
                             return;
                         }
                     }
@@ -351,7 +360,15 @@ class CleanTalkWidgetDoboard {
             showLoginButton.addEventListener('click', async () => {
                 const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
                 const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
+                const signupContainer = document.querySelector('.doboard_task_widget-auth-inputs-container');
                 const submitButton = document.getElementById('doboard_task_widget-submit_button');
+
+                if (signupContainer) {
+                    signupContainer.style.display = loginContainer?.classList?.contains('doboard_task_widget-hidden')
+                    ? 'none'
+                    : 'block'
+                }
+
                 if (loginContainer) {
                     loginContainer.classList.toggle('doboard_task_widget-hidden');
                     if (submitButton) {
@@ -361,7 +378,8 @@ class CleanTalkWidgetDoboard {
                             submitButton.closest('.doboard_task_widget-field').classList.add('doboard_task_widget-hidden');
                         }
                     }
-                }
+
+                } else
                 if (phantomContainer) {
                     phantomContainer.classList.toggle('doboard_task_widget-hidden');
                 }
@@ -457,14 +475,18 @@ class CleanTalkWidgetDoboard {
                     userEmailElement.focus();
                     userEmailElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = 'red'
                     return;
                 } else if (!emailRegex.test(userEmail)) {
                     userEmailElement.style.borderColor = 'red';
                     userEmailElement.focus();
                     userEmailElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = 'red'
                     return;
                 }
 
@@ -474,14 +496,18 @@ class CleanTalkWidgetDoboard {
                     userPasswordElement.focus();
                     userPasswordElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${userPasswordElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${userPasswordElement.id}"]`).style.color = 'red'
                     return;
                 } else if (userPassword.length < 6) {
                     userPasswordElement.style.borderColor = 'red';
                     userPasswordElement.focus();
                     userPasswordElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${userPasswordElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${userPasswordElement.id}"]`).style.color = 'red'
                     return;
                 }
 
@@ -533,13 +559,16 @@ class CleanTalkWidgetDoboard {
                     userEmailElement.focus();
                     userEmailElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = 'red'
                     return;
                 } else if (!emailRegex.test(userEmail)) {
 
                     userEmailElement.style.borderColor = 'red';
                     userEmailElement.focus();
 
+                    document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = 'red'
                     return;
                 }
 
@@ -566,7 +595,9 @@ class CleanTalkWidgetDoboard {
                     userNameElement.focus();
                     userNameElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${userNameElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${userNameElement.id}"]`).style.color = 'red'
                     return;
                 }
 
@@ -576,14 +607,18 @@ class CleanTalkWidgetDoboard {
                     userEmailElement.focus();
                     userEmailElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = 'red'
                     return;
                 } else if (!emailRegex.test(userEmail)) {
                     userEmailElement.style.borderColor = 'red';
                     userEmailElement.focus();
                     userEmailElement.addEventListener('input', function() {
                         this.style.borderColor = '';
+                        document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = ''
                     });
+                    document.querySelector(`label[for="${userEmailElement.id}"]`).style.color = 'red'
                     return;
                 }
 
@@ -681,6 +716,7 @@ class CleanTalkWidgetDoboard {
                     : SpotFixSVGLoader.getAsDataURI('iconMaximize'),
                 iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
                 iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
+                iconListMinimalistic: SpotFixSVGLoader.getAsDataURI('iconListMinimalistic'),
                 ...this.srcVariables
             };
             storageGetUserIsDefined() && storageSetWidgetIsClosed(false);
@@ -702,7 +738,9 @@ class CleanTalkWidgetDoboard {
             this.type_name = templateName;
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
-            templateVariables = {position: savedVerticalPosition && /^\d+px$/.test(savedVerticalPosition)
+            templateVariables = {
+                iconList: SpotFixSVGLoader.getAsDataURI('iconList'),
+                position: savedVerticalPosition && /^\d+px$/.test(savedVerticalPosition)
                     ? savedVerticalPosition : !Number.isNaN(Number(config?.verticalPosition))
                     ? `${Number(config?.verticalPosition)}vh` : '0vh', ...this.srcVariables};
             break;
@@ -795,6 +833,13 @@ class CleanTalkWidgetDoboard {
 
             if (sessionIdExists && email && !email.includes('spotfix_')) {
                 document.querySelector('.doboard_task_widget-login').classList.add('hidden');
+            }
+
+            const goToListButton = document.getElementById('openTasksList');
+            if (goToListButton) {
+                goToListButton.addEventListener('click', () => {
+                    if(this.type_name !== 'all_issues') this.createWidgetElement('all_issues');
+                });
             }
 
             const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
@@ -906,6 +951,22 @@ class CleanTalkWidgetDoboard {
                 wrapReview.style.right = '-145px';
                 wrapReview.style.borderTopRightRadius = '4px';
                 wrapReview.style.borderBottomRightRadius = '4px';
+            }
+            const wrapGoToListButton = document.getElementById('doboard_task_widget_goToListButton');
+            if (wrapGoToListButton) {
+                wrapGoToListButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    clearTimeout(this.timerToOpenWrap);
+                    if(this.type_name !== 'all_issues') this.createWidgetElement('all_issues');
+                })
+            }
+
+            const spotfixWrapedWidget = document.querySelector('.wrap_review');
+            if (spotfixWrapedWidget) {
+                spotfixWrapedWidget.addEventListener('mouseenter', () => {
+                    clearTimeout(this.timerToOpenWrap);
+                });
             }
             break;
         case 'all_issues':
@@ -1032,7 +1093,7 @@ class CleanTalkWidgetDoboard {
                         if (this.isSpotHaveToBeHighlighted(taskData)) {
                             spotsToBeHighlighted.push(taskData);
                         }
-
+                        clearTimeout(this.timerToOpenWrap);
                         return this.loadTemplate('list_issues', listIssuesTemplateVariables);
                     }
 
