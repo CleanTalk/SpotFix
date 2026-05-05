@@ -10079,108 +10079,109 @@ class CleanTalkWidgetDoboard {
         const container = document.querySelector('.doboard_task_widget-container');
         switch (type) {
         case 'create_issue':
-            document.getElementById('spotfix-widget-create-task-visibility').checked = this.new_task_type === 'PUBLIC';
+            if(!nonRequesting) {
+                document.getElementById('spotfix-widget-create-task-visibility').checked = this.new_task_type === 'PUBLIC';
 
-            if(container && +localStorage.getItem('maximize')){
-                container.classList.add('doboard_task_widget-container-maximize');
-            } else if(container) {
-                container.classList.remove('doboard_task_widget-container-maximize');
-            }
-            // highlight selected item during task creation
-            const selection = window.getSelection();
-            const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
-            const email = getSpotfixEmail();
-
-            if (sessionIdExists && email && !email.includes('spotfix_')) {
-                document.querySelector('.doboard_task_widget-login').classList.add('hidden');
-            }
-
-            const goToListButton = document.getElementById('openTasksList');
-            if (goToListButton) {
-                goToListButton.addEventListener('click', () => {
-                    if(this.type_name !== 'all_issues') this.createWidgetElement('all_issues');
-                });
-            }
-
-            const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
-            const titleContainer = document.getElementById('doboard_task_widget-title')?.closest('.doboard_task_widget-input-container');
-            const descriptionContainer = document.getElementById('doboard_task_widget-description-container');
-            const requireFullRegistrationMessage = document.getElementById('doboard_task_widget-require_full_registration');
-            const submitButtonContainer = document.getElementById('doboard_task_widget-submit_button')?.closest('.doboard_task_widget-field');
-            const visibilityToggle = document.querySelector('.doboard_task_widget-visibility-toggle');
-
-            const registerOnlyButton = document.getElementById('doboard_task_widget-register_only_button');
-
-            if (requireFullRegistration && !sessionIdExists) {
-                if (titleContainer) titleContainer.style.display = '';
-                if (descriptionContainer) descriptionContainer.style.display = '';
-                if (submitButtonContainer) submitButtonContainer.style.display = 'none';
-                if (visibilityToggle) visibilityToggle.style.display = 'none';
-                if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.remove('doboard_task_widget-hidden');
-                const loginSection = document.querySelector('.doboard_task_widget-login');
-                if (loginSection) loginSection.classList.add('active');
-                // Hide login accordion icon when require_full_registration
-                const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
-                if (loginIcon) loginIcon.classList.add('doboard_task_widget-login-icon-hidden');
-                // Show register only button
-                if (registerOnlyButton) registerOnlyButton.classList.remove('doboard_task_widget-hidden');
-            } else {
-                if (titleContainer) titleContainer.style.display = '';
-                if (descriptionContainer) descriptionContainer.style.display = '';
-                if (submitButtonContainer) submitButtonContainer.style.display = '';
-                if (visibilityToggle) visibilityToggle.style.display = '';
-                if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.add('doboard_task_widget-hidden');
-                // Show login accordion icon when not require_full_registration
-                const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
-                if (loginIcon) loginIcon.classList.remove('doboard_task_widget-login-icon-hidden');
-                // Hide register only button
-                if (registerOnlyButton) registerOnlyButton.classList.add('doboard_task_widget-hidden');
-            }
-
-            if (
-                selection.type === 'Range'
-            ) {
-                const selectedData = spotFixGetSelectedData(selection);
-                if (selectedData) {
-                    spotFixScrollToNodePath(selectedData.nodePath);
-                    this.positionWidgetContainer();
+                if (container && +localStorage.getItem('maximize')) {
+                    container.classList.add('doboard_task_widget-container-maximize');
+                } else if (container) {
+                    container.classList.remove('doboard_task_widget-container-maximize');
                 }
-            }
-            // bind creation events
-            this.bindCreateTaskEvents(this);
-            this.bindShowLoginFormEvents();
+                // highlight selected item during task creation
+                const selection = window.getSelection();
+                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+                const email = getSpotfixEmail();
 
-            this.fileUploader = new FileUploader(this.escapeHtml);
-            this.fileUploader.init();
+                if (sessionIdExists && email && !email.includes('spotfix_')) {
+                    document.querySelector('.doboard_task_widget-login').classList.add('hidden');
+                }
 
-            const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
-            const fileUploaderDesc = this.fileUploader;
+                const goToListButton = document.getElementById('openTasksList');
+                if (goToListButton) {
+                    goToListButton.addEventListener('click', () => {
+                        if (this.type_name !== 'all_issues') this.createWidgetElement('all_issues');
+                    });
+                }
 
+                const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
+                const titleContainer = document.getElementById('doboard_task_widget-title')?.closest('.doboard_task_widget-input-container');
+                const descriptionContainer = document.getElementById('doboard_task_widget-description-container');
+                const requireFullRegistrationMessage = document.getElementById('doboard_task_widget-require_full_registration');
+                const submitButtonContainer = document.getElementById('doboard_task_widget-submit_button')?.closest('.doboard_task_widget-field');
+                const visibilityToggle = document.querySelector('.doboard_task_widget-visibility-toggle');
 
-            if (window.DescriptionEditorIframe.iframe && !this.nonRequesting) {
-                window.DescriptionEditorIframe.remove();
-            }
-            if(!this.nonRequesting) {
-                // Create description editor iframe
-                window.DescriptionEditorIframe.create({
-                    savedContent: savedDescription,
-                    onChange: function(content) {
-                        localStorage.setItem('spotfix-description-ls', content);
-                    },
-                    handlers: {
-                        onAttachmentClick: function() {
-                            fileUploaderDesc?.fileInput?.click();
-                        },
-                        onScreenshotClick: function() {
-                            fileUploaderDesc?.makeScreenshot();
-                        },
+                const registerOnlyButton = document.getElementById('doboard_task_widget-register_only_button');
+
+                if (requireFullRegistration && !sessionIdExists) {
+                    if (titleContainer) titleContainer.style.display = '';
+                    if (descriptionContainer) descriptionContainer.style.display = '';
+                    if (submitButtonContainer) submitButtonContainer.style.display = 'none';
+                    if (visibilityToggle) visibilityToggle.style.display = 'none';
+                    if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.remove('doboard_task_widget-hidden');
+                    const loginSection = document.querySelector('.doboard_task_widget-login');
+                    if (loginSection) loginSection.classList.add('active');
+                    // Hide login accordion icon when require_full_registration
+                    const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
+                    if (loginIcon) loginIcon.classList.add('doboard_task_widget-login-icon-hidden');
+                    // Show register only button
+                    if (registerOnlyButton) registerOnlyButton.classList.remove('doboard_task_widget-hidden');
+                } else {
+                    if (titleContainer) titleContainer.style.display = '';
+                    if (descriptionContainer) descriptionContainer.style.display = '';
+                    if (submitButtonContainer) submitButtonContainer.style.display = '';
+                    if (visibilityToggle) visibilityToggle.style.display = '';
+                    if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.add('doboard_task_widget-hidden');
+                    // Show login accordion icon when not require_full_registration
+                    const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
+                    if (loginIcon) loginIcon.classList.remove('doboard_task_widget-login-icon-hidden');
+                    // Hide register only button
+                    if (registerOnlyButton) registerOnlyButton.classList.add('doboard_task_widget-hidden');
+                }
+
+                if (
+                    selection.type === 'Range'
+                ) {
+                    const selectedData = spotFixGetSelectedData(selection);
+                    if (selectedData) {
+                        spotFixScrollToNodePath(selectedData.nodePath);
+                        this.positionWidgetContainer();
                     }
-                }).catch(function(error) {
-                    console.error('Failed to create description editor:', error);
-                });
+                }
+                // bind creation events
+                this.bindCreateTaskEvents(this);
+                this.bindShowLoginFormEvents();
+
+                this.fileUploader = new FileUploader(this.escapeHtml);
+                this.fileUploader.init();
+
+                const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
+                const fileUploaderDesc = this.fileUploader;
+
+
+                if (window.DescriptionEditorIframe.iframe && !this.nonRequesting) {
+                    window.DescriptionEditorIframe.remove();
+                }
+                if (!this.nonRequesting) {
+                    // Create description editor iframe
+                    window.DescriptionEditorIframe.create({
+                        savedContent: savedDescription,
+                        onChange: function(content) {
+                            localStorage.setItem('spotfix-description-ls', content);
+                        },
+                        handlers: {
+                            onAttachmentClick: function() {
+                                fileUploaderDesc?.fileInput?.click();
+                            },
+                            onScreenshotClick: function() {
+                                fileUploaderDesc?.makeScreenshot();
+                            },
+                        },
+                    }).catch(function(error) {
+                        console.error('Failed to create description editor:', error);
+                    });
+                }
+
             }
-
-
             break;
         case 'wrap':
             await this.getTaskCount();
