@@ -844,11 +844,13 @@ class CleanTalkWidgetDoboard {
                     document.querySelector('.doboard_task_widget-login').classList.add('hidden');
                 }
 
-                const goToListButton = document.getElementById('openTasksList');
-                if (goToListButton) {
-                    goToListButton.addEventListener('click', () => {
-                        if (this.type_name !== 'all_issues') this.createWidgetElement('all_issues');
-                    });
+                if(!nonRequesting) {
+                    const goToListButton = document.getElementById('openTasksList');
+                    if (goToListButton) {
+                        goToListButton.addEventListener('click', () => {
+                            if (this.type_name !== 'all_issues') this.createWidgetElement('all_issues');
+                        });
+                    }
                 }
 
                 const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
@@ -934,16 +936,18 @@ class CleanTalkWidgetDoboard {
         case 'wrap':
             await this.getTaskCount();
             const wrap = document.querySelector('.doboard_task_widget-wrap');
-            wrap.addEventListener('click', async (e) => {
-                if (window.getSelection()?.type === "Range" && this.selectedData) {
-                    spotFixOpenWidget(this.selectedData, 'wrap_review');
-                } else {
-                    const widgetElementClasses = e.currentTarget.classList;
-                    if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
-                        if(this.type_name !== 'all_issues') await this.createWidgetElement('all_issues');
+            if(!nonRequesting) {
+                wrap.addEventListener('click', async (e) => {
+                    if (window.getSelection()?.type === 'Range' && this.selectedData) {
+                        spotFixOpenWidget(this.selectedData, 'wrap_review');
+                    } else {
+                        const widgetElementClasses = e.currentTarget.classList;
+                        if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
+                            if (this.type_name !== 'all_issues') await this.createWidgetElement('all_issues');
+                        }
                     }
-                }
-            });
+                });
+            };
             hideContainersSpinner(false);
             if (horizontalPosition === 'left') {
                 wrap.style.borderTopRightRadius = '4px';
@@ -952,23 +956,25 @@ class CleanTalkWidgetDoboard {
             break;
         case 'wrap_review':
             const wrapReview = document.querySelector('#doboard_task_widget_button');
-            wrapReview.addEventListener('click', (e) => {
-                clearTimeout(this.timerToOpenWrap);
-                spotFixOpenWidget(this.selectedData, 'create_issue');
-            });
-            if (horizontalPosition === 'left') {
-                wrapReview.style.right = '-145px';
-                wrapReview.style.borderTopRightRadius = '4px';
-                wrapReview.style.borderBottomRightRadius = '4px';
-            }
-            const wrapGoToListButton = document.getElementById('doboard_task_widget_goToListButton');
-            if (wrapGoToListButton) {
-                wrapGoToListButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
+            if(!nonRequesting) {
+                wrapReview.addEventListener('click', (e) => {
                     clearTimeout(this.timerToOpenWrap);
-                    if(this.type_name !== 'all_issues') this.createWidgetElement('all_issues');
-                })
+                    spotFixOpenWidget(this.selectedData, 'create_issue');
+                });
+                if (horizontalPosition === 'left') {
+                    wrapReview.style.right = '-145px';
+                    wrapReview.style.borderTopRightRadius = '4px';
+                    wrapReview.style.borderBottomRightRadius = '4px';
+                }
+                const wrapGoToListButton = document.getElementById('doboard_task_widget_goToListButton');
+                if (wrapGoToListButton) {
+                    wrapGoToListButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        clearTimeout(this.timerToOpenWrap);
+                        if (this.type_name !== 'all_issues') this.createWidgetElement('all_issues');
+                    });
+                }
             }
 
             const spotfixWrapedWidget = document.querySelector('.wrap_review');
@@ -1604,12 +1610,14 @@ class CleanTalkWidgetDoboard {
             break;
         }
 
-        const backToAllIssuesController = document.querySelector('.doboard_task_widget_return_to_all');
-        const widgetClass = this;
-        if ( backToAllIssuesController ) {
-            backToAllIssuesController.addEventListener('click', function(e, self = widgetClass) {
-                self.createWidgetElement('all_issues');
-            });
+        if(!nonRequesting) {
+            const backToAllIssuesController = document.querySelector('.doboard_task_widget_return_to_all');
+            const widgetClass = this;
+            if (backToAllIssuesController) {
+                backToAllIssuesController.addEventListener('click', function(e, self = widgetClass) {
+                    if (this.type_name !== 'all_issues') self.createWidgetElement('all_issues');
+                });
+            }
         }
 
         const paperclipController = document.querySelector('.doboard_task_widget-send_message_paperclip');
@@ -1633,14 +1641,15 @@ class CleanTalkWidgetDoboard {
             this.hide();
         }) || '';
 
-        document.querySelector('#openUserMenuButton')?.addEventListener('click', () => {
-            this.createWidgetElement('user_menu')
-        }) || '';
+        if(!nonRequesting) {
+            document.querySelector('#openUserMenuButton')?.addEventListener('click', () => {
+                this.createWidgetElement('user_menu');
+            }) || '';
 
-        document.querySelector('#openSpotMenuButton')?.addEventListener('click', () => {
-            this.createWidgetElement('spot_menu')
-        }) || '';
-
+            document.querySelector('#openSpotMenuButton')?.addEventListener('click', () => {
+                this.createWidgetElement('spot_menu');
+            }) || '';
+        }
         document.querySelector('#unsubscribe_from_spot')?.addEventListener('change', () => {
             const currentUserId = +localStorage.getItem('spotfix_user_id');
 
@@ -1699,9 +1708,11 @@ class CleanTalkWidgetDoboard {
             logoutUserDoboard(this.params.projectToken);
         }) || '';
 
-        document.getElementById('addNewTaskButton')?.addEventListener('click', async () => {
-            if(this.type_name !== 'create_issue') await this.createWidgetElement('create_issue');
-        }) || '';
+        if(!nonRequesting) {
+            document.getElementById('addNewTaskButton')?.addEventListener('click', async () => {
+                if (this.type_name !== 'create_issue') await this.createWidgetElement('create_issue');
+            }) || '';
+        }
 
         document.getElementById('maximizeWidgetContainer')?.addEventListener('click', () => {
             const container = document.querySelector('.doboard_task_widget-container');
@@ -1758,10 +1769,12 @@ class CleanTalkWidgetDoboard {
             if(loginContainer) loginContainer.style.display = 'block';
         }) || '';
 
-        document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {
-            this.createWidgetElement(this.type_name)
-            this.bindWidgetInputsInteractive();
-        }) || '';
+        if(!nonRequesting) {
+            document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {
+                this.createWidgetElement(this.type_name);
+                this.bindWidgetInputsInteractive();
+            }) || '';
+        }
 
         wsSpotfix.onMessage(() => {
             this.createWidgetElement(this.socket_type_name, true)
@@ -1802,9 +1815,11 @@ class CleanTalkWidgetDoboard {
             });
         }
 
-        document.querySelector('.doboard_task_widget-issues_list_empty button')?.addEventListener('click', () => {
-            if(this.type_name !== 'create_issue') this.createWidgetElement('create_issue');
-        })
+        if(!nonRequesting) {
+            document.querySelector('.doboard_task_widget-issues_list_empty button')?.addEventListener('click', () => {
+                if (this.type_name !== 'create_issue') this.createWidgetElement('create_issue');
+            });
+        }
 
         document.getElementById('doboard_task_widget-title')?.addEventListener('change', (e) => {
             localStorage.setItem('spotfix-title-ls', e.target.value);
