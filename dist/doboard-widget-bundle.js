@@ -13182,13 +13182,53 @@ class FileUploader {
          });
      }
 
+    async prepareSafeStyles() {
+        const restoreActions = [];
+        const links = document.querySelectorAll('link[rel="stylesheet"]');
+
+        for (const link of links) {
+            try {
+                const rules = link.sheet ? link.sheet.cssRules : null;
+            } catch (e) {
+                if (e.name === 'SecurityError') {
+                    const parent = link.parentNode;
+                    const nextSibling = link.nextSibling;
+
+                    try {
+                        const response = await fetch(link.href);
+                        const cssText = await response.text();
+
+                        const styleTag = document.createElement('style');
+                        styleTag.textContent = cssText;
+                        document.head.appendChild(styleTag);
+
+                        parent.removeChild(link);
+                        restoreActions.push(() => {
+                            styleTag.remove();
+                            parent.insertBefore(link, nextSibling);
+                        });
+                    } catch (fetchError) {
+                        parent.removeChild(link);
+                        restoreActions.push(() => {
+                            parent.insertBefore(link, nextSibling);
+                        });
+                    }
+                }
+            }
+        }
+        return () => restoreActions.forEach(action => action());
+    }
+
     async makeScreenshot() {
         let blob = null;
+        let restoreDOM = () => {};
 
         try {
             const domtoimageLib = await this.loadDomToImage();
 
             if (!domtoimageLib) throw new Error('domtoimageLib failed to load');
+
+            restoreDOM = await this.prepareSafeStyles();
 
             blob = await domtoimageLib.toBlob(document.body, {
                 width: window.innerWidth,
@@ -13227,6 +13267,8 @@ class FileUploader {
                 console.error('SpotFix Error: Both screenshot libraries failed.', fallbackError);
                 return null;
             }
+        } finally {
+            restoreDOM();
         }
 
         if (blob) {
