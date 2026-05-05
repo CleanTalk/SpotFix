@@ -1575,8 +1575,8 @@ class CleanTalkWidgetDoboard {
                 const attachmentsSendResult = await mainThis?.fileUploader?.sendAttachmentsForComment(mainThis?.params, sessionId, newCommentResponse?.commentId);
                 if (!attachmentsSendResult.success) {
                     mainThis?.fileUploader?.showError('Some files where no sent, see details in the console.');
-                    // const toConsole = JSON.stringify(attachmentsSendResult);
-                    // console.log(toConsole);
+                    const toConsole = JSON.stringify(attachmentsSendResult);
+                    console.log(toConsole);
                 }
             }
 
