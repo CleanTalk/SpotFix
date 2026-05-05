@@ -328,7 +328,7 @@
     margin-bottom: 16px;
 }
 .doboard_task_widget-input-container.hidden, .doboard_task_widget-hidden {
-    display: none;
+    display: none !important;
 }
 
 .doboard_task_widget-input-container .doboard_task_widget-field {

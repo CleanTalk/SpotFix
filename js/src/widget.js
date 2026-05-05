@@ -259,6 +259,7 @@ class CleanTalkWidgetDoboard {
                     projectToken: this.params.projectToken,
                     projectId: this.params.projectId,
                     accountId: this.params.accountId,
+                    has_files: this.fileUploader.hasFiles(),
                     task_type: this.new_task_type,
                     taskMeta: JSON.stringify(this.selectedData ? this.selectedData : { pageURL: window.location.href }),
                 };
@@ -355,12 +356,14 @@ class CleanTalkWidgetDoboard {
         const forgotPasswordButtonBlack = document.getElementById('doboard_task_widget-forgot_password-black');
         const loginButton = document.getElementById('doboard_task_widget-login_button');
         const restorePasswordButton = document.getElementById('doboard_task_widget-restore_password_button');
+        const signupContainer = document.querySelector('.doboard_task_widget-auth-inputs-container');
 
         if (showLoginButton) {
+
             showLoginButton.addEventListener('click', async () => {
                 const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
                 const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
-                const signupContainer = document.querySelector('.doboard_task_widget-auth-inputs-container');
+
                 const submitButton = document.getElementById('doboard_task_widget-submit_button');
 
                 if (signupContainer) {
@@ -379,7 +382,7 @@ class CleanTalkWidgetDoboard {
                         }
                     }
 
-                } else
+                }
                 if (phantomContainer) {
                     phantomContainer.classList.toggle('doboard_task_widget-hidden');
                 }
@@ -390,6 +393,11 @@ class CleanTalkWidgetDoboard {
                 const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
                 const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
                 const submitButton = document.getElementById('doboard_task_widget-submit_button');
+                if (signupContainer) {
+                    signupContainer.style.display = loginContainer?.classList?.contains('doboard_task_widget-hidden')
+                        ? 'none'
+                        : 'block'
+                }
                 if (loginContainer) {
                     loginContainer.classList.toggle('doboard_task_widget-hidden');
                     if (submitButton) {
@@ -1553,7 +1561,7 @@ class CleanTalkWidgetDoboard {
                 commentText = editor?.getContent({ format: 'html' })?.trim();
             }
 
-            if (!commentText) return;
+            if (!mainThis?.fileUploader?.hasFiles() && !commentText) return;
 
             // Add other fields handling here
             if(input) input.disabled = true;
@@ -1562,7 +1570,8 @@ class CleanTalkWidgetDoboard {
             let newCommentResponse = null;
 
             try {
-                newCommentResponse = await addTaskComment(mainThis.params, mainThis.currentActiveTaskId, commentText);
+                newCommentResponse = await addTaskComment(mainThis.params, mainThis.currentActiveTaskId,
+                    commentText ? commentText : mainThis?.fileUploader?.hasFiles() ? ' ' : null);
                 if(input) input.value = '';
                 await mainThis.createWidgetElement('concrete_issue');
                 hideContainersSpinner(false);
