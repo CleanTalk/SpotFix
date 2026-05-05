@@ -1615,7 +1615,7 @@ class CleanTalkWidgetDoboard {
             const widgetClass = this;
             if (backToAllIssuesController) {
                 backToAllIssuesController.addEventListener('click', function(e, self = widgetClass) {
-                    if (this.type_name !== 'all_issues') self.createWidgetElement('all_issues');
+                    self.createWidgetElement('all_issues');
                 });
             }
         }
