@@ -20,7 +20,7 @@ class FileUploader {
         this.maxFiles = 5;
 
         /** @type {string[]} Allowed MIME types for files */
-        this.allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+        this.allowedTypes = ['video/mp4', 'video/webm', 'image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
 
         /** @type {function} HTML escaping function for XSS protection */
         this.escapeHtmlHandler = escapeHtmlHandler;
@@ -393,33 +393,78 @@ class FileUploader {
      * Make a screenshot and add it as a file
      * @returns {Promise<void>}
      */
+
+     async loadDomToImage() {
+         return new Promise((resolve, reject) => {
+             if (window.domtoimage) {
+                 resolve(window.domtoimage);
+                 return;
+             }
+             const script = document.createElement('script');
+             script.src = 'https://cdn.jsdelivr.net/npm/dom-to-image-more@3.1.6/dist/dom-to-image-more.min.js';
+             script.onload = () => resolve(window.domtoimage);
+             script.onerror = () => reject(new Error('Failed to load dom-to-image-more'));
+             document.head.appendChild(script);
+         });
+     }
+
     async makeScreenshot() {
-        if (typeof html2canvas === 'undefined') {
-            console.error("SpotFix Error: in Screenshot Library");
-            return null;
-        }
+        let blob = null;
         try {
-            const canvas = await html2canvas(document.body, {
-                useCORS: true,
-                allowTaint: true,
-                logging: false,
-                scale: window.devicePixelRatio || 1
+            const domtoimageLib = await this.loadDomToImage();
+            if (!domtoimageLib) throw new Error('domtoimageLib failed to load');
+
+            blob = await domtoimageLib.toBlob(document.body, {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                style: {
+                    transform: `translate(${-window.scrollX}px, ${-window.scrollY}px)`,
+                },
             });
 
-            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-            if (!blob) return null;
+            if (!blob) throw new Error('dom-to-image-more returned an empty result');
 
+        } catch (primaryError) {
+            console.warn('SpotFix: dom-to-image-more failed, trying html2canvas...', primaryError);
+
+            try {
+                if (typeof html2canvas === 'undefined') {
+                    throw new Error('html2canvas is not defined in the global scope');
+                }
+
+                const canvas = await html2canvas(document.body, {
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false,
+                    scale: window.devicePixelRatio || 1,
+                    x: window.scrollX,
+                    y: window.scrollY,
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                });
+
+                blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+
+                if (!blob) throw new Error('html2canvas returned an empty canvas');
+
+            } catch (fallbackError) {
+                console.error('SpotFix Error: Both screenshot libraries failed.', fallbackError);
+                return null;
+            }
+        }
+
+        if (blob) {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const day = String(now.getDate()).padStart(2, '0');
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const year = now.getFullYear();
-
             const fileName = `Screenshot_${hours}-${minutes}_${day}_${month}_${year}.png`;
+
             const file = new File([blob], fileName, {
                 type: 'image/png',
-                lastModified: Date.now()
+                lastModified: Date.now(),
             });
 
             if (this.uploaderWrapper && this.uploaderWrapper.style.display !== 'block') {
@@ -428,10 +473,6 @@ class FileUploader {
 
             this.clearError();
             this.addFile(file);
-
-        } catch (err) {
-            console.error("SpotFix Error: creating screenshot:", err);
-            return null;
         }
     }
 }

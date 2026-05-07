@@ -259,6 +259,7 @@ class CleanTalkWidgetDoboard {
                     projectToken: this.params.projectToken,
                     projectId: this.params.projectId,
                     accountId: this.params.accountId,
+                    has_files: this.fileUploader.hasFiles(),
                     task_type: this.new_task_type,
                     taskMeta: JSON.stringify(this.selectedData ? this.selectedData : { pageURL: window.location.href }),
                 };
@@ -355,12 +356,14 @@ class CleanTalkWidgetDoboard {
         const forgotPasswordButtonBlack = document.getElementById('doboard_task_widget-forgot_password-black');
         const loginButton = document.getElementById('doboard_task_widget-login_button');
         const restorePasswordButton = document.getElementById('doboard_task_widget-restore_password_button');
+        const signupContainer = document.querySelector('.doboard_task_widget-auth-inputs-container');
 
         if (showLoginButton) {
+
             showLoginButton.addEventListener('click', async () => {
                 const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
                 const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
-                const signupContainer = document.querySelector('.doboard_task_widget-auth-inputs-container');
+
                 const submitButton = document.getElementById('doboard_task_widget-submit_button');
 
                 if (signupContainer) {
@@ -379,7 +382,7 @@ class CleanTalkWidgetDoboard {
                         }
                     }
 
-                } else
+                }
                 if (phantomContainer) {
                     phantomContainer.classList.toggle('doboard_task_widget-hidden');
                 }
@@ -390,6 +393,11 @@ class CleanTalkWidgetDoboard {
                 const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
                 const phantomContainer = document.querySelector('.doboard_task_widget-input-container-phantom');
                 const submitButton = document.getElementById('doboard_task_widget-submit_button');
+                if (signupContainer) {
+                    signupContainer.style.display = loginContainer?.classList?.contains('doboard_task_widget-hidden')
+                        ? 'none'
+                        : 'block'
+                }
                 if (loginContainer) {
                     loginContainer.classList.toggle('doboard_task_widget-hidden');
                     if (submitButton) {
@@ -819,122 +827,127 @@ class CleanTalkWidgetDoboard {
         const container = document.querySelector('.doboard_task_widget-container');
         switch (type) {
         case 'create_issue':
-            document.getElementById('spotfix-widget-create-task-visibility').checked = this.new_task_type === 'PUBLIC';
+            if(!nonRequesting) {
+                document.getElementById('spotfix-widget-create-task-visibility').checked = this.new_task_type === 'PUBLIC';
 
-            if(container && +localStorage.getItem('maximize')){
-                container.classList.add('doboard_task_widget-container-maximize');
-            } else if(container) {
-                container.classList.remove('doboard_task_widget-container-maximize');
-            }
-            // highlight selected item during task creation
-            const selection = window.getSelection();
-            const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
-            const email = getSpotfixEmail();
-
-            if (sessionIdExists && email && !email.includes('spotfix_')) {
-                document.querySelector('.doboard_task_widget-login').classList.add('hidden');
-            }
-
-            const goToListButton = document.getElementById('openTasksList');
-            if (goToListButton) {
-                goToListButton.addEventListener('click', () => {
-                    if(this.type_name !== 'all_issues') this.createWidgetElement('all_issues');
-                });
-            }
-
-            const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
-            const titleContainer = document.getElementById('doboard_task_widget-title')?.closest('.doboard_task_widget-input-container');
-            const descriptionContainer = document.getElementById('doboard_task_widget-description-container');
-            const requireFullRegistrationMessage = document.getElementById('doboard_task_widget-require_full_registration');
-            const submitButtonContainer = document.getElementById('doboard_task_widget-submit_button')?.closest('.doboard_task_widget-field');
-            const visibilityToggle = document.querySelector('.doboard_task_widget-visibility-toggle');
-
-            const registerOnlyButton = document.getElementById('doboard_task_widget-register_only_button');
-
-            if (requireFullRegistration && !sessionIdExists) {
-                if (titleContainer) titleContainer.style.display = '';
-                if (descriptionContainer) descriptionContainer.style.display = '';
-                if (submitButtonContainer) submitButtonContainer.style.display = 'none';
-                if (visibilityToggle) visibilityToggle.style.display = 'none';
-                if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.remove('doboard_task_widget-hidden');
-                const loginSection = document.querySelector('.doboard_task_widget-login');
-                if (loginSection) loginSection.classList.add('active');
-                // Hide login accordion icon when require_full_registration
-                const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
-                if (loginIcon) loginIcon.classList.add('doboard_task_widget-login-icon-hidden');
-                // Show register only button
-                if (registerOnlyButton) registerOnlyButton.classList.remove('doboard_task_widget-hidden');
-            } else {
-                if (titleContainer) titleContainer.style.display = '';
-                if (descriptionContainer) descriptionContainer.style.display = '';
-                if (submitButtonContainer) submitButtonContainer.style.display = '';
-                if (visibilityToggle) visibilityToggle.style.display = '';
-                if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.add('doboard_task_widget-hidden');
-                // Show login accordion icon when not require_full_registration
-                const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
-                if (loginIcon) loginIcon.classList.remove('doboard_task_widget-login-icon-hidden');
-                // Hide register only button
-                if (registerOnlyButton) registerOnlyButton.classList.add('doboard_task_widget-hidden');
-            }
-
-            if (
-                selection.type === 'Range'
-            ) {
-                const selectedData = spotFixGetSelectedData(selection);
-                if (selectedData) {
-                    spotFixScrollToNodePath(selectedData.nodePath);
-                    this.positionWidgetContainer();
+                if (container && +localStorage.getItem('maximize')) {
+                    container.classList.add('doboard_task_widget-container-maximize');
+                } else if (container) {
+                    container.classList.remove('doboard_task_widget-container-maximize');
                 }
-            }
-            // bind creation events
-            this.bindCreateTaskEvents(this);
-            this.bindShowLoginFormEvents();
+                // highlight selected item during task creation
+                const selection = window.getSelection();
+                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+                const email = getSpotfixEmail();
 
-            this.fileUploader = new FileUploader(this.escapeHtml);
-            this.fileUploader.init();
+                if (sessionIdExists && email && !email.includes('spotfix_')) {
+                    document.querySelector('.doboard_task_widget-login').classList.add('hidden');
+                }
 
-            const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
-            const fileUploaderDesc = this.fileUploader;
-
-
-            if (window.DescriptionEditorIframe.iframe && !this.nonRequesting) {
-                window.DescriptionEditorIframe.remove();
-            }
-            if(!this.nonRequesting) {
-                // Create description editor iframe
-                window.DescriptionEditorIframe.create({
-                    savedContent: savedDescription,
-                    onChange: function(content) {
-                        localStorage.setItem('spotfix-description-ls', content);
-                    },
-                    handlers: {
-                        onAttachmentClick: function() {
-                            fileUploaderDesc?.fileInput?.click();
-                        },
-                        onScreenshotClick: function() {
-                            fileUploaderDesc?.makeScreenshot();
-                        },
+                if(!nonRequesting) {
+                    const goToListButton = document.getElementById('openTasksList');
+                    if (goToListButton) {
+                        goToListButton.addEventListener('click', () => {
+                            if (this.type_name !== 'all_issues') this.createWidgetElement('all_issues');
+                        });
                     }
-                }).catch(function(error) {
-                    console.error('Failed to create description editor:', error);
-                });
+                }
+
+                const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
+                const titleContainer = document.getElementById('doboard_task_widget-title')?.closest('.doboard_task_widget-input-container');
+                const descriptionContainer = document.getElementById('doboard_task_widget-description-container');
+                const requireFullRegistrationMessage = document.getElementById('doboard_task_widget-require_full_registration');
+                const submitButtonContainer = document.getElementById('doboard_task_widget-submit_button')?.closest('.doboard_task_widget-field');
+                const visibilityToggle = document.querySelector('.doboard_task_widget-visibility-toggle');
+
+                const registerOnlyButton = document.getElementById('doboard_task_widget-register_only_button');
+
+                if (requireFullRegistration && !sessionIdExists) {
+                    if (titleContainer) titleContainer.style.display = '';
+                    if (descriptionContainer) descriptionContainer.style.display = '';
+                    if (submitButtonContainer) submitButtonContainer.style.display = 'none';
+                    if (visibilityToggle) visibilityToggle.style.display = 'none';
+                    if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.remove('doboard_task_widget-hidden');
+                    const loginSection = document.querySelector('.doboard_task_widget-login');
+                    if (loginSection) loginSection.classList.add('active');
+                    // Hide login accordion icon when require_full_registration
+                    const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
+                    if (loginIcon) loginIcon.classList.add('doboard_task_widget-login-icon-hidden');
+                    // Show register only button
+                    if (registerOnlyButton) registerOnlyButton.classList.remove('doboard_task_widget-hidden');
+                } else {
+                    if (titleContainer) titleContainer.style.display = '';
+                    if (descriptionContainer) descriptionContainer.style.display = '';
+                    if (submitButtonContainer) submitButtonContainer.style.display = '';
+                    if (visibilityToggle) visibilityToggle.style.display = '';
+                    if (requireFullRegistrationMessage) requireFullRegistrationMessage.classList.add('doboard_task_widget-hidden');
+                    // Show login accordion icon when not require_full_registration
+                    const loginIcon = document.querySelector('.doboard_task_widget-login-icon');
+                    if (loginIcon) loginIcon.classList.remove('doboard_task_widget-login-icon-hidden');
+                    // Hide register only button
+                    if (registerOnlyButton) registerOnlyButton.classList.add('doboard_task_widget-hidden');
+                }
+
+                if (
+                    selection.type === 'Range'
+                ) {
+                    const selectedData = spotFixGetSelectedData(selection);
+                    if (selectedData) {
+                        spotFixScrollToNodePath(selectedData.nodePath);
+                        this.positionWidgetContainer();
+                    }
+                }
+                // bind creation events
+                this.bindCreateTaskEvents(this);
+                this.bindShowLoginFormEvents();
+
+                this.fileUploader = new FileUploader(this.escapeHtml);
+                this.fileUploader.init();
+
+                const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
+                const fileUploaderDesc = this.fileUploader;
+
+
+                if (window.DescriptionEditorIframe.iframe && !this.nonRequesting) {
+                    window.DescriptionEditorIframe.remove();
+                }
+                if (!this.nonRequesting) {
+                    // Create description editor iframe
+                    window.DescriptionEditorIframe.create({
+                        savedContent: savedDescription,
+                        onChange: function(content) {
+                            localStorage.setItem('spotfix-description-ls', content);
+                        },
+                        handlers: {
+                            onAttachmentClick: function() {
+                                fileUploaderDesc?.fileInput?.click();
+                            },
+                            onScreenshotClick: function() {
+                                fileUploaderDesc?.makeScreenshot();
+                            },
+                        },
+                    }).catch(function(error) {
+                        console.error('Failed to create description editor:', error);
+                    });
+                }
+
             }
-
-
             break;
         case 'wrap':
             await this.getTaskCount();
             const wrap = document.querySelector('.doboard_task_widget-wrap');
-            wrap.addEventListener('click', async (e) => {
-                if (window.getSelection()?.type === "Range" && this.selectedData) {
-                    spotFixOpenWidget(this.selectedData, 'wrap_review');
-                } else {
-                    const widgetElementClasses = e.currentTarget.classList;
-                    if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
-                        if(this.type_name !== 'all_issues') await this.createWidgetElement('all_issues');
+            if(!nonRequesting) {
+                wrap.addEventListener('click', async (e) => {
+                    if (window.getSelection()?.type === 'Range' && this.selectedData) {
+                        spotFixOpenWidget(this.selectedData, 'wrap_review');
+                    } else {
+                        const widgetElementClasses = e.currentTarget.classList;
+                        if (widgetElementClasses && !widgetElementClasses.contains('hidden')) {
+                            if (this.type_name !== 'all_issues') await this.createWidgetElement('all_issues');
+                        }
                     }
-                }
-            });
+                });
+            };
             hideContainersSpinner(false);
             if (horizontalPosition === 'left') {
                 wrap.style.borderTopRightRadius = '4px';
@@ -943,23 +956,25 @@ class CleanTalkWidgetDoboard {
             break;
         case 'wrap_review':
             const wrapReview = document.querySelector('#doboard_task_widget_button');
-            wrapReview.addEventListener('click', (e) => {
-                clearTimeout(this.timerToOpenWrap);
-                spotFixOpenWidget(this.selectedData, 'create_issue');
-            });
-            if (horizontalPosition === 'left') {
-                wrapReview.style.right = '-145px';
-                wrapReview.style.borderTopRightRadius = '4px';
-                wrapReview.style.borderBottomRightRadius = '4px';
-            }
-            const wrapGoToListButton = document.getElementById('doboard_task_widget_goToListButton');
-            if (wrapGoToListButton) {
-                wrapGoToListButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
+            if(!nonRequesting) {
+                wrapReview.addEventListener('click', (e) => {
                     clearTimeout(this.timerToOpenWrap);
-                    if(this.type_name !== 'all_issues') this.createWidgetElement('all_issues');
-                })
+                    spotFixOpenWidget(this.selectedData, 'create_issue');
+                });
+                if (horizontalPosition === 'left') {
+                    wrapReview.style.right = '-145px';
+                    wrapReview.style.borderTopRightRadius = '4px';
+                    wrapReview.style.borderBottomRightRadius = '4px';
+                }
+                const wrapGoToListButton = document.getElementById('doboard_task_widget_goToListButton');
+                if (wrapGoToListButton) {
+                    wrapGoToListButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        clearTimeout(this.timerToOpenWrap);
+                        if (this.type_name !== 'all_issues') this.createWidgetElement('all_issues');
+                    });
+                }
             }
 
             const spotfixWrapedWidget = document.querySelector('.wrap_review');
@@ -1553,7 +1568,7 @@ class CleanTalkWidgetDoboard {
                 commentText = editor?.getContent({ format: 'html' })?.trim();
             }
 
-            if (!commentText) return;
+            if (!mainThis?.fileUploader?.hasFiles() && !commentText) return;
 
             // Add other fields handling here
             if(input) input.disabled = true;
@@ -1562,7 +1577,8 @@ class CleanTalkWidgetDoboard {
             let newCommentResponse = null;
 
             try {
-                newCommentResponse = await addTaskComment(mainThis.params, mainThis.currentActiveTaskId, commentText);
+                newCommentResponse = await addTaskComment(mainThis.params, mainThis.currentActiveTaskId,
+                    commentText ? commentText : mainThis?.fileUploader?.hasFiles() ? ' ' : null);
                 if(input) input.value = '';
                 await mainThis.createWidgetElement('concrete_issue');
                 hideContainersSpinner(false);
@@ -1594,12 +1610,14 @@ class CleanTalkWidgetDoboard {
             break;
         }
 
-        const backToAllIssuesController = document.querySelector('.doboard_task_widget_return_to_all');
-        const widgetClass = this;
-        if ( backToAllIssuesController ) {
-            backToAllIssuesController.addEventListener('click', function(e, self = widgetClass) {
-                self.createWidgetElement('all_issues');
-            });
+        if(!nonRequesting) {
+            const backToAllIssuesController = document.querySelector('.doboard_task_widget_return_to_all');
+            const widgetClass = this;
+            if (backToAllIssuesController) {
+                backToAllIssuesController.addEventListener('click', function(e, self = widgetClass) {
+                    self.createWidgetElement('all_issues');
+                });
+            }
         }
 
         const paperclipController = document.querySelector('.doboard_task_widget-send_message_paperclip');
@@ -1623,14 +1641,15 @@ class CleanTalkWidgetDoboard {
             this.hide();
         }) || '';
 
-        document.querySelector('#openUserMenuButton')?.addEventListener('click', () => {
-            this.createWidgetElement('user_menu')
-        }) || '';
+        if(!nonRequesting) {
+            document.querySelector('#openUserMenuButton')?.addEventListener('click', () => {
+                this.createWidgetElement('user_menu');
+            }) || '';
 
-        document.querySelector('#openSpotMenuButton')?.addEventListener('click', () => {
-            this.createWidgetElement('spot_menu')
-        }) || '';
-
+            document.querySelector('#openSpotMenuButton')?.addEventListener('click', () => {
+                this.createWidgetElement('spot_menu');
+            }) || '';
+        }
         document.querySelector('#unsubscribe_from_spot')?.addEventListener('change', () => {
             const currentUserId = +localStorage.getItem('spotfix_user_id');
 
@@ -1689,9 +1708,11 @@ class CleanTalkWidgetDoboard {
             logoutUserDoboard(this.params.projectToken);
         }) || '';
 
-        document.getElementById('addNewTaskButton')?.addEventListener('click', async () => {
-            if(this.type_name !== 'create_issue') await this.createWidgetElement('create_issue');
-        }) || '';
+        if(!nonRequesting) {
+            document.getElementById('addNewTaskButton')?.addEventListener('click', async () => {
+                if (this.type_name !== 'create_issue') await this.createWidgetElement('create_issue');
+            }) || '';
+        }
 
         document.getElementById('maximizeWidgetContainer')?.addEventListener('click', () => {
             const container = document.querySelector('.doboard_task_widget-container');
@@ -1748,10 +1769,12 @@ class CleanTalkWidgetDoboard {
             if(loginContainer) loginContainer.style.display = 'block';
         }) || '';
 
-        document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {
-            this.createWidgetElement(this.type_name)
-            this.bindWidgetInputsInteractive();
-        }) || '';
+        if(!nonRequesting) {
+            document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {
+                this.createWidgetElement(this.type_name);
+                this.bindWidgetInputsInteractive();
+            }) || '';
+        }
 
         wsSpotfix.onMessage(() => {
             this.createWidgetElement(this.socket_type_name, true)
@@ -1792,9 +1815,11 @@ class CleanTalkWidgetDoboard {
             });
         }
 
-        document.querySelector('.doboard_task_widget-issues_list_empty button')?.addEventListener('click', () => {
-            if(this.type_name !== 'create_issue') this.createWidgetElement('create_issue');
-        })
+        if(!nonRequesting) {
+            document.querySelector('.doboard_task_widget-issues_list_empty button')?.addEventListener('click', () => {
+                if (this.type_name !== 'create_issue') this.createWidgetElement('create_issue');
+            });
+        }
 
         document.getElementById('doboard_task_widget-title')?.addEventListener('change', (e) => {
             localStorage.setItem('spotfix-title-ls', e.target.value);
