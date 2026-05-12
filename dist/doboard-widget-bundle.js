@@ -11231,8 +11231,17 @@ class CleanTalkWidgetDoboard {
         });
         tasksCount = filteredTasks.length;
 
-        let notificationsCount = await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
-        notificationsCount = [...new Map(notificationsCount.map((item) => [item.task_id, item])).values()].length;
+        let notificationsCount = 0;
+
+        if(!this.nonRequesting) {
+            const activeTasksIds = filteredTasks.map(item => item.taskId);
+            notificationsCount = await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
+            notificationsCount = [...new Map(notificationsCount.map((item) => [item.task_id, item])).values()];
+            notificationsCount = notificationsCount.filter((item) => activeTasksIds.includes(item.task_id)).length;
+            localStorage.setItem('spotfix-tasks-notifications-count', `${notificationsCount}`);
+        } else {
+            notificationsCount = localStorage.getItem('spotfix-tasks-notifications-count');
+        }
 
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
         if ( taskCountElement && +notificationsCount ) {
