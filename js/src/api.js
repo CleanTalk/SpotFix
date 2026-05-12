@@ -298,7 +298,7 @@ const getTasksAttachmenDoboard = async (sessionId, accountId, projectToken, curr
         task_id: currentActiveTaskId
     }
     const result = await spotfixApiCall(data, 'attachment_get', accountId);
-    
+
     const attachment = result.attachments.map((item, index) => ({
         attachmentId: item.attachment_id || `att_${item.task_id}_${index}_${Date.now()}`,
         taskId: item.task_id,

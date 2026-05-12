@@ -8305,7 +8305,7 @@ const getTasksAttachmenDoboard = async (sessionId, accountId, projectToken, curr
         task_id: currentActiveTaskId
     }
     const result = await spotfixApiCall(data, 'attachment_get', accountId);
-    
+
     const attachment = result.attachments.map((item, index) => ({
         attachmentId: item.attachment_id || `att_${item.task_id}_${index}_${Date.now()}`,
         taskId: item.task_id,
@@ -9335,7 +9335,7 @@ class CleanTalkWidgetDoboard {
             // Load all tasks
             const isWidgetClosed = localStorage.getItem('spotfix_widget_is_closed');
             if(((isWidgetClosed && !this.selectedText) || !isWidgetClosed) && type !== 'create_issue'){
-                this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
+                // this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
             }
         }
 
@@ -11231,9 +11231,12 @@ class CleanTalkWidgetDoboard {
         });
         tasksCount = filteredTasks.length;
 
+        let notificationsCount = await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
+        notificationsCount = [...new Map(notificationsCount.map((item) => [item.task_id, item])).values()].length;
+
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
-        if ( taskCountElement && +tasksCount ) {
-            taskCountElement.innerText = ksesFilter(tasksCount);
+        if ( taskCountElement && +notificationsCount ) {
+            taskCountElement.innerText = ksesFilter(notificationsCount);
             taskCountElement.classList.remove('hidden');
             if (localStorage.getItem('horizontalPosition') === 'left' || window.SpotfixWidgetConfig?.horizontalPosition === 'left') taskCountElement.style.left = '10px';
         }
