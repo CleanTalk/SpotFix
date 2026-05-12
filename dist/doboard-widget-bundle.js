@@ -10401,6 +10401,13 @@ class CleanTalkWidgetDoboard {
                             finishedContainer.classList.toggle('expanded');
                             finishedHeader.classList.toggle('expanded');
 
+                            if (finishedContainer.classList.contains('expanded')) {
+                                spotFixHighlightElements(spotsToBeHighlighted, this);
+                            } else {
+                                spotFixRemoveHighlights();
+                                spotFixHighlightElements(spotsToBeHighlighted.filter(item => !item.isFixed), this);
+                            }
+
                             setTimeout(() => {
                                 if (finishedContainer.classList.contains('expanded')) {
                                     const children = finishedContainer.children;
@@ -10419,7 +10426,13 @@ class CleanTalkWidgetDoboard {
 
                 this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                 this.savedIssuesQuantityAll = tasks.length;
-                spotFixHighlightElements(spotsToBeHighlighted, this);
+                const finishedSpotsListHeader = document.getElementById('finishedTasksHeader');
+                if(finishedSpotsListHeader?.classList?.contains('expanded')){
+                    spotFixHighlightElements(spotsToBeHighlighted, this);
+                } else {
+                    spotFixRemoveHighlights();
+                    spotFixHighlightElements(spotsToBeHighlighted.filter(item => !item.isFixed), this);
+                }
                 const headerSpan = document.querySelector('.doboard_task_widget-header span');
                 if (headerSpan) {
                 headerSpan.innerHTML = ksesFilter('All spots ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
