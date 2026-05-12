@@ -11233,7 +11233,7 @@ class CleanTalkWidgetDoboard {
 
         let notificationsCount = 0;
 
-        if(!this.nonRequesting) {
+        if(!this.nonRequesting || !localStorage.getItem('spotfix-tasks-notifications-count')) {
             const activeTasksIds = filteredTasks.map(item => item.taskId);
             notificationsCount = await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
             notificationsCount = [...new Map(notificationsCount.map((item) => [item.task_id, item])).values()];
