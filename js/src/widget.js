@@ -83,7 +83,7 @@ class CleanTalkWidgetDoboard {
             // Load all tasks
             const isWidgetClosed = localStorage.getItem('spotfix_widget_is_closed');
             if(((isWidgetClosed && !this.selectedText) || !isWidgetClosed) && type !== 'create_issue'){
-                // this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
+                this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
             }
         }
 
@@ -1981,7 +1981,7 @@ class CleanTalkWidgetDoboard {
 
         let notificationsCount = 0;
 
-        if(!this.nonRequesting || !localStorage.getItem('spotfix-tasks-notifications-count')) {
+        if(!this.nonRequesting) {
             const activeTasksIds = filteredTasks.map(item => item.taskId);
             notificationsCount = await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
             notificationsCount = [...new Map(notificationsCount.map((item) => [item.task_id, item])).values()];
