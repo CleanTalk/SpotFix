@@ -60,7 +60,14 @@ function spotFixGetSelectedData(selection) {
 
     const range = selection.getRangeAt(0);
     // Selection must be within a single DOM element.
-    if (range.startContainer !== range.endContainer) { spotFixDebugLog('`spotFixGetSelectedData` skip by `Selection within several tags nodes`'); return null; }
+    const commonNode = range.commonAncestorContainer;
+    const commonElement = commonNode.nodeType === Node.ELEMENT_NODE ? commonNode : commonNode.parentElement;
+    if (commonElement === document.body && range.startContainer !== range.endContainer) {
+        spotFixDebugLog('`spotFixGetSelectedData` skip: Selection is too broad');
+        return null;
+    }
+
+    // if (range.startContainer !== range.endContainer) { spotFixDebugLog('`spotFixGetSelectedData` skip by `Selection within several tags nodes`'); return null; }
 
     // FIRST - check selection type
     const selectionType = spotFixGetSelectionType(selection);
@@ -74,8 +81,6 @@ function spotFixGetSelectedData(selection) {
     let endSelectPosition = 0;
     let nodePath = '';
     let imageUrl = '';
-
-    const commonNode = range.commonAncestorContainer;
 
     switch (selectionType) {
         case SPOTFIX_SELECTION_TYPE_TEXT:
@@ -249,26 +254,10 @@ function spotFixHighlightNestedElement(element) {
  * @param {Array} spots
  * @param widgetInstance
  */
-function spotFixHighlightTextInElement(element, spots,widgetInstance) {
-    let tooltipTitleText = '';
-    if (spots[0].isFixed) {
-        tooltipTitleText = `This issue already fixed.`;
-    } else {
-        tooltipTitleText = `We are already working on this issue.`;
-    }
+function spotFixHighlightTextInElement(element, spots, widgetInstance) {
+    if (!spots || spots.length === 0) return;
 
-    const tooltip = `<div class="doboard_task_widget-text_selection_tooltip_element">
-                            <span class="doboard_task_widget-text_selection_tooltip_icon"></span>
-                            <span>
-                                <div>${tooltipTitleText}</div>
-                                <div>You can see history <span class="doboard_task_widget-see-task doboard_task_widget-see-task__task-id-${spots[0].taskId}">Here</span></div>
-                            </span>
-                        </div>`;
-
-    const spotfixHighlightOpen = `<span class="doboard_task_widget-text_selection"><span class="doboard_task_widget-text_selection_tooltip">${tooltip}</span>`;
-    const spotfixHighlightClose = `</span>`;
-
-    let text = element.textContent;
+    const originalText = element.textContent;
     const spotSelectedText = spots[0].selectedText;
 
     // meta.selectedText can not be empty string
@@ -277,7 +266,7 @@ function spotFixHighlightTextInElement(element, spots,widgetInstance) {
         return;
     }
 
-    const markers = [];
+    const validRanges = [];
 
     // Mark positions for inserting
     spots.forEach(spot => {
@@ -285,58 +274,105 @@ function spotFixHighlightTextInElement(element, spots,widgetInstance) {
         const startPos = parseInt(spot.startSelectPosition) || 0;
         const endPos = parseInt(spot.endSelectPosition) || 0;
 
-        if (startPos < 0 || endPos > text.length || startPos > endPos) {
+        if (startPos < 0 || endPos > originalText.length || startPos > endPos) {
             spotFixDebugLog('Invalid text positions: ' + spot);
             return;
         }
-
-        markers.push({ position: startPos, type: 'start' });
-        markers.push({ position: endPos, type: 'end' });
+        validRanges.push({ startPos, endPos });
     });
 
-    if (markers.length === 0) return;
+    if (validRanges.length === 0) return;
 
-    // Sort markers backward
-    markers.sort((a, b) => b.position - a.position);
+    validRanges.sort((a, b) => b.startPos - a.startPos);
 
-    // Check here that element (from meta.nodePath) contains same inner text as in meta.selectedText
-    // Is the `text` in the element equal to the selected text `spotSelectedText`
-    if ( text.slice(markers[1].position, markers[0].position) !== spotSelectedText ) {
+    const minStart = validRanges[validRanges.length - 1].startPos;
+    const maxEnd = validRanges[0].endPos;
+
+    if (originalText.slice(minStart, maxEnd) !== spotSelectedText) {
         spotFixDebugLog('It is not allow to highlight element by provided metadata.');
         return;
     }
 
-    let result = text;
-    markers.forEach(marker => {
-        const insertText = marker.type === 'start'
-            ? spotfixHighlightOpen
-            : spotfixHighlightClose;
+    let tooltipTitleText = spots[0].isFixed
+        ? `This issue already fixed.`
+        : `We are already working on this issue.`;
 
-        result = result.slice(0, marker.position) + insertText + result.slice(marker.position);
-    });
+    const tooltipHtml = `
+        <div class="doboard_task_widget-text_selection_tooltip_element">
+            <span class="doboard_task_widget-text_selection_tooltip_icon"></span>
+            <span>
+                <div>${tooltipTitleText}</div>
+                <div>You can see history <span class="doboard_task_widget-see-task doboard_task_widget-see-task__task-id-${spots[0].taskId}">Here</span></div>
+            </span>
+        </div>
+    `;
 
-    // Safety HTML insert
-    try {
-        element.innerHTML = ksesFilter(result);
-        document.querySelectorAll('.doboard_task_widget-see-task').forEach(link => {
-            link.addEventListener('click', (e) => {
+    validRanges.forEach(rangeData => {
+        const { startPos, endPos } = rangeData;
 
-                e.preventDefault();
-                const classList = link.className.split(' ');
-                const idClass = classList.find(cls => cls.includes('__task-id-'));
-                let taskId = null;
-                if (idClass) {
-                    taskId = idClass.split('__task-id-')[1];
+        const highlightWrapper = document.createElement('span');
+        highlightWrapper.className = 'doboard_task_widget-text_selection';
+
+        const tooltipSpan = document.createElement('span');
+        tooltipSpan.className = 'doboard_task_widget-text_selection_tooltip';
+        tooltipSpan.innerHTML = tooltipHtml;
+
+        highlightWrapper.appendChild(tooltipSpan);
+
+        const range = document.createRange();
+        const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+
+        let node;
+        let currentPos = 0;
+        let startNode = null, startOffset = 0;
+        let endNode = null, endOffset = 0;
+
+        while ((node = walker.nextNode())) {
+            let nodeLength = node.nodeValue.length;
+
+            if (!startNode && currentPos + nodeLength >= startPos) {
+                startNode = node;
+                startOffset = startPos - currentPos;
+            }
+            if (!endNode && currentPos + nodeLength >= endPos) {
+                endNode = node;
+                endOffset = endPos - currentPos;
+                break;
+            }
+            currentPos += nodeLength;
+        }
+
+        if (startNode && endNode) {
+            try {
+                range.setStart(startNode, startOffset);
+                range.setEnd(endNode, endOffset);
+
+                const contents = range.extractContents();
+                highlightWrapper.appendChild(contents);
+
+                range.insertNode(highlightWrapper);
+
+                const link = tooltipSpan.querySelector('.doboard_task_widget-see-task');
+                if (link) {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const classList = link.className.split(' ');
+                        const idClass = classList.find(cls => cls.includes('__task-id-'));
+                        let taskId = null;
+                        if (idClass) {
+                            taskId = idClass.split('__task-id-')[1];
+                        }
+                        if (taskId) {
+                            widgetInstance.currentActiveTaskId = taskId;
+                            widgetInstance.showOneTask();
+                        }
+                    });
                 }
-                if (taskId) {
-                    widgetInstance.currentActiveTaskId = taskId;
-                    widgetInstance.showOneTask();
-                }
-            });
-        });
     } catch (error) {
         spotFixDebugLog('Error updating element content: ' + error);
     }
+        }
+    });
 }
 
 /**
