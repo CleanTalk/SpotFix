@@ -1144,7 +1144,7 @@ class CleanTalkWidgetDoboard {
 
                     const finishedHeader = document.getElementById('finishedTasksHeader');
                     const finishedContainer = document.getElementById('finishedTasksContainer');
-                    if (finishedHeader && finishedContainer) {
+                    if (finishedHeader && finishedContainer && !this.nonRequesting) {
                         finishedHeader.addEventListener('click', () => {
                             finishedContainer.classList.toggle('expanded');
                             finishedHeader.classList.toggle('expanded');
@@ -1175,11 +1175,13 @@ class CleanTalkWidgetDoboard {
                 this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                 this.savedIssuesQuantityAll = tasks.length;
                 const finishedSpotsListHeader = document.getElementById('finishedTasksHeader');
-                if(finishedSpotsListHeader?.classList?.contains('expanded')){
-                    spotFixHighlightElements(spotsToBeHighlighted, this);
-                } else {
-                    spotFixRemoveHighlights();
-                    spotFixHighlightElements(spotsToBeHighlighted.filter(item => !item.isFixed), this);
+                if(!this.nonRequesting) {
+                    if (finishedSpotsListHeader?.classList?.contains('expanded')) {
+                        spotFixHighlightElements(spotsToBeHighlighted, this);
+                    } else {
+                        spotFixRemoveHighlights();
+                        spotFixHighlightElements(spotsToBeHighlighted.filter(item => !item.isFixed), this);
+                    }
                 }
                 const headerSpan = document.querySelector('.doboard_task_widget-header span');
                 if (headerSpan) {
@@ -1386,7 +1388,7 @@ class CleanTalkWidgetDoboard {
             // remove old highlights before adding new ones
             spotFixRemoveHighlights();
 
-            if (meta && nodePath) {
+            if (meta && nodePath && !this.nonRequesting) {
                 // Pass the task meta object as an array
                 spotFixHighlightElements([{...meta, taskId: currentTaskData.taskId}], this);
                 if (typeof spotFixScrollToNodePath === 'function') {
@@ -1883,7 +1885,7 @@ class CleanTalkWidgetDoboard {
         await this.createWidgetElement('concrete_issue');
         const taskHighlightData = this.getTaskHighlightData(this.currentActiveTaskId)
 
-        if (taskHighlightData) {
+        if (taskHighlightData && !this.nonRequesting) {
             spotFixRemoveHighlights();
             spotFixHighlightElements([taskHighlightData], this)
             this.positionWidgetContainer();
