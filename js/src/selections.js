@@ -261,20 +261,24 @@ function spotFixHighlightNestedElement(element) {
 function spotFixHighlightTextInElement(element, spots, widgetInstance) {
     if (!spots || spots.length === 0) return;
 
+    const listTags = ['LI', 'OL', 'UL'];
+    if (listTags.includes(element.tagName)) {
+        const textNode = document.createTextNode(element.textContent);
+        element.parentNode.replaceChild(textNode, element);
+        element = textNode;
+    }
+
     const originalText = element.textContent;
     const spotSelectedText = spots[0].selectedText;
 
-    // meta.selectedText can not be empty string
-    if ( ! spotSelectedText ) {
+    if (!spotSelectedText) {
         spotFixDebugLog('Provided metadata is invalid.');
         return;
     }
 
     const validRanges = [];
 
-    // Mark positions for inserting
     spots.forEach(spot => {
-        // Validating positions
         const startPos = parseInt(spot.startSelectPosition) || 0;
         const endPos = parseInt(spot.endSelectPosition) || 0;
 
@@ -312,62 +316,76 @@ function spotFixHighlightTextInElement(element, spots, widgetInstance) {
     `;
 
     validRanges.forEach(rangeData => {
-
         const {startPos, endPos} = rangeData;
         const highlightWrapper = document.createElement('span');
         highlightWrapper.className = 'doboard_task_widget-text_selection';
+
         const tooltipSpan = document.createElement('span');
         tooltipSpan.className = 'doboard_task_widget-text_selection_tooltip';
         tooltipSpan.innerHTML = tooltipHtml;
         highlightWrapper.appendChild(tooltipSpan);
-        const range = document.createRange();
-        const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
-        let node;
-        let currentPos = 0;
-        let startNode = null, startOffset = 0;
-        let endNode = null, endOffset = 0;
 
-        while ((node = walker.nextNode())) {
-            let nodeLength = node.nodeValue.length;
-            if (!startNode && currentPos + nodeLength >= startPos) {
-                startNode = node;
-                startOffset = startPos - currentPos;
-            }
-            if (!endNode && currentPos + nodeLength >= endPos) {
-                endNode = node;
-                endOffset = endPos - currentPos;
-                break;
-            }
-            currentPos += nodeLength;
-        }
-        if (startNode && endNode) {
+        const range = document.createRange();
+
+        if (element.nodeType === Node.TEXT_NODE) {
             try {
-                range.setStart(startNode, startOffset);
-                range.setEnd(endNode, endOffset);
+                range.setStart(element, startPos);
+                range.setEnd(element, endPos);
                 const contents = range.extractContents();
                 highlightWrapper.appendChild(contents);
                 range.insertNode(highlightWrapper);
-                const link = tooltipSpan.querySelector('.doboard_task_widget-see-task');
-                if (link) {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const classList = link.className.split(' ');
-                        const idClass = classList.find(cls => cls.includes('__task-id-'));
-                        let taskId = null;
-                        if (idClass) {
-                            taskId = idClass.split('__task-id-')[1];
-                        }
-                        if (taskId) {
-                            widgetInstance.currentActiveTaskId = taskId;
-                            widgetInstance.showOneTask();
-                        }
-                    });
+                setupLinkListener(tooltipSpan);
+            } catch (e) { spotFixDebugLog(e); }
+        } else {
+            const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+            let node;
+            let currentPos = 0;
+            let startNode = null, startOffset = 0;
+            let endNode = null, endOffset = 0;
+
+            while ((node = walker.nextNode())) {
+                let nodeLength = node.nodeValue.length;
+                if (!startNode && currentPos + nodeLength >= startPos) {
+                    startNode = node;
+                    startOffset = startPos - currentPos;
                 }
-            } catch (error) {
-                spotFixDebugLog('Error updating element content: ' + error);
+                if (!endNode && currentPos + nodeLength >= endPos) {
+                    endNode = node;
+                    endOffset = endPos - currentPos;
+                    break;
+                }
+                currentPos += nodeLength;
+            }
+
+            if (startNode && endNode) {
+                try {
+                    range.setStart(startNode, startOffset);
+                    range.setEnd(endNode, endOffset);
+                    const contents = range.extractContents();
+                    highlightWrapper.appendChild(contents);
+                    range.insertNode(highlightWrapper);
+                    setupLinkListener(tooltipSpan);
+                } catch (error) {
+                    spotFixDebugLog('Error updating element content: ' + error);
+                }
             }
         }
     });
+
+    function setupLinkListener(tooltip) {
+        const link = tooltip.querySelector('.doboard_task_widget-see-task');
+        if (link) {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const idClass = link.className.split(' ').find(cls => cls.includes('__task-id-'));
+                if (idClass) {
+                    const taskId = idClass.split('__task-id-')[1];
+                    widgetInstance.currentActiveTaskId = taskId;
+                    widgetInstance.showOneTask();
+                }
+            });
+        }
+    }
 }
 
 /**
