@@ -210,17 +210,12 @@ function spotFixHighlightElements(spotsToBeHighlighted, widgetInstance) {
 
         // MAIN LOGIC: highlight for the different types
         switch (selectionType) {
-            case 'image':
-                this.spotFixHighlightImageElement(element);
-                break;
+        case 'image':
+            this.spotFixHighlightImageElement(element);
+            break;
 
         case 'element':
-            if (['UL', 'OL', 'LI'].includes(element.tagName)) {
-                element.style.outline = "2px dashed gold";
-                element.style.backgroundColor = "rgba(255, 215, 0, 0.1)";
-            } else {
-                this.spotFixHighlightNestedElement(element);
-            }
+            this.spotFixHighlightNestedElement(element);
             break;
 
         case 'text':
@@ -324,7 +319,12 @@ function spotFixHighlightTextInElement(element, spots, widgetInstance) {
 
         const tooltipSpan = document.createElement('span');
         tooltipSpan.className = 'doboard_task_widget-text_selection_tooltip';
-        tooltipSpan.innerHTML = tooltipHtml;
+
+        // Convert block-level divs to inline-block spans to prevent list breakages
+        const safeTooltipHtml = tooltipHtml
+            .replace(/<div/g, '<span style="display:block"')
+            .replace(/<\/div>/g, '</span>');
+        tooltipSpan.innerHTML = safeTooltipHtml;
 
         highlightWrapper.appendChild(tooltipSpan);
 
@@ -356,10 +356,7 @@ function spotFixHighlightTextInElement(element, spots, widgetInstance) {
                 range.setStart(startNode, startOffset);
                 range.setEnd(endNode, endOffset);
 
-                const contents = range.extractContents();
-                highlightWrapper.appendChild(contents);
-
-                range.insertNode(highlightWrapper);
+                range.surroundContents(highlightWrapper);
 
                 const link = tooltipSpan.querySelector('.doboard_task_widget-see-task');
                 if (link) {
@@ -377,9 +374,15 @@ function spotFixHighlightTextInElement(element, spots, widgetInstance) {
                         }
                     });
                 }
-    } catch (error) {
-        spotFixDebugLog('Error updating element content: ' + error);
-    }
+            } catch (error) {
+                try {
+                    const contents = range.extractContents();
+                    highlightWrapper.appendChild(contents);
+                    range.insertNode(highlightWrapper);
+                } catch (fallbackError) {
+                    spotFixDebugLog('Error updating element content: ' + fallbackError);
+                }
+            }
         }
     });
 }
