@@ -263,9 +263,11 @@ function spotFixHighlightTextInElement(element, spots, widgetInstance) {
 
     const listTags = ['LI', 'OL', 'UL'];
     if (listTags.includes(element.tagName)) {
-        const textNode = document.createTextNode(element.textContent);
-        element.parentNode.replaceChild(textNode, element);
-        element = textNode;
+        const span = document.createElement('span');
+        span.textContent = element.textContent;
+        if (element.id) span.id = element.id;
+        element.parentNode.replaceChild(span, element);
+        element = span;
     }
 
     const originalText = element.textContent;
