@@ -10396,7 +10396,7 @@ class CleanTalkWidgetDoboard {
 
                     const finishedHeader = document.getElementById('finishedTasksHeader');
                     const finishedContainer = document.getElementById('finishedTasksContainer');
-                    if (finishedHeader && finishedContainer && !this.nonRequesting) {
+                    if (finishedHeader && finishedContainer) {
                         finishedHeader.addEventListener('click', () => {
                             finishedContainer.classList.toggle('expanded');
                             finishedHeader.classList.toggle('expanded');
@@ -10427,14 +10427,12 @@ class CleanTalkWidgetDoboard {
                 this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                 this.savedIssuesQuantityAll = tasks.length;
                 const finishedSpotsListHeader = document.getElementById('finishedTasksHeader');
-                if(!this.nonRequesting) {
                     if (finishedSpotsListHeader?.classList?.contains('expanded')) {
                         spotFixHighlightElements(spotsToBeHighlighted, this);
                     } else {
                         spotFixRemoveHighlights();
                         spotFixHighlightElements(spotsToBeHighlighted.filter(item => !item.isFixed), this);
                     }
-                }
                 const headerSpan = document.querySelector('.doboard_task_widget-header span');
                 if (headerSpan) {
                 headerSpan.innerHTML = ksesFilter('All spots ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
@@ -10640,7 +10638,7 @@ class CleanTalkWidgetDoboard {
             // remove old highlights before adding new ones
             spotFixRemoveHighlights();
 
-            if (meta && nodePath && !this.nonRequesting) {
+            if (meta && nodePath) {
                 // Pass the task meta object as an array
                 spotFixHighlightElements([{...meta, taskId: currentTaskData.taskId}], this);
                 if (typeof spotFixScrollToNodePath === 'function') {
@@ -11137,7 +11135,7 @@ class CleanTalkWidgetDoboard {
         await this.createWidgetElement('concrete_issue');
         const taskHighlightData = this.getTaskHighlightData(this.currentActiveTaskId)
 
-        if (taskHighlightData && !this.nonRequesting) {
+        if (taskHighlightData) {
             spotFixRemoveHighlights();
             spotFixHighlightElements([taskHighlightData], this)
             this.positionWidgetContainer();
@@ -12227,13 +12225,22 @@ function spotFixHighlightElements(spotsToBeHighlighted, widgetInstance) {
                 this.spotFixHighlightImageElement(element);
                 break;
 
-            case 'element':
+        case 'element':
+            if (['UL', 'OL', 'LI'].includes(element.tagName)) {
+                element.style.outline = "2px dashed gold";
+                element.style.backgroundColor = "rgba(255, 215, 0, 0.1)";
+            } else {
                 this.spotFixHighlightNestedElement(element);
-                break;
+            }
+            break;
 
-            case 'text':
-                this.spotFixHighlightTextInElement(element, spots, widgetInstance);
-                break;
+        case 'text':
+            const uniqueSpot = [spots[0]];
+            try {
+                this.spotFixHighlightTextInElement(element, uniqueSpot, widgetInstance);
+            } catch (e) {
+            }
+            break;
 
             default:
                 spotFixDebugLog('Unknown selection type: ' + selectionType);

@@ -214,13 +214,22 @@ function spotFixHighlightElements(spotsToBeHighlighted, widgetInstance) {
                 this.spotFixHighlightImageElement(element);
                 break;
 
-            case 'element':
+        case 'element':
+            if (['UL', 'OL', 'LI'].includes(element.tagName)) {
+                element.style.outline = "2px dashed gold";
+                element.style.backgroundColor = "rgba(255, 215, 0, 0.1)";
+            } else {
                 this.spotFixHighlightNestedElement(element);
-                break;
+            }
+            break;
 
-            case 'text':
-                this.spotFixHighlightTextInElement(element, spots, widgetInstance);
-                break;
+        case 'text':
+            const uniqueSpot = [spots[0]];
+            try {
+                this.spotFixHighlightTextInElement(element, uniqueSpot, widgetInstance);
+            } catch (e) {
+            }
+            break;
 
             default:
                 spotFixDebugLog('Unknown selection type: ' + selectionType);
