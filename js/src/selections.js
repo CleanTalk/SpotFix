@@ -312,25 +312,16 @@ function spotFixHighlightTextInElement(element, spots, widgetInstance) {
     `;
 
     validRanges.forEach(rangeData => {
-        const { startPos, endPos } = rangeData;
 
+        const {startPos, endPos} = rangeData;
         const highlightWrapper = document.createElement('span');
         highlightWrapper.className = 'doboard_task_widget-text_selection';
-
         const tooltipSpan = document.createElement('span');
         tooltipSpan.className = 'doboard_task_widget-text_selection_tooltip';
-
-        // Convert block-level divs to inline-block spans to prevent list breakages
-        const safeTooltipHtml = tooltipHtml
-            .replace(/<div/g, '<span style="display:block"')
-            .replace(/<\/div>/g, '</span>');
-        tooltipSpan.innerHTML = safeTooltipHtml;
-
+        tooltipSpan.innerHTML = tooltipHtml;
         highlightWrapper.appendChild(tooltipSpan);
-
         const range = document.createRange();
         const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
-
         let node;
         let currentPos = 0;
         let startNode = null, startOffset = 0;
@@ -338,7 +329,6 @@ function spotFixHighlightTextInElement(element, spots, widgetInstance) {
 
         while ((node = walker.nextNode())) {
             let nodeLength = node.nodeValue.length;
-
             if (!startNode && currentPos + nodeLength >= startPos) {
                 startNode = node;
                 startOffset = startPos - currentPos;
@@ -350,14 +340,13 @@ function spotFixHighlightTextInElement(element, spots, widgetInstance) {
             }
             currentPos += nodeLength;
         }
-
         if (startNode && endNode) {
             try {
                 range.setStart(startNode, startOffset);
                 range.setEnd(endNode, endOffset);
-
-                range.surroundContents(highlightWrapper);
-
+                const contents = range.extractContents();
+                highlightWrapper.appendChild(contents);
+                range.insertNode(highlightWrapper);
                 const link = tooltipSpan.querySelector('.doboard_task_widget-see-task');
                 if (link) {
                     link.addEventListener('click', (e) => {
@@ -375,13 +364,7 @@ function spotFixHighlightTextInElement(element, spots, widgetInstance) {
                     });
                 }
             } catch (error) {
-                try {
-                    const contents = range.extractContents();
-                    highlightWrapper.appendChild(contents);
-                    range.insertNode(highlightWrapper);
-                } catch (fallbackError) {
-                    spotFixDebugLog('Error updating element content: ' + fallbackError);
-                }
+                spotFixDebugLog('Error updating element content: ' + error);
             }
         }
     });
