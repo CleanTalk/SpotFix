@@ -15,8 +15,7 @@ function spotFixInit() {
     wsSpotfix.subscribe();
     new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
-    if(!localStorage.getItem('spotfix_session_id') ||
-        (localStorage.getItem('spotfix_session_id') && localStorage.getItem('spotfix_email')?.includes('spotfix_'))) {
+    if(!localStorage.getItem('spotfix_session_id')) {
         loadBotDetector();
     }
 
