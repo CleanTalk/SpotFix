@@ -9297,6 +9297,7 @@ class CleanTalkWidgetDoboard {
             iconFinishedTitle: SpotFixSVGLoader.getAsDataURI('iconFinishedTitle'),
             iconTwoSidesArrows: SpotFixSVGLoader.getAsDataURI('iconTwoSidesArrows'),
             iconMute: SpotFixSVGLoader.getAsDataURI('iconMute'),
+            iconListMinimalisticDark: SpotFixSVGLoader.getAsDataURI('iconListMinimalisticDark'),
             iconHighlight: SpotFixSVGLoader.getAsDataURI('iconHighlight'),
             iconLockDark: SpotFixSVGLoader.getAsDataURI('iconLockDark'),
             iconPublicDark: SpotFixSVGLoader.getAsDataURI('iconPublicDark'),
@@ -10498,6 +10499,14 @@ class CleanTalkWidgetDoboard {
                 this.createWidgetElement('user_menu');
             });
 
+            const screenDblckickToggle = document.getElementById('spofix-screen-dblckick-list');
+            if (screenDblckickToggle) {
+                screenDblckickToggle.checked = !!+localStorage.getItem('spofix-screen-dblckick');
+                screenDblckickToggle.addEventListener('change', (el) => {
+                    localStorage.setItem('spofix-screen-dblckick', `${+el.target.checked}`)
+                });
+            }
+
             document.body.appendChild(widgetContainer);
             setToggleStatus(this);
             checkLogInOutButtonsVisible();
@@ -11608,6 +11617,17 @@ if( document.readyState !== 'loading' ) {
 } else {
     document.addEventListener('DOMContentLoaded', spotFixInit);
 }
+
+window.addEventListener('dblclick', (event) => {
+    const target = event.target;
+
+    const selection = window.getSelection();
+    const selectedData = spotFixGetSelectedData(selection);
+
+    if (!selectedData && +localStorage.getItem('spofix-screen-dblckick')) {
+        new CleanTalkWidgetDoboard({}, 'all_issues')
+    }
+});
 
 function spotFixInit() {
     spotfixIndexedDB.init();
@@ -13698,6 +13718,19 @@ class SpotFixTemplatesLoader {
                     </div>
                 </div>
             </div>
+           <div class="doboard_task_widget-user_menu-item">
+                <img src="{{iconListMinimalisticDark}}" alt="" style="margin-right: 12px">
+                <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
+                    <span style="display: inline-flex; padding-top: 4px">
+                        <span style="font-weight: 500; font-size: 14px; color: #252A2F; margin-bottom: 4px">
+                        Open spots lists on double click</span>
+                    </span>
+                    <label class="toggle" style="margin-left: 8px">
+                      <input id="spofix-screen-dblckick-list" type="checkbox">
+                      <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
             <div class="doboard_task_widget-user_menu-item" style="display: none">
                 <span id="doboard_task_widget-user_menu-logout_button">
                     <img src="{{iconDoor}}" alt="" style="margin-right: 12px; cursor: pointer">
@@ -14324,6 +14357,16 @@ static getAttachmentIcon(filename, fileUrl, thumbnailUrl) {
 <path d="M2.75 5.5H2.75833" stroke="#40484F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M2.75 11H2.75833" stroke="#40484F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M2.75 16.5H2.75833" stroke="#40484F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;}
+
+    static iconListMinimalisticDark() {
+        return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M7.33398 5.5H19.2507" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M7.33398 11H19.2507" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M7.33398 16.5H19.2507" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M2.75 5.5H2.75833" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M2.75 11H2.75833" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M2.75 16.5H2.75833" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;}
 
     static iconList() {

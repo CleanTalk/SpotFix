@@ -9,6 +9,17 @@ if( document.readyState !== 'loading' ) {
     document.addEventListener('DOMContentLoaded', spotFixInit);
 }
 
+window.addEventListener('dblclick', (event) => {
+    const target = event.target;
+
+    const selection = window.getSelection();
+    const selectedData = spotFixGetSelectedData(selection);
+
+    if (!selectedData && +localStorage.getItem('spofix-screen-dblckick')) {
+        new CleanTalkWidgetDoboard({}, 'all_issues')
+    }
+});
+
 function spotFixInit() {
     spotfixIndexedDB.init();
     wsSpotfix.connect();

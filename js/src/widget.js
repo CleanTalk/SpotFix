@@ -45,6 +45,7 @@ class CleanTalkWidgetDoboard {
             iconFinishedTitle: SpotFixSVGLoader.getAsDataURI('iconFinishedTitle'),
             iconTwoSidesArrows: SpotFixSVGLoader.getAsDataURI('iconTwoSidesArrows'),
             iconMute: SpotFixSVGLoader.getAsDataURI('iconMute'),
+            iconListMinimalisticDark: SpotFixSVGLoader.getAsDataURI('iconListMinimalisticDark'),
             iconHighlight: SpotFixSVGLoader.getAsDataURI('iconHighlight'),
             iconLockDark: SpotFixSVGLoader.getAsDataURI('iconLockDark'),
             iconPublicDark: SpotFixSVGLoader.getAsDataURI('iconPublicDark'),
@@ -1245,6 +1246,14 @@ class CleanTalkWidgetDoboard {
                 localStorage.setItem('horizontalPosition', 'right');
                 this.createWidgetElement('user_menu');
             });
+
+            const screenDblckickToggle = document.getElementById('spofix-screen-dblckick-list');
+            if (screenDblckickToggle) {
+                screenDblckickToggle.checked = !!+localStorage.getItem('spofix-screen-dblckick');
+                screenDblckickToggle.addEventListener('change', (el) => {
+                    localStorage.setItem('spofix-screen-dblckick', `${+el.target.checked}`)
+                });
+            }
 
             document.body.appendChild(widgetContainer);
             setToggleStatus(this);
