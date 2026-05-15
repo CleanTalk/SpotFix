@@ -15,7 +15,8 @@ window.addEventListener('dblclick', (event) => {
     const selection = window.getSelection();
     const selectedData = spotFixGetSelectedData(selection);
     console.log(selectedData)
-    if (!selectedData && +localStorage.getItem('spofix-screen-dblckick')) {
+
+    if (!document.querySelector('.doboard_task_widget-container') && !selectedData && +localStorage.getItem('spofix-screen-dblckick')) {
         new CleanTalkWidgetDoboard({}, 'all_issues')
     }
 });

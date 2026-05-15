@@ -113,6 +113,7 @@ class CleanTalkWidgetDoboard {
         }
         this.widgetElement = await this.createWidgetElement(type);
         this.bindWidgetInputsInteractive();
+
     }
 
     getParams() {
