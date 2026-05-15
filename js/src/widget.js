@@ -937,8 +937,8 @@ class CleanTalkWidgetDoboard {
         case 'wrap':
             await this.getTaskCount();
             const wrap = document.querySelector('.doboard_task_widget-wrap');
-            if(!nonRequesting) {
-                wrap.addEventListener('click', async (e) => {
+            if(!nonRequesting && wrap) {
+                wrap?.addEventListener('click', async (e) => {
                     if (window.getSelection()?.type === 'Range' && this.selectedData) {
                         spotFixOpenWidget(this.selectedData, 'wrap_review');
                     } else {
