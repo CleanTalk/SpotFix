@@ -17,6 +17,7 @@ window.addEventListener('dblclick', (event) => {
     console.log(selectedData)
 
     if (!document.querySelector('.doboard_task_widget-container') && !selectedData && +localStorage.getItem('spofix-screen-dblckick')) {
+        window.getSelection().removeAllRanges();
         new CleanTalkWidgetDoboard({}, 'all_issues')
     }
 });
