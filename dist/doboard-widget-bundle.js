@@ -11624,7 +11624,6 @@ window.addEventListener('dblclick', (event) => {
 
     const selection = window.getSelection();
     const selectedData = spotFixGetSelectedData(selection);
-    console.log(selectedData)
 
     if (!document.querySelector('.doboard_task_widget-container') && !selectedData && +localStorage.getItem('spofix-screen-dblckick')) {
         window.getSelection().removeAllRanges();
