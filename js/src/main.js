@@ -27,7 +27,9 @@ function spotFixInit() {
     wsSpotfix.subscribe();
     new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
-    loadBotDetector();
+    if(!localStorage.getItem('spotfix_session_id')) {
+        loadBotDetector();
+    }
 
     const projectToken = localStorage.getItem('spotfix_project_token');
     const accountId = localStorage.getItem('spotfix_company_id');
