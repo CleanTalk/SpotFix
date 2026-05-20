@@ -16,7 +16,7 @@ class CleanTalkWidgetDoboard {
     /**
      * Constructor
      */
-    constructor(selectedData, type, timerToOpenWrap) {
+    constructor(selectedData, type, timerToOpenWrap, taskData) {
         this.selectedData = selectedData || '';
         this.timerToOpenWrap = timerToOpenWrap;
         this.selectedText = selectedData?.selectedText || '';
@@ -49,6 +49,14 @@ class CleanTalkWidgetDoboard {
             iconLockDark: SpotFixSVGLoader.getAsDataURI('iconLockDark'),
             iconPublicDark: SpotFixSVGLoader.getAsDataURI('iconPublicDark'),
         };
+
+        if (taskData && +taskData?.taskId){
+            this.currentActiveTaskId = +taskData.taskId;
+        }
+        if (taskData && +taskData?.commentId){
+            this.currentActiveCommentId = +taskData.commentId;
+        }
+
         this.fileUploader = new FileUploader(this.escapeHtml);
         this.init(type);
     }
@@ -936,8 +944,8 @@ class CleanTalkWidgetDoboard {
         case 'wrap':
             await this.getTaskCount();
             const wrap = document.querySelector('.doboard_task_widget-wrap');
-            if(!nonRequesting) {
-                wrap.addEventListener('click', async (e) => {
+            if(!nonRequesting && wrap) {
+                wrap?.addEventListener('click', async (e) => {
                     if (window.getSelection()?.type === 'Range' && this.selectedData) {
                         spotFixOpenWidget(this.selectedData, 'wrap_review');
                     } else {
@@ -1436,6 +1444,7 @@ class CleanTalkWidgetDoboard {
                         commentBody: comment.commentBody,
                         commentDate: comment.commentDate,
                         commentTime: comment.commentTime,
+                        commentId: `spotfix_comment_${comment?.commentId}`,
                         commentLink: (JSON.parse(currentTaskData.taskMeta)?.pageURL || '') + `#spotfix_comment_${currentTaskData?.taskId}_${comment?.commentId}`,
                         commentAttachments: attachmentsHTML,
                         issueTitle: templateVariables.issueTitle,
@@ -1513,8 +1522,15 @@ class CleanTalkWidgetDoboard {
                             const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
                             if (container) {
                                 setTimeout(() => {
-                                    const scrollPosition = container.scrollHeight;
-                                    container.scrollTo({top: scrollPosition, behavior: 'smooth'});
+                                    if (+taskDetails.taskId === +mainThis.currentActiveTaskId && mainThis.currentActiveCommentId){
+                                        const targetComment = document.getElementById(`spotfix_comment_${mainThis.currentActiveCommentId}`);
+                                        if (targetComment) {
+                                            targetComment.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        }
+                                    } else {
+                                        const scrollPosition = container.scrollHeight;
+                                        container.scrollTo({top: scrollPosition, behavior: 'smooth'});
+                                    }
                                 }, 50);
                             }
                         }

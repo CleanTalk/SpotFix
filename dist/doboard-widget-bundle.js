@@ -9268,7 +9268,7 @@ class CleanTalkWidgetDoboard {
     /**
      * Constructor
      */
-    constructor(selectedData, type, timerToOpenWrap) {
+    constructor(selectedData, type, timerToOpenWrap, taskData) {
         this.selectedData = selectedData || '';
         this.timerToOpenWrap = timerToOpenWrap;
         this.selectedText = selectedData?.selectedText || '';
@@ -9301,6 +9301,14 @@ class CleanTalkWidgetDoboard {
             iconLockDark: SpotFixSVGLoader.getAsDataURI('iconLockDark'),
             iconPublicDark: SpotFixSVGLoader.getAsDataURI('iconPublicDark'),
         };
+
+        if (taskData && +taskData?.taskId){
+            this.currentActiveTaskId = +taskData.taskId;
+        }
+        if (taskData && +taskData?.commentId){
+            this.currentActiveCommentId = +taskData.commentId;
+        }
+
         this.fileUploader = new FileUploader(this.escapeHtml);
         this.init(type);
     }
@@ -10188,8 +10196,8 @@ class CleanTalkWidgetDoboard {
         case 'wrap':
             await this.getTaskCount();
             const wrap = document.querySelector('.doboard_task_widget-wrap');
-            if(!nonRequesting) {
-                wrap.addEventListener('click', async (e) => {
+            if(!nonRequesting && wrap) {
+                wrap?.addEventListener('click', async (e) => {
                     if (window.getSelection()?.type === 'Range' && this.selectedData) {
                         spotFixOpenWidget(this.selectedData, 'wrap_review');
                     } else {
@@ -10688,6 +10696,7 @@ class CleanTalkWidgetDoboard {
                         commentBody: comment.commentBody,
                         commentDate: comment.commentDate,
                         commentTime: comment.commentTime,
+                        commentId: `spotfix_comment_${comment?.commentId}`,
                         commentLink: (JSON.parse(currentTaskData.taskMeta)?.pageURL || '') + `#spotfix_comment_${currentTaskData?.taskId}_${comment?.commentId}`,
                         commentAttachments: attachmentsHTML,
                         issueTitle: templateVariables.issueTitle,
@@ -10765,8 +10774,15 @@ class CleanTalkWidgetDoboard {
                             const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
                             if (container) {
                                 setTimeout(() => {
-                                    const scrollPosition = container.scrollHeight;
-                                    container.scrollTo({top: scrollPosition, behavior: 'smooth'});
+                                    if (+taskDetails.taskId === +mainThis.currentActiveTaskId && mainThis.currentActiveCommentId){
+                                        const targetComment = document.getElementById(`spotfix_comment_${mainThis.currentActiveCommentId}`);
+                                        if (targetComment) {
+                                            targetComment.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        }
+                                    } else {
+                                        const scrollPosition = container.scrollHeight;
+                                        container.scrollTo({top: scrollPosition, behavior: 'smooth'});
+                                    }
                                 }, 50);
                             }
                         }
@@ -11610,6 +11626,32 @@ if( document.readyState !== 'loading' ) {
     document.addEventListener('DOMContentLoaded', spotFixInit);
 }
 
+let lastProcessedHash = null;
+function checkUrl() {
+    const currentUrl = window.location.href;
+    const regex = /#spotfix_comment_(\d+)_(\d+)/;
+    const match = currentUrl.match(regex);
+
+    if (match) {
+        const currentHash = match[0];
+
+        if (currentHash === lastProcessedHash) {
+            return;
+        }
+
+        lastProcessedHash = currentHash;
+
+        const num1 = Number(match[1]);
+        const num2 = Number(match[2]);
+        new CleanTalkWidgetDoboard({}, 'concrete_issue', null, {taskId: num1, commentId: num2});
+    } else {
+        lastProcessedHash = null;
+    }
+}
+
+window.addEventListener('hashchange', checkUrl);
+window.addEventListener('popstate', checkUrl);
+
 function spotFixInit() {
     spotfixIndexedDB.init();
     wsSpotfix.connect();
@@ -11634,6 +11676,9 @@ function spotFixInit() {
             })
             .catch(err => console.error('project_get error:', err));
     }
+
+    checkUrl();
+
 }
 
 function loadBotDetector() {
@@ -13460,7 +13505,7 @@ class SpotFixTemplatesLoader {
     <div class="doboard_task_widget-comment_text_container">
         <div class="doboard_task_widget-comment_body">{{commentBody}}</div>
         <div class="doboard_task_widget-comment_attachments">{{commentAttachments}}</div>
-        <div class="doboard_task_widget-comment_time">
+        <div id={{commentId}} class="doboard_task_widget-comment_time">
             <a href={{commentLink}}>{{commentTime}}</a>
         </div>
     </div>
