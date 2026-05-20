@@ -1436,6 +1436,7 @@ class CleanTalkWidgetDoboard {
                         commentBody: comment.commentBody,
                         commentDate: comment.commentDate,
                         commentTime: comment.commentTime,
+                        commentLink: (JSON.parse(currentTaskData.taskMeta)?.pageURL || '') + `#spotfix_comment_${currentTaskData?.taskId}_${comment?.commentId}`,
                         commentAttachments: attachmentsHTML,
                         issueTitle: templateVariables.issueTitle,
                         avatarCSSClass: avatarData.avatarCSSClass,

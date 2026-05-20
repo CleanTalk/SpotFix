@@ -1990,3 +1990,8 @@ input:checked + .slider:before {
 .left_mobile .doboard_task_widget-wrap {
     right: -50px;
 }
+
+.doboard_task_widget-comment_time a {
+    text-decoration: none;
+    color: inherit;
+}

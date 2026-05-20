@@ -218,6 +218,7 @@ function getTaskFullDetails(tasksDetails, taskId) {
                     commentAuthorName: getAuthorName(author),
                     commentBody: comment.commentBody,
                     commentDate: date,
+                    commentId: comment.commentId,
                     commentTime: time,
                     commentUserId: comment.userId || 'Unknown User',
                     commentAttachments: commentAttachments,
