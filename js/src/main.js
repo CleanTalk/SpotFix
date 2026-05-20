@@ -10,7 +10,6 @@ if( document.readyState !== 'loading' ) {
 }
 
 window.addEventListener('dblclick', (event) => {
-    const target = event.target;
 
     const selection = window.getSelection();
     const selectedData = spotFixGetSelectedData(selection);
