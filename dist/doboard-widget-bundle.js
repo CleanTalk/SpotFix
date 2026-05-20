@@ -10271,7 +10271,9 @@ class CleanTalkWidgetDoboard {
                 });
 
                 activeTasks = sortedTasks.filter(task => task.taskStatus !== 'DONE');
-                finishedTasks = sortedTasks.filter(task => task.taskStatus === 'DONE');
+                finishedTasks = sortedTasks
+                    .filter(task => task.taskStatus === 'DONE')
+                    .sort((a, b) => new Date(b.taskLastUpdate) - new Date(a.taskLastUpdate));
 
                 const container = document.querySelector(".doboard_task_widget-all_issues-container");
                 if (container) {
