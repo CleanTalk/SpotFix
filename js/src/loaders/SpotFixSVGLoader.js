@@ -430,6 +430,16 @@ static getAttachmentIcon(filename, fileUrl, thumbnailUrl) {
 <path d="M2.75 16.5H2.75833" stroke="#40484F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;}
 
+    static iconListMinimalisticDark() {
+        return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M7.33398 5.5H19.2507" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M7.33398 11H19.2507" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M7.33398 16.5H19.2507" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M2.75 5.5H2.75833" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M2.75 11H2.75833" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M2.75 16.5H2.75833" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;}
+
     static iconList() {
         return `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M0.984782 10.5992C0.939313 10.5429 0.956188 10.4759 0.956188 10.414C0.954782 9.49246 0.954313 8.5709 0.955719 7.64887C0.956188 7.30762 1.13244 7.1323 1.47369 7.13184C2.39525 7.1309 3.31681 7.1309 4.23884 7.1323C4.30072 7.1323 4.36775 7.11449 4.424 7.16043C4.44369 7.21668 4.44416 7.2748 4.44416 7.3334C4.44275 8.22027 4.44369 9.10668 4.44369 9.99355C4.44369 10.175 4.41041 10.3428 4.27213 10.4726C4.16994 10.5682 4.04431 10.6151 3.90556 10.6161C2.96619 10.6236 2.02728 10.6179 1.08791 10.6193C1.05228 10.6193 1.019 10.6095 0.98525 10.5996L0.984782 10.5992Z" fill="#BBC7D1"/>

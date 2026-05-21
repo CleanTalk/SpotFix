@@ -9,6 +9,17 @@ if( document.readyState !== 'loading' ) {
     document.addEventListener('DOMContentLoaded', spotFixInit);
 }
 
+window.addEventListener('dblclick', (event) => {
+
+    const selection = window.getSelection();
+    const selectedData = spotFixGetSelectedData(selection);
+
+    if (!document.querySelector('.doboard_task_widget-container') && !selectedData && +localStorage.getItem('spofix-screen-dblckick')) {
+        window.getSelection().removeAllRanges();
+        new CleanTalkWidgetDoboard({}, 'all_issues')
+    }
+});
+
 let lastProcessedHash = null;
 function checkUrl() {
     const currentUrl = window.location.href;
