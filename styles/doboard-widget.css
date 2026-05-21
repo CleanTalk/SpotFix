@@ -1995,3 +1995,8 @@ input:checked + .slider:before {
     text-decoration: none;
     color: inherit;
 }
+
+.doboard_task_widget-comment_time a:hover {
+    text-decoration: none;
+    color: black;
+}
