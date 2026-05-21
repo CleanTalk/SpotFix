@@ -10693,13 +10693,18 @@ class CleanTalkWidgetDoboard {
                         }
                     }
 
+                    let commentLink = '';
+                    try {
+                        commentLink = (JSON.parse(currentTaskData.taskMeta)?.pageURL || '') + `#spotfix_comment_${currentTaskData?.taskId}_${comment?.commentId}`
+                    } catch (e){}
+
                     const commentData = {
                         commentAuthorName: comment.commentAuthorName,
                         commentBody: comment.commentBody,
                         commentDate: comment.commentDate,
                         commentTime: comment.commentTime,
                         commentId: `spotfix_comment_${comment?.commentId}`,
-                        commentLink: (JSON.parse(currentTaskData.taskMeta)?.pageURL || '') + `#spotfix_comment_${currentTaskData?.taskId}_${comment?.commentId}`,
+                        commentLink: commentLink || '',
                         commentAttachments: attachmentsHTML,
                         issueTitle: templateVariables.issueTitle,
                         avatarCSSClass: avatarData.avatarCSSClass,
