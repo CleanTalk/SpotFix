@@ -10705,7 +10705,12 @@ class CleanTalkWidgetDoboard {
 
                     let commentLink = '';
                     try {
-                        commentLink = (JSON.parse(currentTaskData.taskMeta)?.pageURL || '') + `#spotfix_comment_${currentTaskData?.taskId}_${comment?.commentId}`
+                        const taskMeta = JSON.parse(currentTaskData.taskMeta) || {};
+                        const safePageUrl = getSafeUrl(taskMeta.pageURL || '');
+                        const baseCommentUrl = safePageUrl ? safePageUrl.split('#')[0] : '';
+                        commentLink = baseCommentUrl
+                            ? `${baseCommentUrl}#spotfix_comment_${currentTaskData?.taskId}_${comment?.commentId}`
+                            : '';
                     } catch (e){}
 
                     const commentData = {
