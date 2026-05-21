@@ -353,6 +353,19 @@ class SpotFixTemplatesLoader {
                     </div>
                 </div>
             </div>
+           <div class="doboard_task_widget-user_menu-item">
+                <img src="{{iconListMinimalisticDark}}" alt="" style="margin-right: 12px">
+                <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
+                    <span style="display: inline-flex; padding-top: 4px">
+                        <span style="font-weight: 500; font-size: 14px; color: #252A2F; margin-bottom: 4px">
+                        Open spots lists on double click</span>
+                    </span>
+                    <label class="toggle" style="margin-left: 8px">
+                      <input id="spofix-screen-dblckick-list" type="checkbox">
+                      <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
             <div class="doboard_task_widget-user_menu-item" style="display: none">
                 <span id="doboard_task_widget-user_menu-logout_button">
                     <img src="{{iconDoor}}" alt="" style="margin-right: 12px; cursor: pointer">

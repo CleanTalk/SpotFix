@@ -45,6 +45,7 @@ class CleanTalkWidgetDoboard {
             iconFinishedTitle: SpotFixSVGLoader.getAsDataURI('iconFinishedTitle'),
             iconTwoSidesArrows: SpotFixSVGLoader.getAsDataURI('iconTwoSidesArrows'),
             iconMute: SpotFixSVGLoader.getAsDataURI('iconMute'),
+            iconListMinimalisticDark: SpotFixSVGLoader.getAsDataURI('iconListMinimalisticDark'),
             iconHighlight: SpotFixSVGLoader.getAsDataURI('iconHighlight'),
             iconLockDark: SpotFixSVGLoader.getAsDataURI('iconLockDark'),
             iconPublicDark: SpotFixSVGLoader.getAsDataURI('iconPublicDark'),
@@ -112,6 +113,7 @@ class CleanTalkWidgetDoboard {
         }
         this.widgetElement = await this.createWidgetElement(type);
         this.bindWidgetInputsInteractive();
+
     }
 
     getParams() {
@@ -936,8 +938,8 @@ class CleanTalkWidgetDoboard {
         case 'wrap':
             await this.getTaskCount();
             const wrap = document.querySelector('.doboard_task_widget-wrap');
-            if(!nonRequesting) {
-                wrap.addEventListener('click', async (e) => {
+            if(!nonRequesting && wrap) {
+                wrap?.addEventListener('click', async (e) => {
                     if (window.getSelection()?.type === 'Range' && this.selectedData) {
                         spotFixOpenWidget(this.selectedData, 'wrap_review');
                     } else {
@@ -1245,6 +1247,14 @@ class CleanTalkWidgetDoboard {
                 localStorage.setItem('horizontalPosition', 'right');
                 this.createWidgetElement('user_menu');
             });
+
+            const screenDblckickToggle = document.getElementById('spofix-screen-dblckick-list');
+            if (screenDblckickToggle) {
+                screenDblckickToggle.checked = !!+localStorage.getItem('spofix-screen-dblckick');
+                screenDblckickToggle.addEventListener('change', (el) => {
+                    localStorage.setItem('spofix-screen-dblckick', `${+el.target.checked}`)
+                });
+            }
 
             document.body.appendChild(widgetContainer);
             setToggleStatus(this);
