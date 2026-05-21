@@ -8618,6 +8618,10 @@ const wsSpotfix = {
         }
     },
 
+    isActive() {
+        return socket !== null && socket.readyState === WebSocket.OPEN;
+    },
+
     close() {
         isIntentionalClose = true;
         if (reconnectTimer) {
@@ -9264,6 +9268,8 @@ class CleanTalkWidgetDoboard {
     savedIssuesQuantityAll = 0;
     allTasksData = {};
     srcVariables = {};
+    dataCache = null; // Здесь будем хранить уже готовые массивы
+    dataCacheTimestamp = 0;
 
     /**
      * Constructor
@@ -10245,6 +10251,56 @@ class CleanTalkWidgetDoboard {
                 changeSize(container);
             }
             spotFixRemoveHighlights();
+
+            const now = Date.now();
+            const isCacheValid = this.htmlCacheTimestamp && (now - this.htmlCacheTimestamp < 60000); // 60
+
+            if (isCacheValid && this.cachedHTML && !this.nonRequesting) {
+                const issuesContainer = document.querySelector(".doboard_task_widget-all_issues-container");
+                if (issuesContainer) {
+                    issuesContainer.innerHTML = this.cachedHTML;
+                }
+
+                const headerSpan = document.querySelector('.doboard_task_widget-header span');
+                if (headerSpan) {
+                    headerSpan.innerHTML = ksesFilter('All spots ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
+                }
+
+                const finishedSpotsListHeader = document.getElementById('finishedTasksHeader');
+                if (finishedSpotsListHeader?.classList?.contains('expanded')) {
+                    spotFixHighlightElements(this.cachedSpotsToBeHighlighted, this);
+                } else {
+                    spotFixHighlightElements(this.cachedSpotsToBeHighlighted.filter(item => !item.isFixed), this);
+                }
+
+                const finishedHeader = document.getElementById('finishedTasksHeader');
+                const finishedContainer = document.getElementById('finishedTasksContainer');
+                if (finishedHeader && finishedContainer) {
+                    finishedHeader.onclick = () => {
+                        finishedContainer.classList.toggle('expanded');
+                        finishedHeader.classList.toggle('expanded');
+
+                        if (finishedContainer.classList.contains('expanded')) {
+                            spotFixHighlightElements(this.cachedSpotsToBeHighlighted, this);
+                        } else {
+                            spotFixRemoveHighlights();
+                            spotFixHighlightElements(this.cachedSpotsToBeHighlighted.filter(item => !item.isFixed), this);
+                        }
+
+                        setTimeout(() => {
+                            if (finishedContainer.classList.contains('expanded') && finishedContainer.children.length > 0) {
+                                const targetIndex = Math.min(2, finishedContainer.children.length - 1);
+                                finishedContainer.children[targetIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }
+                        }, 350);
+                    };
+                }
+
+                this.bindIssuesClick();
+                hideContainersSpinner(false);
+                break;
+            }
+            //if no cash or expired
             let issuesQuantityOnPage = 0;
             const sessionId = localStorage.getItem('spotfix_session_id');
 
@@ -10252,9 +10308,12 @@ class CleanTalkWidgetDoboard {
             let activeTasks = [];
             let finishedTasks = [];
 
-            this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
+            if(!this.allTasksData.length || !wsSpotfix.isActive()) {
+                this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
+            }
             const tasks = this.allTasksData;
             tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId, this.nonRequesting);
+
             let spotsToBeHighlighted = [];
             if (tasks.length > 0) {
                 const currentURL = window.location.href;
@@ -10270,9 +10329,9 @@ class CleanTalkWidgetDoboard {
                 const container = document.querySelector(".doboard_task_widget-all_issues-container");
                 if (container) {
                     container.innerHTML = `<div class="doboard_task_widget-all_issues-container-active" style="flex-grow: 1"></div>
-        <div class="doboard_task_widget_tasks_list" style="min-height: 32px; max-height: 32px">
-            <span>doBoard / SpotFix</span>
-        </div>`;
+<div class="doboard_task_widget_tasks_list" style="min-height: 32px; max-height: 32px">
+    <span>doBoard / SpotFix</span>
+</div>`;
                 }
 
                 const generateTaskHtml = (elTask, isFinishedGroup) => {
@@ -10379,7 +10438,6 @@ class CleanTalkWidgetDoboard {
                     activeTasksContainer.innerHTML += activeTasksHtml;
                 }
 
-
                 if (finishedTasks.length > 0) {
                     let finishedTasksContent = '';
                     for (const elTask of finishedTasks) {
@@ -10399,7 +10457,7 @@ class CleanTalkWidgetDoboard {
                     const finishedHeader = document.getElementById('finishedTasksHeader');
                     const finishedContainer = document.getElementById('finishedTasksContainer');
                     if (finishedHeader && finishedContainer) {
-                        finishedHeader.addEventListener('click', () => {
+                        finishedHeader.onclick = () => {
                             finishedContainer.classList.toggle('expanded');
                             finishedHeader.classList.toggle('expanded');
 
@@ -10422,24 +10480,24 @@ class CleanTalkWidgetDoboard {
                                     }
                                 }
                             }, 350);
-                        });
+                        };
                     }
                 }
 
                 this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                 this.savedIssuesQuantityAll = tasks.length;
                 const finishedSpotsListHeader = document.getElementById('finishedTasksHeader');
-                    if (finishedSpotsListHeader?.classList?.contains('expanded')) {
-                        spotFixHighlightElements(spotsToBeHighlighted, this);
-                    } else {
-                        spotFixRemoveHighlights();
-                        spotFixHighlightElements(spotsToBeHighlighted.filter(item => !item.isFixed), this);
-                    }
+                if (finishedSpotsListHeader?.classList?.contains('expanded')) {
+                    spotFixHighlightElements(spotsToBeHighlighted, this);
+                } else {
+                    spotFixRemoveHighlights();
+                    spotFixHighlightElements(spotsToBeHighlighted.filter(item => !item.isFixed), this);
+                }
                 const headerSpan = document.querySelector('.doboard_task_widget-header span');
                 if (headerSpan) {
-                headerSpan.innerHTML = ksesFilter('All spots ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
+                    headerSpan.innerHTML = ksesFilter('All spots ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
                 }
-              }
+            }
 
             if (tasks.length === 0) {
                 document.querySelector(".doboard_task_widget-all_issues-container").innerHTML =
@@ -10448,15 +10506,21 @@ class CleanTalkWidgetDoboard {
 
             if (activeTasks?.length === 0 && finishedTasks?.length !== 0) {
                 const container = document.querySelector(".doboard_task_widget-all_issues-container");
-
                 if (container) {
                     const messageHtml = ksesFilter('<div class="doboard_task_widget-issues_list_empty">You’re also welcome to review spelling, grammar, ' +
                         'or ask a question related to this page. Mark any content on the page or post an <button type="button">open spot</button></div>');
-
                     container.insertAdjacentHTML('afterbegin', messageHtml);
                 }
             }
-            // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
+
+            //save cash
+            const finalContainer = document.querySelector(".doboard_task_widget-all_issues-container");
+            if (finalContainer) {
+                this.cachedHTML = finalContainer.innerHTML;
+                this.cachedSpotsToBeHighlighted = spotsToBeHighlighted;
+                this.htmlCacheTimestamp = Date.now();
+            }
+
             this.bindIssuesClick();
             hideContainersSpinner(false);
             break;
@@ -11230,11 +11294,13 @@ class CleanTalkWidgetDoboard {
         const tasksCountLS = localStorage.getItem('spotfix_tasks_count');
 
         let tasksCount;
+        let tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
 
-        if (!this.nonRequesting) {
+        if (!this.nonRequesting && !tasks.length && wsSpotfix.isActive()) {
             await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
+            tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
         }
-        const tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+
         storageSaveTasksCount(tasks);
         const filteredTasks = tasks.filter(task => {
             return task.taskMeta && task.taskStatus === 'ACTIVE';
