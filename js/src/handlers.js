@@ -108,10 +108,13 @@ async function addTaskComment(params, taskId, commentText) {
 async function getAllTasks(params, nonRequesting = false) {
     const projectToken = params.projectToken;
     const sessionId = localStorage.getItem('spotfix_session_id') || '';
-    if (!nonRequesting) {
+    let tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+
+    if (!nonRequesting && (!tasksData || !tasksData.length) && !wsSpotfix.isActive()) {
         await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
+        tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
     }
-    const tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+
     storageSaveTasksCount(tasksData);
     // Get only tasks with metadata
     const filteredTaskData = tasksData.filter((task) => {

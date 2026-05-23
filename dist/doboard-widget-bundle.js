@@ -8760,10 +8760,13 @@ async function addTaskComment(params, taskId, commentText) {
 async function getAllTasks(params, nonRequesting = false) {
     const projectToken = params.projectToken;
     const sessionId = localStorage.getItem('spotfix_session_id') || '';
-    if (!nonRequesting) {
+    let tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+
+    if (!nonRequesting && (!tasksData || !tasksData.length) && !wsSpotfix.isActive()) {
         await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
+        tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
     }
-    const tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+
     storageSaveTasksCount(tasksData);
     // Get only tasks with metadata
     const filteredTaskData = tasksData.filter((task) => {
@@ -9268,8 +9271,6 @@ class CleanTalkWidgetDoboard {
     savedIssuesQuantityAll = 0;
     allTasksData = {};
     srcVariables = {};
-    dataCache = null;
-    dataCacheTimestamp = 0;
 
     /**
      * Constructor
@@ -10308,7 +10309,7 @@ class CleanTalkWidgetDoboard {
                 hideContainersSpinner(false);
                 break;
             }
-            //if no cash or expired
+            // If there is no cache or it has expired, fetch fresh data.
             let issuesQuantityOnPage = 0;
             const sessionId = localStorage.getItem('spotfix_session_id');
 
@@ -10316,9 +10317,8 @@ class CleanTalkWidgetDoboard {
             let activeTasks = [];
             let finishedTasks = [];
 
-            if(!this.allTasksData.length || !wsSpotfix.isActive()) {
-                this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
-            }
+            this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
+
             const tasks = this.allTasksData;
             tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId, this.nonRequesting);
 
@@ -10523,7 +10523,7 @@ class CleanTalkWidgetDoboard {
                 }
             }
 
-            //save cash
+            // Save the rendered issues list HTML, highlight data, and cache timestamp.
             const finalContainer = document.querySelector(".doboard_task_widget-all_issues-container");
             if (finalContainer) {
                 this.cachedHTML = finalContainer.innerHTML;
@@ -10769,7 +10769,9 @@ class CleanTalkWidgetDoboard {
                             }
                         },
                     },
-                }).catch(function(error) {});
+                }).catch(function(error) {
+                    console.error('Failed to initialize MessageEditorIframe.', error);
+                });
 
                 this.fileUploader.init();
                 hideContainersSpinner();
@@ -11432,7 +11434,7 @@ class CleanTalkWidgetDoboard {
         let tasksCount;
         let tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
 
-        if (!this.nonRequesting && !tasks.length && wsSpotfix.isActive()) {
+        if (!this.nonRequesting && (!tasks.length || !wsSpotfix.isActive())) {
             await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
             tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
         }
