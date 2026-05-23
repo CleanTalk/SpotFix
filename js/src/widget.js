@@ -12,7 +12,7 @@ class CleanTalkWidgetDoboard {
     savedIssuesQuantityAll = 0;
     allTasksData = {};
     srcVariables = {};
-    dataCache = null; // Здесь будем хранить уже готовые массивы
+    dataCache = null;
     dataCacheTimestamp = 0;
 
     /**
