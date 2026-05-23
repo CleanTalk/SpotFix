@@ -1342,7 +1342,7 @@ class CleanTalkWidgetDoboard {
             const currentTaskIdSM = this.currentActiveTaskId;
             const taskCacheSM = this.spotMenuCache[currentTaskIdSM];
 
-            const isCacheValidSM = taskCacheSM && (now - taskCacheSM.timestamp < 60000) && !this.nonRequesting;
+            const isCacheValidSM = taskCacheSM && (nowSM - taskCacheSM.timestamp < 60000) && !this.nonRequesting;
 
             if (isCacheValidSM) {
                 widgetContainer.innerHTML = taskCacheSM.widgetHTML;
