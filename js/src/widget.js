@@ -1772,7 +1772,14 @@ class CleanTalkWidgetDoboard {
                     delete mainThis.concreteIssueCache[mainThis.currentActiveTaskId];
                 }
 
-                await mainThis.createWidgetElement('concrete_issue');
+                if(wsSpotfix.isActive()){
+                    await mainThis.createWidgetElement('concrete_issue', true);
+                    window.MessageEditorIframe.setContent('');
+                    const filesContainer = document.getElementById('doboard_task_widget__file-upload__wrapper');
+                    if(filesContainer) filesContainer.style.display = 'none';
+                } else {
+                    await mainThis.createWidgetElement('concrete_issue');
+                }
                 hideContainersSpinner(false);
             } catch (err) {
                 alert('Error when adding a comment: ' + err?.message);
