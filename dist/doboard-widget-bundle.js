@@ -11009,7 +11009,7 @@ class CleanTalkWidgetDoboard {
                             }
                         },
                     },
-                }).catch(function(error) {});
+                }).catch(function(error) {console.error('Failed to create message editor:', error);});
             }
             if(this.nonRequesting) {
                 const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
@@ -11434,7 +11434,7 @@ class CleanTalkWidgetDoboard {
         let tasksCount;
         let tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
 
-        if (!this.nonRequesting && (!tasks.length || !wsSpotfix.isActive())) {
+        if (!this.nonRequesting && !tasks.length && !wsSpotfix.isActive()) {
             await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
             tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
         }
