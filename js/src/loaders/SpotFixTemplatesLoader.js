@@ -111,7 +111,9 @@ class SpotFixTemplatesLoader {
     <div class="doboard_task_widget-comment_text_container">
         <div class="doboard_task_widget-comment_body">{{commentBody}}</div>
         <div class="doboard_task_widget-comment_attachments">{{commentAttachments}}</div>
-        <div class="doboard_task_widget-comment_time">{{commentTime}}</div>
+        <div id="{{commentId}}" class="doboard_task_widget-comment_time">
+            <a href="{{commentLink}}">{{commentTime}}</a>
+        </div>
     </div>
 </div>
 `;
