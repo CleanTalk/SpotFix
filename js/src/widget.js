@@ -16,7 +16,7 @@ class CleanTalkWidgetDoboard {
     /**
      * Constructor
      */
-    constructor(selectedData, type, timerToOpenWrap) {
+    constructor(selectedData, type, timerToOpenWrap, taskData) {
         this.selectedData = selectedData || '';
         this.timerToOpenWrap = timerToOpenWrap;
         this.selectedText = selectedData?.selectedText || '';
@@ -50,6 +50,14 @@ class CleanTalkWidgetDoboard {
             iconLockDark: SpotFixSVGLoader.getAsDataURI('iconLockDark'),
             iconPublicDark: SpotFixSVGLoader.getAsDataURI('iconPublicDark'),
         };
+
+        if (taskData && +taskData?.taskId){
+            this.currentActiveTaskId = +taskData.taskId;
+        }
+        if (taskData && +taskData?.commentId){
+            this.currentActiveCommentId = +taskData.commentId;
+        }
+
         this.fileUploader = new FileUploader(this.escapeHtml);
         this.init(type);
     }
@@ -1013,7 +1021,9 @@ class CleanTalkWidgetDoboard {
                 });
 
                 activeTasks = sortedTasks.filter(task => task.taskStatus !== 'DONE');
-                finishedTasks = sortedTasks.filter(task => task.taskStatus === 'DONE');
+                finishedTasks = sortedTasks
+                    .filter(task => task.taskStatus === 'DONE')
+                    .sort((a, b) => new Date(b.taskLastUpdate) - new Date(a.taskLastUpdate));
 
                 const container = document.querySelector(".doboard_task_widget-all_issues-container");
                 if (container) {
@@ -1441,11 +1451,23 @@ class CleanTalkWidgetDoboard {
                         }
                     }
 
+                    let commentLink = '';
+                    try {
+                        const taskMeta = JSON.parse(currentTaskData.taskMeta) || {};
+                        const safePageUrl = getSafeUrl(taskMeta.pageURL || '');
+                        const baseCommentUrl = safePageUrl ? safePageUrl.split('#')[0] : '';
+                        commentLink = baseCommentUrl
+                            ? `${baseCommentUrl}#spotfix_comment_${currentTaskData?.taskId}_${comment?.commentId}`
+                            : '';
+                    } catch (e){}
+
                     const commentData = {
                         commentAuthorName: comment.commentAuthorName,
                         commentBody: comment.commentBody,
                         commentDate: comment.commentDate,
                         commentTime: comment.commentTime,
+                        commentId: `spotfix_comment_${comment?.commentId}`,
+                        commentLink: commentLink || '',
                         commentAttachments: attachmentsHTML,
                         issueTitle: templateVariables.issueTitle,
                         avatarCSSClass: avatarData.avatarCSSClass,
@@ -1522,8 +1544,15 @@ class CleanTalkWidgetDoboard {
                             const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
                             if (container) {
                                 setTimeout(() => {
-                                    const scrollPosition = container.scrollHeight;
-                                    container.scrollTo({top: scrollPosition, behavior: 'smooth'});
+                                    if (+taskDetails.taskId === +mainThis.currentActiveTaskId && mainThis.currentActiveCommentId){
+                                        const targetComment = document.getElementById(`spotfix_comment_${mainThis.currentActiveCommentId}`);
+                                        if (targetComment) {
+                                            targetComment.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        }
+                                    } else {
+                                        const scrollPosition = container.scrollHeight;
+                                        container.scrollTo({top: scrollPosition, behavior: 'smooth'});
+                                    }
                                 }, 50);
                             }
                         }

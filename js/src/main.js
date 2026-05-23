@@ -20,6 +20,32 @@ window.addEventListener('dblclick', (event) => {
     }
 });
 
+let lastProcessedHash = null;
+function checkUrl() {
+    const currentUrl = window.location.href;
+    const regex = /#spotfix_comment_(\d+)_(\d+)/;
+    const match = currentUrl.match(regex);
+
+    if (match) {
+        const currentHash = match[0];
+
+        if (currentHash === lastProcessedHash) {
+            return;
+        }
+
+        lastProcessedHash = currentHash;
+
+        const num1 = Number(match[1]);
+        const num2 = Number(match[2]);
+        new CleanTalkWidgetDoboard({}, 'concrete_issue', null, {taskId: num1, commentId: num2});
+    } else {
+        lastProcessedHash = null;
+    }
+}
+
+window.addEventListener('hashchange', checkUrl);
+window.addEventListener('popstate', checkUrl);
+
 function spotFixInit() {
     spotfixIndexedDB.init();
     wsSpotfix.connect();
@@ -44,6 +70,9 @@ function spotFixInit() {
             })
             .catch(err => console.error('project_get error:', err));
     }
+
+    checkUrl();
+
 }
 
 function loadBotDetector() {
@@ -229,6 +258,7 @@ function getTaskFullDetails(tasksDetails, taskId) {
                     commentAuthorName: getAuthorName(author),
                     commentBody: comment.commentBody,
                     commentDate: date,
+                    commentId: comment.commentId,
                     commentTime: time,
                     commentUserId: comment.userId || 'Unknown User',
                     commentAttachments: commentAttachments,
