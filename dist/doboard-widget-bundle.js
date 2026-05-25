@@ -8618,6 +8618,10 @@ const wsSpotfix = {
         }
     },
 
+    isActive() {
+        return socket !== null && socket.readyState === WebSocket.OPEN;
+    },
+
     close() {
         isIntentionalClose = true;
         if (reconnectTimer) {
@@ -8756,10 +8760,13 @@ async function addTaskComment(params, taskId, commentText) {
 async function getAllTasks(params, nonRequesting = false) {
     const projectToken = params.projectToken;
     const sessionId = localStorage.getItem('spotfix_session_id') || '';
-    if (!nonRequesting) {
+    let tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+
+    if (!nonRequesting && (!tasksData || !tasksData.length) && !wsSpotfix.isActive()) {
         await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
+        tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
     }
-    const tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+
     storageSaveTasksCount(tasksData);
     // Get only tasks with metadata
     const filteredTaskData = tasksData.filter((task) => {
@@ -10253,6 +10260,56 @@ class CleanTalkWidgetDoboard {
                 changeSize(container);
             }
             spotFixRemoveHighlights();
+
+            const nowAI = Date.now();
+            const isCacheValid = this.htmlCacheTimestamp && (nowAI - this.htmlCacheTimestamp < 60000); // 60
+
+            if (isCacheValid && this.cachedHTML && !this.nonRequesting) {
+                const issuesContainer = document.querySelector(".doboard_task_widget-all_issues-container");
+                if (issuesContainer) {
+                    issuesContainer.innerHTML = this.cachedHTML;
+                }
+
+                const headerSpan = document.querySelector('.doboard_task_widget-header span');
+                if (headerSpan) {
+                    headerSpan.innerHTML = ksesFilter('All spots ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
+                }
+
+                const finishedSpotsListHeader = document.getElementById('finishedTasksHeader');
+                if (finishedSpotsListHeader?.classList?.contains('expanded')) {
+                    spotFixHighlightElements(this.cachedSpotsToBeHighlighted, this);
+                } else {
+                    spotFixHighlightElements(this.cachedSpotsToBeHighlighted.filter(item => !item.isFixed), this);
+                }
+
+                const finishedHeader = document.getElementById('finishedTasksHeader');
+                const finishedContainer = document.getElementById('finishedTasksContainer');
+                if (finishedHeader && finishedContainer) {
+                    finishedHeader.onclick = () => {
+                        finishedContainer.classList.toggle('expanded');
+                        finishedHeader.classList.toggle('expanded');
+
+                        if (finishedContainer.classList.contains('expanded')) {
+                            spotFixHighlightElements(this.cachedSpotsToBeHighlighted, this);
+                        } else {
+                            spotFixRemoveHighlights();
+                            spotFixHighlightElements(this.cachedSpotsToBeHighlighted.filter(item => !item.isFixed), this);
+                        }
+
+                        setTimeout(() => {
+                            if (finishedContainer.classList.contains('expanded') && finishedContainer.children.length > 0) {
+                                const targetIndex = Math.min(2, finishedContainer.children.length - 1);
+                                finishedContainer.children[targetIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }
+                        }, 350);
+                    };
+                }
+
+                this.bindIssuesClick();
+                hideContainersSpinner(false);
+                break;
+            }
+            // If there is no cache or it has expired, fetch fresh data.
             let issuesQuantityOnPage = 0;
             const sessionId = localStorage.getItem('spotfix_session_id');
 
@@ -10261,8 +10318,10 @@ class CleanTalkWidgetDoboard {
             let finishedTasks = [];
 
             this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
+
             const tasks = this.allTasksData;
             tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId, this.nonRequesting);
+
             let spotsToBeHighlighted = [];
             if (tasks.length > 0) {
                 const currentURL = window.location.href;
@@ -10280,9 +10339,9 @@ class CleanTalkWidgetDoboard {
                 const container = document.querySelector(".doboard_task_widget-all_issues-container");
                 if (container) {
                     container.innerHTML = `<div class="doboard_task_widget-all_issues-container-active" style="flex-grow: 1"></div>
-        <div class="doboard_task_widget_tasks_list" style="min-height: 32px; max-height: 32px">
-            <span>doBoard / SpotFix</span>
-        </div>`;
+<div class="doboard_task_widget_tasks_list" style="min-height: 32px; max-height: 32px">
+    <span>doBoard / SpotFix</span>
+</div>`;
                 }
 
                 const generateTaskHtml = (elTask, isFinishedGroup) => {
@@ -10389,7 +10448,6 @@ class CleanTalkWidgetDoboard {
                     activeTasksContainer.innerHTML += activeTasksHtml;
                 }
 
-
                 if (finishedTasks.length > 0) {
                     let finishedTasksContent = '';
                     for (const elTask of finishedTasks) {
@@ -10409,7 +10467,7 @@ class CleanTalkWidgetDoboard {
                     const finishedHeader = document.getElementById('finishedTasksHeader');
                     const finishedContainer = document.getElementById('finishedTasksContainer');
                     if (finishedHeader && finishedContainer) {
-                        finishedHeader.addEventListener('click', () => {
+                        finishedHeader.onclick = () => {
                             finishedContainer.classList.toggle('expanded');
                             finishedHeader.classList.toggle('expanded');
 
@@ -10432,24 +10490,24 @@ class CleanTalkWidgetDoboard {
                                     }
                                 }
                             }, 350);
-                        });
+                        };
                     }
                 }
 
                 this.savedIssuesQuantityOnPage = issuesQuantityOnPage;
                 this.savedIssuesQuantityAll = tasks.length;
                 const finishedSpotsListHeader = document.getElementById('finishedTasksHeader');
-                    if (finishedSpotsListHeader?.classList?.contains('expanded')) {
-                        spotFixHighlightElements(spotsToBeHighlighted, this);
-                    } else {
-                        spotFixRemoveHighlights();
-                        spotFixHighlightElements(spotsToBeHighlighted.filter(item => !item.isFixed), this);
-                    }
+                if (finishedSpotsListHeader?.classList?.contains('expanded')) {
+                    spotFixHighlightElements(spotsToBeHighlighted, this);
+                } else {
+                    spotFixRemoveHighlights();
+                    spotFixHighlightElements(spotsToBeHighlighted.filter(item => !item.isFixed), this);
+                }
                 const headerSpan = document.querySelector('.doboard_task_widget-header span');
                 if (headerSpan) {
-                headerSpan.innerHTML = ksesFilter('All spots ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
+                    headerSpan.innerHTML = ksesFilter('All spots ' + getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll));
                 }
-              }
+            }
 
             if (tasks.length === 0) {
                 document.querySelector(".doboard_task_widget-all_issues-container").innerHTML =
@@ -10458,15 +10516,21 @@ class CleanTalkWidgetDoboard {
 
             if (activeTasks?.length === 0 && finishedTasks?.length !== 0) {
                 const container = document.querySelector(".doboard_task_widget-all_issues-container");
-
                 if (container) {
                     const messageHtml = ksesFilter('<div class="doboard_task_widget-issues_list_empty">You’re also welcome to review spelling, grammar, ' +
                         'or ask a question related to this page. Mark any content on the page or post an <button type="button">open spot</button></div>');
-
                     container.insertAdjacentHTML('afterbegin', messageHtml);
                 }
             }
-            // Bind the click event to the task elements for scrolling to the selected text and Go to concrete issue interface by click issue-item row
+
+            // Save the rendered issues list HTML, highlight data, and cache timestamp.
+            const finalContainer = document.querySelector(".doboard_task_widget-all_issues-container");
+            if (finalContainer) {
+                this.cachedHTML = finalContainer.innerHTML;
+                this.cachedSpotsToBeHighlighted = spotsToBeHighlighted;
+                this.htmlCacheTimestamp = Date.now();
+            }
+
             this.bindIssuesClick();
             hideContainersSpinner(false);
             break;
@@ -10526,7 +10590,43 @@ class CleanTalkWidgetDoboard {
 
             break;
         case 'spot_menu':
-            if(!this.nonRequesting) await getReleaseVersion();
+            if (!this.spotMenuCache) {
+                this.spotMenuCache = {};
+            }
+
+            const nowSM = Date.now();
+            const currentTaskIdSM = this.currentActiveTaskId;
+            const taskCacheSM = this.spotMenuCache[currentTaskIdSM];
+
+            const isCacheValidSM = taskCacheSM && (nowSM - taskCacheSM.timestamp < 60000) && !this.nonRequesting;
+
+            if (isCacheValidSM) {
+                widgetContainer.innerHTML = taskCacheSM.widgetHTML;
+                if (!document.body.contains(widgetContainer)) {
+                    document.body.appendChild(widgetContainer);
+                }
+
+                const currentUserId = localStorage.getItem('spotfix_user_id') || 0;
+                const unsubscribeElem = document.getElementById('unsubscribe_from_spot');
+                const highlightElem = document.getElementById('highlight_the_spot');
+
+                if (unsubscribeElem && taskCacheSM.isViewer) {
+                    unsubscribeElem.checked = true;
+                }
+                if (highlightElem && currentUserId) {
+                    const highlightStatuses = JSON.parse(localStorage.getItem('spotfix_highlight_statuses') || '{}');
+                    highlightElem.checked = highlightStatuses[currentUserId]?.[currentTaskIdSM] ?? true;
+                }
+                if (!localStorage.getItem('spotfix_session_id')) {
+                    if (unsubscribeElem) unsubscribeElem.disabled = true;
+                    if (highlightElem) highlightElem.disabled = true;
+                }
+
+                break;
+            }
+
+            if (!this.nonRequesting) await getReleaseVersion();
+
             let spotfixVersion = '';
             const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
             spotfixVersion = spotMenuVersion ? `Spotfix version ${spotMenuVersion}.` : '';
@@ -10534,7 +10634,7 @@ class CleanTalkWidgetDoboard {
 
             let allTasks = this.allTasksData;
 
-            if(this.nonRequesting){
+            if (this.nonRequesting) {
                 allTasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
                 this.allTasksData = allTasks;
             }
@@ -10543,10 +10643,8 @@ class CleanTalkWidgetDoboard {
 
             templateVariables.taskName = currentTask.taskTitle;
             templateVariables.taskType = currentTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicDark : this.srcVariables.iconLockDark;
-            templateVariables.doboardLink =
-                `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}?token=${currentTask.taskToken}`;
-            templateVariables.doboardLinkShort =
-                `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}`;
+            templateVariables.doboardLink = `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}?token=${currentTask.taskToken}`;
+            templateVariables.doboardLinkShort = `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}`;
 
             const currentUserId = localStorage.getItem('spotfix_user_id') || 0;
 
@@ -10555,45 +10653,138 @@ class CleanTalkWidgetDoboard {
 
             templateVariables.viewersCount = `${usersFiltered.length || 0} members`;
 
-            if(usersFiltered.length) {
+            if (usersFiltered.length) {
                 templateVariables.viewers = usersFiltered.map(user => {
                     return `<div class="spotfix_widget-task-menu_user">
-                    <span><img alt="" src="${user?.avatar?.s || templateVariables.avatar}" />${user.name || 'Anonymous'}</span><span>${user?.position || ''}</span>
-                </div>`
-                }).join('')
+            <span><img alt="" src="${user?.avatar?.s || templateVariables.avatar}" />${user.name || 'Anonymous'}</span><span>${user?.position || ''}</span>
+        </div>`
+                }).join('');
             }
 
             widgetContainer.innerHTML = this.loadTemplate('spot_menu', templateVariables);
             document.body.appendChild(widgetContainer);
 
-            if(currentTask?.viewers?.includes(+currentUserId)){
-                document.getElementById('unsubscribe_from_spot').checked = true;
+            const isViewer = currentTask?.viewers?.includes(+currentUserId);
+            const unsubscribeElem = document.getElementById('unsubscribe_from_spot');
+            const highlightElem = document.getElementById('highlight_the_spot');
+
+            if (isViewer && unsubscribeElem) {
+                unsubscribeElem.checked = true;
             }
-            if (currentUserId) {
-                const highlightStatuses = JSON.parse(
-                    localStorage.getItem('spotfix_highlight_statuses') || '{}'
-                );
-                document.getElementById('highlight_the_spot').checked =
-                    highlightStatuses[currentUserId]?.[this.currentActiveTaskId] ?? true;
+            if (currentUserId && highlightElem) {
+                const highlightStatuses = JSON.parse(localStorage.getItem('spotfix_highlight_statuses') || '{}');
+                highlightElem.checked = highlightStatuses[currentUserId]?.[this.currentActiveTaskId] ?? true;
             }
-            if(!localStorage.getItem('spotfix_session_id')){
-                document.getElementById('unsubscribe_from_spot').disabled = true;
-                document.getElementById('highlight_the_spot').disabled = true;
+            if (!localStorage.getItem('spotfix_session_id')) {
+                if (unsubscribeElem) unsubscribeElem.disabled = true;
+                if (highlightElem) highlightElem.disabled = true;
             }
+
+            this.spotMenuCache[currentTaskIdSM] = {
+                timestamp: Date.now(),
+                widgetHTML: widgetContainer.innerHTML,
+                isViewer: isViewer
+            };
+
             break;
         case 'concrete_issue':
-            if(this.nonRequesting) {
+            if (this.nonRequesting) {
                 hideContainersSpinner();
                 this.allTasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
             } else {
                 changeSize(container);
             }
+
+            if (!this.concreteIssueCache) {
+                this.concreteIssueCache = {};
+            }
+
+            const nowCI = Date.now();
+            const currentTaskId = this.currentActiveTaskId;
+            const taskCache = this.concreteIssueCache[currentTaskId];
+
+            const isConcreteCacheValid = taskCache && (nowCI - taskCache.timestamp < 60000) && !this.nonRequesting;
+
+            if (isConcreteCacheValid) {
+                widgetContainer.innerHTML = taskCache.widgetHTML;
+                if (!document.body.contains(widgetContainer)) {
+                    document.body.appendChild(widgetContainer);
+                }
+
+                const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
+                if (issuesCommentsContainer) {
+                    issuesCommentsContainer.innerHTML = taskCache.commentsHTML;
+                }
+
+                const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
+                if (issueTitleElement) {
+                    issueTitleElement.innerText = ksesFilter(taskCache.issueTitle);
+                }
+
+                spotFixRemoveHighlights();
+                if (taskCache.meta && taskCache.nodePath) {
+                    spotFixHighlightElements([{...taskCache.meta, taskId: currentTaskId}], this);
+                    if (typeof spotFixScrollToNodePath === 'function') {
+                        spotFixScrollToNodePath(taskCache.nodePath);
+                    }
+                }
+
+                this.bindImageAttachmentClicks();
+
+                if (window.MessageEditorIframe.iframe) {
+                    window.MessageEditorIframe.remove();
+                }
+
+                let savedComments = localStorage.getItem('spotfix_comment_draft');
+                let savedDraftText = '';
+                if (savedComments) {
+                    try { savedDraftText = JSON.parse(savedComments)[`${currentTaskId}`] || ''; } catch (err){}
+                }
+
+                const mainThis = this;
+                window.MessageEditorIframe.create({
+                    savedContent: savedDraftText,
+                    onReady: function() {
+                        const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
+                        if (container) {
+                            setTimeout(() => { container.scrollTo({top: container.scrollHeight, behavior: 'smooth'}); }, 50);
+                        }
+                    },
+                    handlers: {
+                        onChange: function(content) {
+                            let contentForSaving = localStorage.getItem('spotfix_comment_draft');
+                            contentForSaving = contentForSaving ? JSON.parse(contentForSaving) : {};
+                            contentForSaving[`${currentTaskId}`] = content;
+                            try { localStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving)); } catch (err){}
+                        },
+                        onAttachmentClick: function() { mainThis.fileUploader?.fileInput?.click(); },
+                        onScreenshotClick: function() { mainThis.fileUploader?.makeScreenshot(); },
+                        onSendComment: function(eventData) {
+                            clickHandler(mainThis, null, eventData.content);
+                            let contentForSaving = localStorage.getItem('spotfix_comment_draft');
+                            if (contentForSaving) {
+                                contentForSaving = JSON.parse(contentForSaving);
+                                delete contentForSaving[`${currentTaskId}`];
+                                localStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
+                            }
+                        },
+                    },
+                }).catch(function(error) {
+                    console.error('Failed to initialize MessageEditorIframe.', error);
+                });
+
+                this.fileUploader.init();
+                hideContainersSpinner();
+                break;
+            }
+
             if(!this.nonRequesting && this.currentActiveTaskId) {
                 updateNotificationsDoboard(this.currentActiveTaskId, this.params.projectToken, this.params.accountId)
             }
+
             tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId, this.nonRequesting);
             const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId, this.nonRequesting);
-            // Update issue title in the interface
+
             const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
             if (issueTitleElement) {
                 issueTitleElement.innerText = ksesFilter(tasksFullDetails.taskName || taskDetails?.issueTitle);
@@ -10602,7 +10793,7 @@ class CleanTalkWidgetDoboard {
             templateVariables.issueTitle = tasksFullDetails.taskName || taskDetails?.issueTitle;
             templateVariables.issueComments = taskDetails?.issueComments;
             templateVariables.amountOfComments = `${taskDetails?.issueComments.length || 0} messages`;
-            // Highlight the task's selected text
+
             let nodePath = null;
             const currentTaskData = this.allTasksData.find((element) => String(element.taskId) === String(taskDetails.taskId));
             let meta = null;
@@ -10616,7 +10807,6 @@ class CleanTalkWidgetDoboard {
 
             templateVariables.taskPageUrl = meta?.pageURL;
             templateVariables.taskFormattedPageUrl = '';
-
             let taskFormattedPageUrl = '';
 
             const issueLinkElement = document.getElementById('spotfix_doboard_task_widget_url');
@@ -10635,7 +10825,6 @@ class CleanTalkWidgetDoboard {
                 } else if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
                     const safeUrl = this.escapeHtml(getSafeUrl(meta.pageURL));
                     const safeText = this.escapeHtml(taskFormattedPageUrl);
-
                     templateVariables.taskFormattedPageUrl = `<a rel="nofollow" style="word-break: break-all" href="${safeUrl}">${safeText}</a>`;
                 } else {
                     templateVariables.taskFormattedPageUrl = `<span>This spot not have link because it created without selecting a content.</span>`;
@@ -10655,11 +10844,9 @@ class CleanTalkWidgetDoboard {
                 document.body.appendChild(widgetContainer);
             }
 
-            // remove old highlights before adding new ones
             spotFixRemoveHighlights();
 
             if (meta && nodePath) {
-                // Pass the task meta object as an array
                 spotFixHighlightElements([{...meta, taskId: currentTaskData.taskId}], this);
                 if (typeof spotFixScrollToNodePath === 'function') {
                     spotFixScrollToNodePath(nodePath);
@@ -10668,9 +10855,6 @@ class CleanTalkWidgetDoboard {
 
             const issuesCommentsContainer = document.querySelector('.doboard_task_widget-concrete_issues-container');
             if (!issuesCommentsContainer) return;
-
-            const currentScrollTop = issuesCommentsContainer.scrollTop;
-            const wasAtBottom = currentScrollTop + issuesCommentsContainer.clientHeight >= issuesCommentsContainer.scrollHeight - 10;
 
             let dayMessagesData = [];
             const initIssuerID = localStorage.getItem('spotfix_user_id');
@@ -10762,18 +10946,15 @@ class CleanTalkWidgetDoboard {
                     }
                 }
 
-                // Bind click events to image attachments for lightbox
                 this.bindImageAttachmentClicks();
 
             } else {
                 issuesCommentsContainer.innerHTML = ksesFilter('No comments');
             }
 
-            // textarea (new comment) behaviour - using iframe editor
             const mainThis = this;
             const fileUploader = this.fileUploader;
 
-            // Remove existing iframe editor if any
             if (window.MessageEditorIframe.iframe && !this.nonRequesting) {
                 window.MessageEditorIframe.remove();
             }
@@ -10787,11 +10968,9 @@ class CleanTalkWidgetDoboard {
                     } catch (err){}
                 }
 
-                // Create message editor iframe
                 window.MessageEditorIframe.create({
                     savedContent: savedDraftText,
                     onReady: function() {
-                        // Scroll to the bottom comments
                         if (!mainThis.nonRequesting) {
                             const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
                             if (container) {
@@ -10812,22 +10991,14 @@ class CleanTalkWidgetDoboard {
                     handlers: {
                         onChange: function(content) {
                             let contentForSaving = localStorage.getItem('spotfix_comment_draft');
-                            if (contentForSaving) {
-                                contentForSaving = JSON.parse(contentForSaving);
-                            } else contentForSaving = {};
-
+                            contentForSaving = contentForSaving ? JSON.parse(contentForSaving) : {};
                             contentForSaving[`${mainThis.currentActiveTaskId}`] = content;
                             try {
                                 localStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
                             } catch (err){}
-
                         },
-                        onAttachmentClick: function() {
-                            fileUploader?.fileInput?.click();
-                        },
-                        onScreenshotClick: function() {
-                            fileUploader?.makeScreenshot();
-                        },
+                        onAttachmentClick: function() { fileUploader?.fileInput?.click(); },
+                        onScreenshotClick: function() { fileUploader?.makeScreenshot(); },
                         onSendComment: function(eventData) {
                             clickHandler(mainThis, null, eventData.content);
                             let contentForSaving = localStorage.getItem('spotfix_comment_draft');
@@ -10838,33 +11009,34 @@ class CleanTalkWidgetDoboard {
                             }
                         },
                     },
-                }).catch(function(error) {
-                    console.error('Failed to create message editor:', error);
-                });
+                }).catch(function(error) {console.error('Failed to create message editor:', error);});
             }
             if(this.nonRequesting) {
                 const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
-
                 if (container) {
                     setTimeout(() => {
-                        const scrollPosition = container.scrollHeight;
-                        container.scrollTo({ top: scrollPosition, behavior: 'smooth' });
+                        container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
                     }, 50);
                 }
             }
 
-            // Hide spinner preloader
             hideContainersSpinner();
-
-
             this.fileUploader.init();
+
+            this.concreteIssueCache[currentTaskId] = {
+                timestamp: Date.now(),
+                widgetHTML: widgetContainer.innerHTML,
+                commentsHTML: issuesCommentsContainer ? issuesCommentsContainer.innerHTML : '',
+                issueTitle: templateVariables.issueTitle,
+                meta: meta,
+                nodePath: nodePath
+            };
 
         async function clickHandler(mainThis, editor, contentFromIframe)  {
             const sendButton = document.querySelector('.doboard_task_widget-send_message_button');
             const sendMessageContainer = sendButton?.closest('.doboard_task_widget-send_message');
             const input = sendMessageContainer?.querySelector('.doboard_task_widget-send_message_input');
 
-            // Get content from iframe or from editor parameter
             let commentText;
             if (contentFromIframe) {
                 commentText = contentFromIframe.trim();
@@ -10874,7 +11046,6 @@ class CleanTalkWidgetDoboard {
 
             if (!mainThis?.fileUploader?.hasFiles() && !commentText) return;
 
-            // Add other fields handling here
             if(input) input.disabled = true;
             if(sendButton) sendButton.disabled = true;
 
@@ -10884,7 +11055,19 @@ class CleanTalkWidgetDoboard {
                 newCommentResponse = await addTaskComment(mainThis.params, mainThis.currentActiveTaskId,
                     commentText ? commentText : mainThis?.fileUploader?.hasFiles() ? ' ' : null);
                 if(input) input.value = '';
-                await mainThis.createWidgetElement('concrete_issue');
+
+                if (mainThis.concreteIssueCache) {
+                    delete mainThis.concreteIssueCache[mainThis.currentActiveTaskId];
+                }
+
+                if(wsSpotfix.isActive()){
+                    await mainThis.createWidgetElement('concrete_issue', true);
+                    window.MessageEditorIframe.setContent('');
+                    const filesContainer = document.getElementById('doboard_task_widget__file-upload__wrapper');
+                    if(filesContainer) filesContainer.style.display = 'none';
+                } else {
+                    await mainThis.createWidgetElement('concrete_issue');
+                }
                 hideContainersSpinner(false);
             } catch (err) {
                 alert('Error when adding a comment: ' + err?.message);
@@ -10893,20 +11076,10 @@ class CleanTalkWidgetDoboard {
             if (mainThis && mainThis?.fileUploader?.hasFiles() && newCommentResponse !== null && newCommentResponse?.hasOwnProperty('commentId')) {
                 const sessionId = localStorage.getItem('spotfix_session_id');
                 const attachmentsSendResult = await mainThis?.fileUploader?.sendAttachmentsForComment(mainThis?.params, sessionId, newCommentResponse?.commentId);
-                if (!attachmentsSendResult.success) {
-                    mainThis?.fileUploader?.showError('Some files where no sent, see details in the console.');
-                    const toConsole = JSON.stringify(attachmentsSendResult);
-                    console.log(toConsole);
-                }
             }
 
             if(input) input.disabled = false;
-
         };
-            // this._sendButtonClickHandler = clickHandler;
-            //
-            // sendButton.addEventListener('click', clickHandler);
-
 
             break;
 
@@ -11259,11 +11432,13 @@ class CleanTalkWidgetDoboard {
         const tasksCountLS = localStorage.getItem('spotfix_tasks_count');
 
         let tasksCount;
+        let tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
 
-        if (!this.nonRequesting) {
+        if (!this.nonRequesting && !tasks.length && !wsSpotfix.isActive()) {
             await getTasksDoboard(projectToken, sessionId, this.params.accountId, this.params.projectId);
+            tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
         }
-        const tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+
         storageSaveTasksCount(tasks);
         const filteredTasks = tasks.filter(task => {
             return task.taskMeta && task.taskStatus === 'ACTIVE';

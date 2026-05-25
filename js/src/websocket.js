@@ -168,6 +168,10 @@ const wsSpotfix = {
         }
     },
 
+    isActive() {
+        return socket !== null && socket.readyState === WebSocket.OPEN;
+    },
+
     close() {
         isIntentionalClose = true;
         if (reconnectTimer) {
