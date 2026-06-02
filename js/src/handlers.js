@@ -110,7 +110,7 @@ async function getAllTasks(params, nonRequesting = false) {
     const sessionId = localStorage.getItem('spotfix_session_id') || '';
     let tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
 
-    if ((nonRequesting && !tasksData.length) || (!nonRequesting && (!tasksData || !tasksData.length) && !wsSpotfix.isActive())) {
+    if ((nonRequesting && (!tasksData || !tasksData.length)) || (!nonRequesting && (!tasksData || !tasksData.length) && !wsSpotfix.isActive())) {
         await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
         tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
     }

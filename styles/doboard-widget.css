@@ -380,14 +380,14 @@
     color: #2F68B7;
 }
 
-.doboard_task_widget-login, .doboard_task_widget-logined-user-name {
+.doboard_task_widget-login, .doboard_task_widget-logged-user-name {
     margin-bottom: 16px;
     border: 1px solid #BBC7D1;
     border-radius: 4px;
     padding: 11px 8px 8px 8px;
 }
 
-.doboard_task_widget-logined-user-name {
+.doboard_task_widget-logged-user-name {
     display: flex;
     align-items: center;
 }
@@ -472,10 +472,10 @@
     display: none;
 }
 
-.doboard_task_widget-logined-user-name b {
+.doboard_task_widget-logged-user-name b {
     font-weight: 600;
 }
-.doboard_task_widget-logined-user-name {
+.doboard_task_widget-logged-user-name {
     font-size: 12px;
 }
 
@@ -2038,7 +2038,7 @@ input:checked + .slider:before {
     color: black;
 }
 
-.doboard_task_widget-logined-user-name img {
+.doboard_task_widget-logged-user-name img {
     margin-right: 8px;
     width: 28px;
     height: 28px;

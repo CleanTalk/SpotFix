@@ -740,10 +740,10 @@ class CleanTalkWidgetDoboard {
             };
 
             const userId = localStorage.getItem('spotfix_user_id') || 0;
-            const usersList = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
             templateVariables.userAvatarLoginBlock = SpotFixSVGLoader.getAsDataURI('iconGuestAvatarDark') || '';
             templateVariables.userNameLoginBlock = 'Guest';
             if(userId) {
+                const usersList = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
                 const user = usersList.find(user => +user?.user_id === +userId)
                 templateVariables.userAvatarLoginBlock = user?.avatar?.s || SpotFixSVGLoader.getAsDataURI('iconGuestAvatarDark') || '';
                 templateVariables.userNameLoginBlock = user?.name || user?.email || 'Guest';
@@ -876,11 +876,11 @@ class CleanTalkWidgetDoboard {
                     }
                 }
 
-                const loginedUserNameBlock = document.querySelector('.doboard_task_widget-logined-user-name');
-                if(loginedUserNameBlock) {
+                const loggedUserNameBlock = document.querySelector('.doboard_task_widget-logged-user-name');
+                if(loggedUserNameBlock) {
                     if(localStorage.getItem('spotfix_session_id')) {
-                        loginedUserNameBlock.style.display = 'flex';
-                    } else loginedUserNameBlock.style.display = 'none';
+                        loggedUserNameBlock.style.display = 'flex';
+                    } else loggedUserNameBlock.style.display = 'none';
                 }
 
                 const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';

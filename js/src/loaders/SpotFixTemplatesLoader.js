@@ -174,7 +174,7 @@ class SpotFixTemplatesLoader {
             <div class="doboard_task_widget__file-upload__error" id="doboard_task_widget__file-upload__error"></div>
             <input type="file" class="doboard_task_widget__file-upload__file-input-button" id="doboard_task_widget__file-upload__file-input-button" multiple accept="*/*">
         </div>
-        <div class="doboard_task_widget-logined-user-name">
+        <div class="doboard_task_widget-logged-user-name">
             <img src="{{userAvatarLoginBlock}}"  alt="">
             <span>Reporting as <b>{{userNameLoginBlock}}</b></span>
         </div>
