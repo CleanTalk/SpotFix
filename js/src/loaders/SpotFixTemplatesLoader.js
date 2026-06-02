@@ -27,7 +27,7 @@ class SpotFixTemplatesLoader {
                 <img src="{{iconMaximize}}" alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <span id="openUserMenuButton">
-                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
+                <img src="{{userAvatar}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
         </div>

@@ -2044,3 +2044,9 @@ input:checked + .slider:before {
     height: 28px;
     border-radius: 50%;
 }
+
+#openUserMenuButton img {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+}

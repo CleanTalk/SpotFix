@@ -779,6 +779,12 @@ class CleanTalkWidgetDoboard {
             this.type_name = templateName;
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
+            this.srcVariables.userAvatar = SpotFixSVGLoader.getAsDataURI('iconGuestAvatarDark');
+            const userIdAI = localStorage.getItem('spotfix_user_id') || 0;
+            if(userIdAI) {
+                const usersList = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
+                this.srcVariables.userAvatar = usersList.find(user => +user?.user_id === +userIdAI)?.avatar?.s || SpotFixSVGLoader.getAsDataURI('iconGuestAvatarDark') || '';
+            }
             templateVariables = {...this.srcVariables};
             break;
         case 'user_menu':
