@@ -10000,6 +10000,8 @@ class CleanTalkWidgetDoboard {
 
             const userId = localStorage.getItem('spotfix_user_id') || 0;
             const usersList = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
+            templateVariables.userAvatarLoginBlock = SpotFixSVGLoader.getAsDataURI('iconGuestAvatarDark') || '';
+            templateVariables.userNameLoginBlock = 'Guest';
             if(userId) {
                 const user = usersList.find(user => +user?.user_id === +userId)
                 templateVariables.userAvatarLoginBlock = user?.avatar?.s || SpotFixSVGLoader.getAsDataURI('iconGuestAvatarDark') || '';
