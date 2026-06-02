@@ -1548,9 +1548,10 @@ class CleanTalkWidgetDoboard {
             }
 
             const userId = localStorage.getItem('spotfix_user_id') || 0;
-            const usersList = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
-            templateVariables.userAvatar = usersList.find(user => +user?.user_id === +userId)?.avatar?.s || templateVariables.userAvatar;
-
+            if(userId) {
+                const usersList = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
+                templateVariables.userAvatar = usersList.find(user => +user?.user_id === +userId)?.avatar?.s || templateVariables.userAvatar;
+            }
             tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId, this.nonRequesting);
             const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId, this.nonRequesting);
 

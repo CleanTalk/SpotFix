@@ -8762,7 +8762,7 @@ async function getAllTasks(params, nonRequesting = false) {
     const sessionId = localStorage.getItem('spotfix_session_id') || '';
     let tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
 
-    if ((nonRequesting || !tasksData.length) || (!nonRequesting && (!tasksData || !tasksData.length) && !wsSpotfix.isActive())) {
+    if ((nonRequesting && !tasksData.length) || (!nonRequesting && (!tasksData || !tasksData.length) && !wsSpotfix.isActive())) {
         await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
         tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
     }
@@ -10807,9 +10807,10 @@ class CleanTalkWidgetDoboard {
             }
 
             const userId = localStorage.getItem('spotfix_user_id') || 0;
-            const usersList = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
-            templateVariables.userAvatar = usersList.find(user => +user?.user_id === +userId)?.avatar?.s || templateVariables.userAvatar;
-
+            if(userId) {
+                const usersList = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
+                templateVariables.userAvatar = usersList.find(user => +user?.user_id === +userId)?.avatar?.s || templateVariables.userAvatar;
+            }
             tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId, this.nonRequesting);
             const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId, this.nonRequesting);
 
