@@ -380,11 +380,16 @@
     color: #2F68B7;
 }
 
-.doboard_task_widget-login {
+.doboard_task_widget-login, .doboard_task_widget-logined-user-name {
     margin-bottom: 16px;
     border: 1px solid #BBC7D1;
     border-radius: 4px;
     padding: 11px 8px 8px 8px;
+}
+
+.doboard_task_widget-logined-user-name {
+    display: flex;
+    align-items: center;
 }
 
 .doboard_task_widget-login.hidden {
@@ -410,18 +415,42 @@
 .doboard_task_widget-login .doboard_task_widget-input-container:last-child {
     margin-bottom: 0;
 }
+
+.doboard_task_widget-login-icon span b {
+    font-weight: 600;
+    font-size: 12px;
+    display: inline;
+}
+.doboard_task_widget-login-icon span span {
+    font-size: 12px;
+    display: inline;
+}
+
+.active .doboard_task_widget-login-icon span b {
+    display: none;
+}
+.active .doboard_task_widget-login-icon span span {
+    display: none;
+}
+
+.active .doboard_task_widget-login-icon img {
+    display: none;
+}
+
 .doboard_task_widget-login .doboard_task_widget-login-icon {
-    display: block;
+    display: inline-flex;
     position: relative;
+    width: stretch;
     padding-right: 24px;
     cursor: pointer;
 }
 .doboard_task_widget-login.active .doboard_task_widget-login-icon {
     /*margin-bottom: 24px;*/
 }
-.doboard_task_widget-login .doboard_task_widget-login-icon::after {
+
+.doboard_task_widget-login .doboard_task_widget-login-icon span::after {
     position: absolute;
-    top: 0;
+    top: 12px;
     right: 4px;
     content: "";
     display: block;
@@ -434,13 +463,20 @@
     border-left: none;
     transition: all 0.2s ease-in-out;
 }
-.doboard_task_widget-login.active .doboard_task_widget-login-icon::after {
+.doboard_task_widget-login.active .doboard_task_widget-login-icon span::after {
     transform: rotate(-135deg);
     top: 7px;
 }
 
-.doboard_task_widget-login-icon.doboard_task_widget-login-icon-hidden::after {
+.doboard_task_widget-login-icon.doboard_task_widget-login-icon-hidden span::after {
     display: none;
+}
+
+.doboard_task_widget-logined-user-name b {
+    font-weight: 600;
+}
+.doboard_task_widget-logined-user-name {
+    font-size: 12px;
 }
 
 .doboard_task_widget-submit_button {
@@ -2000,4 +2036,11 @@ input:checked + .slider:before {
 .doboard_task_widget-comment_time a:hover {
     text-decoration: none;
     color: black;
+}
+
+.doboard_task_widget-logined-user-name img {
+    margin-right: 8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
 }
