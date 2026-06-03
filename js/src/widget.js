@@ -49,6 +49,7 @@ class CleanTalkWidgetDoboard {
             iconHighlight: SpotFixSVGLoader.getAsDataURI('iconHighlight'),
             iconLockDark: SpotFixSVGLoader.getAsDataURI('iconLockDark'),
             iconPublicDark: SpotFixSVGLoader.getAsDataURI('iconPublicDark'),
+            iconGuestAvatar: SpotFixSVGLoader.getAsDataURI('iconGuestAvatar'),
         };
 
         if (taskData && +taskData?.taskId){
@@ -737,6 +738,17 @@ class CleanTalkWidgetDoboard {
                 iconListMinimalistic: SpotFixSVGLoader.getAsDataURI('iconListMinimalistic'),
                 ...this.srcVariables
             };
+
+            const userId = localStorage.getItem('spotfix_user_id') || 0;
+            templateVariables.userAvatarLoginBlock = SpotFixSVGLoader.getAsDataURI('iconGuestAvatarDark') || '';
+            templateVariables.userNameLoginBlock = 'Guest';
+            if(userId) {
+                const usersList = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
+                const user = usersList.find(user => +user?.user_id === +userId)
+                templateVariables.userAvatarLoginBlock = user?.avatar?.s || SpotFixSVGLoader.getAsDataURI('iconGuestAvatarDark') || '';
+                templateVariables.userNameLoginBlock = user?.name || user?.email || 'Guest';
+            }
+
             storageGetUserIsDefined() && storageSetWidgetIsClosed(false);
             break;
         case 'wrap':
@@ -767,6 +779,12 @@ class CleanTalkWidgetDoboard {
             this.type_name = templateName;
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
+            this.srcVariables.userAvatar = SpotFixSVGLoader.getAsDataURI('iconGuestAvatarDark');
+            const userIdAI = localStorage.getItem('spotfix_user_id') || 0;
+            if(userIdAI) {
+                const usersList = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
+                this.srcVariables.userAvatar = usersList.find(user => +user?.user_id === +userIdAI)?.avatar?.s || SpotFixSVGLoader.getAsDataURI('iconGuestAvatarDark') || '';
+            }
             templateVariables = {...this.srcVariables};
             break;
         case 'user_menu':
@@ -821,6 +839,7 @@ class CleanTalkWidgetDoboard {
                 issueTitle: '...',
                 issueComments: [],
                 issuesCounter: getIssuesCounterString(this.savedIssuesQuantityOnPage, this.savedIssuesQuantityAll),
+                userAvatar: SpotFixSVGLoader.getAsDataURI('iconGuestAvatarDark'),
                 ...this.srcVariables,
             };
             break;
@@ -861,6 +880,13 @@ class CleanTalkWidgetDoboard {
                             if (this.type_name !== 'all_issues') this.createWidgetElement('all_issues');
                         });
                     }
+                }
+
+                const loggedUserNameBlock = document.querySelector('.doboard_task_widget-logged-user-name');
+                if(loggedUserNameBlock) {
+                    if(localStorage.getItem('spotfix_session_id')) {
+                        loggedUserNameBlock.style.display = 'flex';
+                    } else loggedUserNameBlock.style.display = 'none';
                 }
 
                 const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
@@ -1003,7 +1029,9 @@ class CleanTalkWidgetDoboard {
             spotFixRemoveHighlights();
 
             const nowAI = Date.now();
-            const isCacheValid = this.htmlCacheTimestamp && (nowAI - this.htmlCacheTimestamp < 60000); // 60
+            const currentSessionIdAI = localStorage.getItem('spotfix_session_id') || '';
+            const isSessionStateValidAI = (this.cachedSessionIdAI === currentSessionIdAI);
+            const isCacheValid = this.htmlCacheTimestamp && (nowAI - this.htmlCacheTimestamp < 60000) && isSessionStateValidAI;
 
             if (isCacheValid && this.cachedHTML && !this.nonRequesting) {
                 const issuesContainer = document.querySelector(".doboard_task_widget-all_issues-container");
@@ -1053,6 +1081,7 @@ class CleanTalkWidgetDoboard {
             // If there is no cache or it has expired, fetch fresh data.
             let issuesQuantityOnPage = 0;
             const sessionId = localStorage.getItem('spotfix_session_id');
+
 
             const notifications = this.nonRequesting ? [] : await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
             let activeTasks = [];
@@ -1270,6 +1299,7 @@ class CleanTalkWidgetDoboard {
                 this.cachedHTML = finalContainer.innerHTML;
                 this.cachedSpotsToBeHighlighted = spotsToBeHighlighted;
                 this.htmlCacheTimestamp = Date.now();
+                this.cachedSessionIdAI = localStorage.getItem('spotfix_session_id') || '';
             }
 
             this.bindIssuesClick();
@@ -1444,7 +1474,9 @@ class CleanTalkWidgetDoboard {
             const currentTaskId = this.currentActiveTaskId;
             const taskCache = this.concreteIssueCache[currentTaskId];
 
-            const isConcreteCacheValid = taskCache && (nowCI - taskCache.timestamp < 60000) && !this.nonRequesting;
+            const currentSessionId = localStorage.getItem('spotfix_session_id') || '';
+            const isSessionStateValid = taskCache && (taskCache.sessionId === currentSessionId);
+            const isConcreteCacheValid = taskCache && (nowCI - taskCache.timestamp < 30000) && !this.nonRequesting && isSessionStateValid;
 
             if (isConcreteCacheValid) {
                 widgetContainer.innerHTML = taskCache.widgetHTML;
@@ -1523,6 +1555,11 @@ class CleanTalkWidgetDoboard {
                 updateNotificationsDoboard(this.currentActiveTaskId, this.params.projectToken, this.params.accountId)
             }
 
+            const userId = localStorage.getItem('spotfix_user_id') || 0;
+            if(userId) {
+                const usersList = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
+                templateVariables.userAvatar = usersList.find(user => +user?.user_id === +userId)?.avatar?.s || templateVariables.userAvatar;
+            }
             tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId, this.nonRequesting);
             const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId, this.nonRequesting);
 
@@ -1770,7 +1807,8 @@ class CleanTalkWidgetDoboard {
                 commentsHTML: issuesCommentsContainer ? issuesCommentsContainer.innerHTML : '',
                 issueTitle: templateVariables.issueTitle,
                 meta: meta,
-                nodePath: nodePath
+                nodePath: nodePath,
+                sessionId: localStorage.getItem('spotfix_session_id') || ''
             };
 
         async function clickHandler(mainThis, editor, contentFromIframe)  {

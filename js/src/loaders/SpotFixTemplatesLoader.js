@@ -27,7 +27,7 @@ class SpotFixTemplatesLoader {
                 <img src="{{iconMaximize}}" alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <span id="openUserMenuButton">
-                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
+                <img src="{{userAvatar}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
         </div>
@@ -63,7 +63,7 @@ class SpotFixTemplatesLoader {
                 <img src="{{iconMaximize}}"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <span id="openSpotMenuButton">
-                <img src="{{iconEllipsesMore}}"  alt="" class="doboard_task_widget_cursor-pointer">
+                <img src="{{userAvatar}}" style="height: 22px; width: 22px; border-radius: 50%"  alt="" class="doboard_task_widget_cursor-pointer">
             </span>
             <img src="{{buttonCloseScreen}}"  alt="" class="doboard_task_widget-close_btn doboard_task_widget_cursor-pointer">
         </div>
@@ -174,11 +174,19 @@ class SpotFixTemplatesLoader {
             <div class="doboard_task_widget__file-upload__error" id="doboard_task_widget__file-upload__error"></div>
             <input type="file" class="doboard_task_widget__file-upload__file-input-button" id="doboard_task_widget__file-upload__file-input-button" multiple accept="*/*">
         </div>
-
+        <div class="doboard_task_widget-logged-user-name">
+            <img src="{{userAvatarLoginBlock}}"  alt="">
+            <span>Reporting as <b>{{userNameLoginBlock}}</b></span>
+        </div>
         <div class="doboard_task_widget-login">
-
-            <span  class="doboard_task_widget-login-icon" >Sign up here to receive notifications.</span>
-
+            <span  class="doboard_task_widget-login-icon" >
+            <img style="margin-right: 8px" src="{{iconGuestAvatar}}"  alt="">
+            <span style="flex-grow: 1">
+             <span>Reporting as <b>Guest</b></span><br/>
+                Sign up here to receive notifications.
+                </span>
+               
+            </span>
             <div class="doboard_task_widget-accordion">
             
                    <div class="doboard_task_widget-input-container-phantom">
