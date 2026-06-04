@@ -970,7 +970,7 @@ class CleanTalkWidgetDoboard {
 
                 const spotfix_license_status = localStorage.getItem('spotfix_license_status');
                 if(spotfix_license_status && spotfix_license_status !== "ACTIVE") {
-                    this.registrationShowMessage('Your license has expired. Please renew it under the organization owner\'s account by navigating to Profile Picture → Company settings', 'error');
+                    this.registrationShowMessage('Your license has expired. Please renew it under the organization owner\'s account by navigating to Profile Picture → Company settings', 'error', true);
                     document.querySelector('.doboard_task_widget-visibility-toggle').style.display = 'none';
                     document.querySelector('.doboard_task_widget-logged-user-name').style.display = 'none';
                     document.querySelector('.doboard_task_widget-login').style.display = 'none';
@@ -1828,8 +1828,8 @@ class CleanTalkWidgetDoboard {
             const spotfix_license_status = localStorage.getItem('spotfix_license_status');
             const messageContainer = document.getElementById('spotfix_widget_task_send_message_container');
             if(spotfix_license_status && spotfix_license_status !== "ACTIVE") {
-                this.registrationShowMessage('Your license has expired. Please renew it under the organization owner\'s account by navigating to Profile Picture → Company settings', 'error');
-                messageContainer.style.display = 'none';
+                this.registrationShowMessage('Your license has expired. Please renew it under the organization owner\'s account by navigating to Profile Picture → Company settings', 'error', true);
+                if(messageContainer) messageContainer.style.display = 'none';
             }
 
         async function clickHandler(mainThis, editor, contentFromIframe)  {
@@ -2360,7 +2360,7 @@ class CleanTalkWidgetDoboard {
         window.addEventListener('resize', this.handleResize.bind(this));
     }
 
-    registrationShowMessage(messageText, type = 'error') {
+    registrationShowMessage(messageText, type = 'error', noTitle) {
         const titleSpan = document.getElementById('doboard_task_widget-error_message-header');
         const messageDiv = document.getElementById('doboard_task_widget-error_message');
         const messageWrap = document.querySelector('.doboard_task_widget-message-wrapper');
@@ -2374,7 +2374,9 @@ class CleanTalkWidgetDoboard {
                 messageWrap.classList.add('doboard_task_widget-notice_message');
                 messageDiv.style.color = '#2a5db0';
             } else {
-                titleSpan.innerText = ksesFilter('Registration error');
+                if(!noTitle) {
+                    titleSpan.innerText = ksesFilter('Registration error');
+                }
                 messageWrap.classList.add('doboard_task_widget-error_message');
                 messageDiv.style.color = 'red';
             }
