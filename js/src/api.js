@@ -371,6 +371,7 @@ const getProjectDoboard = async (projectToken, accountId) => {
     const sessionId = localStorage.getItem('spotfix_session_id');
     const data = {
         project_token: projectToken,
+        with_account_status: 1,
     };
     if (sessionId) {
         data.session_id = sessionId;

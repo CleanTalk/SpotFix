@@ -947,6 +947,7 @@ class CleanTalkWidgetDoboard {
                 if (window.DescriptionEditorIframe.iframe && !this.nonRequesting) {
                     window.DescriptionEditorIframe.remove();
                 }
+
                 if (!this.nonRequesting) {
                     // Create description editor iframe
                     window.DescriptionEditorIframe.create({
@@ -967,6 +968,19 @@ class CleanTalkWidgetDoboard {
                     });
                 }
 
+                const spotfix_license_status = localStorage.getItem('spotfix_license_status');
+                if(spotfix_license_status && spotfix_license_status !== "ACTIVE") {
+                    this.registrationShowMessage('Your license has expired. Please renew it under the organization owner\'s account by navigating to Profile Picture → Company settings', 'error');
+                    document.querySelector('.doboard_task_widget-visibility-toggle').style.display = 'none';
+                    document.querySelector('.doboard_task_widget-logged-user-name').style.display = 'none';
+                    document.querySelector('.doboard_task_widget-login').style.display = 'none';
+                    document.getElementById('doboard_task_widget-submit_button').style.display = 'none';
+                    const description = document.getElementById('doboard_task_widget-description-container');
+                    if (description) {
+                        description.style.pointerEvents = 'none';
+                        description.style.opacity = '0.6';
+                    }
+                }
             }
             break;
         case 'wrap':
@@ -1810,6 +1824,13 @@ class CleanTalkWidgetDoboard {
                 nodePath: nodePath,
                 sessionId: localStorage.getItem('spotfix_session_id') || ''
             };
+
+            const spotfix_license_status = localStorage.getItem('spotfix_license_status');
+            const messageContainer = document.getElementById('spotfix_widget_task_send_message_container');
+            if(spotfix_license_status && spotfix_license_status !== "ACTIVE") {
+                this.registrationShowMessage('Your license has expired. Please renew it under the organization owner\'s account by navigating to Profile Picture → Company settings', 'error');
+                messageContainer.style.display = 'none';
+            }
 
         async function clickHandler(mainThis, editor, contentFromIframe)  {
             const sendButton = document.querySelector('.doboard_task_widget-send_message_button');
