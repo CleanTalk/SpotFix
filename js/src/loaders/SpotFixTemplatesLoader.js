@@ -77,6 +77,10 @@ class SpotFixTemplatesLoader {
         </div>
         <div class="doboard_task_widget-concrete_issues-container">
         </div>
+        <div class="doboard_task_widget-message-wrapper hidden" style="margin-bottom: 1px">
+            <span id="doboard_task_widget-error_message-header"></span>
+            <div id="doboard_task_widget-error_message"></div>
+        </div>
         <div id="spotfix_widget_task_send_message_container" class="doboard_task_widget-send_message doboard_task_widget-spotfix-editor">
              <textarea name="doboard_task_widget_message" id="doboard_task_widget-send_message_input_SpotFix" class="doboard_task_widget-send_message_input" placeholder="Write a message..."></textarea>
             </div>

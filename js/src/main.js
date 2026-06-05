@@ -62,7 +62,9 @@ function spotFixInit() {
         getProjectDoboard(projectToken, accountId)
             .then(result => {
                 if (result && result?.projects && result?.projects[0]) {
+                    localStorage.setItem('spotfix_license_status', result.account_status);
                     const project = result?.projects[0];
+
                     if (project?.require_full_registration !== undefined) {
                         localStorage.setItem('spotfix_require_full_registration', project?.require_full_registration);
                     }
