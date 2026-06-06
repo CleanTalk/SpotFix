@@ -884,7 +884,7 @@ class CleanTalkWidgetDoboard {
 
                 const loggedUserNameBlock = document.querySelector('.doboard_task_widget-logged-user-name');
                 if(loggedUserNameBlock) {
-                    if(localStorage.getItem('spotfix_session_id')) {
+                    if(localStorage.getItem('spotfix_session_id') && !(localStorage.getItem('spotfix_email')?.includes('spotfix_'))) {
                         loggedUserNameBlock.style.display = 'flex';
                     } else loggedUserNameBlock.style.display = 'none';
                 }
