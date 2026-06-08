@@ -10144,7 +10144,7 @@ class CleanTalkWidgetDoboard {
 
                 const loggedUserNameBlock = document.querySelector('.doboard_task_widget-logged-user-name');
                 if(loggedUserNameBlock) {
-                    if(localStorage.getItem('spotfix_session_id')) {
+                    if(localStorage.getItem('spotfix_session_id') && !(localStorage.getItem('spotfix_email')?.includes('spotfix_'))) {
                         loggedUserNameBlock.style.display = 'flex';
                     } else loggedUserNameBlock.style.display = 'none';
                 }
@@ -10430,7 +10430,7 @@ class CleanTalkWidgetDoboard {
                         const hasUpdates = !!(notifications?.find(item => +item?.task_id === elTask?.taskId));
                         const isDone = elTask.taskStatus === 'DONE';
                         const meta = JSON.parse(elTask.taskMeta);
-                        const isNoRelevant = meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath);
+                        const isNoRelevant = meta.pageURL && meta.pageURL === window.location.href && meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath);
                         const isTaskWithoutReference = !((meta.nodePath || meta.selectedText) && meta?.pageURL);
 
                         const elementBgCSSClass = isFinishedGroup
@@ -10872,7 +10872,7 @@ class CleanTalkWidgetDoboard {
             }
 
             if (isPageUrlString || issueLinkElement) {
-                if (meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath)) {
+                if (meta.pageURL && meta.pageURL === window.location.href && meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath)) {
                     templateVariables.taskFormattedPageUrl = `<span>The link to the content has been lost because the content was changed, deleted, or moved to another URL.</span>`;
                 } else if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
                     const safeUrl = this.escapeHtml(getSafeUrl(meta.pageURL));
