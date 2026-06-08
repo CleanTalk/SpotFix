@@ -10144,7 +10144,7 @@ class CleanTalkWidgetDoboard {
 
                 const loggedUserNameBlock = document.querySelector('.doboard_task_widget-logged-user-name');
                 if(loggedUserNameBlock) {
-                    if(localStorage.getItem('spotfix_session_id')) {
+                    if(localStorage.getItem('spotfix_session_id') && !(localStorage.getItem('spotfix_email')?.includes('spotfix_'))) {
                         loggedUserNameBlock.style.display = 'flex';
                     } else loggedUserNameBlock.style.display = 'none';
                 }
@@ -10430,7 +10430,7 @@ class CleanTalkWidgetDoboard {
                         const hasUpdates = !!(notifications?.find(item => +item?.task_id === elTask?.taskId));
                         const isDone = elTask.taskStatus === 'DONE';
                         const meta = JSON.parse(elTask.taskMeta);
-                        const isNoRelevant = meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath);
+                        const isNoRelevant = meta.pageURL && meta.pageURL === window.location.href && meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath);
                         const isTaskWithoutReference = !((meta.nodePath || meta.selectedText) && meta?.pageURL);
 
                         const elementBgCSSClass = isFinishedGroup
@@ -10872,7 +10872,7 @@ class CleanTalkWidgetDoboard {
             }
 
             if (isPageUrlString || issueLinkElement) {
-                if (meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath)) {
+                if (meta.pageURL && meta.pageURL === window.location.href && meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath)) {
                     templateVariables.taskFormattedPageUrl = `<span>The link to the content has been lost because the content was changed, deleted, or moved to another URL.</span>`;
                 } else if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
                     const safeUrl = this.escapeHtml(getSafeUrl(meta.pageURL));
@@ -13597,16 +13597,30 @@ class FileUploader {
 
     async makeScreenshot() {
         let blob = null;
+
+        let bgColor = window.getComputedStyle(document.body).backgroundColor;
+        if (bgColor === 'rgba(0, 0, 0, 0)' || bgColor === 'transparent') {
+            bgColor = '#ffffff';
+        }
+
         try {
             const domtoimageLib = await this.loadDomToImage();
             if (!domtoimageLib) throw new Error('domtoimageLib failed to load');
 
             blob = await domtoimageLib.toBlob(document.body, {
+                bgcolor: bgColor,
                 width: window.innerWidth,
                 height: window.innerHeight,
                 style: {
                     transform: `translate(${-window.scrollX}px, ${-window.scrollY}px)`,
+                    backgroundColor: bgColor
                 },
+                filter: (node) => {
+                    if (node.classList && node.classList.contains('doboard_task_widget')) {
+                        return false;
+                    }
+                    return true;
+                }
             });
 
             if (!blob) throw new Error('dom-to-image-more returned an empty result');
@@ -13624,10 +13638,22 @@ class FileUploader {
                     allowTaint: true,
                     logging: false,
                     scale: window.devicePixelRatio || 1,
+                    backgroundColor: bgColor,
                     x: window.scrollX,
                     y: window.scrollY,
                     width: window.innerWidth,
                     height: window.innerHeight,
+                    scrollX: 0,
+                    scrollY: 0,
+                    windowWidth: document.documentElement.offsetWidth,
+                    windowHeight: document.documentElement.offsetHeight,
+
+                    ignoreElements: (element) => {
+                        if (element.classList && element.classList.contains('doboard_task_widget')) {
+                            return true;
+                        }
+                        return false;
+                    }
                 });
 
                 blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
