@@ -257,7 +257,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
 
     if(result.operation_message === 'Access is denied'){
         await spotfixIndexedDB.put(SPOTFIX_TABLE_TASKS, {taskId: taskId, task_type: 'PRIVATE', taskMeta:"{}"});
-        return [];
+        return null;
     } else {
         const tasks = result.tasks.map((task) => ({
             taskId: task.task_id,

@@ -8264,7 +8264,7 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
 
     if(result.operation_message === 'Access is denied'){
         await spotfixIndexedDB.put(SPOTFIX_TABLE_TASKS, {taskId: taskId, task_type: 'PRIVATE', taskMeta:"{}"});
-        return [];
+        return null;
     } else {
         const tasks = result.tasks.map((task) => ({
             taskId: task.task_id,
@@ -8711,15 +8711,24 @@ async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
     return createdTask;
 }
 
-async function getTasksFullDetails(params, tasks, currentActiveTaskId, nonRequesting = false) {
+async function getTasksFullDetails(params, tasksList, currentActiveTaskId, nonRequesting = false) {
+    let tasks = tasksList;
     if (tasks.length > 0) {
         const sessionId = localStorage.getItem('spotfix_session_id');
         if (!nonRequesting && currentActiveTaskId && +currentActiveTaskId !== 0) {
-            await getTasksAttachmenDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
-            await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
             const tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
             if (!tasksData.find((item) => +item.taskId === +currentActiveTaskId)) {
-                await getTasksDoboard(params.projectToken, sessionId, params.accountId, params.projectId, null, +currentActiveTaskId);
+                await getTasksDoboard(params.projectToken, sessionId, params.accountId, params.projectId, null, +currentActiveTaskId)
+                    .then(async (ans) => {
+                        if (ans) {
+                            await getTasksAttachmenDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
+                            await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
+                        }
+                        tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+                    });
+            } else {
+                await getTasksAttachmenDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
+                await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
             }
         }
         const comments = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_COMMENTS);
@@ -11105,7 +11114,7 @@ class CleanTalkWidgetDoboard {
 
             if (taskDetails.task_type === 'PRIVATE') {
                 const openSpotMenuButton = document.getElementById('openSpotMenuButton');
-                openSpotMenuButton.style.display = 'none';
+                if(openSpotMenuButton) openSpotMenuButton.style.display = 'none';
                 const messageContainer = document.getElementById('spotfix_widget_task_send_message_container');
                 if (messageContainer) {
                     messageContainer.style.pointerEvents = 'none';

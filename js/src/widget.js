@@ -1824,7 +1824,7 @@ class CleanTalkWidgetDoboard {
 
             if (taskDetails.task_type === 'PRIVATE') {
                 const openSpotMenuButton = document.getElementById('openSpotMenuButton');
-                openSpotMenuButton.style.display = 'none';
+                if(openSpotMenuButton) openSpotMenuButton.style.display = 'none';
                 const messageContainer = document.getElementById('spotfix_widget_task_send_message_container');
                 if (messageContainer) {
                     messageContainer.style.pointerEvents = 'none';
