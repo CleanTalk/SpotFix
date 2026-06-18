@@ -48,6 +48,10 @@ async function getTasksFullDetails(params, tasks, currentActiveTaskId, nonReques
         if (!nonRequesting && currentActiveTaskId && +currentActiveTaskId !== 0) {
             await getTasksAttachmenDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
             await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
+            const tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+            if (!tasksData.find((item) => +item.taskId === +currentActiveTaskId)) {
+                await getTasksDoboard(params.projectToken, sessionId, params.accountId, params.projectId, null, +currentActiveTaskId);
+            }
         }
         const comments = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_COMMENTS);
         const attachments = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_ATTACHMENT);
@@ -60,6 +64,7 @@ async function getTasksFullDetails(params, tasks, currentActiveTaskId, nonReques
         return {
             comments: comments,
             users: users,
+            task_type: foundTask?.task_type,
             attachments: attachments,
             taskStatus: foundTask?.taskStatus,
             taskName: foundTask?.taskTitle,

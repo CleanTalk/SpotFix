@@ -79,6 +79,9 @@ const spotfixApiCall = async (data, method, accountId = undefined) => {
             clearLocalstorageOnLogout();
             checkLogInOutButtonsVisible();
         }
+        if (responseBody.data.operation_message === "Access is denied"){
+            return {operation_message: "Access is denied"}
+        }
         throw new Error(errorMessage);
     }
 
@@ -237,7 +240,7 @@ const logoutUserDoboard = async (projectToken) => {
     }
 };
 
-const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, userId) => {
+const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, userId, taskId) => {
     const data = {
         session_id: sessionId,
         project_token: projectToken,
@@ -247,24 +250,37 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
     if ( userId ) {
         data.user_id = userId;
     }
+    if ( taskId ) {
+        data.task_id = taskId;
+    }
     const result = await spotfixApiCall(data, 'task_get', accountId);
-    const tasks = result.tasks.map((task) => ({
-        taskId: task.task_id,
-        taskTitle: task.name,
-        userId: task.user_id,
-        task_type: task.task_type,
-        commentsCount: task.comments_count,
-        taskLastUpdate: task.updated,
-        taskCreated: task.created,
-        taskCreatorTaskUser: task.creator_user_id,
-        taskMeta: task.meta,
-        taskStatus: task.status,
-        viewers: task.comments_viewers,
-        taskToken: task.token
-    }));
-    await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_TASKS, tasks);
-    storageSaveTasksCount(tasks);
-    return tasks;
+
+    if(result.operation_message === 'Access is denied'){
+        await spotfixIndexedDB.put(SPOTFIX_TABLE_TASKS, {taskId: taskId, task_type: 'PRIVATE', taskMeta:"{}"});
+        return [];
+    } else {
+        const tasks = result.tasks.map((task) => ({
+            taskId: task.task_id,
+            taskTitle: task.name,
+            userId: task.user_id,
+            task_type: task.task_type,
+            commentsCount: task.comments_count,
+            taskLastUpdate: task.updated,
+            taskCreated: task.created,
+            taskCreatorTaskUser: task.creator_user_id,
+            taskMeta: task.meta,
+            taskStatus: task.status,
+            viewers: task.comments_viewers,
+            taskToken: task.token
+        }));
+        if(taskId){
+            await spotfixIndexedDB.put(SPOTFIX_TABLE_TASKS, tasks);
+        } else {
+            await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_TASKS, tasks);
+        }
+        storageSaveTasksCount(tasks);
+        return tasks;
+    }
 };
 
 

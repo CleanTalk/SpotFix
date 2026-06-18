@@ -1103,7 +1103,7 @@ class CleanTalkWidgetDoboard {
 
             this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
 
-            const tasks = this.allTasksData;
+            const tasks = this.allTasksData?.length ? this.allTasksData.filter(item => item.task_type !== 'PRIVATE') : [];
             tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId, this.nonRequesting);
 
             let spotsToBeHighlighted = [];
@@ -1577,14 +1577,16 @@ class CleanTalkWidgetDoboard {
             tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId, this.nonRequesting);
             const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId, this.nonRequesting);
 
+            const taskName = taskDetails.task_type === 'PRIVATE' ? '' : tasksFullDetails.taskName || taskDetails?.issueTitle;
+
             const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
             if (issueTitleElement) {
-                issueTitleElement.innerText = ksesFilter(tasksFullDetails.taskName || taskDetails?.issueTitle);
+                issueTitleElement.innerText = ksesFilter(taskName);
             }
 
-            templateVariables.issueTitle = tasksFullDetails.taskName || taskDetails?.issueTitle;
+            templateVariables.issueTitle = taskName;
             templateVariables.issueComments = taskDetails?.issueComments;
-            templateVariables.amountOfComments = `${taskDetails?.issueComments.length || 0} messages`;
+            templateVariables.amountOfComments = taskDetails.task_type === 'PRIVATE' ? '' : `${taskDetails?.issueComments.length || 0} messages`;
 
             let nodePath = null;
             const currentTaskData = this.allTasksData.find((element) => String(element.taskId) === String(taskDetails.taskId));
@@ -1611,7 +1613,7 @@ class CleanTalkWidgetDoboard {
                     : taskFormattedPageUrl;
             }
 
-            if (isPageUrlString || issueLinkElement) {
+            if (meta && (isPageUrlString || issueLinkElement)) {
                 if (meta.pageURL && meta.pageURL === window.location.href && meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath)) {
                     templateVariables.taskFormattedPageUrl = `<span>The link to the content has been lost because the content was changed, deleted, or moved to another URL.</span>`;
                 } else if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
@@ -1743,6 +1745,11 @@ class CleanTalkWidgetDoboard {
             } else {
                 issuesCommentsContainer.innerHTML = ksesFilter('No comments');
             }
+            if(taskDetails.task_type === 'PRIVATE'){
+                issuesCommentsContainer.innerHTML = `<span style="text-align: center">
+            This Spot is not available for public viewing. To share it publicly, enable public access in doBoard.com → 
+            Project → Board → Task Settings. Once enabled, the Spot will be accessible to anyone on the Internet.</span>`
+            }
 
             const mainThis = this;
             const fileUploader = this.fileUploader;
@@ -1807,13 +1814,23 @@ class CleanTalkWidgetDoboard {
                 const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
                 if (container) {
                     setTimeout(() => {
-                        container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+                        container.scrollTo({top: container.scrollHeight, behavior: 'smooth'});
                     }, 50);
                 }
             }
 
             hideContainersSpinner();
-            this.fileUploader.init();
+            if(taskDetails.task_type !== 'PRIVATE') this.fileUploader.init();
+
+            if (taskDetails.task_type === 'PRIVATE') {
+                const openSpotMenuButton = document.getElementById('openSpotMenuButton');
+                openSpotMenuButton.style.display = 'none';
+                const messageContainer = document.getElementById('spotfix_widget_task_send_message_container');
+                if (messageContainer) {
+                    messageContainer.style.pointerEvents = 'none';
+                    messageContainer.style.opacity = '0.6';
+                }
+            }
 
             this.concreteIssueCache[currentTaskId] = {
                 timestamp: Date.now(),

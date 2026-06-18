@@ -8086,6 +8086,9 @@ const spotfixApiCall = async (data, method, accountId = undefined) => {
             clearLocalstorageOnLogout();
             checkLogInOutButtonsVisible();
         }
+        if (responseBody.data.operation_message === "Access is denied"){
+            return {operation_message: "Access is denied"}
+        }
         throw new Error(errorMessage);
     }
 
@@ -8244,7 +8247,7 @@ const logoutUserDoboard = async (projectToken) => {
     }
 };
 
-const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, userId) => {
+const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, userId, taskId) => {
     const data = {
         session_id: sessionId,
         project_token: projectToken,
@@ -8254,24 +8257,37 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
     if ( userId ) {
         data.user_id = userId;
     }
+    if ( taskId ) {
+        data.task_id = taskId;
+    }
     const result = await spotfixApiCall(data, 'task_get', accountId);
-    const tasks = result.tasks.map((task) => ({
-        taskId: task.task_id,
-        taskTitle: task.name,
-        userId: task.user_id,
-        task_type: task.task_type,
-        commentsCount: task.comments_count,
-        taskLastUpdate: task.updated,
-        taskCreated: task.created,
-        taskCreatorTaskUser: task.creator_user_id,
-        taskMeta: task.meta,
-        taskStatus: task.status,
-        viewers: task.comments_viewers,
-        taskToken: task.token
-    }));
-    await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_TASKS, tasks);
-    storageSaveTasksCount(tasks);
-    return tasks;
+
+    if(result.operation_message === 'Access is denied'){
+        await spotfixIndexedDB.put(SPOTFIX_TABLE_TASKS, {taskId: taskId, task_type: 'PRIVATE', taskMeta:"{}"});
+        return [];
+    } else {
+        const tasks = result.tasks.map((task) => ({
+            taskId: task.task_id,
+            taskTitle: task.name,
+            userId: task.user_id,
+            task_type: task.task_type,
+            commentsCount: task.comments_count,
+            taskLastUpdate: task.updated,
+            taskCreated: task.created,
+            taskCreatorTaskUser: task.creator_user_id,
+            taskMeta: task.meta,
+            taskStatus: task.status,
+            viewers: task.comments_viewers,
+            taskToken: task.token
+        }));
+        if(taskId){
+            await spotfixIndexedDB.put(SPOTFIX_TABLE_TASKS, tasks);
+        } else {
+            await spotfixIndexedDB.clearPut(SPOTFIX_TABLE_TASKS, tasks);
+        }
+        storageSaveTasksCount(tasks);
+        return tasks;
+    }
 };
 
 
@@ -8701,6 +8717,10 @@ async function getTasksFullDetails(params, tasks, currentActiveTaskId, nonReques
         if (!nonRequesting && currentActiveTaskId && +currentActiveTaskId !== 0) {
             await getTasksAttachmenDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
             await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
+            const tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+            if (!tasksData.find((item) => +item.taskId === +currentActiveTaskId)) {
+                await getTasksDoboard(params.projectToken, sessionId, params.accountId, params.projectId, null, +currentActiveTaskId);
+            }
         }
         const comments = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_COMMENTS);
         const attachments = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_ATTACHMENT);
@@ -8713,6 +8733,7 @@ async function getTasksFullDetails(params, tasks, currentActiveTaskId, nonReques
         return {
             comments: comments,
             users: users,
+            task_type: foundTask?.task_type,
             attachments: attachments,
             taskStatus: foundTask?.taskStatus,
             taskName: foundTask?.taskTitle,
@@ -10363,7 +10384,7 @@ class CleanTalkWidgetDoboard {
 
             this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
 
-            const tasks = this.allTasksData;
+            const tasks = this.allTasksData?.length ? this.allTasksData.filter(item => item.task_type !== 'PRIVATE') : [];
             tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId, this.nonRequesting);
 
             let spotsToBeHighlighted = [];
@@ -10837,14 +10858,16 @@ class CleanTalkWidgetDoboard {
             tasksFullDetails = await getTasksFullDetails(this.params, this.allTasksData, this.currentActiveTaskId, this.nonRequesting);
             const taskDetails = await getTaskFullDetails(tasksFullDetails, this.currentActiveTaskId, this.nonRequesting);
 
+            const taskName = taskDetails.task_type === 'PRIVATE' ? '' : tasksFullDetails.taskName || taskDetails?.issueTitle;
+
             const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
             if (issueTitleElement) {
-                issueTitleElement.innerText = ksesFilter(tasksFullDetails.taskName || taskDetails?.issueTitle);
+                issueTitleElement.innerText = ksesFilter(taskName);
             }
 
-            templateVariables.issueTitle = tasksFullDetails.taskName || taskDetails?.issueTitle;
+            templateVariables.issueTitle = taskName;
             templateVariables.issueComments = taskDetails?.issueComments;
-            templateVariables.amountOfComments = `${taskDetails?.issueComments.length || 0} messages`;
+            templateVariables.amountOfComments = taskDetails.task_type === 'PRIVATE' ? '' : `${taskDetails?.issueComments.length || 0} messages`;
 
             let nodePath = null;
             const currentTaskData = this.allTasksData.find((element) => String(element.taskId) === String(taskDetails.taskId));
@@ -10871,7 +10894,7 @@ class CleanTalkWidgetDoboard {
                     : taskFormattedPageUrl;
             }
 
-            if (isPageUrlString || issueLinkElement) {
+            if (meta && (isPageUrlString || issueLinkElement)) {
                 if (meta.pageURL && meta.pageURL === window.location.href && meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath)) {
                     templateVariables.taskFormattedPageUrl = `<span>The link to the content has been lost because the content was changed, deleted, or moved to another URL.</span>`;
                 } else if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
@@ -11003,6 +11026,11 @@ class CleanTalkWidgetDoboard {
             } else {
                 issuesCommentsContainer.innerHTML = ksesFilter('No comments');
             }
+            if(taskDetails.task_type === 'PRIVATE'){
+                issuesCommentsContainer.innerHTML = `<span style="text-align: center">
+            This Spot is not available for public viewing. To share it publicly, enable public access in doBoard.com → 
+            Project → Board → Task Settings. Once enabled, the Spot will be accessible to anyone on the Internet.</span>`
+            }
 
             const mainThis = this;
             const fileUploader = this.fileUploader;
@@ -11067,13 +11095,23 @@ class CleanTalkWidgetDoboard {
                 const container = document.querySelector('.doboard_task_widget-concrete_issues-container');
                 if (container) {
                     setTimeout(() => {
-                        container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+                        container.scrollTo({top: container.scrollHeight, behavior: 'smooth'});
                     }, 50);
                 }
             }
 
             hideContainersSpinner();
-            this.fileUploader.init();
+            if(taskDetails.task_type !== 'PRIVATE') this.fileUploader.init();
+
+            if (taskDetails.task_type === 'PRIVATE') {
+                const openSpotMenuButton = document.getElementById('openSpotMenuButton');
+                openSpotMenuButton.style.display = 'none';
+                const messageContainer = document.getElementById('spotfix_widget_task_send_message_container');
+                if (messageContainer) {
+                    messageContainer.style.pointerEvents = 'none';
+                    messageContainer.style.opacity = '0.6';
+                }
+            }
 
             this.concreteIssueCache[currentTaskId] = {
                 timestamp: Date.now(),
@@ -12114,6 +12152,7 @@ function getTaskFullDetails(tasksDetails, taskId) {
         taskId: taskId,
         taskAuthorAvatarImgSrc: avatarSrc,
         taskAuthorName: authorName,
+        task_type: tasksDetails.task_type,
         lastMessageText: lastComment ? lastComment.commentBody : 'No messages yet',
         issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
         issueComments: comments
