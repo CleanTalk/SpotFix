@@ -410,16 +410,30 @@ class FileUploader {
 
     async makeScreenshot() {
         let blob = null;
+
+        let bgColor = window.getComputedStyle(document.body).backgroundColor;
+        if (bgColor === 'rgba(0, 0, 0, 0)' || bgColor === 'transparent') {
+            bgColor = '#ffffff';
+        }
+
         try {
             const domtoimageLib = await this.loadDomToImage();
             if (!domtoimageLib) throw new Error('domtoimageLib failed to load');
 
             blob = await domtoimageLib.toBlob(document.body, {
+                bgcolor: bgColor,
                 width: window.innerWidth,
                 height: window.innerHeight,
                 style: {
                     transform: `translate(${-window.scrollX}px, ${-window.scrollY}px)`,
+                    backgroundColor: bgColor
                 },
+                filter: (node) => {
+                    if (node.classList && node.classList.contains('doboard_task_widget')) {
+                        return false;
+                    }
+                    return true;
+                }
             });
 
             if (!blob) throw new Error('dom-to-image-more returned an empty result');
@@ -437,10 +451,22 @@ class FileUploader {
                     allowTaint: true,
                     logging: false,
                     scale: window.devicePixelRatio || 1,
+                    backgroundColor: bgColor,
                     x: window.scrollX,
                     y: window.scrollY,
                     width: window.innerWidth,
                     height: window.innerHeight,
+                    scrollX: 0,
+                    scrollY: 0,
+                    windowWidth: document.documentElement.offsetWidth,
+                    windowHeight: document.documentElement.offsetHeight,
+
+                    ignoreElements: (element) => {
+                        if (element.classList && element.classList.contains('doboard_task_widget')) {
+                            return true;
+                        }
+                        return false;
+                    }
                 });
 
                 blob = await new Promise(res => canvas.toBlob(res, 'image/png'));

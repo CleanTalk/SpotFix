@@ -238,6 +238,7 @@ function getTaskFullDetails(tasksDetails, taskId) {
         taskId: taskId,
         taskAuthorAvatarImgSrc: avatarSrc,
         taskAuthorName: authorName,
+        task_type: tasksDetails.task_type,
         lastMessageText: lastComment ? lastComment.commentBody : 'No messages yet',
         issueTitle: comments.length > 0 ? comments[0].issueTitle : 'No Title',
         issueComments: comments

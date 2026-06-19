@@ -42,12 +42,25 @@ async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
     return createdTask;
 }
 
-async function getTasksFullDetails(params, tasks, currentActiveTaskId, nonRequesting = false) {
+async function getTasksFullDetails(params, tasksList, currentActiveTaskId, nonRequesting = false) {
+    let tasks = tasksList;
     if (tasks.length > 0) {
         const sessionId = localStorage.getItem('spotfix_session_id');
         if (!nonRequesting && currentActiveTaskId && +currentActiveTaskId !== 0) {
-            await getTasksAttachmenDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
-            await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
+            const tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+            if (!tasksData.find((item) => +item.taskId === +currentActiveTaskId)) {
+                await getTasksDoboard(params.projectToken, sessionId, params.accountId, params.projectId, null, +currentActiveTaskId)
+                    .then(async (ans) => {
+                        if (ans) {
+                            await getTasksAttachmenDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
+                            await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
+                        }
+                        tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+                    });
+            } else {
+                await getTasksAttachmenDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
+                await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
+            }
         }
         const comments = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_COMMENTS);
         const attachments = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_ATTACHMENT);
@@ -60,6 +73,7 @@ async function getTasksFullDetails(params, tasks, currentActiveTaskId, nonReques
         return {
             comments: comments,
             users: users,
+            task_type: foundTask?.task_type,
             attachments: attachments,
             taskStatus: foundTask?.taskStatus,
             taskName: foundTask?.taskTitle,
