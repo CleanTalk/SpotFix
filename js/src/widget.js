@@ -1670,7 +1670,13 @@ class CleanTalkWidgetDoboard {
                             const attThumbnailUrl = att.URL_thumbnail || att.URL || '#';
                             const attIcon = SpotFixSVGLoader.getAttachmentIcon(attFilename, attUrl, attThumbnailUrl);
                             const attIsImage = this.isImageFile(attFilename);
-                            const attClass = attIsImage ? 'image-attachment' : '';
+                            const attIsText = this.isTextFile(attFilename);
+                            let attClass = '';
+                            if (attIsImage) {
+                                attClass = 'image-attachment';
+                            } else if (attIsText) {
+                                attClass = 'text-attachment';
+                            }
                             attachmentsHTML += this.loadTemplate('concrete_issue_attachment', {
                                 attachmentUrl: attUrl,
                                 attachmentFilename: attFilename,
@@ -2485,6 +2491,137 @@ class CleanTalkWidgetDoboard {
         return imageExtensions.includes(ext);
     }
 
+    isTextFile(filename) {
+        if (!filename) return false;
+        const ext = filename.split('.').pop().toLowerCase();
+        const textExtensions = [
+            'js', 'ts', 'json', 'json5', 'yaml', 'yml', 'xml', 'md', 'toml',
+            'csv', 'html', 'css', 'scss', 'less', 'hbs', 'twig', 'php', 'py',
+            'java', 'c', 'cpp', 'cs', 'rb', 'rs', 'swift', 'kt', 'pl', 'r',
+            'lua', 'dockerfile', 'nginx', 'ini', 'bat', 'ps1', 'makefile',
+            'diff', 'tex', 'log', 'txt'
+        ];
+        return textExtensions.includes(ext);
+    }
+
+    getAceMode(filename) {
+        if (!filename) return 'text';
+        const ext = filename.split('.').pop().toLowerCase();
+        switch (ext) {
+        case 'js': return 'javascript';
+        case 'ts': return 'typescript';
+        case 'yaml': case 'yml': return 'yaml';
+        case 'md': return 'markdown';
+        case 'c': case 'cpp': return 'c_cpp';
+        case 'cs': return 'csharp';
+        case 'rb': return 'ruby';
+        case 'rs': return 'rust';
+        case 'kt': return 'kotlin';
+        case 'pl': return 'perl';
+        case 'bat': return 'batchfile';
+        case 'ps1': return 'powershell';
+        case 'tex': return 'latex';
+        case 'log': case 'txt': return 'text';
+        default: return ext;
+        }
+    }
+
+    async loadAceEditor() {
+        if (window.ace) return Promise.resolve();
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = "https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ace.js";
+            script.onload = () => {
+                window.ace.config.set('basePath', 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/');
+                resolve();
+            };
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    }
+
+    async showTextLightbox(fileUrl, fileName = 'file.txt') {
+        this.hideImageLightbox();
+
+        let fileContent = "Loading...";
+        try {
+            const response = await fetch(fileUrl);
+            if (response.ok) {
+                fileContent = await response.text();
+            } else {
+                fileContent = "Failed to load file.";
+            }
+        } catch (e) {
+            fileContent = "Error fetching file.";
+        }
+
+        const closeIconSrc = this.srcVariables.buttonCloseScreen;
+
+        const lightboxHTML = `
+            <div id="doboard_task_widget-lightbox" class="doboard_task_widget-lightbox-text active">
+                <div class="doboard_task_widget-lightbox-text-overlay"></div>
+                
+                <div class="doboard_task_widget-lightbox-text-wrapper">
+                    <button class="doboard_task_widget-lightbox-text-close">
+                        <img src="${closeIconSrc}" alt="Close" />
+                    </button>
+                    
+                    <div class="doboard_task_widget-lightbox-text-content">
+                        <div class="doboard_task_widget-lightbox-text-header">
+                            ${this.escapeHtml(fileName)}
+                        </div>
+                        
+                        <div id="ace-editor-container" class="doboard_task_widget-lightbox-text-editor"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = lightboxHTML;
+        const lightbox = tempDiv.firstElementChild;
+        document.body.appendChild(lightbox);
+
+        const closeBtn = lightbox.querySelector('.doboard_task_widget-lightbox-text-close');
+        const overlay = lightbox.querySelector('.doboard_task_widget-lightbox-text-overlay');
+
+        const escHandler = (e) => {
+            if (e.key === 'Escape') {
+                closeHandler();
+            }
+        };
+        const closeHandler = () => {
+            this.hideImageLightbox();
+            document.removeEventListener('keydown', escHandler);
+        };
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeHandler);
+        }
+        if (overlay) {
+            overlay.addEventListener('click', closeHandler);
+        }
+        document.addEventListener('keydown', escHandler);
+
+        await this.loadAceEditor();
+
+        if (window.ace) {
+            const editor = window.ace.edit("ace-editor-container");
+            editor.setTheme("ace/theme/github");
+            const mode = this.getAceMode(fileName);
+            editor.session.setMode("ace/mode/" + mode);
+            editor.setValue(fileContent, -1);
+            editor.setReadOnly(true);
+            editor.setShowPrintMargin(false);
+        } else {
+            const container = document.getElementById('ace-editor-container');
+            container.style.overflow = 'auto';
+            container.style.padding = '16px';
+            container.style.fontFamily = 'monospace';
+            container.style.whiteSpace = 'pre-wrap';
+            container.innerText = fileContent;
+        }
+    }
+
     /**
      * Show image in lightbox
      * @param {string} imageUrl - The image URL to show
@@ -2557,10 +2694,14 @@ class CleanTalkWidgetDoboard {
                 e.stopPropagation();
                 const fileUrl = newItem.getAttribute('data-attachment-url');
                 const fileName = newItem.querySelector('.doboard_task_widget-attachment_filename')?.textContent || 'file';
+
                 const isImage = newItem.classList.contains('image-attachment');
+                const isText = newItem.classList.contains('text-attachment');
 
                 if (isImage && fileUrl) {
                     this.showImageLightbox(fileUrl, fileName);
+                } else if (isText && fileUrl) {
+                    this.showTextLightbox(fileUrl, fileName);
                 } else if (fileUrl) {
                     this.downloadFile(fileUrl, fileName);
                 }
