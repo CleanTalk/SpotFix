@@ -2541,20 +2541,20 @@ class CleanTalkWidgetDoboard {
         const closeIconSrc = this.srcVariables.buttonCloseScreen;
 
         const lightboxHTML = `
-            <div id="doboard_task_widget-lightbox" class="doboard_task_widget-lightbox active">
-                <div class="doboard_task_widget-lightbox-overlay"></div>
+            <div id="doboard_task_widget-lightbox" class="doboard_task_widget-lightbox-text active">
+                <div class="doboard_task_widget-lightbox-text-overlay"></div>
                 
-                <div class="doboard_task_widget-lightbox-wrapper">
-                    <button class="doboard_task_widget-lightbox-close">
+                <div class="doboard_task_widget-lightbox-text-wrapper">
+                    <button class="doboard_task_widget-lightbox-text-close">
                         <img src="${closeIconSrc}" alt="Close" />
                     </button>
                     
-                    <div class="doboard_task_widget-lightbox-content">
-                        <div class="doboard_task_widget-lightbox-header">
+                    <div class="doboard_task_widget-lightbox-text-content">
+                        <div class="doboard_task_widget-lightbox-text-header">
                             ${this.escapeHtml(fileName)}
                         </div>
                         
-                        <div id="ace-editor-container" class="doboard_task_widget-lightbox-editor"></div>
+                        <div id="ace-editor-container" class="doboard_task_widget-lightbox-text-editor"></div>
                     </div>
                 </div>
             </div>
@@ -2565,22 +2565,24 @@ class CleanTalkWidgetDoboard {
         const lightbox = tempDiv.firstElementChild;
         document.body.appendChild(lightbox);
 
-        const closeBtn = lightbox.querySelector('.doboard_task_widget-lightbox-close');
-        const overlay = lightbox.querySelector('.doboard_task_widget-lightbox-overlay');
-
-        const closeHandler = () => this.hideImageLightbox();
-
-        if (closeBtn) {
-            closeBtn.addEventListener('click', closeHandler);
-        }
-        if (overlay) overlay.addEventListener('click', closeHandler);
+        const closeBtn = lightbox.querySelector('.doboard_task_widget-lightbox-text-close');
+        const overlay = lightbox.querySelector('.doboard_task_widget-lightbox-text-overlay');
 
         const escHandler = (e) => {
             if (e.key === 'Escape') {
-                this.hideImageLightbox();
-                document.removeEventListener('keydown', escHandler);
+                closeHandler();
             }
         };
+        const closeHandler = () => {
+            this.hideImageLightbox();
+            document.removeEventListener('keydown', escHandler);
+        };
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeHandler);
+        }
+        if (overlay) {
+            overlay.addEventListener('click', closeHandler);
+        }
         document.addEventListener('keydown', escHandler);
 
         await this.loadAceEditor();

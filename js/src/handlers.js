@@ -460,7 +460,7 @@ function formatToDotMonthDate(dateString) {
         const year = date.getFullYear();
 
         return `${day}.${month}.${year}`;
-    }
+    } else return '';
 }
 
 function getSafeUrl(url) {
