@@ -452,13 +452,15 @@ function addIconPack() {
 }
 
 function formatToDotMonthDate(dateString) {
-    const date = new Date(dateString.replace(' ', 'T'));
+    if (dateString) {
+        const date = new Date(dateString.replace(' ', 'T'));
 
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = date.toLocaleString('en-GB', {month: 'short'});
-    const year = date.getFullYear();
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = date.toLocaleString('en-GB', {month: 'short'});
+        const year = date.getFullYear();
 
-    return `${day}.${month}.${year}`;
+        return `${day}.${month}.${year}`;
+    } else return '';
 }
 
 function getSafeUrl(url) {
