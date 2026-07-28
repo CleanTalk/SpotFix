@@ -9554,6 +9554,14 @@ class CleanTalkWidgetDoboard {
                 submitButton.disabled = true;
                 submitButton.innerText = ksesFilter('Creating spot...');
 
+                if (this.fileUploader && typeof this.fileUploader.makeScreenshot === 'function') {
+                    try {
+                        await this.fileUploader.makeScreenshot();
+                    } catch (screenshotError) {
+                        console.error('Failed to capture automatic screenshot:', screenshotError);
+                    }
+                }
+
                 let taskDetails = {
                     taskTitle: taskTitle,
                     taskDescription: taskDescription,
