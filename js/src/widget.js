@@ -262,14 +262,6 @@ class CleanTalkWidgetDoboard {
                 submitButton.disabled = true;
                 submitButton.innerText = ksesFilter('Creating spot...');
 
-                if (this.fileUploader && typeof this.fileUploader.makeScreenshot === 'function') {
-                    try {
-                        await this.fileUploader.makeScreenshot();
-                    } catch (screenshotError) {
-                        console.error('Failed to capture automatic screenshot:', screenshotError);
-                    }
-                }
-
                 let taskDetails = {
                     taskTitle: taskTitle,
                     taskDescription: taskDescription,
@@ -947,6 +939,19 @@ class CleanTalkWidgetDoboard {
 
                 this.fileUploader = new FileUploader(this.escapeHtml);
                 this.fileUploader.init();
+
+                if (!this.nonRequesting && typeof this.fileUploader.makeScreenshot === 'function') {
+                    const originalDisplay = widgetContainer.style.display;
+                    widgetContainer.style.display = 'none';
+
+                    try {
+                        await this.fileUploader.makeScreenshot();
+                    } catch (screenshotError) {
+                        console.error('SpotFix: Failed to capture automatic screenshot on open:', screenshotError);
+                    } finally {
+                        widgetContainer.style.display = originalDisplay;
+                    }
+                }
 
                 const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
                 const fileUploaderDesc = this.fileUploader;
