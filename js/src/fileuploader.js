@@ -409,6 +409,11 @@ class FileUploader {
      }
 
     async makeScreenshot() {
+        if (this.files.length >= this.maxFiles || this.getTotalSize() >= this.maxTotalSize) {
+            console.log('SpotFix: File count or total size limit reached. Automatic screenshot cancelled.');
+            return;
+        }
+
         let blob = null;
 
         let bgColor = window.getComputedStyle(document.body).backgroundColor;
@@ -493,12 +498,16 @@ class FileUploader {
                 lastModified: Date.now(),
             });
 
-            if (this.uploaderWrapper && this.uploaderWrapper.style.display !== 'block') {
-                this.uploaderWrapper.style.display = 'block';
-            }
+            if (this.validateFile(file)) {
+                if (this.uploaderWrapper && this.uploaderWrapper.style.display !== 'block') {
+                    this.uploaderWrapper.style.display = 'block';
+                }
 
-            this.clearError();
-            this.addFile(file);
+                this.clearError();
+                this.addFile(file);
+            } else {
+                console.warn('SpotFix: Automatic screenshot was not added because the total file size would exceed the limit.');
+            }
         }
     }
 }
