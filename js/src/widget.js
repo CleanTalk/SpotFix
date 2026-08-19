@@ -937,10 +937,16 @@ class CleanTalkWidgetDoboard {
                 this.bindCreateTaskEvents(this);
                 this.bindShowLoginFormEvents();
 
-                this.fileUploader = new FileUploader(this.escapeHtml);
-                this.fileUploader.init();
+                this.fileUploader = new FileUploader(this?.escapeHtml);
+                if (this?.fileUploader) {
+                    try {
+                        this.fileUploader.init();
+                    } catch (error) {
+                        console.warn('File uploader init error:', error.message);
+                    }
+                }
 
-                if (!this.nonRequesting && typeof this.fileUploader.makeScreenshot === 'function') {
+                if (!this?.nonRequesting && this?.fileUploader?.makeScreenshot && typeof this?.fileUploader?.makeScreenshot === 'function') {
                     const originalDisplay = widgetContainer.style.display;
                     widgetContainer.style.display = 'none';
 
