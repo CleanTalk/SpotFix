@@ -13812,6 +13812,42 @@ class FileUploader {
          });
      }
 
+    isPageSafeForDomToImage() {
+        const currentOrigin = window.location.origin;
+
+        for (let i = 0; i < document.styleSheets.length; i++) {
+            const sheet = document.styleSheets[i];
+            try {
+                const rules = sheet.cssRules;
+            } catch (e) {
+                if (e.name === 'SecurityError') {
+                    return false;
+                }
+            }
+        }
+
+        const images = document.querySelectorAll('img');
+        for (let i = 0; i < images.length; i++) {
+            const img = images[i];
+            try {
+                if (img.src && img.src.startsWith('http')) {
+                    const url = new URL(img.src);
+                    if (url.origin !== currentOrigin && !img.crossOrigin) {
+                        return false;
+                    }
+                }
+            } catch (e){
+                return null;
+            }
+        }
+
+        if (document.querySelectorAll('iframe').length > 0) {
+            return false;
+        }
+
+        return true;
+    }
+
     async makeScreenshot() {
         if (!this.files || !Array.isArray(this.files) || this.files.length >= this.maxFiles) {
             console.log('SpotFix: File count limit reached.');
@@ -13827,60 +13863,76 @@ class FileUploader {
         let bgColor = window.getComputedStyle(document.body).backgroundColor;
         if (bgColor === 'rgba(0, 0, 0, 0)' || bgColor === 'transparent') bgColor = '#ffffff';
 
-        const currentOrigin = window.location.origin;
-        const transparentPixel = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+        const isSafe = this.isPageSafeForDomToImage();
 
-        try {
-            if (typeof html2canvas === 'undefined') {
-                throw new Error('html2canvas is not defined');
-            }
-
-            const canvas = await html2canvas(document.body, {
-                useCORS: true,
-                allowTaint: false,
-                logging: false,
-                backgroundColor: bgColor,
-                scale: window.devicePixelRatio || 1,
-                onclone: (clonedDoc) => {
-                    const links = clonedDoc.querySelectorAll('link[rel="stylesheet"]');
-                    links.forEach(link => {
-                        try {
-                            if (link.href && link.href.includes('fonts.googleapis.com')) {
-                                link.remove();
-                            } else if (link.sheet) {
-                                const rules = link.sheet.cssRules;
-                            }
-                        } catch (e) {
-                            link.remove();
+        if (isSafe) {
+            try {
+                const domtoimageLib = await this.loadDomToImage();
+                if (domtoimageLib) {
+                    blob = await domtoimageLib.toBlob(document.body, {
+                        bgcolor: bgColor,
+                        width: window.innerWidth,
+                        height: window.innerHeight,
+                        style: {
+                            transform: `translate(${-window.scrollX}px, ${-window.scrollY}px)`,
+                            backgroundColor: bgColor
+                        },
+                        filter: (node) => {
+                            if (node.classList && node.classList.contains('doboard_task_widget')) return false;
+                            return true;
                         }
                     });
-
-                    const images = clonedDoc.querySelectorAll('img');
-                    images.forEach(img => {
-                        try {
-                            if (img.src && img.src.startsWith('http')) {
-                                const url = new URL(img.src);
-                                if (url.origin !== currentOrigin && !img.crossOrigin) {
-                                    img.src = transparentPixel;
-                                    img.removeAttribute('srcset');
-                                }
-                            }
-                        } catch(e) {
-                            img.remove();
-                        }
-                    });
-
-                    clonedDoc.querySelectorAll('iframe').forEach(ifr => ifr.remove());
-                    clonedDoc.querySelectorAll('.doboard_task_widget').forEach(w => w.style.display = 'none');
                 }
-            });
+            } catch (error) {
+                console.warn('SpotFix: dom-to-image-more failed despite safety check.', error);
+                blob = null;
+            }
+        }
 
-            blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
-            if (!blob) throw new Error('html2canvas returned empty canvas');
+        if (!blob) {
+            try {
+                if (typeof html2canvas === 'undefined') throw new Error('html2canvas is not defined');
 
-        } catch (error) {
-            console.error('SpotFix: html2canvas failed.', error);
-            return null;
+                if (document.fonts && document.fonts.ready) await document.fonts.ready;
+
+                const canvas = await html2canvas(document.body, {
+                    useCORS: true,
+                    allowTaint: false,
+                    logging: false,
+                    backgroundColor: bgColor,
+                    scale: window.devicePixelRatio > 1 ? window.devicePixelRatio : 2,
+                    x: window.scrollX,
+                    y: window.scrollY,
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    windowWidth: document.documentElement.offsetWidth,
+                    windowHeight: document.documentElement.offsetHeight,
+                    onclone: (clonedDoc) => {
+                        const currentOrigin = window.location.origin;
+                        const transparentPixel = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+                        clonedDoc.querySelectorAll('img').forEach(img => {
+                            try {
+                                if (img.src && img.src.startsWith('http')) {
+                                    const url = new URL(img.src);
+                                    if (url.origin !== currentOrigin && !img.crossOrigin) {
+                                        img.src = transparentPixel;
+                                        img.removeAttribute('srcset');
+                                    }
+                                }
+                            } catch(e) {}
+                        });
+                        clonedDoc.querySelectorAll('iframe').forEach(ifr => ifr.remove());
+                        clonedDoc.querySelectorAll('.doboard_task_widget').forEach(w => w.style.display = 'none');
+                    }
+                });
+
+                blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+                if (!blob) throw new Error('html2canvas returned empty canvas');
+
+            } catch (error) {
+                return null;
+            }
         }
 
         if (blob) {
