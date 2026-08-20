@@ -417,119 +417,84 @@ class FileUploader {
 
     async makeScreenshot() {
         if (!this.files || !Array.isArray(this.files) || this.files.length >= this.maxFiles) {
-            console.log('SpotFix: File count limit reached or file uploader is not fully initialized.');
+            console.log('SpotFix: File count limit reached.');
             return;
         }
 
         if (typeof this.getTotalSize === 'function' && this.getTotalSize() >= this.maxTotalSize) {
-            console.log('SpotFix: File count or total size limit reached. Automatic screenshot cancelled.');
+            console.log('SpotFix: Size limit reached.');
             return;
         }
 
         let blob = null;
-
         let bgColor = window.getComputedStyle(document.body).backgroundColor;
-        if (bgColor === 'rgba(0, 0, 0, 0)' || bgColor === 'transparent') {
-            bgColor = '#ffffff';
-        }
+        if (bgColor === 'rgba(0, 0, 0, 0)' || bgColor === 'transparent') bgColor = '#ffffff';
+
+        const currentOrigin = window.location.origin;
+        const transparentPixel = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
         try {
-            const domtoimageLib = await this.loadDomToImage();
-            if (!domtoimageLib) throw new Error('domtoimageLib failed to load');
+            if (typeof html2canvas === 'undefined') {
+                throw new Error('html2canvas is not defined');
+            }
 
-            blob = await domtoimageLib.toBlob(document.body, {
-                bgcolor: bgColor,
-                width: window.innerWidth,
-                height: window.innerHeight,
-                style: {
-                    transform: `translate(${-window.scrollX}px, ${-window.scrollY}px)`,
-                    backgroundColor: bgColor
-                },
-                filter: (node) => {
-                    if (node.classList && node.classList.contains('doboard_task_widget')) {
-                        return false;
-                    }
-                    return true;
+            const canvas = await html2canvas(document.body, {
+                useCORS: true,
+                allowTaint: false,
+                logging: false,
+                backgroundColor: bgColor,
+                scale: window.devicePixelRatio || 1,
+                onclone: (clonedDoc) => {
+                    const links = clonedDoc.querySelectorAll('link[rel="stylesheet"]');
+                    links.forEach(link => {
+                        try {
+                            if (link.href && link.href.includes('fonts.googleapis.com')) {
+                                link.remove();
+                            } else if (link.sheet) {
+                                const rules = link.sheet.cssRules;
+                            }
+                        } catch (e) {
+                            link.remove();
+                        }
+                    });
+
+                    const images = clonedDoc.querySelectorAll('img');
+                    images.forEach(img => {
+                        try {
+                            if (img.src && img.src.startsWith('http')) {
+                                const url = new URL(img.src);
+                                if (url.origin !== currentOrigin && !img.crossOrigin) {
+                                    img.src = transparentPixel;
+                                    img.removeAttribute('srcset');
+                                }
+                            }
+                        } catch(e) {
+                            img.remove();
+                        }
+                    });
+
+                    clonedDoc.querySelectorAll('iframe').forEach(ifr => ifr.remove());
+                    clonedDoc.querySelectorAll('.doboard_task_widget').forEach(w => w.style.display = 'none');
                 }
             });
 
-            if (!blob) throw new Error('dom-to-image-more returned an empty result');
+            blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+            if (!blob) throw new Error('html2canvas returned empty canvas');
 
-        } catch (primaryError) {
-            console.warn('SpotFix: dom-to-image-more failed, trying html2canvas...', primaryError);
-
-            try {
-                if (typeof html2canvas === 'undefined') {
-                    throw new Error('html2canvas is not defined in the global scope');
-                }
-
-                const canvas = await html2canvas(document.body, {
-                    useCORS: true,
-                    allowTaint: true,
-                    logging: false,
-                    scale: window.devicePixelRatio || 1,
-                    backgroundColor: bgColor,
-                    x: window.scrollX,
-                    y: window.scrollY,
-                    width: window.innerWidth,
-                    height: window.innerHeight,
-                    scrollX: 0,
-                    scrollY: 0,
-                    windowWidth: document.documentElement.offsetWidth,
-                    windowHeight: document.documentElement.offsetHeight,
-
-                    ignoreElements: (element) => {
-                        if (element.classList && element.classList.contains('doboard_task_widget')) {
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-
-                blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
-
-                if (!blob) throw new Error('html2canvas returned an empty canvas');
-
-            } catch (fallbackError) {
-                console.error('SpotFix Error: Both screenshot libraries failed.', fallbackError);
-                return null;
-            }
+        } catch (error) {
+            console.error('SpotFix: html2canvas failed.', error);
+            return null;
         }
 
         if (blob) {
             const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const year = now.getFullYear();
-            const fileName = `Screenshot_${hours}-${minutes}_${day}_${month}_${year}.png`;
-
-            const file = new File([blob], fileName, {
-                type: 'image/png',
-                lastModified: Date.now(),
-            });
+            const fileName = `Screenshot_${now.getHours()}-${now.getMinutes()}_${now.getDate()}_${now.getMonth() + 1}_${now.getFullYear()}.png`;
+            const file = new File([blob], fileName, { type: 'image/png', lastModified: Date.now() });
 
             if (typeof this.validateFile === 'function' && this.validateFile(file)) {
-
-                if (this.uploaderWrapper && this.uploaderWrapper.style && this.uploaderWrapper.style.display !== 'block') {
-                    this.uploaderWrapper.style.display = 'block';
-                }
-
-                if (typeof this.clearError === 'function') {
-                    this.clearError();
-                }
-
-                try {
-                    if (typeof this.addFile === 'function') {
-                        this.addFile(file);
-                    }
-                } catch (addFileError) {
-                    console.warn('SpotFix: Cannot add screenshot to DOM (uploader elements missing)', addFileError.message);
-                }
-
-            } else {
-                console.warn('SpotFix: Automatic screenshot was not added because the total file size would exceed the limit.');
+                if (this.uploaderWrapper?.style) this.uploaderWrapper.style.display = 'block';
+                if (typeof this.clearError === 'function') this.clearError();
+                if (typeof this.addFile === 'function') this.addFile(file);
             }
         }
     }
