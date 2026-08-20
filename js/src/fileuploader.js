@@ -35,6 +35,11 @@ class FileUploader {
      */
     init() {
         this.initializeElements();
+
+        if (!this.uploaderWrapper) {
+            return;
+        }
+
         this.bindFilesInputChange();
     }
 
@@ -104,7 +109,9 @@ class FileUploader {
         event.target.value = '';
 
         // show wrapper
-        this.uploaderWrapper.style.display = 'block';
+        if (this.uploaderWrapper && this.uploaderWrapper.style) {
+            this.uploaderWrapper.style.display = 'block';
+        }
     }
 
     /**
