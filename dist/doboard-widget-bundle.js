@@ -10229,10 +10229,16 @@ class CleanTalkWidgetDoboard {
                 this.bindCreateTaskEvents(this);
                 this.bindShowLoginFormEvents();
 
-                this.fileUploader = new FileUploader(this.escapeHtml);
-                this.fileUploader.init();
+                this.fileUploader = new FileUploader(this?.escapeHtml);
+                if (this?.fileUploader) {
+                    try {
+                        this.fileUploader.init();
+                    } catch (error) {
+                        console.warn('File uploader init error:', error.message);
+                    }
+                }
 
-                if (!this.nonRequesting && typeof this.fileUploader.makeScreenshot === 'function') {
+                if (!this?.nonRequesting && this?.fileUploader?.makeScreenshot && typeof this?.fileUploader?.makeScreenshot === 'function') {
                     const originalDisplay = widgetContainer.style.display;
                     widgetContainer.style.display = 'none';
 
@@ -13426,6 +13432,11 @@ class FileUploader {
      */
     init() {
         this.initializeElements();
+
+        if (!this.uploaderWrapper) {
+            return;
+        }
+
         this.bindFilesInputChange();
     }
 
@@ -13445,7 +13456,7 @@ class FileUploader {
         /** @type {HTMLElement|null} */
         this.errorMessage = document.getElementById('doboard_task_widget__file-upload__error');
 
-        if (!this.fileInput || !this.fileList || !this.errorMessage || this.uploaderWrapper) {
+        if (!this.fileInput || !this.fileList || !this.errorMessage || !this.uploaderWrapper) {
             console.warn('File uploader elements not found');
         }
     }
@@ -13495,7 +13506,9 @@ class FileUploader {
         event.target.value = '';
 
         // show wrapper
-        this.uploaderWrapper.style.display = 'block';
+        if (this.uploaderWrapper && this.uploaderWrapper.style) {
+            this.uploaderWrapper.style.display = 'block';
+        }
     }
 
     /**
@@ -13800,7 +13813,12 @@ class FileUploader {
      }
 
     async makeScreenshot() {
-        if (this.files.length >= this.maxFiles || this.getTotalSize() >= this.maxTotalSize) {
+        if (!this.files || !Array.isArray(this.files) || this.files.length >= this.maxFiles) {
+            console.log('SpotFix: File count limit reached or file uploader is not fully initialized.');
+            return;
+        }
+
+        if (typeof this.getTotalSize === 'function' && this.getTotalSize() >= this.maxTotalSize) {
             console.log('SpotFix: File count or total size limit reached. Automatic screenshot cancelled.');
             return;
         }
@@ -13889,13 +13907,24 @@ class FileUploader {
                 lastModified: Date.now(),
             });
 
-            if (this.validateFile(file)) {
-                if (this.uploaderWrapper && this.uploaderWrapper.style.display !== 'block') {
+            if (typeof this.validateFile === 'function' && this.validateFile(file)) {
+
+                if (this.uploaderWrapper && this.uploaderWrapper.style && this.uploaderWrapper.style.display !== 'block') {
                     this.uploaderWrapper.style.display = 'block';
                 }
 
-                this.clearError();
-                this.addFile(file);
+                if (typeof this.clearError === 'function') {
+                    this.clearError();
+                }
+
+                try {
+                    if (typeof this.addFile === 'function') {
+                        this.addFile(file);
+                    }
+                } catch (addFileError) {
+                    console.warn('SpotFix: Cannot add screenshot to DOM (uploader elements missing)', addFileError.message);
+                }
+
             } else {
                 console.warn('SpotFix: Automatic screenshot was not added because the total file size would exceed the limit.');
             }
