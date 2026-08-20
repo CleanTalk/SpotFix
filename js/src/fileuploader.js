@@ -415,42 +415,6 @@ class FileUploader {
          });
      }
 
-    isPageSafeForDomToImage() {
-        const currentOrigin = window.location.origin;
-
-        for (let i = 0; i < document.styleSheets.length; i++) {
-            const sheet = document.styleSheets[i];
-            try {
-                const rules = sheet.cssRules;
-            } catch (e) {
-                if (e.name === 'SecurityError') {
-                    return false;
-                }
-            }
-        }
-
-        const images = document.querySelectorAll('img');
-        for (let i = 0; i < images.length; i++) {
-            const img = images[i];
-            try {
-                if (img.src && img.src.startsWith('http')) {
-                    const url = new URL(img.src);
-                    if (url.origin !== currentOrigin && !img.crossOrigin) {
-                        return false;
-                    }
-                }
-            } catch (e){
-                return null;
-            }
-        }
-
-        if (document.querySelectorAll('iframe').length > 0) {
-            return false;
-        }
-
-        return true;
-    }
-
     async makeScreenshot() {
         if (!this.files || !Array.isArray(this.files) || this.files.length >= this.maxFiles) {
             console.log('SpotFix: File count limit reached.');
@@ -466,30 +430,27 @@ class FileUploader {
         let bgColor = window.getComputedStyle(document.body).backgroundColor;
         if (bgColor === 'rgba(0, 0, 0, 0)' || bgColor === 'transparent') bgColor = '#ffffff';
 
-        const isSafe = this.isPageSafeForDomToImage();
-
-        if (isSafe) {
-            try {
-                const domtoimageLib = await this.loadDomToImage();
-                if (domtoimageLib) {
-                    blob = await domtoimageLib.toBlob(document.body, {
-                        bgcolor: bgColor,
-                        width: window.innerWidth,
-                        height: window.innerHeight,
-                        style: {
-                            transform: `translate(${-window.scrollX}px, ${-window.scrollY}px)`,
-                            backgroundColor: bgColor
-                        },
-                        filter: (node) => {
-                            if (node.classList && node.classList.contains('doboard_task_widget')) return false;
-                            return true;
-                        }
-                    });
-                }
-            } catch (error) {
-                console.warn('SpotFix: dom-to-image-more failed despite safety check.', error);
-                blob = null;
+        try {
+            const domtoimageLib = await this.loadDomToImage();
+            if (domtoimageLib) {
+                blob = await domtoimageLib.toBlob(document.body, {
+                    bgcolor: bgColor,
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    style: {
+                        transform: `translate(${-window.scrollX}px, ${-window.scrollY}px)`,
+                        backgroundColor: bgColor
+                    },
+                    filter: (node) => {
+                        if (node.classList && node.classList.contains('doboard_task_widget')) return false;
+                        if (node.tagName === 'NOSCRIPT') return false;
+                        return true;
+                    }
+                });
             }
+        } catch (error) {
+            console.warn(error.message);
+            blob = null;
         }
 
         if (!blob) {
@@ -534,6 +495,7 @@ class FileUploader {
                 if (!blob) throw new Error('html2canvas returned empty canvas');
 
             } catch (error) {
+                console.error(error);
                 return null;
             }
         }
