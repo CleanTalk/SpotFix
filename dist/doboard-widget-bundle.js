@@ -13900,7 +13900,7 @@ class FileUploader {
                     allowTaint: false,
                     logging: false,
                     backgroundColor: bgColor,
-                    scale: window.devicePixelRatio > 1 ? window.devicePixelRatio : 2,
+                    scale: window.devicePixelRatio || 1,
                     x: window.scrollX,
                     y: window.scrollY,
                     width: window.innerWidth,
