@@ -448,7 +448,7 @@ class FileUploader {
             try {
                 const domtoimageLib = await this.loadDomToImage();
                 if (domtoimageLib) {
-                    blob = await domtoimageLib.toBlob(document.body, {
+                    blob = await domtoimageLib.toBlob(document.documentElement, {
                         bgcolor: bgColor,
                         width: window.innerWidth,
                         height: window.innerHeight,
@@ -498,8 +498,6 @@ class FileUploader {
                     y: window.scrollY,
                     width: window.innerWidth,
                     height: window.innerHeight,
-                    windowWidth: window.innerWidth,
-                    windowHeight: window.innerHeight,
 
                     onclone: (clonedDoc) => {
                         const transparentPixel = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
