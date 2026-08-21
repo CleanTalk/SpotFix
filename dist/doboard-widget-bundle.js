@@ -13829,45 +13829,54 @@ class FileUploader {
 
         const currentOrigin = window.location.origin;
 
-        try {
-            const domtoimageLib = await this.loadDomToImage();
-            if (domtoimageLib) {
-                blob = await domtoimageLib.toBlob(document.body, {
-                    bgcolor: bgColor,
-                    width: window.innerWidth,
-                    height: window.innerHeight,
-                    style: {
-                        transform: `translate(${-window.scrollX}px, ${-window.scrollY}px)`,
-                        backgroundColor: bgColor
-                    },
-                    filter: (node) => {
-                        if (node.classList && node.classList.contains('doboard_task_widget')) return false;
-                        if (node.tagName === 'NOSCRIPT' || node.tagName === 'IFRAME') return false;
-
-                        if (node.tagName === 'IMG' && node.src && node.src.startsWith('http')) {
-                            try {
-                                const url = new URL(node.src);
-                                if (url.origin !== currentOrigin && !node.crossOrigin) return false;
-                            } catch (e) {
-                                return false;
-                            }
-                        }
-
-                        if (node.tagName === 'LINK' && node.rel === 'stylesheet') {
-                            try {
-                                if (node.sheet && !node.sheet.cssRules) return false;
-                            } catch (e) {
-                                return false;
-                            }
-                        }
-
-                        return true;
-                    }
-                });
+        let hasCssCorsError = false;
+        for (let i = 0; i < document.styleSheets.length; i++) {
+            try {
+                const rules = document.styleSheets[i].cssRules;
+            } catch (e) {
+                if (e.name === 'SecurityError') {
+                    hasCssCorsError = true;
+                    break;
+                }
             }
-        } catch (error) {
-            console.warn(error.message);
-            blob = null;
+        }
+
+        if (!hasCssCorsError) {
+            try {
+                const domtoimageLib = await this.loadDomToImage();
+                if (domtoimageLib) {
+                    blob = await domtoimageLib.toBlob(document.body, {
+                        bgcolor: bgColor,
+                        width: window.innerWidth,
+                        height: window.innerHeight,
+                        style: {
+                            transform: `translate(${-window.scrollX}px, ${-window.scrollY}px)`,
+                            backgroundColor: bgColor
+                        },
+                        filter: (node) => {
+                            if (node.classList && node.classList.contains('doboard_task_widget')) return false;
+                            if (node.tagName === 'NOSCRIPT' || node.tagName === 'IFRAME') return false;
+
+                            if (node.tagName === 'IMG' && node.src && node.src.startsWith('http')) {
+                                try {
+                                    const url = new URL(node.src);
+                                    if (url.origin !== currentOrigin && !node.crossOrigin) return false;
+                                } catch (e) { return false; }
+                            }
+                            return true;
+                        }
+                    });
+
+                     if (blob && blob.size < 100) {
+                        blob = null;
+                    }
+                }
+            } catch (error) {
+                console.warn('SpotFix: dom-to-image failed.', error.message);
+                blob = null;
+            }
+        } else {
+            console.log('SpotFix: html2canvas.');
         }
 
         if (!blob) {
