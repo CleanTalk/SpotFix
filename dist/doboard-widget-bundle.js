@@ -13827,6 +13827,8 @@ class FileUploader {
         let bgColor = window.getComputedStyle(document.body).backgroundColor;
         if (bgColor === 'rgba(0, 0, 0, 0)' || bgColor === 'transparent') bgColor = '#ffffff';
 
+        const currentOrigin = window.location.origin;
+
         try {
             const domtoimageLib = await this.loadDomToImage();
             if (domtoimageLib) {
@@ -13840,7 +13842,25 @@ class FileUploader {
                     },
                     filter: (node) => {
                         if (node.classList && node.classList.contains('doboard_task_widget')) return false;
-                        if (node.tagName === 'NOSCRIPT') return false;
+                        if (node.tagName === 'NOSCRIPT' || node.tagName === 'IFRAME') return false;
+
+                        if (node.tagName === 'IMG' && node.src && node.src.startsWith('http')) {
+                            try {
+                                const url = new URL(node.src);
+                                if (url.origin !== currentOrigin && !node.crossOrigin) return false;
+                            } catch (e) {
+                                return false;
+                            }
+                        }
+
+                        if (node.tagName === 'LINK' && node.rel === 'stylesheet') {
+                            try {
+                                if (node.sheet && !node.sheet.cssRules) return false;
+                            } catch (e) {
+                                return false;
+                            }
+                        }
+
                         return true;
                     }
                 });
@@ -13869,7 +13889,6 @@ class FileUploader {
                     windowWidth: document.documentElement.offsetWidth,
                     windowHeight: document.documentElement.offsetHeight,
                     onclone: (clonedDoc) => {
-                        const currentOrigin = window.location.origin;
                         const transparentPixel = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
                         clonedDoc.querySelectorAll('img').forEach(img => {
