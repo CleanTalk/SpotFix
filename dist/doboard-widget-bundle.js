@@ -13885,7 +13885,7 @@ class FileUploader {
 
                 if (document.fonts && document.fonts.ready) await document.fonts.ready;
 
-                const canvas = await html2canvas(document.body, {
+                const canvas = await html2canvas(document.documentElement, {
                     useCORS: true,
                     allowTaint: false,
                     logging: false,
@@ -13895,13 +13895,10 @@ class FileUploader {
                     y: window.scrollY,
                     width: window.innerWidth,
                     height: window.innerHeight,
-                    onclone: (clonedDoc) => {
-                        clonedDoc.documentElement.style.width = window.innerWidth + 'px';
-                        clonedDoc.documentElement.style.height = window.innerHeight + 'px';
-                        clonedDoc.body.style.width = window.innerWidth + 'px';
-                        clonedDoc.body.style.height = window.innerHeight + 'px';
-                        clonedDoc.body.style.minHeight = window.innerHeight + 'px';
+                    windowWidth: window.innerWidth,
+                    windowHeight: window.innerHeight,
 
+                    onclone: (clonedDoc) => {
                         const transparentPixel = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
                         clonedDoc.querySelectorAll('img').forEach(img => {
