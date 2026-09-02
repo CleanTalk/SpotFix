@@ -951,7 +951,14 @@ class CleanTalkWidgetDoboard {
                     widgetContainer.style.display = 'none';
 
                     try {
-                        await this.fileUploader.makeScreenshot();
+                        if (!this?.nonRequesting && this?.fileUploader?.makeScreenshot && typeof this?.fileUploader?.makeScreenshot === 'function') {
+                            setTimeout(() => {
+                                this.fileUploader.makeScreenshot().catch((screenshotError) => {
+                                    console.error('SpotFix: Failed to capture automatic screenshot on open:', screenshotError);
+                                });
+                            }, 300);
+
+                        }
                     } catch (screenshotError) {
                         console.error('SpotFix: Failed to capture automatic screenshot on open:', screenshotError);
                     } finally {
