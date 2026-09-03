@@ -8793,7 +8793,7 @@ async function getAllTasks(params, nonRequesting = false) {
     const sessionId = localStorage.getItem('spotfix_session_id') || '';
     let tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
 
-    if ((nonRequesting && (!tasksData || !tasksData.length)) || (!nonRequesting && (!tasksData || !tasksData.length) && !wsSpotfix.isActive())) {
+    if (!nonRequesting || (!tasksData || !tasksData.length) || !wsSpotfix.isActive()) {
         await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
         tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
     }
@@ -10239,16 +10239,13 @@ class CleanTalkWidgetDoboard {
                 }
 
                 if (!this?.nonRequesting && this?.fileUploader?.makeScreenshot && typeof this?.fileUploader?.makeScreenshot === 'function') {
-                    const originalDisplay = widgetContainer.style.display;
-                    widgetContainer.style.display = 'none';
 
-                    try {
-                        await this.fileUploader.makeScreenshot();
-                    } catch (screenshotError) {
-                        console.error('SpotFix: Failed to capture automatic screenshot on open:', screenshotError);
-                    } finally {
-                        widgetContainer.style.display = originalDisplay;
-                    }
+                    setTimeout(() => {
+                        this.fileUploader.makeScreenshot().catch((screenshotError) => {
+                            console.error('SpotFix: Failed to capture automatic screenshot on open:', screenshotError);
+                        });
+                    }, 300);
+
                 }
 
                 const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
@@ -10801,7 +10798,7 @@ class CleanTalkWidgetDoboard {
 
             const currentSessionId = localStorage.getItem('spotfix_session_id') || '';
             const isSessionStateValid = taskCache && (taskCache.sessionId === currentSessionId);
-            const isConcreteCacheValid = taskCache && (nowCI - taskCache.timestamp < 30000) && !this.nonRequesting && isSessionStateValid;
+            const isConcreteCacheValid = taskCache && (nowCI - taskCache.timestamp < 15000) && !this.nonRequesting && isSessionStateValid;
 
             if (isConcreteCacheValid) {
                 widgetContainer.innerHTML = taskCache.widgetHTML;
