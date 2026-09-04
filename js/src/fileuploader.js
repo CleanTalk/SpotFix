@@ -450,7 +450,7 @@ class FileUploader {
         }, 3000);
     }
 
-    async makeScreenshot(notShowErr=true) {
+    async makeScreenshot(showError = true) {
         if (!this.files || !Array.isArray(this.files) || this.files.length >= this.maxFiles) {
             console.log('SpotFix: File count limit reached.');
             return;
@@ -496,14 +496,14 @@ class FileUploader {
                 }
 
             } catch (error) {
-                if (notShowErr) {
+                if (showError) {
                     if (typeof this.showErrorNotification === 'function') {
                         this.showErrorNotification('Unable to take a screenshot due to the site\'s security settings (CORS).');
                     } else {
                         alert('Unable to take a screenshot due to the site\'s security settings (CORS).');
                     }
                 }
-                return;
+                throw new Error('Screenshot failed due to CORS');
             }
         } else {
             console.log('SpotFix: Fallback to html2canvas.');
@@ -546,7 +546,14 @@ class FileUploader {
 
             } catch (error) {
                 console.error(error);
-                return null;
+                if (showError) {
+                    if (typeof this.showErrorNotification === 'function') {
+                        this.showErrorNotification('Unable to take a screenshot due to the site\'s security settings (CORS).');
+                    } else {
+                        alert('Unable to take a screenshot due to the site\'s security settings (CORS).');
+                    }
+                }
+                throw error;
             }
         }
 
