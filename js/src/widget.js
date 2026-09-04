@@ -949,7 +949,7 @@ class CleanTalkWidgetDoboard {
                 if (!this?.nonRequesting && this?.fileUploader?.makeScreenshot && typeof this?.fileUploader?.makeScreenshot === 'function') {
 
                     setTimeout(() => {
-                        this.fileUploader.makeScreenshot().catch((screenshotError) => {
+                        this.fileUploader.makeScreenshot(false).catch((screenshotError) => {
                             console.error('SpotFix: Failed to capture automatic screenshot on open:', screenshotError);
                         });
                     }, 300);
