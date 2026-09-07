@@ -10241,7 +10241,7 @@ class CleanTalkWidgetDoboard {
                 if (!this?.nonRequesting && this?.fileUploader?.makeScreenshot && typeof this?.fileUploader?.makeScreenshot === 'function') {
 
                     setTimeout(() => {
-                        this.fileUploader.makeScreenshot().catch((screenshotError) => {
+                        this.fileUploader.makeScreenshot(false).catch((screenshotError) => {
                             console.error('SpotFix: Failed to capture automatic screenshot on open:', screenshotError);
                         });
                     }, 300);
@@ -13809,7 +13809,42 @@ class FileUploader {
          });
      }
 
-    async makeScreenshot() {
+    showErrorNotification(message) {
+        const toast = document.createElement('div');
+        toast.textContent = message;
+
+        Object.assign(toast.style, {
+            position: 'fixed',
+            bottom: '30px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: '#ff4d4f',
+            color: '#ffffff',
+            padding: '12px 24px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            zIndex: '999999',
+            fontFamily: 'sans-serif',
+            fontSize: '14px',
+            transition: 'opacity 0.3s ease, bottom 0.3s ease',
+            opacity: '0'
+        });
+
+        document.body.appendChild(toast);
+
+        requestAnimationFrame(() => {
+            toast.style.opacity = '1';
+            toast.style.bottom = '40px';
+        });
+
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.bottom = '30px';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    async makeScreenshot(showError = true) {
         if (!this.files || !Array.isArray(this.files) || this.files.length >= this.maxFiles) {
             console.log('SpotFix: File count limit reached.');
             return;
@@ -13825,58 +13860,47 @@ class FileUploader {
         if (bgColor === 'rgba(0, 0, 0, 0)' || bgColor === 'transparent') bgColor = '#ffffff';
 
         const currentOrigin = window.location.origin;
+        let domtoimageLib = null;
 
-        let hasCssCorsError = false;
-        for (let i = 0; i < document.styleSheets.length; i++) {
-            try {
-                const rules = document.styleSheets[i].cssRules;
-            } catch (e) {
-                if (e.name === 'SecurityError') {
-                    hasCssCorsError = true;
-                    break;
-                }
-            }
+        try {
+            domtoimageLib = await this.loadDomToImage();
+        } catch (e) {
+            console.warn('SpotFix: Failed to load dom-to-image library', e.message);
         }
 
-        if (!hasCssCorsError) {
+        if (domtoimageLib) {
             try {
-                const domtoimageLib = await this.loadDomToImage();
-                if (domtoimageLib) {
-                    blob = await domtoimageLib.toBlob(document.documentElement, {
-                        bgcolor: bgColor,
-                        width: window.innerWidth,
-                        height: window.innerHeight,
-                        style: {
-                            transform: `translate(${-window.scrollX}px, ${-window.scrollY}px)`,
-                            backgroundColor: bgColor
-                        },
-                        filter: (node) => {
-                            if (node.classList && node.classList.contains('doboard_task_widget')) return false;
-                            if (node.tagName === 'NOSCRIPT' || node.tagName === 'IFRAME') return false;
+                blob = await domtoimageLib.toBlob(document.documentElement, {
+                    bgcolor: bgColor,
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    style: {
+                        transform: `translate(${-window.scrollX}px, ${-window.scrollY}px)`,
+                        backgroundColor: bgColor
+                    },
+                    filter: (node) => {
+                        if (node.classList && node.classList.contains('doboard_task_widget')) return false;
+                        if (node.tagName === 'NOSCRIPT' || node.tagName === 'IFRAME') return false;
+                        return true;
+                    }
+                });
 
-                            if (node.tagName === 'IMG' && node.src && node.src.startsWith('http')) {
-                                try {
-                                    const url = new URL(node.src);
-                                    if (url.origin !== currentOrigin && !node.crossOrigin) return false;
-                                } catch (e) { return false; }
-                            }
-                            return true;
-                        }
-                    });
+                if (blob && blob.size < 100) {
+                    throw new Error('Blob is too small, render likely failed due to CORS');
+                }
 
-                    if (blob && blob.size < 100) {
-                        blob = null;
+            } catch (error) {
+                if (showError) {
+                    if (typeof this.showErrorNotification === 'function') {
+                        this.showErrorNotification('Unable to take a screenshot due to the site\'s security settings (CORS).');
+                    } else {
+                        alert('Unable to take a screenshot due to the site\'s security settings (CORS).');
                     }
                 }
-            } catch (error) {
-                console.warn('SpotFix: dom-to-image failed.', error.message);
-                blob = null;
+                throw new Error('Screenshot failed due to CORS');
             }
         } else {
-            console.log('SpotFix: html2canvas.');
-        }
-
-        if (!blob) {
+            console.log('SpotFix: Fallback to html2canvas.');
             try {
                 if (typeof html2canvas === 'undefined') throw new Error('html2canvas is not defined');
 
@@ -13895,7 +13919,6 @@ class FileUploader {
 
                     onclone: (clonedDoc) => {
                         const transparentPixel = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-
                         clonedDoc.querySelectorAll('img').forEach(img => {
                             try {
                                 if (img.src && img.src.startsWith('http')) {
@@ -13917,7 +13940,14 @@ class FileUploader {
 
             } catch (error) {
                 console.error(error);
-                return null;
+                if (showError) {
+                    if (typeof this.showErrorNotification === 'function') {
+                        this.showErrorNotification('Unable to take a screenshot due to the site\'s security settings (CORS).');
+                    } else {
+                        alert('Unable to take a screenshot due to the site\'s security settings (CORS).');
+                    }
+                }
+                throw error;
             }
         }
 
