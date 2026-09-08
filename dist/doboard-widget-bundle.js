@@ -13869,9 +13869,9 @@ class FileUploader {
         }
 
         if (domtoimageLib) {
-            console.log(1)
+            console.log(1);
             try {
-                blob = await domtoimageLib.toBlob(document.documentElement, {
+                const renderPromise = domtoimageLib.toBlob(document.documentElement, {
                     bgcolor: bgColor,
                     width: window.innerWidth,
                     height: window.innerHeight,
@@ -13885,24 +13885,31 @@ class FileUploader {
                         return true;
                     }
                 });
-                console.log(2)
+
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('Timeout: dom-to-image. CORS')), 15000);
+                });
+
+                blob = await Promise.race([renderPromise, timeoutPromise]);
+
+                console.log(2);
                 if (!blob || (blob && blob.size < 100)) {
-                    console.log(3)
+                    console.log(3);
                     throw new Error('Blob is null or too small, render likely failed due to CORS');
                 }
 
             } catch (error) {
-                console.log(4)
+                console.log(4, error.message);
                 if (showError) {
-                    console.log(5, this)
+                    console.log(5, this);
                     if (typeof this.showErrorNotification === 'function') {
-                        console.log(6)
+                        console.log(6);
                         this.showErrorNotification('Unable to take a screenshot due to the site\'s security settings (CORS).');
                     } else {
                         alert('Unable to take a screenshot due to the site\'s security settings (CORS).');
                     }
                 }
-                console.log(7)
+                console.log(7);
                 throw new Error('Screenshot failed due to CORS');
             }
         } else {
