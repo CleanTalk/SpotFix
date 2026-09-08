@@ -13886,29 +13886,23 @@ class FileUploader {
                 });
 
                 const timeoutPromise = new Promise((_, reject) => {
-                    setTimeout(() => reject(new Error('Timeout: dom-to-image. CORS')), 15000);
+                    setTimeout(() => reject(new Error('Timeout: dom-to-image. CORS')), 10000);
                 });
 
                 blob = await Promise.race([renderPromise, timeoutPromise]);
 
-                console.log(2);
                 if (!blob || (blob && blob.size < 100)) {
-                    console.log(3);
                     throw new Error('Blob is null or too small, render likely failed due to CORS');
                 }
 
             } catch (error) {
-                console.log(4, error.message);
                 if (showError) {
-                    console.log(5, this);
                     if (typeof this.showErrorNotification === 'function') {
-                        console.log(6);
                         this.showErrorNotification('Unable to take a screenshot due to the site\'s security settings (CORS).');
                     } else {
                         alert('Unable to take a screenshot due to the site\'s security settings (CORS).');
                     }
                 }
-                console.log(7);
                 throw new Error('Screenshot failed due to CORS');
             }
         } else {
