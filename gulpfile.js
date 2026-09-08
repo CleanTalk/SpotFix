@@ -15,6 +15,7 @@ function bundle_src_js() {
     const cssStream = processCSS();
     const jsStream = gulp.src([
         'js/src/lib/html2canvas.js',
+        'js/src/lib/dom-to-image.js',
         'js/src/localDB.js',
         'js/src/api.js',
         'js/src/websocket.js',

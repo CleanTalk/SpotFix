@@ -401,73 +401,40 @@ class FileUploader {
      * @returns {Promise<void>}
      */
 
-     async loadDomToImage() {
-         return new Promise((resolve, reject) => {
-             if (window.domtoimage) {
-                 resolve(window.domtoimage);
-                 return;
-             }
+     showErrorNotification(message) {
+         const toast = document.createElement('div');
+         toast.textContent = message;
 
-             const defineMem = window.define;
-             if (defineMem && defineMem.amd) {
-                 window.define = undefined;
-             }
-
-             const script = document.createElement('script');
-             script.src = 'https://cdn.jsdelivr.net/npm/dom-to-image-more@3.1.6/dist/dom-to-image-more.min.js';
-
-             script.onload = () => {
-                 if (defineMem && defineMem.amd) {
-                     window.define = defineMem;
-                 }
-                 resolve(window.domtoimage);
-             };
-
-             script.onerror = () => {
-                 if (defineMem && defineMem.amd) {
-                     window.define = defineMem;
-                 }
-                 reject(new Error('Failed to load dom-to-image-more'));
-             };
-
-             document.head.appendChild(script);
+         Object.assign(toast.style, {
+             position: 'fixed',
+             bottom: '30px',
+             left: '50%',
+             transform: 'translateX(-50%)',
+             backgroundColor: '#ff4d4f',
+             color: '#ffffff',
+             padding: '12px 24px',
+             borderRadius: '8px',
+             boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+             zIndex: '999999',
+             fontFamily: 'sans-serif',
+             fontSize: '14px',
+             transition: 'opacity 0.3s ease, bottom 0.3s ease',
+             opacity: '0'
          });
+
+         document.body.appendChild(toast);
+
+         requestAnimationFrame(() => {
+             toast.style.opacity = '1';
+             toast.style.bottom = '40px';
+         });
+
+         setTimeout(() => {
+             toast.style.opacity = '0';
+             toast.style.bottom = '30px';
+             setTimeout(() => toast.remove(), 300);
+         }, 3000);
      }
-
-    showErrorNotification(message) {
-        const toast = document.createElement('div');
-        toast.textContent = message;
-
-        Object.assign(toast.style, {
-            position: 'fixed',
-            bottom: '30px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            backgroundColor: '#ff4d4f',
-            color: '#ffffff',
-            padding: '12px 24px',
-            borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-            zIndex: '999999',
-            fontFamily: 'sans-serif',
-            fontSize: '14px',
-            transition: 'opacity 0.3s ease, bottom 0.3s ease',
-            opacity: '0'
-        });
-
-        document.body.appendChild(toast);
-
-        requestAnimationFrame(() => {
-            toast.style.opacity = '1';
-            toast.style.bottom = '40px';
-        });
-
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.bottom = '30px';
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-    }
 
     async makeScreenshot(showError = true) {
         if (!this.files || !Array.isArray(this.files) || this.files.length >= this.maxFiles) {
@@ -485,15 +452,8 @@ class FileUploader {
         if (bgColor === 'rgba(0, 0, 0, 0)' || bgColor === 'transparent') bgColor = '#ffffff';
 
         const currentOrigin = window.location.origin;
-        let domtoimageLib = null;
 
-        try {
-            domtoimageLib = await this.loadDomToImage();
-        } catch (e) {
-            console.warn('SpotFix: Failed to load dom-to-image library', e.message);
-        }
-
-        domtoimageLib = domtoimageLib || window.domtoimage;
+        const domtoimageLib = typeof domtoimage !== 'undefined' ? domtoimage : window.domtoimage;
 
         if (domtoimageLib) {
             try {
@@ -530,7 +490,7 @@ class FileUploader {
                         alert('Unable to take a screenshot due to the site\'s security settings (CORS).');
                     }
                 }
-                throw new Error('Screenshot failed due to CORS');
+                return;
             }
         } else {
             console.log('SpotFix: Fallback to html2canvas.');
@@ -569,7 +529,10 @@ class FileUploader {
                 });
 
                 blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
-                if (!blob) throw new Error('html2canvas returned empty canvas');
+
+                if (!blob || (blob && blob.size < 100)) {
+                    throw new Error('html2canvas returned empty canvas due to CORS');
+                }
 
             } catch (error) {
                 console.error(error);
@@ -580,7 +543,7 @@ class FileUploader {
                         alert('Unable to take a screenshot due to the site\'s security settings (CORS).');
                     }
                 }
-                throw error;
+                return;
             }
         }
 
