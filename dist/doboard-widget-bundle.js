@@ -13801,10 +13801,29 @@ class FileUploader {
                  resolve(window.domtoimage);
                  return;
              }
+
+             const defineMem = window.define;
+             if (defineMem && defineMem.amd) {
+                 window.define = undefined;
+             }
+
              const script = document.createElement('script');
              script.src = 'https://cdn.jsdelivr.net/npm/dom-to-image-more@3.1.6/dist/dom-to-image-more.min.js';
-             script.onload = () => resolve(window.domtoimage);
-             script.onerror = () => reject(new Error('Failed to load dom-to-image-more'));
+
+             script.onload = () => {
+                 if (defineMem && defineMem.amd) {
+                     window.define = defineMem;
+                 }
+                 resolve(window.domtoimage);
+             };
+
+             script.onerror = () => {
+                 if (defineMem && defineMem.amd) {
+                     window.define = defineMem;
+                 }
+                 reject(new Error('Failed to load dom-to-image-more'));
+             };
+
              document.head.appendChild(script);
          });
      }
@@ -13867,6 +13886,8 @@ class FileUploader {
         } catch (e) {
             console.warn('SpotFix: Failed to load dom-to-image library', e.message);
         }
+
+        domtoimageLib = domtoimageLib || window.domtoimage;
 
         if (domtoimageLib) {
             try {
