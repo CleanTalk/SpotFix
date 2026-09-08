@@ -473,7 +473,7 @@ class FileUploader {
                 });
 
                 const timeoutPromise = new Promise((_, reject) => {
-                    setTimeout(() => reject(new Error('Timeout: dom-to-image. CORS')), 10000);
+                    setTimeout(() => reject(new Error('Timeout: dom-to-image. CORS')), 8000);
                 });
 
                 blob = await Promise.race([renderPromise, timeoutPromise]);
