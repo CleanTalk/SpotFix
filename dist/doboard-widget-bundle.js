@@ -13869,7 +13869,6 @@ class FileUploader {
         }
 
         if (domtoimageLib) {
-            console.log(1);
             try {
                 const renderPromise = domtoimageLib.toBlob(document.documentElement, {
                     bgcolor: bgColor,
