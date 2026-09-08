@@ -13869,6 +13869,7 @@ class FileUploader {
         }
 
         if (domtoimageLib) {
+            console.log(1)
             try {
                 blob = await domtoimageLib.toBlob(document.documentElement, {
                     bgcolor: bgColor,
@@ -13884,19 +13885,24 @@ class FileUploader {
                         return true;
                     }
                 });
-
-                if (blob && blob.size < 100) {
-                    throw new Error('Blob is too small, render likely failed due to CORS');
+                console.log(2)
+                if (!blob || (blob && blob.size < 100)) {
+                    console.log(3)
+                    throw new Error('Blob is null or too small, render likely failed due to CORS');
                 }
 
             } catch (error) {
+                console.log(4)
                 if (showError) {
+                    console.log(5, this)
                     if (typeof this.showErrorNotification === 'function') {
+                        console.log(6)
                         this.showErrorNotification('Unable to take a screenshot due to the site\'s security settings (CORS).');
                     } else {
                         alert('Unable to take a screenshot due to the site\'s security settings (CORS).');
                     }
                 }
+                console.log(7)
                 throw new Error('Screenshot failed due to CORS');
             }
         } else {
