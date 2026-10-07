@@ -46,28 +46,37 @@ async function getTasksFullDetails(params, tasksList, currentActiveTaskId, nonRe
     let tasks = tasksList;
     if (tasks.length > 0) {
         const sessionId = localStorage.getItem('spotfix_session_id');
+        const loadActiveTaskDetails = () => Promise.all([
+            getTasksAttachmenDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId),
+            getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId),
+        ]);
+        const requests = [];
         if (!nonRequesting && currentActiveTaskId && +currentActiveTaskId !== 0) {
-            const tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
-            if (!tasksData.find((item) => +item.taskId === +currentActiveTaskId)) {
-                await getTasksDoboard(params.projectToken, sessionId, params.accountId, params.projectId, null, +currentActiveTaskId)
-                    .then(async (ans) => {
-                        if (ans) {
-                            await getTasksAttachmenDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
-                            await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
-                        }
-                        tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
-                    });
-            } else {
-                await getTasksAttachmenDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
-                await getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId);
-            }
+            requests.push((async () => {
+                const tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+                if (!tasksData.find((item) => +item.taskId === +currentActiveTaskId)) {
+                    const ans = await getTasksDoboard(
+                        params.projectToken, sessionId, params.accountId, params.projectId, null, +currentActiveTaskId,
+                    );
+                    if (ans) {
+                        await loadActiveTaskDetails();
+                    }
+                    tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+                } else {
+                    await loadActiveTaskDetails();
+                }
+            })());
         }
-        const comments = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_COMMENTS);
-        const attachments = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_ATTACHMENT);
         if (!nonRequesting) {
-            await getUserDoboard(sessionId, params.projectToken, params.accountId);
+            requests.push(getUserDoboard(sessionId, params.projectToken, params.accountId));
         }
-        const users = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
+        await Promise.all(requests);
+
+        const [comments, attachments, users] = await Promise.all([
+            spotfixIndexedDB.getAll(SPOTFIX_TABLE_COMMENTS),
+            spotfixIndexedDB.getAll(SPOTFIX_TABLE_ATTACHMENT),
+            spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS),
+        ]);
         const foundTask = tasks.find((item) => +item.taskId === +currentActiveTaskId);
 
         return {
