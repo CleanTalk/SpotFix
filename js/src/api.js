@@ -159,6 +159,7 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname) => 
         project_token: projectToken,
         account_id: accountId,
         confirmation_url: email,
+        lead_source: 'spotfix_' + window.location.hostname,
     };
     if (email && nickname) {
         data.email = email;
