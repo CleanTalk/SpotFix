@@ -1,4 +1,5 @@
 var spotFixShowDelayTimeout = null;
+let spotFixLastHandledSelectionRange = null;
 const SPOTFIX_DEBUG = false;
 const SPOTFIX_SHOW_DELAY = 1000;
 
@@ -104,6 +105,10 @@ document.addEventListener('selectionchange', function(e) {
     const isWrapReviewWidgetExists = !!(document.getElementsByClassName('wrap_review')[0]);
     const sel = document.getSelection();
 
+    if (!sel || sel.toString() === '') {
+        spotFixLastHandledSelectionRange = null;
+    }
+
     if ((!sel || sel.toString() === "") && isWrapReviewWidgetExists) {
         new CleanTalkWidgetDoboard({}, 'wrap')
         return;
@@ -124,9 +129,13 @@ document.addEventListener('selectionchange', function(e) {
             if (spotFixIsInsideWidget(anchorNode) || spotFixIsInsideWidget(focusNode)) {
                 return;
             }
+            if (spotFixIsLastHandledSelection(selection)) {
+                return;
+            }
             const selectedData = spotFixGetSelectedData(selection);
 
              if ( selectedData ) {
+                spotFixLastHandledSelectionRange = selection.getRangeAt(0).cloneRange();
                 // spotFixOpenWidget(selectedData, 'create_issue');
                  const timer = setTimeout(() => {
                      clearTimeout(timer);
@@ -138,6 +147,23 @@ document.addEventListener('selectionchange', function(e) {
     }, SPOTFIX_SHOW_DELAY);
 });
 
+
+/**
+ * @param {Selection} selection
+ * @return {boolean}
+ */
+function spotFixIsLastHandledSelection(selection) {
+    if (!spotFixLastHandledSelectionRange || selection.rangeCount !== 1) {
+        return false;
+    }
+    const range = selection.getRangeAt(0);
+    try {
+        return range.compareBoundaryPoints(Range.START_TO_START, spotFixLastHandledSelectionRange) === 0 &&
+            range.compareBoundaryPoints(Range.END_TO_END, spotFixLastHandledSelectionRange) === 0;
+    } catch (e) {
+        return false;
+    }
+}
 
 /**
  * Shows the spot fix widget.

@@ -12,6 +12,7 @@ class CleanTalkWidgetDoboard {
     savedIssuesQuantityAll = 0;
     allTasksData = {};
     srcVariables = {};
+    placeholderInAttributeCache = new Map();
 
     /**
      * Constructor
@@ -92,7 +93,8 @@ class CleanTalkWidgetDoboard {
         } else {
             // Load all tasks
             const isWidgetClosed = localStorage.getItem('spotfix_widget_is_closed');
-            if(((isWidgetClosed && !this.selectedText) || !isWidgetClosed) && type !== 'create_issue'){
+            const isTasksLoadNeeded = type !== 'create_issue' && type !== 'all_issues';
+            if (((isWidgetClosed && !this.selectedText) || !isWidgetClosed) && isTasksLoadNeeded) {
                 this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
             }
         }
@@ -121,6 +123,9 @@ class CleanTalkWidgetDoboard {
             storageSetWidgetIsClosed(false);
         }
         this.widgetElement = await this.createWidgetElement(type);
+        if (type === 'all_issues') {
+            storageSaveTasksUpdateData(this.allTasksData);
+        }
         this.bindWidgetInputsInteractive();
 
     }
@@ -1113,11 +1118,20 @@ class CleanTalkWidgetDoboard {
             const sessionId = localStorage.getItem('spotfix_session_id');
 
 
-            const notifications = this.nonRequesting ? [] : await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
+            const notificationsRequest = this.nonRequesting ? [] : getNotificationsDoboard(
+                this.params.projectToken, sessionId, this.params.accountId, this.params.projectId,
+            ).catch((err) => {
+                console.error('notification_get error:', err);
+                return [];
+            });
+            const [notifications, allTasksData] = await Promise.all([
+                notificationsRequest,
+                getAllTasks(this.params, this.nonRequesting),
+            ]);
             let activeTasks = [];
             let finishedTasks = [];
 
-            this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
+            this.allTasksData = allTasksData;
 
             const tasks = this.allTasksData?.length ? this.allTasksData.filter(item => item.task_type !== 'PRIVATE') : [];
             tasksFullDetails = await getTasksFullDetails(this.params, tasks, this.currentActiveTaskId, this.nonRequesting);
@@ -2205,7 +2219,8 @@ class CleanTalkWidgetDoboard {
      *
      */
     loadTemplate(templateName, variables = {}) {
-        let template = SpotFixTemplatesLoader.getTemplateCode(templateName);
+        const rawTemplate = SpotFixTemplatesLoader.getTemplateCode(templateName);
+        let template = rawTemplate;
 
         for (const [key, value] of Object.entries(variables)) {
             const placeholder = `{{${key}}}`;
@@ -2214,9 +2229,11 @@ class CleanTalkWidgetDoboard {
             // 1) For attributes we MUST use escapeHtml!
             // 2) Only for HTML inserts we must clean data by ksesFilter
             // Check if placeholder is used in an attribute context
-            if (this.isPlaceholderInAttribute(template, placeholder)) {
+            if (this.isPlaceholderInAttribute(templateName, rawTemplate, placeholder)) {
                 // For attributes, use escapeHtml to prevent XSS
                 replacement = this.escapeHtml(String(value));
+            } else if (!String(value).includes('<')) {
+                replacement = String(value);
             } else {
                 // For HTML content, use ksesFilter to sanitize HTML
                 replacement = ksesFilter(String(value), {template: templateName, imgFilter: true});
@@ -2229,12 +2246,27 @@ class CleanTalkWidgetDoboard {
     }
 
     /**
-     * Check if a placeholder is used inside an HTML attribute
+     * Check if a placeholder is used inside an HTML attribute.
+     * @param {string} templateName - The template name, used as the cache key
      * @param {string} template - The template string
      * @param {string} placeholder - The placeholder to check (e.g., "{{key}}")
      * @return {boolean} - True if placeholder is in an attribute context
      */
-    isPlaceholderInAttribute(template, placeholder) {
+    isPlaceholderInAttribute(templateName, template, placeholder) {
+        const cacheKey = templateName + '|' + placeholder;
+        if (!this.placeholderInAttributeCache.has(cacheKey)) {
+            this.placeholderInAttributeCache.set(cacheKey, this.checkPlaceholderInAttribute(template, placeholder));
+        }
+        return this.placeholderInAttributeCache.get(cacheKey);
+    }
+
+    /**
+     * Check if a placeholder is used inside an HTML attribute (without caching)
+     * @param {string} template - The template string
+     * @param {string} placeholder - The placeholder to check (e.g., "{{key}}")
+     * @return {boolean} - True if placeholder is in an attribute context
+     */
+    checkPlaceholderInAttribute(template, placeholder) {
         // Escape special regex characters in placeholder
         const escapedPlaceholder = placeholder.replace(/[{}]/g, '\\$&');
 
