@@ -33,6 +33,7 @@ class DescriptionEditorIframe {
     handleIframeMessage(event) {
         const data = event.data;
         if (!data || !data.type || data.source !== 'spotfix-description-editor-iframe') return;
+        if (!this.iframe || event.source !== this.iframe.contentWindow) return;
 
         switch (data.type) {
             case 'spotfix:tinymce-ready':
@@ -135,7 +136,8 @@ class DescriptionEditorIframe {
 
             const messageHandler = function (event) {
                 if (event.data && event.data.type === 'spotfix:tinymce-ready' &&
-                    event.data.source === 'spotfix-description-editor-iframe') {
+                    event.data.source === 'spotfix-description-editor-iframe' &&
+                    self.iframe && event.source === self.iframe.contentWindow) {
                     clearTimeout(timeout);
                     window.removeEventListener('message', messageHandler);
                     resolve(self.iframe);

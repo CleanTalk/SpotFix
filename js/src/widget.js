@@ -174,7 +174,6 @@ class CleanTalkWidgetDoboard {
      */
     bindCreateTaskEvents(data) {
         const submitButton = document.getElementById('doboard_task_widget-submit_button');
-        this.createdTaskWithoutComment = null;
 
         if (submitButton) {
             submitButton.addEventListener('click', async () => {
@@ -305,9 +304,6 @@ class CleanTalkWidgetDoboard {
                     } else {
                         taskDetails.userPassword = document?.getElementById('doboard_task_widget-user_password')?.value
                     }
-                    if ( this.createdTaskWithoutComment ) {
-                        taskDetails.createdTask = this.createdTaskWithoutComment;
-                    }
 
                     // Save pending task in LS
                     localStorage.setItem('spotfix_pending_task', JSON.stringify({
@@ -320,16 +316,9 @@ class CleanTalkWidgetDoboard {
                         submitTaskResult = await this.submitTask(taskDetails);
                     } catch (error) {
                         submitButton.innerText = submitButtonText;
-                        if (error.createdTask) {
-                            this.createdTaskWithoutComment = error.createdTask;
-                            this.registrationShowMessage(
-                                'The spot was created, but its description was not saved. Please try again.');
-                            return;
-                        }
                         this.registrationShowMessage(error.message);
                         return;
                     }
-                    this.createdTaskWithoutComment = null;
 
                     if (this.fileUploader?.hasFiles() && submitTaskResult?.initialComment?.commentId) {
                         const sessionId = localStorage.getItem('spotfix_session_id');
@@ -357,10 +346,14 @@ class CleanTalkWidgetDoboard {
                         this.selectedData.isPublic = submitTaskResult.isPublic
                     }
 
-                    // refersh tasks list after creation
-                    this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
-                    // save updates
-                    storageSaveTasksUpdateData(this.allTasksData);
+                    try {
+                        // refersh tasks list after creation
+                        this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
+                        // save updates
+                        storageSaveTasksUpdateData(this.allTasksData);
+                    } catch (tasksErr) {
+                        console.error(tasksErr);
+                    }
 
                     this.selectedData = {};
                     await this.createWidgetElement('all_issues');

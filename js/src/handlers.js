@@ -104,22 +104,18 @@ async function getUserDetails(params, nonRequesting = false) {
 
 async function handleCreateTask(sessionId, taskDetails) {
     try {
-        const result = taskDetails.createdTask || await createTaskDoboard(sessionId, taskDetails);
+        const result = await createTaskDoboard(sessionId, taskDetails);
         if (result && result.taskId && (taskDetails.taskDescription || taskDetails.has_files)) {
             const sign = `<br><br><br><em>The spot has been posted at the following URL <a href="${window.location.href}"><span class="task-link task-link--done">${window.location.href}</span></a></em>`;
 
-            let commentResponse;
             try {
-                commentResponse = await addTaskComment({
+                result.initialComment = await addTaskComment({
                     projectToken: taskDetails.projectToken,
                     accountId: taskDetails.accountId,
                 }, result.taskId, (taskDetails.taskDescription ?? '') + sign);
             } catch (commentErr) {
-                commentErr.createdTask = result;
-                throw commentErr;
+                console.error(commentErr);
             }
-
-            result.initialComment = commentResponse;
         }
         return result;
     } catch (err) {
