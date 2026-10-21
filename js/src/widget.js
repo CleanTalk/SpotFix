@@ -177,6 +177,10 @@ class CleanTalkWidgetDoboard {
 
         if (submitButton) {
             submitButton.addEventListener('click', async () => {
+                if (this.isSubmittingTask) {
+                    return;
+                }
+
                 // Check required fields: Report about and Description
                 const taskTitleElement = document.getElementById('doboard_task_widget-title');
                 const taskTitle = taskTitleElement.value;
@@ -269,6 +273,8 @@ class CleanTalkWidgetDoboard {
 
                 // Make the submit button disable with spinner
                 const submitButton = document.getElementById('doboard_task_widget-submit_button');
+                const submitButtonText = submitButton.innerText;
+                this.isSubmittingTask = true;
                 submitButton.disabled = true;
                 submitButton.innerText = ksesFilter('Creating spot...');
 
@@ -303,53 +309,61 @@ class CleanTalkWidgetDoboard {
                     description: taskDescription
                 }));
 
+                const unlockSubmit = () => {
+                    this.isSubmittingTask = false;
+                    submitButton.style.cursor = 'pointer';
+                    this.updateCreateTaskSubmitState(window.DescriptionEditorIframe.getContent() || taskDescription);
+                };
+
                 let submitTaskResult;
                 try {
                     submitTaskResult = await this.submitTask(taskDetails);
                 } catch (error) {
+                    submitButton.innerText = submitButtonText;
+                    unlockSubmit();
                     this.registrationShowMessage(error.message);
                     return;
                 }
 
-                if (this.fileUploader?.hasFiles() && submitTaskResult?.initialComment?.commentId) {
-                    const sessionId = localStorage.getItem('spotfix_session_id');
-                    try {
-                        const attachmentsSendResult = await this.fileUploader.sendAttachmentsForComment(
-                            this.params,
-                            sessionId,
-                            submitTaskResult.initialComment.commentId
-                        );
+                try {
+                    if (this.fileUploader?.hasFiles() && submitTaskResult?.initialComment?.commentId) {
+                        const sessionId = localStorage.getItem('spotfix_session_id');
+                        try {
+                            const attachmentsSendResult = await this.fileUploader.sendAttachmentsForComment(
+                                this.params,
+                                sessionId,
+                                submitTaskResult.initialComment.commentId
+                            );
 
-                        if (!attachmentsSendResult.success) {
-                            console.error(attachmentsSendResult);
+                            if (!attachmentsSendResult.success) {
+                                console.error(attachmentsSendResult);
+                            }
+                        } catch (uploadErr) {
+                            console.error(uploadErr);
                         }
-                    } catch (uploadErr) {
-                        console.error(uploadErr);
                     }
+
+                    if ( submitTaskResult.needToLogin ) {
+                        // @ToDo Do not know what to de here: throw an error or pass log message?
+                        return;
+                    }
+
+                    if ( submitTaskResult.isPublic !== undefined ) {
+                        this.selectedData.isPublic = submitTaskResult.isPublic
+                    }
+
+                    // refersh tasks list after creation
+                    this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
+                    // save updates
+                    storageSaveTasksUpdateData(this.allTasksData);
+
+                    this.selectedData = {};
+                    await this.createWidgetElement('all_issues');
+                    storageSetWidgetIsClosed(false);
+                    hideContainersSpinner(false);
+                } finally {
+                    unlockSubmit();
                 }
-
-                // Return the submit button normal state
-                submitButton.disabled = false;
-                submitButton.style.cursor = 'pointer';
-
-                if ( submitTaskResult.needToLogin ) {
-                    // @ToDo Do not know what to de here: throw an error or pass log message?
-                    return;
-                }
-
-                if ( submitTaskResult.isPublic !== undefined ) {
-                    this.selectedData.isPublic = submitTaskResult.isPublic
-                }
-
-                // refersh tasks list after creation
-                this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
-                // save updates
-                storageSaveTasksUpdateData(this.allTasksData);
-
-                this.selectedData = {};
-                await this.createWidgetElement('all_issues');
-                storageSetWidgetIsClosed(false);
-                hideContainersSpinner(false);
             });
         }
     }
@@ -357,12 +371,12 @@ class CleanTalkWidgetDoboard {
 
     updateCreateTaskSubmitState(description) {
         const submitButton = document.getElementById('doboard_task_widget-submit_button');
-        const tmp = document.createElement('div');
+        const tmp = document.createElement('template');
         tmp.innerHTML = description || '';
-        const isValid = (tmp.textContent || '').trim().length >= SPOTFIX_MIN_DESCRIPTION_LENGTH;
+        const isValid = (tmp.content.textContent || '').trim().length >= SPOTFIX_MIN_DESCRIPTION_LENGTH;
 
         if (submitButton) {
-            submitButton.disabled = !isValid;
+            submitButton.disabled = !isValid || !!this.isSubmittingTask;
             submitButton.classList.toggle('doboard_task_widget-submit_button-invalid', !isValid);
             if (isValid) {
                 submitButton.removeAttribute('title');
