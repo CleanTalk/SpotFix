@@ -215,6 +215,7 @@ class DescriptionEditorIframe {
                 toolbar_location: "bottom",
                 height: 200,
                 width: "100%",
+                placeholder: "Describe the issue using at least 10 characters.",
                 toolbar: "attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote",
                 file_picker_types: "file image media",
                 setup: function(editor) {
@@ -222,7 +223,7 @@ class DescriptionEditorIframe {
                 editor.ui.registry.addButton("screenshotButton", { icon: "screenshot", tooltip: "Screenshot", onAction: function() { window.parent.postMessage({ type: "spotfix:tinymce-action", source: "spotfix-description-editor-iframe", action: "screenshot", eventData: { type: "screenshot" } }, "*"); } });
                 editor.on("init", function() { if (savedContent && savedContent.trim() !== "") { editor.setContent(savedContent, { format: "html" }); editor.save(); } window.parent.postMessage({ type: "spotfix:tinymce-ready", source: "spotfix-description-editor-iframe" }, "*"); });
                 editor.on("change", function() { const content = editor.getContent(); window.parent.postMessage({ type: "spotfix:tinymce-change", source: "spotfix-description-editor-iframe", content: content }, "*"); });
-                editor.on("input", function() { const content = editor.getContent(); window.parent.postMessage({ type: "spotfix:tinymce-input", source: "spotfix-description-editor-iframe", content: content }, "*"); });
+                editor.on("input undo redo", function() { const content = editor.getContent(); window.parent.postMessage({ type: "spotfix:tinymce-input", source: "spotfix-description-editor-iframe", content: content }, "*"); });
                 }
                 }).catch(function(error) { window.parent.postMessage({ type: "spotfix:tinymce-error", source: "spotfix-description-editor-iframe", error: error.message }, "*"); });
                 }

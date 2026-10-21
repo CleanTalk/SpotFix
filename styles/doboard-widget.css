@@ -506,6 +506,11 @@
     cursor: wait;
 }
 
+.doboard_task_widget-submit_button.doboard_task_widget-submit_button-invalid:disabled {
+    background: #BBC7D1;
+    cursor: not-allowed;
+}
+
 .doboard_task_widget-login-buttons-wrapper {
     display: flex;
     gap: 10px;

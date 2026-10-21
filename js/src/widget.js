@@ -191,7 +191,12 @@ class CleanTalkWidgetDoboard {
                     return;
                 }
                 const taskDescriptionElement = document.getElementById('doboard_task_widget-description')
-                const taskDescription = taskDescriptionElement.value || data.descriptionText;
+                const taskDescription = window.DescriptionEditorIframe.getContent() ||
+                    taskDescriptionElement.value || data.descriptionText;
+
+                if ( ! this.updateCreateTaskSubmitState(taskDescription) ) {
+                    return;
+                }
 
                 // if ( ! taskDescription ) {
                 //     taskDescriptionElement.style.borderColor = 'red';
@@ -349,6 +354,25 @@ class CleanTalkWidgetDoboard {
         }
     }
 
+
+    updateCreateTaskSubmitState(description) {
+        const submitButton = document.getElementById('doboard_task_widget-submit_button');
+        const tmp = document.createElement('div');
+        tmp.innerHTML = description || '';
+        const isValid = (tmp.textContent || '').trim().length >= SPOTFIX_MIN_DESCRIPTION_LENGTH;
+
+        if (submitButton) {
+            submitButton.disabled = !isValid;
+            submitButton.classList.toggle('doboard_task_widget-submit_button-invalid', !isValid);
+            if (isValid) {
+                submitButton.removeAttribute('title');
+            } else {
+                submitButton.title = 'Please provide at least a few words describing the issue.';
+            }
+        }
+
+        return isValid;
+    }
 
     resetLoginForm() {
         const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
@@ -963,6 +987,9 @@ class CleanTalkWidgetDoboard {
 
                 const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
                 const fileUploaderDesc = this.fileUploader;
+                const updateSubmitState = (content) => this.updateCreateTaskSubmitState(content);
+
+                updateSubmitState(savedDescription);
 
 
                 if (window.DescriptionEditorIframe.iframe && !this.nonRequesting) {
@@ -975,7 +1002,9 @@ class CleanTalkWidgetDoboard {
                         savedContent: savedDescription,
                         onChange: function(content) {
                             localStorage.setItem('spotfix-description-ls', content);
+                            updateSubmitState(content);
                         },
+                        onInput: updateSubmitState,
                         handlers: {
                             onAttachmentClick: function() {
                                 fileUploaderDesc?.fileInput?.click();
