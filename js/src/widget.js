@@ -195,8 +195,8 @@ class CleanTalkWidgetDoboard {
                     return;
                 }
                 const taskDescriptionElement = document.getElementById('doboard_task_widget-description')
-                const taskDescription = window.DescriptionEditorIframe.getContent() ||
-                    taskDescriptionElement.value || data.descriptionText;
+                const taskDescription = this.getCreateTaskDescription(
+                    taskDescriptionElement.value || data.descriptionText);
 
                 if ( ! this.updateCreateTaskSubmitState(taskDescription) ) {
                     return;
@@ -278,54 +278,48 @@ class CleanTalkWidgetDoboard {
                 submitButton.disabled = true;
                 submitButton.innerText = ksesFilter('Creating spot...');
 
-                let taskDetails = {
-                    taskTitle: taskTitle,
-                    taskDescription: taskDescription,
-                    //typeSend: typeSend,
-                    selectedData: this.selectedData,
-                    projectToken: this.params.projectToken,
-                    projectId: this.params.projectId,
-                    accountId: this.params.accountId,
-                    has_files: this.fileUploader.hasFiles(),
-                    task_type: this.new_task_type,
-                    taskMeta: JSON.stringify(this.selectedData ? this.selectedData : { pageURL: window.location.href }),
-                };
-
-                if ( userEmail ) {
-                    taskDetails.userEmail = userEmail
-                }
-                if ( userName ) {
-                    taskDetails.userName = userName
-                }
-                if ( userPassword ) {
-                    taskDetails.userPassword = userPassword
-                } else {
-                    taskDetails.userPassword = document?.getElementById('doboard_task_widget-user_password')?.value
-                }
-
-                // Save pending task in LS
-                localStorage.setItem('spotfix_pending_task', JSON.stringify({
-                    ...this.selectedData,
-                    description: taskDescription
-                }));
-
-                const unlockSubmit = () => {
-                    this.isSubmittingTask = false;
-                    submitButton.style.cursor = 'pointer';
-                    this.updateCreateTaskSubmitState(window.DescriptionEditorIframe.getContent() || taskDescription);
-                };
-
-                let submitTaskResult;
                 try {
-                    submitTaskResult = await this.submitTask(taskDetails);
-                } catch (error) {
-                    submitButton.innerText = submitButtonText;
-                    unlockSubmit();
-                    this.registrationShowMessage(error.message);
-                    return;
-                }
+                    let taskDetails = {
+                        taskTitle: taskTitle,
+                        taskDescription: taskDescription,
+                        //typeSend: typeSend,
+                        selectedData: this.selectedData,
+                        projectToken: this.params.projectToken,
+                        projectId: this.params.projectId,
+                        accountId: this.params.accountId,
+                        has_files: this.fileUploader.hasFiles(),
+                        task_type: this.new_task_type,
+                        taskMeta: JSON.stringify(
+                            this.selectedData ? this.selectedData : { pageURL: window.location.href }),
+                    };
 
-                try {
+                    if ( userEmail ) {
+                        taskDetails.userEmail = userEmail
+                    }
+                    if ( userName ) {
+                        taskDetails.userName = userName
+                    }
+                    if ( userPassword ) {
+                        taskDetails.userPassword = userPassword
+                    } else {
+                        taskDetails.userPassword = document?.getElementById('doboard_task_widget-user_password')?.value
+                    }
+
+                    // Save pending task in LS
+                    localStorage.setItem('spotfix_pending_task', JSON.stringify({
+                        ...this.selectedData,
+                        description: taskDescription
+                    }));
+
+                    let submitTaskResult;
+                    try {
+                        submitTaskResult = await this.submitTask(taskDetails);
+                    } catch (error) {
+                        submitButton.innerText = submitButtonText;
+                        this.registrationShowMessage(error.message);
+                        return;
+                    }
+
                     if (this.fileUploader?.hasFiles() && submitTaskResult?.initialComment?.commentId) {
                         const sessionId = localStorage.getItem('spotfix_session_id');
                         try {
@@ -361,11 +355,24 @@ class CleanTalkWidgetDoboard {
                     await this.createWidgetElement('all_issues');
                     storageSetWidgetIsClosed(false);
                     hideContainersSpinner(false);
+                } catch (error) {
+                    submitButton.innerText = submitButtonText;
+                    throw error;
                 } finally {
-                    unlockSubmit();
+                    this.isSubmittingTask = false;
+                    submitButton.style.cursor = 'pointer';
+                    this.updateCreateTaskSubmitState(this.getCreateTaskDescription(taskDescription));
                 }
             });
         }
+    }
+
+    getCreateTaskDescription(fallback) {
+        const editor = window.DescriptionEditorIframe;
+        if (editor?.iframe && editor.editorReady) {
+            return editor.getContent();
+        }
+        return fallback || '';
     }
 
 
