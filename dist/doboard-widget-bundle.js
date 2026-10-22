@@ -15408,6 +15408,8 @@ class DescriptionEditorIframe {
                 height: 200,
                 width: "100%",
                 placeholder: "Describe the issue using at least 10 characters.",
+                content_style: \`.mce-content-body[data-mce-placeholder]:not(.mce-visualblocks)::before {
+                    color: #A9B1B8 !important;}\`,
                 toolbar: "attachmentButton screenshotButton emoticons bullist numlist bold italic strikethrough underline blockquote",
                 file_picker_types: "file image media",
                 setup: function(editor) {
