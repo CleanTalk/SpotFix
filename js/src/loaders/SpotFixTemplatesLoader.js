@@ -168,7 +168,7 @@ class SpotFixTemplatesLoader {
         </div>
 
         <div id="doboard_task_widget-description-container" class="doboard_task_widget-input-container doboard_task_widget-input-container-textarea" style="flex-grow: 1; min-height: 200px">
-            <textarea id="doboard_task_widget-description" class="doboard_task_widget-field" name="description" placeholder=" " required></textarea>
+            <textarea id="doboard_task_widget-description" class="doboard_task_widget-field" name="description" placeholder="Describe the issue using at least 10 characters." required></textarea>
             <label for="doboard_task_widget-description" style="top:1px" class="doboard_task_widget-field-textarea-label" >Description</label>
         </div>
 

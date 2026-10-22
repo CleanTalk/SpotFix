@@ -177,6 +177,10 @@ class CleanTalkWidgetDoboard {
 
         if (submitButton) {
             submitButton.addEventListener('click', async () => {
+                if (this.isSubmittingTask) {
+                    return;
+                }
+
                 // Check required fields: Report about and Description
                 const taskTitleElement = document.getElementById('doboard_task_widget-title');
                 const taskTitle = taskTitleElement.value;
@@ -191,7 +195,12 @@ class CleanTalkWidgetDoboard {
                     return;
                 }
                 const taskDescriptionElement = document.getElementById('doboard_task_widget-description')
-                const taskDescription = taskDescriptionElement.value || data.descriptionText;
+                const taskDescription = this.getCreateTaskDescription(
+                    taskDescriptionElement.value || data.descriptionText);
+
+                if ( ! this.updateCreateTaskSubmitState(taskDescription) ) {
+                    return;
+                }
 
                 // if ( ! taskDescription ) {
                 //     taskDescriptionElement.style.borderColor = 'red';
@@ -264,91 +273,131 @@ class CleanTalkWidgetDoboard {
 
                 // Make the submit button disable with spinner
                 const submitButton = document.getElementById('doboard_task_widget-submit_button');
+                const submitButtonText = submitButton.innerText;
+                this.isSubmittingTask = true;
                 submitButton.disabled = true;
                 submitButton.innerText = ksesFilter('Creating spot...');
 
-                let taskDetails = {
-                    taskTitle: taskTitle,
-                    taskDescription: taskDescription,
-                    //typeSend: typeSend,
-                    selectedData: this.selectedData,
-                    projectToken: this.params.projectToken,
-                    projectId: this.params.projectId,
-                    accountId: this.params.accountId,
-                    has_files: this.fileUploader.hasFiles(),
-                    task_type: this.new_task_type,
-                    taskMeta: JSON.stringify(this.selectedData ? this.selectedData : { pageURL: window.location.href }),
-                };
-
-                if ( userEmail ) {
-                    taskDetails.userEmail = userEmail
-                }
-                if ( userName ) {
-                    taskDetails.userName = userName
-                }
-                if ( userPassword ) {
-                    taskDetails.userPassword = userPassword
-                } else {
-                    taskDetails.userPassword = document?.getElementById('doboard_task_widget-user_password')?.value
-                }
-
-                // Save pending task in LS
-                localStorage.setItem('spotfix_pending_task', JSON.stringify({
-                    ...this.selectedData,
-                    description: taskDescription
-                }));
-
-                let submitTaskResult;
                 try {
-                    submitTaskResult = await this.submitTask(taskDetails);
-                } catch (error) {
-                    this.registrationShowMessage(error.message);
-                    return;
-                }
+                    let taskDetails = {
+                        taskTitle: taskTitle,
+                        taskDescription: taskDescription,
+                        //typeSend: typeSend,
+                        selectedData: this.selectedData,
+                        projectToken: this.params.projectToken,
+                        projectId: this.params.projectId,
+                        accountId: this.params.accountId,
+                        has_files: this.fileUploader.hasFiles(),
+                        task_type: this.new_task_type,
+                        taskMeta: JSON.stringify(
+                            this.selectedData ? this.selectedData : { pageURL: window.location.href }),
+                    };
 
-                if (this.fileUploader?.hasFiles() && submitTaskResult?.initialComment?.commentId) {
-                    const sessionId = localStorage.getItem('spotfix_session_id');
-                    try {
-                        const attachmentsSendResult = await this.fileUploader.sendAttachmentsForComment(
-                            this.params,
-                            sessionId,
-                            submitTaskResult.initialComment.commentId
-                        );
-
-                        if (!attachmentsSendResult.success) {
-                            console.error(attachmentsSendResult);
-                        }
-                    } catch (uploadErr) {
-                        console.error(uploadErr);
+                    if ( userEmail ) {
+                        taskDetails.userEmail = userEmail
                     }
+                    if ( userName ) {
+                        taskDetails.userName = userName
+                    }
+                    if ( userPassword ) {
+                        taskDetails.userPassword = userPassword
+                    } else {
+                        taskDetails.userPassword = document?.getElementById('doboard_task_widget-user_password')?.value
+                    }
+
+                    // Save pending task in LS
+                    localStorage.setItem('spotfix_pending_task', JSON.stringify({
+                        ...this.selectedData,
+                        description: taskDescription
+                    }));
+
+                    let submitTaskResult;
+                    try {
+                        submitTaskResult = await this.submitTask(taskDetails);
+                    } catch (error) {
+                        submitButton.innerText = submitButtonText;
+                        this.registrationShowMessage(error.message);
+                        return;
+                    }
+
+                    if (this.fileUploader?.hasFiles() && submitTaskResult?.initialComment?.commentId) {
+                        const sessionId = localStorage.getItem('spotfix_session_id');
+                        try {
+                            const attachmentsSendResult = await this.fileUploader.sendAttachmentsForComment(
+                                this.params,
+                                sessionId,
+                                submitTaskResult.initialComment.commentId
+                            );
+
+                            if (!attachmentsSendResult.success) {
+                                console.error(attachmentsSendResult);
+                            }
+                        } catch (uploadErr) {
+                            console.error(uploadErr);
+                        }
+                    }
+
+                    if ( submitTaskResult.needToLogin ) {
+                        // @ToDo Do not know what to de here: throw an error or pass log message?
+                        return;
+                    }
+
+                    if ( submitTaskResult.isPublic !== undefined ) {
+                        this.selectedData.isPublic = submitTaskResult.isPublic
+                    }
+
+                    try {
+                        // refersh tasks list after creation
+                        this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
+                        // save updates
+                        storageSaveTasksUpdateData(this.allTasksData);
+                    } catch (tasksErr) {
+                        console.error(tasksErr);
+                    }
+
+                    this.selectedData = {};
+                    await this.createWidgetElement('all_issues');
+                    storageSetWidgetIsClosed(false);
+                    hideContainersSpinner(false);
+                } catch (error) {
+                    submitButton.innerText = submitButtonText;
+                    throw error;
+                } finally {
+                    this.isSubmittingTask = false;
+                    submitButton.style.cursor = 'pointer';
+                    this.updateCreateTaskSubmitState(this.getCreateTaskDescription(taskDescription));
                 }
-
-                // Return the submit button normal state
-                submitButton.disabled = false;
-                submitButton.style.cursor = 'pointer';
-
-                if ( submitTaskResult.needToLogin ) {
-                    // @ToDo Do not know what to de here: throw an error or pass log message?
-                    return;
-                }
-
-                if ( submitTaskResult.isPublic !== undefined ) {
-                    this.selectedData.isPublic = submitTaskResult.isPublic
-                }
-
-                // refersh tasks list after creation
-                this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
-                // save updates
-                storageSaveTasksUpdateData(this.allTasksData);
-
-                this.selectedData = {};
-                await this.createWidgetElement('all_issues');
-                storageSetWidgetIsClosed(false);
-                hideContainersSpinner(false);
             });
         }
     }
 
+    getCreateTaskDescription(fallback) {
+        const editor = window.DescriptionEditorIframe;
+        if (editor?.iframe && editor.editorReady) {
+            return editor.getContent();
+        }
+        return fallback || '';
+    }
+
+
+    updateCreateTaskSubmitState(description) {
+        const submitButton = document.getElementById('doboard_task_widget-submit_button');
+        const tmp = document.createElement('template');
+        tmp.innerHTML = description || '';
+        const isValid = (tmp.content.textContent || '').trim().length >= SPOTFIX_MIN_DESCRIPTION_LENGTH;
+
+        if (submitButton) {
+            submitButton.disabled = !isValid || !!this.isSubmittingTask;
+            submitButton.classList.toggle('doboard_task_widget-submit_button-invalid', !isValid);
+            if (isValid) {
+                submitButton.removeAttribute('title');
+            } else {
+                submitButton.title = 'Please provide at least a few words describing the issue.';
+            }
+        }
+
+        return isValid;
+    }
 
     resetLoginForm() {
         const loginContainer = document.querySelector('.doboard_task_widget-input-container-login');
@@ -963,6 +1012,9 @@ class CleanTalkWidgetDoboard {
 
                 const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
                 const fileUploaderDesc = this.fileUploader;
+                const updateSubmitState = (content) => this.updateCreateTaskSubmitState(content);
+
+                updateSubmitState(savedDescription);
 
 
                 if (window.DescriptionEditorIframe.iframe && !this.nonRequesting) {
@@ -975,7 +1027,9 @@ class CleanTalkWidgetDoboard {
                         savedContent: savedDescription,
                         onChange: function(content) {
                             localStorage.setItem('spotfix-description-ls', content);
+                            updateSubmitState(content);
                         },
+                        onInput: updateSubmitState,
                         handlers: {
                             onAttachmentClick: function() {
                                 fileUploaderDesc?.fileInput?.click();
