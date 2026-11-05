@@ -8050,8 +8050,11 @@ const spotfixIndexedDB = {
         return { needInit: true };
     },
 
-    withStore: async (table, mode = 'readwrite', callback, isRetry = false) => {
+    withStore: async (table, mode = 'readwrite', callback, isRetry = false, dbKey = getSpotfixDBKey()) => {
         const db = await getDB();
+        if (dbKey !== getSpotfixDBKey()) {
+            throw new Error('The session was changed during the database operation');
+        }
         if (!db) return;
 
         let tx;
@@ -8060,7 +8063,7 @@ const spotfixIndexedDB = {
         } catch (error) {
             dbPromise = null;
             if (isRetry) throw error;
-            return spotfixIndexedDB.withStore(table, mode, callback, true);
+            return spotfixIndexedDB.withStore(table, mode, callback, true, dbKey);
         }
 
         return new Promise((resolve, reject) => {
@@ -8214,6 +8217,12 @@ const spotfixApiCall = async (data, method, accountId = undefined) => {
         new URL(endpointUrl);
     } catch (error) {
         throw new Error(`Invalid endpoint URL: ${endpointUrl}`);
+    }
+
+    const isSessionChanged = method.endsWith('_get') && 'session_id' in data &&
+        (data.session_id || '') !== (spotfixStorage.getItem('spotfix_session_id') || '');
+    if (isSessionChanged) {
+        throw new Error('The session was changed during the request');
     }
 
     const requestDbKey = getSpotfixDBKey();
