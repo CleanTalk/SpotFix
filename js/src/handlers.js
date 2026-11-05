@@ -3,15 +3,15 @@ async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
     const result = await spotFixUserConfirmEmailDoboard(emailConfirmationToken);
     // Save session data to LS
     setSpotfixEmail(result.email);
-    localStorage.setItem('spotfix_session_id', result.sessionId);
-    localStorage.setItem('spotfix_user_id', result.userId);
-    localStorage.setItem('spotfix_widget_is_closed', '0');
+    spotfixStorage.setItem('spotfix_session_id', result.sessionId);
+    spotfixStorage.setItem('spotfix_user_id', result.userId);
+    spotfixStorage.setItem('spotfix_widget_is_closed', '0');
     await spotfixIndexedDB.init();
     wsSpotfix.connect();
     wsSpotfix.subscribe();
 
     // Get pending task from LS
-    const pendingTaskRaw = localStorage.getItem('spotfix_pending_task');
+    const pendingTaskRaw = spotfixStorage.getItem('spotfix_pending_task');
     if (!pendingTaskRaw) throw new Error('No pending task data');
 
     let pendingTask;
@@ -36,7 +36,7 @@ async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
     // Create task
     const createdTask = await handleCreateTask(result.sessionId, taskDetails);
     // Clear pending task
-    localStorage.removeItem('spotfix_pending_task');
+    spotfixStorage.removeItem('spotfix_pending_task');
 
     // Return created task
     return createdTask;
@@ -45,7 +45,7 @@ async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
 async function getTasksFullDetails(params, tasksList, currentActiveTaskId, nonRequesting = false) {
     let tasks = tasksList;
     if (tasks.length > 0) {
-        const sessionId = localStorage.getItem('spotfix_session_id');
+        const sessionId = spotfixStorage.getItem('spotfix_session_id');
         const loadActiveTaskDetails = () => Promise.all([
             getTasksAttachmenDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId),
             getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId),
@@ -70,7 +70,11 @@ async function getTasksFullDetails(params, tasksList, currentActiveTaskId, nonRe
         if (!nonRequesting) {
             requests.push(getUserDoboard(sessionId, params.projectToken, params.accountId));
         }
-        await Promise.all(requests);
+        try {
+            await Promise.all(requests);
+        } catch (error) {
+            console.error('SpotFix task details loading error:', error);
+        }
 
         const [comments, attachments, users] = await Promise.all([
             spotfixIndexedDB.getAll(SPOTFIX_TABLE_COMMENTS),
@@ -88,11 +92,12 @@ async function getTasksFullDetails(params, tasksList, currentActiveTaskId, nonRe
             taskName: foundTask?.taskTitle,
         };
     }
+    return {comments: [], users: [], attachments: []};
 }
 
 async function getUserDetails(params, nonRequesting = false) {
-    const sessionId = localStorage.getItem('spotfix_session_id');
-    const currentUserId = localStorage.getItem('spotfix_user_id');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
+    const currentUserId = spotfixStorage.getItem('spotfix_user_id');
     if (currentUserId) {
         if (!nonRequesting) {
             await getUserDoboard(sessionId, params.projectToken, params.accountId, currentUserId);
@@ -124,7 +129,7 @@ async function handleCreateTask(sessionId, taskDetails) {
 }
 
 async function addTaskComment(params, taskId, commentText) {
-    const sessionId = localStorage.getItem('spotfix_session_id');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
     if (!sessionId) throw new Error('No session');
     if (!params.projectToken || !params.accountId) throw new Error('Missing params');
     return await createTaskCommentDoboard(params.accountId, sessionId, taskId, commentText, params.projectToken);
@@ -132,18 +137,32 @@ async function addTaskComment(params, taskId, commentText) {
 
 async function getAllTasks(params, nonRequesting = false) {
     const projectToken = params.projectToken;
-    const sessionId = localStorage.getItem('spotfix_session_id') || '';
+    const sessionId = spotfixStorage.getItem('spotfix_session_id') || '';
+    const dbKey = getSpotfixDBKey();
     let tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
 
     if (!nonRequesting || (!tasksData || !tasksData.length) || !wsSpotfix.isActive()) {
-        await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
+        try {
+            await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
+            tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+        } catch (error) {
+            console.error('SpotFix tasks loading error:', error);
+        }
+    }
+
+    if (dbKey !== getSpotfixDBKey()) {
         tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
     }
 
     storageSaveTasksCount(tasksData);
     // Get only tasks with metadata
     const filteredTaskData = tasksData.filter((task) => {
-        return task.taskMeta;
+        try {
+            const meta = JSON.parse(task.taskMeta);
+            return !!meta && typeof meta === 'object' && !Array.isArray(meta);
+        } catch (error) {
+            return false;
+        }
     });
 
     return filteredTaskData;
@@ -180,7 +199,7 @@ function formatDate(dateStr) {
 }
 
 function getTaskAuthorDetails(params, taskId) {
-    const sessionId = localStorage.getItem('spotfix_session_id');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
     const mockUsersData =
 		[
 		    {
@@ -246,12 +265,12 @@ function registerUser(taskDetails) {
                 document.getElementById('doboard_task_widget-user_password').focus();
                 return response;
             } else if (response.sessionId) {
-                localStorage.setItem('spotfix_session_id', response.sessionId);
-                localStorage.setItem('spotfix_user_id', response.userId);
+                spotfixStorage.setItem('spotfix_session_id', response.sessionId);
+                spotfixStorage.setItem('spotfix_user_id', response.userId);
                 setSpotfixEmail(response.email);
-                localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
+                spotfixStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
                 spotfixIndexedDB.init();
-                localStorage.setItem('spotfix_widget_is_closed', '0');
+                spotfixStorage.setItem('spotfix_widget_is_closed', '0');
                 wsSpotfix.connect();
                 wsSpotfix.subscribe();
                 userUpdate(projectToken, accountId);
@@ -288,12 +307,12 @@ function loginUser(taskDetails) {
     return (showMessageCallback) => loginUserDoboard(userEmail, userPassword)
         .then((response) => {
             if (response.sessionId) {
-                localStorage.setItem('spotfix_session_id', response.sessionId);
-                localStorage.setItem('spotfix_user_id', response.userId);
+                spotfixStorage.setItem('spotfix_session_id', response.sessionId);
+                spotfixStorage.setItem('spotfix_user_id', response.userId);
                 setSpotfixEmail(userEmail);
-                localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
+                spotfixStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
                 checkLogInOutButtonsVisible();
-                localStorage.setItem('spotfix_widget_is_closed', '0');
+                spotfixStorage.setItem('spotfix_widget_is_closed', '0');
                 spotfixIndexedDB.init();
                 wsSpotfix.connect();
                 wsSpotfix.subscribe();
@@ -337,8 +356,8 @@ function forgotPassword(userEmail) {
 }
 
 function userUpdate(projectToken, accountId) {
-    const sessionId = localStorage.getItem('spotfix_session_id');
-    const userId = localStorage.getItem('spotfix_user_id');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
+    const userId = spotfixStorage.getItem('spotfix_user_id');
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     return userUpdateDoboard(projectToken, accountId, sessionId, userId, timezone);
@@ -369,7 +388,7 @@ function spotFixSplitUrl(url) {
 function setToggleStatus(rootElement) {
     const clickHandler = () => {
         const timer = setTimeout(() => {
-            localStorage.setItem('spotfix_widget_is_closed', '1');
+            spotfixStorage.setItem('spotfix_widget_is_closed', '1');
             wsSpotfix.close();
             rootElement.hide();
             clearTimeout(timer);
@@ -385,7 +404,7 @@ function setToggleStatus(rootElement) {
 function checkLogInOutButtonsVisible() {
     const signInLogInButton = document.getElementById('doboard_task_widget-user_menu-signlog_button');
 
-    if (localStorage.getItem('spotfix_session_id')) {
+    if (spotfixStorage.getItem('spotfix_session_id')) {
         if (signInLogInButton) signInLogInButton.style.display = 'none';
         const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
         if (loginContainer) loginContainer.style.display = 'none';
@@ -409,7 +428,7 @@ function checkLogInOutButtonsVisible() {
  */
 
 function changeSize(container) {
-    if (container && +localStorage.getItem('maximize')) {
+    if (container && +spotfixStorage.getItem('maximize')) {
         container.classList.add('doboard_task_widget-container-maximize');
     } else if (container) {
         container.classList.remove('doboard_task_widget-container-maximize');
@@ -538,9 +557,11 @@ function setupBaseWidgetStyles(widget, signal) {
 }
 
 function restoreWidgetPosition(widget, storageKey) {
-    const savedBottom = localStorage.getItem(storageKey);
+    const savedBottom = spotfixStorage.getItem(storageKey);
     if (savedBottom && savedBottom !== 'NaNpx') {
-        widget.style.bottom = savedBottom;
+        const containerBottom = window.innerHeight - widget.parentElement.getBoundingClientRect().bottom;
+        const maxBottom = Math.max(window.innerHeight - widget.offsetHeight - containerBottom, 0);
+        widget.style.bottom = Math.min(parseFloat(savedBottom) || 0, maxBottom) + 'px';
     }
 }
 
@@ -613,7 +634,7 @@ function setupDragAndDropEvents(widget, dragHandle, state, storageKey, signal) {
                 dragHandle.style.opacity = '0';
             }
 
-            localStorage.setItem(storageKey, widget.style.bottom);
+            spotfixStorage.setItem(storageKey, widget.style.bottom);
 
             setTimeout(() => {
                 state.hasDragged = false;

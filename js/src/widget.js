@@ -21,12 +21,12 @@ class CleanTalkWidgetDoboard {
         this.selectedData = selectedData || '';
         this.timerToOpenWrap = timerToOpenWrap;
         this.selectedText = selectedData?.selectedText || '';
-        this.descriptionText = localStorage.getItem('spotfix-description-ls') || '';
+        this.descriptionText = spotfixStorage.getItem('spotfix-description-ls') || '';
         this.srcVariables = {
             buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
             iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
             iconPlus: SpotFixSVGLoader.getAsDataURI('iconPlus'),
-            iconMaximize: +localStorage.getItem('maximize')
+            iconMaximize: +spotfixStorage.getItem('maximize')
                 ? SpotFixSVGLoader.getAsDataURI('iconMinimize')
                 : SpotFixSVGLoader.getAsDataURI('iconMaximize'),
             iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
@@ -92,10 +92,16 @@ class CleanTalkWidgetDoboard {
             }
         } else {
             // Load all tasks
-            const isWidgetClosed = localStorage.getItem('spotfix_widget_is_closed');
+            const isWidgetClosed = spotfixStorage.getItem('spotfix_widget_is_closed');
             const isTasksLoadNeeded = type !== 'create_issue' && type !== 'all_issues';
             if (((isWidgetClosed && !this.selectedText) || !isWidgetClosed) && isTasksLoadNeeded) {
-                this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
+                const tasksRequest = getAllTasks(this.params, this.nonRequesting);
+                this.allTasksData = type === 'wrap'
+                    ? await Promise.race([
+                        tasksRequest,
+                        new Promise((resolve) => setTimeout(() => resolve([]), SPOTFIX_WRAP_TASKS_TIMEOUT)),
+                    ])
+                    : await tasksRequest;
             }
         }
 
@@ -106,16 +112,19 @@ class CleanTalkWidgetDoboard {
             taskHasSiteOwnerUpdate = true;
         } else {
             if (type === 'wrap_review') {
-                taskHasSiteOwnerUpdate = await checkIfTasksHasSiteOwnerUpdates(
-                    this.allTasksData,
-                    this.params
-                );
+                try {
+                    taskHasSiteOwnerUpdate = await checkIfTasksHasSiteOwnerUpdates(
+                        this.allTasksData,
+                        this.params
+                    );
+                } catch (error) {
+                    console.error('SpotFix tasks updates check error:', error);
+                }
             }
         }
         storageSaveTasksUpdateData(this.allTasksData);
-        //check to hide on first run
         if (!storageWidgetCloseIsSet()) {
-            storageSetWidgetIsClosed(true);
+            storageSetWidgetIsClosed(false);
         }
         //check to show if any task has site owner updates
         if (taskHasSiteOwnerUpdate) {
@@ -142,9 +151,9 @@ class CleanTalkWidgetDoboard {
             // Fallback to spotfixConfig when URL has no params or they are incomplete (e.g. WordPress plugin)
             params = {
                 ...params,
-                projectToken: params.projectToken || config.projectToken || '',
-                projectId: params.projectId || config.projectId || '',
-                accountId: params.accountId || config.accountId || ''
+                projectToken: params.projectToken || config?.projectToken || '',
+                projectId: params.projectId || config?.projectId || '',
+                accountId: params.accountId || config?.accountId || ''
             };
 
         } else {
@@ -161,10 +170,10 @@ class CleanTalkWidgetDoboard {
         }
 
         if (params.accountId) {
-            localStorage.setItem('spotfix_company_id', params.accountId);
+            spotfixStorage.setItem('spotfix_company_id', params.accountId);
         }
         if (params.projectToken) {
-            localStorage.setItem('spotfix_project_token', params.projectToken);
+            spotfixStorage.setItem('spotfix_project_token', params.projectToken);
         }
         return params;
     }
@@ -216,7 +225,7 @@ class CleanTalkWidgetDoboard {
                 let userEmail = '';
                 let userPassword = '';
                 const loginSectionElement = document.querySelector('.doboard_task_widget-login');
-                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+                const sessionIdExists = !!spotfixStorage.getItem('spotfix_session_id');
 
                 if ( !sessionIdExists && loginSectionElement && loginSectionElement.classList.contains('active') ) {
                     const userEmailElement = document.getElementById('doboard_task_widget-user_email');
@@ -306,7 +315,7 @@ class CleanTalkWidgetDoboard {
                     }
 
                     // Save pending task in LS
-                    localStorage.setItem('spotfix_pending_task', JSON.stringify({
+                    spotfixStorage.setItem('spotfix_pending_task', JSON.stringify({
                         ...this.selectedData,
                         description: taskDescription
                     }));
@@ -321,7 +330,7 @@ class CleanTalkWidgetDoboard {
                     }
 
                     if (this.fileUploader?.hasFiles() && submitTaskResult?.initialComment?.commentId) {
-                        const sessionId = localStorage.getItem('spotfix_session_id');
+                        const sessionId = spotfixStorage.getItem('spotfix_session_id');
                         try {
                             const attachmentsSendResult = await this.fileUploader.sendAttachmentsForComment(
                                 this.params,
@@ -601,7 +610,7 @@ class CleanTalkWidgetDoboard {
                 } catch (error) {
                     document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
                 }
-                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+                const sessionIdExists = !!spotfixStorage.getItem('spotfix_session_id');
                 const email = getSpotfixEmail();
                 if (sessionIdExists && email && !email.includes('spotfix_')) {
                     const loginEl= document.querySelector('.doboard_task_widget-login');
@@ -726,7 +735,7 @@ class CleanTalkWidgetDoboard {
                         registerOnlyButton.classList.add('doboard_task_widget-hidden');
 
                         this.registrationShowMessage('Account already exists. Please login with your password.', 'notice');
-                    } else if (localStorage.getItem('spotfix_session_id')) {
+                    } else if (spotfixStorage.getItem('spotfix_session_id')) {
                         // Redraw widget after successful registration
                         await this.createWidgetElement('create_issue');
                     }
@@ -759,8 +768,8 @@ class CleanTalkWidgetDoboard {
         let templateVariables = {};
 
         const config = window.SpotfixWidgetConfig;
-        const savedVerticalPosition = localStorage.getItem('doboardWidgetPosBottom');
-        const savedHorizontalPosition = localStorage.getItem('horizontalPosition');
+        const savedVerticalPosition = spotfixStorage.getItem('doboardWidgetPosBottom');
+        const savedHorizontalPosition = spotfixStorage.getItem('horizontalPosition');
         const horizontalPosition = savedHorizontalPosition === 'left' || savedHorizontalPosition === 'right'
         ? savedHorizontalPosition
         : config?.horizontalPosition;
@@ -780,11 +789,11 @@ class CleanTalkWidgetDoboard {
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
             templateVariables = {
-                selectedText: this.selectedText || localStorage.getItem('spotfix-title-ls') || '',
+                selectedText: this.selectedText || spotfixStorage.getItem('spotfix-title-ls') || '',
                 currentDomain: document.location.hostname || '',
-                descriptionText: this.descriptionText || localStorage.getItem('spotfix-description-ls') || '',
+                descriptionText: this.descriptionText || spotfixStorage.getItem('spotfix-description-ls') || '',
                 buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
-                iconMaximize: +localStorage.getItem('maximize')
+                iconMaximize: +spotfixStorage.getItem('maximize')
                     ? SpotFixSVGLoader.getAsDataURI('iconMinimize')
                     : SpotFixSVGLoader.getAsDataURI('iconMaximize'),
                 iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
@@ -793,7 +802,7 @@ class CleanTalkWidgetDoboard {
                 ...this.srcVariables
             };
 
-            const userId = localStorage.getItem('spotfix_user_id') || 0;
+            const userId = spotfixStorage.getItem('spotfix_user_id') || 0;
             templateVariables.userAvatarLoginBlock = SpotFixSVGLoader.getAsDataURI('iconGuestAvatarDark') || '';
             templateVariables.userNameLoginBlock = 'Guest';
             if(userId) {
@@ -834,7 +843,7 @@ class CleanTalkWidgetDoboard {
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
             this.srcVariables.userAvatar = SpotFixSVGLoader.getAsDataURI('iconGuestAvatarDark');
-            const userIdAI = localStorage.getItem('spotfix_user_id') || 0;
+            const userIdAI = spotfixStorage.getItem('spotfix_user_id') || 0;
             if(userIdAI) {
                 const usersList = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
                 this.srcVariables.userAvatar = usersList.find(user => +user?.user_id === +userIdAI)?.avatar?.s || SpotFixSVGLoader.getAsDataURI('iconGuestAvatarDark') || '';
@@ -845,7 +854,7 @@ class CleanTalkWidgetDoboard {
             templateName = 'user_menu';
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
-            const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+            const userMenuVersion = spotfixStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
             templateVariables = {
                 spotfixVersion: userMenuVersion ? 'Spotfix version ' + userMenuVersion + '.' : '',
                 avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
@@ -861,7 +870,7 @@ class CleanTalkWidgetDoboard {
             templateName = 'spot_menu';
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
-            const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+            const spotMenuVersion = spotfixStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
             templateVariables = {
                 spotfixVersion: spotMenuVersion ? 'Spotfix version ' + spotMenuVersion + '.' : '',
                 chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
@@ -903,6 +912,7 @@ class CleanTalkWidgetDoboard {
         if(!nonRequesting) {
             widgetContainer.innerHTML = this.loadTemplate(templateName, templateVariables);
             document.body.appendChild(widgetContainer);
+            spotFixWidgetContainer = widgetContainer;
 
             // remove highlights before any screen called
             spotFixRemoveHighlights();
@@ -913,14 +923,14 @@ class CleanTalkWidgetDoboard {
             if(!nonRequesting) {
                 document.getElementById('spotfix-widget-create-task-visibility').checked = this.new_task_type === 'PUBLIC';
 
-                if (container && +localStorage.getItem('maximize')) {
+                if (container && +spotfixStorage.getItem('maximize')) {
                     container.classList.add('doboard_task_widget-container-maximize');
                 } else if (container) {
                     container.classList.remove('doboard_task_widget-container-maximize');
                 }
                 // highlight selected item during task creation
                 const selection = window.getSelection();
-                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+                const sessionIdExists = !!spotfixStorage.getItem('spotfix_session_id');
                 const email = getSpotfixEmail();
 
                 if (sessionIdExists && email && !email.includes('spotfix_')) {
@@ -938,12 +948,12 @@ class CleanTalkWidgetDoboard {
 
                 const loggedUserNameBlock = document.querySelector('.doboard_task_widget-logged-user-name');
                 if(loggedUserNameBlock) {
-                    if(localStorage.getItem('spotfix_session_id') && !(localStorage.getItem('spotfix_email')?.includes('spotfix_'))) {
+                    if(spotfixStorage.getItem('spotfix_session_id') && !(spotfixStorage.getItem('spotfix_email')?.includes('spotfix_'))) {
                         loggedUserNameBlock.style.display = 'flex';
                     } else loggedUserNameBlock.style.display = 'none';
                 }
 
-                const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
+                const requireFullRegistration = spotfixStorage.getItem('spotfix_require_full_registration') === '1';
                 const titleContainer = document.getElementById('doboard_task_widget-title')?.closest('.doboard_task_widget-input-container');
                 const descriptionContainer = document.getElementById('doboard_task_widget-description-container');
                 const requireFullRegistrationMessage = document.getElementById('doboard_task_widget-require_full_registration');
@@ -1010,7 +1020,7 @@ class CleanTalkWidgetDoboard {
 
                 }
 
-                const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
+                const savedDescription = spotfixStorage.getItem('spotfix-description-ls') || '';
                 const fileUploaderDesc = this.fileUploader;
                 const updateSubmitState = (content) => this.updateCreateTaskSubmitState(content);
 
@@ -1026,7 +1036,7 @@ class CleanTalkWidgetDoboard {
                     window.DescriptionEditorIframe.create({
                         savedContent: savedDescription,
                         onChange: function(content) {
-                            localStorage.setItem('spotfix-description-ls', content);
+                            spotfixStorage.setItem('spotfix-description-ls', content);
                             updateSubmitState(content);
                         },
                         onInput: updateSubmitState,
@@ -1043,7 +1053,7 @@ class CleanTalkWidgetDoboard {
                     });
                 }
 
-                const spotfix_license_status = localStorage.getItem('spotfix_license_status');
+                const spotfix_license_status = spotfixStorage.getItem('spotfix_license_status');
                 if(spotfix_license_status && spotfix_license_status !== "ACTIVE") {
                     this.registrationShowMessage('Your license has expired. Please renew it under the organization owner\'s account by navigating to Profile Picture → Company settings', 'error', true);
                     document.querySelector('.doboard_task_widget-visibility-toggle').style.display = 'none';
@@ -1059,7 +1069,6 @@ class CleanTalkWidgetDoboard {
             }
             break;
         case 'wrap':
-            await this.getTaskCount();
             const wrap = document.querySelector('.doboard_task_widget-wrap');
             if(!nonRequesting && wrap) {
                 wrap?.addEventListener('click', async (e) => {
@@ -1074,10 +1083,11 @@ class CleanTalkWidgetDoboard {
                 });
             };
             hideContainersSpinner(false);
-            if (horizontalPosition === 'left') {
+            if (wrap && horizontalPosition === 'left') {
                 wrap.style.borderTopRightRadius = '4px';
                 wrap.style.borderBottomRightRadius = '4px';
             }
+            this.getTaskCount().catch((error) => console.error('SpotFix task count error:', error));
             break;
         case 'wrap_review':
             const wrapReview = document.querySelector('#doboard_task_widget_button');
@@ -1118,7 +1128,7 @@ class CleanTalkWidgetDoboard {
             spotFixRemoveHighlights();
 
             const nowAI = Date.now();
-            const currentSessionIdAI = localStorage.getItem('spotfix_session_id') || '';
+            const currentSessionIdAI = spotfixStorage.getItem('spotfix_session_id') || '';
             const isSessionStateValidAI = (this.cachedSessionIdAI === currentSessionIdAI);
             const isCacheValid = this.htmlCacheTimestamp && (nowAI - this.htmlCacheTimestamp < 60000) && isSessionStateValidAI;
 
@@ -1169,7 +1179,7 @@ class CleanTalkWidgetDoboard {
             }
             // If there is no cache or it has expired, fetch fresh data.
             let issuesQuantityOnPage = 0;
-            const sessionId = localStorage.getItem('spotfix_session_id');
+            const sessionId = spotfixStorage.getItem('spotfix_session_id');
 
 
             const notificationsRequest = this.nonRequesting ? [] : getNotificationsDoboard(
@@ -1281,7 +1291,7 @@ class CleanTalkWidgetDoboard {
                             iconOfVisibility: elTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicSmall : this.srcVariables.iconLockSmall,
                             iconLinkChain: isTaskWithoutReference ? SpotFixSVGLoader.getAsDataURI('iconCrossedLinkChain') : this.srcVariables.iconLinkChain,
                             taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
-                            taskPageUrl: isTaskWithoutReference ? 'No link with content' : localStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
+                            taskPageUrl: isTaskWithoutReference ? 'No link with content' : spotfixStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
                             taskLastUpdate: formatToDotMonthDate(elTask.taskLastUpdate),
                             nodePath: this.sanitizeNodePath(taskNodePath),
                             taskId: taskId,
@@ -1296,7 +1306,7 @@ class CleanTalkWidgetDoboard {
                             amountOfComments
                         };
 
-                        if (this.isSpotHaveToBeHighlighted(taskData)) {
+                        if (taskData && this.isSpotHaveToBeHighlighted(taskData)) {
                             spotsToBeHighlighted.push(taskData);
                         }
                         clearTimeout(this.timerToOpenWrap);
@@ -1397,7 +1407,7 @@ class CleanTalkWidgetDoboard {
                 this.cachedHTML = finalContainer.innerHTML;
                 this.cachedSpotsToBeHighlighted = spotsToBeHighlighted;
                 this.htmlCacheTimestamp = Date.now();
-                this.cachedSessionIdAI = localStorage.getItem('spotfix_session_id') || '';
+                this.cachedSessionIdAI = spotfixStorage.getItem('spotfix_session_id') || '';
             }
 
             this.bindIssuesClick();
@@ -1410,7 +1420,7 @@ class CleanTalkWidgetDoboard {
             const user = await getUserDetails(this.params, this.nonRequesting);
             if(!this.nonRequesting) await getReleaseVersion();
             let userMenuSpotfixVersion = '';
-            const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+            const userMenuVersion = spotfixStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
             userMenuSpotfixVersion = userMenuVersion ? `Spotfix version ${userMenuVersion}.` : '';
 
             templateVariables.spotfixVersion = userMenuSpotfixVersion || '';
@@ -1435,19 +1445,19 @@ class CleanTalkWidgetDoboard {
             }
 
             buttonLeft?.addEventListener('click', () => {
-                localStorage.setItem('horizontalPosition', 'left');
+                spotfixStorage.setItem('horizontalPosition', 'left');
                 this.createWidgetElement('user_menu');
             });
             buttonRight?.addEventListener('click', () => {
-                localStorage.setItem('horizontalPosition', 'right');
+                spotfixStorage.setItem('horizontalPosition', 'right');
                 this.createWidgetElement('user_menu');
             });
 
             const screenDblckickToggle = document.getElementById('spofix-screen-dblckick-list');
             if (screenDblckickToggle) {
-                screenDblckickToggle.checked = !!+localStorage.getItem('spofix-screen-dblckick');
+                screenDblckickToggle.checked = !!+spotfixStorage.getItem('spofix-screen-dblckick');
                 screenDblckickToggle.addEventListener('change', (el) => {
-                    localStorage.setItem('spofix-screen-dblckick', `${+el.target.checked}`)
+                    spotfixStorage.setItem('spofix-screen-dblckick', `${+el.target.checked}`)
                 });
             }
 
@@ -1475,7 +1485,7 @@ class CleanTalkWidgetDoboard {
                     document.body.appendChild(widgetContainer);
                 }
 
-                const currentUserId = localStorage.getItem('spotfix_user_id') || 0;
+                const currentUserId = spotfixStorage.getItem('spotfix_user_id') || 0;
                 const unsubscribeElem = document.getElementById('unsubscribe_from_spot');
                 const highlightElem = document.getElementById('highlight_the_spot');
 
@@ -1483,10 +1493,10 @@ class CleanTalkWidgetDoboard {
                     unsubscribeElem.checked = true;
                 }
                 if (highlightElem && currentUserId) {
-                    const highlightStatuses = JSON.parse(localStorage.getItem('spotfix_highlight_statuses') || '{}');
+                    const highlightStatuses = JSON.parse(spotfixStorage.getItem('spotfix_highlight_statuses') || '{}');
                     highlightElem.checked = highlightStatuses[currentUserId]?.[currentTaskIdSM] ?? true;
                 }
-                if (!localStorage.getItem('spotfix_session_id')) {
+                if (!spotfixStorage.getItem('spotfix_session_id')) {
                     if (unsubscribeElem) unsubscribeElem.disabled = true;
                     if (highlightElem) highlightElem.disabled = true;
                 }
@@ -1497,7 +1507,7 @@ class CleanTalkWidgetDoboard {
             if (!this.nonRequesting) await getReleaseVersion();
 
             let spotfixVersion = '';
-            const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+            const spotMenuVersion = spotfixStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
             spotfixVersion = spotMenuVersion ? `Spotfix version ${spotMenuVersion}.` : '';
             templateVariables.spotfixVersion = spotfixVersion || '';
 
@@ -1512,10 +1522,10 @@ class CleanTalkWidgetDoboard {
 
             templateVariables.taskName = currentTask.taskTitle;
             templateVariables.taskType = currentTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicDark : this.srcVariables.iconLockDark;
-            templateVariables.doboardLink = `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}?token=${currentTask.taskToken}`;
-            templateVariables.doboardLinkShort = `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}`;
+            templateVariables.doboardLink = `https://app.doboard.com/${spotfixStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}?token=${currentTask.taskToken}`;
+            templateVariables.doboardLinkShort = `https://app.doboard.com/${spotfixStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}`;
 
-            const currentUserId = localStorage.getItem('spotfix_user_id') || 0;
+            const currentUserId = spotfixStorage.getItem('spotfix_user_id') || 0;
 
             const users = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
             const usersFiltered = users.filter(user => currentTask?.viewers?.includes(user.user_id));
@@ -1541,10 +1551,10 @@ class CleanTalkWidgetDoboard {
                 unsubscribeElem.checked = true;
             }
             if (currentUserId && highlightElem) {
-                const highlightStatuses = JSON.parse(localStorage.getItem('spotfix_highlight_statuses') || '{}');
+                const highlightStatuses = JSON.parse(spotfixStorage.getItem('spotfix_highlight_statuses') || '{}');
                 highlightElem.checked = highlightStatuses[currentUserId]?.[this.currentActiveTaskId] ?? true;
             }
-            if (!localStorage.getItem('spotfix_session_id')) {
+            if (!spotfixStorage.getItem('spotfix_session_id')) {
                 if (unsubscribeElem) unsubscribeElem.disabled = true;
                 if (highlightElem) highlightElem.disabled = true;
             }
@@ -1572,7 +1582,7 @@ class CleanTalkWidgetDoboard {
             const currentTaskId = this.currentActiveTaskId;
             const taskCache = this.concreteIssueCache[currentTaskId];
 
-            const currentSessionId = localStorage.getItem('spotfix_session_id') || '';
+            const currentSessionId = spotfixStorage.getItem('spotfix_session_id') || '';
             const isSessionStateValid = taskCache && (taskCache.sessionId === currentSessionId);
             const isConcreteCacheValid = taskCache && (nowCI - taskCache.timestamp < 15000) && !this.nonRequesting && isSessionStateValid;
 
@@ -1606,7 +1616,7 @@ class CleanTalkWidgetDoboard {
                     window.MessageEditorIframe.remove();
                 }
 
-                let savedComments = localStorage.getItem('spotfix_comment_draft');
+                let savedComments = spotfixStorage.getItem('spotfix_comment_draft');
                 let savedDraftText = '';
                 if (savedComments) {
                     try { savedDraftText = JSON.parse(savedComments)[`${currentTaskId}`] || ''; } catch (err){}
@@ -1623,20 +1633,20 @@ class CleanTalkWidgetDoboard {
                     },
                     handlers: {
                         onChange: function(content) {
-                            let contentForSaving = localStorage.getItem('spotfix_comment_draft');
+                            let contentForSaving = spotfixStorage.getItem('spotfix_comment_draft');
                             contentForSaving = contentForSaving ? JSON.parse(contentForSaving) : {};
                             contentForSaving[`${currentTaskId}`] = content;
-                            try { localStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving)); } catch (err){}
+                            try { spotfixStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving)); } catch (err){}
                         },
                         onAttachmentClick: function() { mainThis.fileUploader?.fileInput?.click(); },
                         onScreenshotClick: function() { mainThis.fileUploader?.makeScreenshot(); },
                         onSendComment: function(eventData) {
                             clickHandler(mainThis, null, eventData.content);
-                            let contentForSaving = localStorage.getItem('spotfix_comment_draft');
+                            let contentForSaving = spotfixStorage.getItem('spotfix_comment_draft');
                             if (contentForSaving) {
                                 contentForSaving = JSON.parse(contentForSaving);
                                 delete contentForSaving[`${currentTaskId}`];
-                                localStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
+                                spotfixStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
                             }
                         },
                     },
@@ -1651,9 +1661,10 @@ class CleanTalkWidgetDoboard {
 
             if(!this.nonRequesting && this.currentActiveTaskId) {
                 updateNotificationsDoboard(this.currentActiveTaskId, this.params.projectToken, this.params.accountId)
+                    .catch((error) => console.error('SpotFix notifications update error:', error));
             }
 
-            const userId = localStorage.getItem('spotfix_user_id') || 0;
+            const userId = spotfixStorage.getItem('spotfix_user_id') || 0;
             if(userId) {
                 const usersList = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
                 templateVariables.userAvatar = usersList.find(user => +user?.user_id === +userId)?.avatar?.s || templateVariables.userAvatar;
@@ -1709,7 +1720,7 @@ class CleanTalkWidgetDoboard {
                 }
             }
 
-            templateVariables.contenerClasess = +localStorage.getItem('maximize')
+            templateVariables.contenerClasess = +spotfixStorage.getItem('maximize')
                 ? 'doboard_task_widget-container-maximize doboard_task_widget-container' : 'doboard_task_widget-container'
             if (this.nonRequesting) {
                 const containerEl = document.getElementById('doboard_task_widget_concrete-container');
@@ -1735,7 +1746,7 @@ class CleanTalkWidgetDoboard {
             if (!issuesCommentsContainer) return;
 
             let dayMessagesData = [];
-            const initIssuerID = localStorage.getItem('spotfix_user_id');
+            const initIssuerID = spotfixStorage.getItem('spotfix_user_id');
             let userIsIssuer = false;
             if ( taskDetails.issueComments.length > 0 ) {
                 storageRemoveUnreadUpdateForTaskID(taskDetails.taskId);
@@ -1849,7 +1860,7 @@ class CleanTalkWidgetDoboard {
             }
             if(!this.nonRequesting) {
                 const draftKey =  mainThis.currentActiveTaskId ;
-                let savedComments = localStorage.getItem('spotfix_comment_draft')
+                let savedComments = spotfixStorage.getItem('spotfix_comment_draft')
                 let savedDraftText = '';
                 if (savedComments) {
                     try {
@@ -1879,22 +1890,22 @@ class CleanTalkWidgetDoboard {
                     },
                     handlers: {
                         onChange: function(content) {
-                            let contentForSaving = localStorage.getItem('spotfix_comment_draft');
+                            let contentForSaving = spotfixStorage.getItem('spotfix_comment_draft');
                             contentForSaving = contentForSaving ? JSON.parse(contentForSaving) : {};
                             contentForSaving[`${mainThis.currentActiveTaskId}`] = content;
                             try {
-                                localStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
+                                spotfixStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
                             } catch (err){}
                         },
                         onAttachmentClick: function() { fileUploader?.fileInput?.click(); },
                         onScreenshotClick: function() { fileUploader?.makeScreenshot(); },
                         onSendComment: function(eventData) {
                             clickHandler(mainThis, null, eventData.content);
-                            let contentForSaving = localStorage.getItem('spotfix_comment_draft');
+                            let contentForSaving = spotfixStorage.getItem('spotfix_comment_draft');
                             if (contentForSaving) {
                                 contentForSaving = JSON.parse(contentForSaving);
                                 delete contentForSaving[`${mainThis.currentActiveTaskId}`];
-                                localStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
+                                spotfixStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
                             }
                         },
                     },
@@ -1929,10 +1940,10 @@ class CleanTalkWidgetDoboard {
                 issueTitle: templateVariables.issueTitle,
                 meta: meta,
                 nodePath: nodePath,
-                sessionId: localStorage.getItem('spotfix_session_id') || ''
+                sessionId: spotfixStorage.getItem('spotfix_session_id') || ''
             };
 
-            const spotfix_license_status = localStorage.getItem('spotfix_license_status');
+            const spotfix_license_status = spotfixStorage.getItem('spotfix_license_status');
             const messageContainer = document.getElementById('spotfix_widget_task_send_message_container');
             if(spotfix_license_status && spotfix_license_status !== "ACTIVE") {
                 this.registrationShowMessage('Your license has expired. Please renew it under the organization owner\'s account by navigating to Profile Picture → Company settings', 'error', true);
@@ -1981,7 +1992,7 @@ class CleanTalkWidgetDoboard {
             }
 
             if (mainThis && mainThis?.fileUploader?.hasFiles() && newCommentResponse !== null && newCommentResponse?.hasOwnProperty('commentId')) {
-                const sessionId = localStorage.getItem('spotfix_session_id');
+                const sessionId = spotfixStorage.getItem('spotfix_session_id');
                 const attachmentsSendResult = await mainThis?.fileUploader?.sendAttachmentsForComment(mainThis?.params, sessionId, newCommentResponse?.commentId);
             }
 
@@ -2035,7 +2046,7 @@ class CleanTalkWidgetDoboard {
             }) || '';
         }
         document.querySelector('#unsubscribe_from_spot')?.addEventListener('change', () => {
-            const currentUserId = +localStorage.getItem('spotfix_user_id');
+            const currentUserId = +spotfixStorage.getItem('spotfix_user_id');
 
             if (!currentUserId) return;
 
@@ -2065,11 +2076,11 @@ class CleanTalkWidgetDoboard {
         }) || '';
 
         document.querySelector('#highlight_the_spot')?.addEventListener('change', (e) => {
-            const currentUserId = localStorage.getItem('spotfix_user_id');
+            const currentUserId = spotfixStorage.getItem('spotfix_user_id');
             if (!currentUserId) return;
 
             const highlightStatuses = JSON.parse(
-                localStorage.getItem('spotfix_highlight_statuses') || '{}'
+                spotfixStorage.getItem('spotfix_highlight_statuses') || '{}'
             );
 
             if (!highlightStatuses[currentUserId]) {
@@ -2078,7 +2089,7 @@ class CleanTalkWidgetDoboard {
 
             highlightStatuses[currentUserId][this.currentActiveTaskId] = e.target.checked;
 
-            localStorage.setItem(
+            spotfixStorage.setItem(
                 'spotfix_highlight_statuses',
                 JSON.stringify(highlightStatuses)
             );
@@ -2103,11 +2114,11 @@ class CleanTalkWidgetDoboard {
             const authInputsContainer = document.querySelector('.doboard_task_widget-auth-inputs-container');
 
             const isMaximized =
-                +localStorage.getItem('maximize') &&
+                +spotfixStorage.getItem('maximize') &&
                 container.classList.contains('doboard_task_widget-container-maximize');
 
             if (isMaximized) {
-                localStorage.setItem('maximize', '0');
+                spotfixStorage.setItem('maximize', '0');
                 container.classList.remove('doboard_task_widget-container-maximize');
                 document.querySelector('#maximizeWidgetContainer img').src = SpotFixSVGLoader.getAsDataURI('iconMaximize');
 
@@ -2125,7 +2136,7 @@ class CleanTalkWidgetDoboard {
                         .forEach(el => (el.style.display = 'inline'));
                 }
             } else {
-                localStorage.setItem('maximize', '1');
+                spotfixStorage.setItem('maximize', '1');
                 container.classList.add('doboard_task_widget-container-maximize');
 
                 document.querySelector('#maximizeWidgetContainer img').src = SpotFixSVGLoader.getAsDataURI('iconMinimize');
@@ -2170,8 +2181,8 @@ class CleanTalkWidgetDoboard {
             const context = this;
             accordionController.addEventListener('click', function() {
                 const loginSection = this.closest('.doboard_task_widget-login');
-                const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
-                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+                const requireFullRegistration = spotfixStorage.getItem('spotfix_require_full_registration') === '1';
+                const sessionIdExists = !!spotfixStorage.getItem('spotfix_session_id');
 
                 if (requireFullRegistration && !sessionIdExists) {
                     loginSection.classList.add('active');
@@ -2182,7 +2193,7 @@ class CleanTalkWidgetDoboard {
                 // Scroll
                 context.positionWidgetContainer();
                 setTimeout(() => {
-                    if( +localStorage.getItem('maximize') ) {
+                    if( +spotfixStorage.getItem('maximize') ) {
                         document.querySelector('.doboard_task_widget-auth-inputs-container')
                             .classList.add('doboard_task_widget-auth-inputs-container-maximized');
                     } else {
@@ -2206,7 +2217,7 @@ class CleanTalkWidgetDoboard {
         }
 
         document.getElementById('doboard_task_widget-title')?.addEventListener('change', (e) => {
-            localStorage.setItem('spotfix-title-ls', e.target.value);
+            spotfixStorage.setItem('spotfix-title-ls', e.target.value);
             if (e.target.value.length < 1) {
                 document.querySelector('.spotfix_placeholder_title').style.display = 'block';
             }
@@ -2347,14 +2358,14 @@ class CleanTalkWidgetDoboard {
     };
 
     async getTaskCount() {
-        if (!localStorage.getItem('spotfix_session_id')) {
+        if (!spotfixStorage.getItem('spotfix_session_id')) {
             return {};
         }
 
         const projectToken = this.params.projectToken;
-        const sessionId = localStorage.getItem('spotfix_session_id');
+        const sessionId = spotfixStorage.getItem('spotfix_session_id');
 
-        const tasksCountLS = localStorage.getItem('spotfix_tasks_count');
+        const tasksCountLS = spotfixStorage.getItem('spotfix_tasks_count');
 
         let tasksCount;
         let tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
@@ -2377,16 +2388,16 @@ class CleanTalkWidgetDoboard {
             notificationsCount = await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
             notificationsCount = [...new Map(notificationsCount.map((item) => [item.task_id, item])).values()];
             notificationsCount = notificationsCount.filter((item) => activeTasksIds.includes(item.task_id)).length;
-            localStorage.setItem('spotfix-tasks-notifications-count', `${notificationsCount}`);
+            spotfixStorage.setItem('spotfix-tasks-notifications-count', `${notificationsCount}`);
         } else {
-            notificationsCount = localStorage.getItem('spotfix-tasks-notifications-count');
+            notificationsCount = spotfixStorage.getItem('spotfix-tasks-notifications-count');
         }
 
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
         if ( taskCountElement && +notificationsCount ) {
             taskCountElement.innerText = ksesFilter(notificationsCount);
             taskCountElement.classList.remove('hidden');
-            if (localStorage.getItem('horizontalPosition') === 'left' || window.SpotfixWidgetConfig?.horizontalPosition === 'left') taskCountElement.style.left = '10px';
+            if (spotfixStorage.getItem('horizontalPosition') === 'left' || window.SpotfixWidgetConfig?.horizontalPosition === 'left') taskCountElement.style.left = '10px';
         }
     }
 
@@ -2401,7 +2412,7 @@ class CleanTalkWidgetDoboard {
      * Submit the task
      */
     async submitTask(taskDetails) {
-        if (!localStorage.getItem('spotfix_session_id')) {
+        if (!spotfixStorage.getItem('spotfix_session_id')) {
             await registerUser(taskDetails)(this.registrationShowMessage);
             if ( taskDetails.userPassword ) {
                 await loginUser(taskDetails)(this.registrationShowMessage);
@@ -2409,7 +2420,7 @@ class CleanTalkWidgetDoboard {
             }
         }
 
-        const sessionId = localStorage.getItem('spotfix_session_id');
+        const sessionId = spotfixStorage.getItem('spotfix_session_id');
 
         if ( ! sessionId ) {
             // @ToDo move this return in register block code
@@ -2833,7 +2844,7 @@ class CleanTalkWidgetDoboard {
 
         // Get user data
         let userData = null;
-        if (localStorage.getItem('spotfix_session_id')) {
+        if (spotfixStorage.getItem('spotfix_session_id')) {
             try {
                 userData = await getUserDetails(params);
             } catch (error) {

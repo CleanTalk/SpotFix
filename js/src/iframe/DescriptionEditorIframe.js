@@ -209,6 +209,7 @@ class DescriptionEditorIframe {
                     }
                 });
                 window.tinymce.init({
+                license_key: 'gpl',
                 target: document.getElementById("tinymce-editor"),
                 icons: "icon_pack_SpotFix",
                 plugins: 'link lists',
