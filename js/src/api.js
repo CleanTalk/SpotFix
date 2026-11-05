@@ -45,6 +45,7 @@ const spotfixApiCall = async (data, method, accountId = undefined) => {
         throw new Error(`Invalid endpoint URL: ${endpointUrl}`);
     }
 
+    const requestDbKey = getSpotfixDBKey();
     const controller = new AbortController();
     const abortTimer = method.endsWith('_get')
         ? setTimeout(() => controller.abort(), SPOTFIX_API_READ_TIMEOUT)
@@ -70,6 +71,10 @@ const spotfixApiCall = async (data, method, accountId = undefined) => {
         }
     } finally {
         clearTimeout(abortTimer);
+    }
+
+    if (method.endsWith('_get') && requestDbKey !== getSpotfixDBKey()) {
+        throw new Error('The session was changed during the request');
     }
 
     if (!responseBody || typeof responseBody !== 'object') {

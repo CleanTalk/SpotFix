@@ -19,6 +19,7 @@ const SPOTFIX_DB_OPEN_TIMEOUT = 3000;
 const SPOTFIX_DB_RETRY_DELAY = 30000;
 
 let dbPromise = null;
+let dbPromiseKey = null;
 let dbFailedAt = 0;
 const spotfixMemoryTables = new Map();
 
@@ -32,11 +33,26 @@ function getRowsWithKey(table, data) {
     return rows.filter((row) => row && row[keyPath] !== undefined && row[keyPath] !== null);
 }
 
-function writeMemoryTable(table, rows, isReplace) {
+function getCurrentMemoryTables() {
+    const dbKey = getSpotfixDBKey();
+    [...spotfixMemoryTables.keys()]
+        .filter((key) => key !== dbKey)
+        .forEach((key) => spotfixMemoryTables.delete(key));
+    if (!spotfixMemoryTables.has(dbKey)) {
+        spotfixMemoryTables.set(dbKey, new Map());
+    }
+    return spotfixMemoryTables.get(dbKey);
+}
+
+function writeMemoryTable(dbKey, table, rows, isReplace) {
+    if (dbKey !== getSpotfixDBKey()) {
+        return;
+    }
+    const tables = getCurrentMemoryTables();
     const keyPath = getTableKeyPath(table);
-    const memoryTable = (!isReplace && spotfixMemoryTables.get(table)) || new Map();
+    const memoryTable = (!isReplace && tables.get(table)) || new Map();
     rows.forEach((row) => memoryTable.set(row[keyPath], row));
-    spotfixMemoryTables.set(table, memoryTable);
+    tables.set(table, memoryTable);
 }
 
 function getSpotfixDBKey() {
@@ -97,14 +113,19 @@ function openIndexedDB(name, version) {
 }
 
 function getDB() {
+    const dbKey = getSpotfixDBKey();
+    if (dbPromise && dbPromiseKey !== dbKey) {
+        dbPromise = null;
+    }
+
     if (!dbPromise) {
-        const dbKey = getSpotfixDBKey();
         if (!dbKey) return null;
 
         if (Date.now() - dbFailedAt < SPOTFIX_DB_RETRY_DELAY) {
             return Promise.reject(new Error('IndexedDB is unavailable'));
         }
 
+        dbPromiseKey = dbKey;
         dbPromise = openIndexedDB(
             getDBNameByKey(dbKey),
             spotfixIndexedDBVersion
@@ -178,22 +199,26 @@ const spotfixIndexedDB = {
     },
 
     put: async (table, data) => {
+        const dbKey = getSpotfixDBKey();
         const rows = getRowsWithKey(table, data);
         try {
             await spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
                 rows.forEach((item) => store.put(item));
             });
-            if (spotfixMemoryTables.has(table)) {
-                writeMemoryTable(table, rows, false);
+            if (getCurrentMemoryTables().has(table)) {
+                writeMemoryTable(dbKey, table, rows, false);
             }
         } catch (error) {
             console.error('SpotFix IndexedDB write error:', error);
-            writeMemoryTable(table, rows, false);
+            if (!getCurrentMemoryTables().has(table)) {
+                writeMemoryTable(dbKey, table, await spotfixIndexedDB.getAll(table), false);
+            }
+            writeMemoryTable(dbKey, table, rows, false);
         }
     },
 
     delete: async (table, key) => {
-        spotfixMemoryTables.get(table)?.delete(key);
+        getCurrentMemoryTables().get(table)?.delete(key);
         try {
             await spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
                 store.delete(key);
@@ -204,7 +229,7 @@ const spotfixIndexedDB = {
     },
 
     clearTable: async (table) => {
-        spotfixMemoryTables.delete(table);
+        getCurrentMemoryTables().delete(table);
         try {
             await spotfixIndexedDB.withStore(table, 'readwrite', (store) =>
                 store.clear()
@@ -215,21 +240,24 @@ const spotfixIndexedDB = {
     },
 
     clearPut: async (table, data) => {
+        const dbKey = getSpotfixDBKey();
         const rows = getRowsWithKey(table, data);
         try {
             await spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
                 store.clear();
                 rows.forEach((item) => store.put(item));
             });
-            spotfixMemoryTables.delete(table);
+            if (dbKey === getSpotfixDBKey()) {
+                getCurrentMemoryTables().delete(table);
+            }
         } catch (error) {
             console.error('SpotFix IndexedDB write error:', error);
-            writeMemoryTable(table, rows, true);
+            writeMemoryTable(dbKey, table, rows, true);
         }
     },
 
     getAll: async (table, indexName, value) => {
-        const memoryTable = spotfixMemoryTables.get(table);
+        const memoryTable = getCurrentMemoryTables().get(table);
         if (memoryTable) {
             const memoryRows = [...memoryTable.values()];
             return indexName && value !== undefined
