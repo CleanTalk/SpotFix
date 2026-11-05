@@ -7834,6 +7834,47 @@
 //# sourceMappingURL=dom-to-image-more.min.js.map
 
 let spotFixCSS = `.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after{content:"";position:absolute;left:8%;top:100%;transform:translateX(-50%);pointer-events:none;background:0 0}.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip::after{border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid #545b61;display:block}.doboard_task_widget-send_message_paperclip{position:relative}.doboard_task_widget-send_message_paperclip .doboard_task_widget-paperclip-tooltip{display:none;position:absolute;left:0;bottom:0;transform:translateX(-3%) translateY(-43px);background:#545b61;color:#fff;border:none;border-radius:3px;padding:10px 16px;font-size:13px;line-height:1.4;z-index:100;min-width:220px;max-width:320px;text-align:left;pointer-events:none;text-transform:none}.doboard_task_widget-send_message_paperclip:hover .doboard_task_widget-paperclip-tooltip{display:block}.doboard_task_widget *{font-family:Inter,sans-serif;font-weight:400;font-size:14px;line-height:130%;color:#40484f}.doboard_task_widget-header *{color:#252a2f;margin:0}.doboard_task_widget-header-icons{display:flex;gap:12px}.doboard_task_widget-close_btn{transform:translateY(-2px)}#openUserMenuButton{transform:scale(.85)}#maximizeWidgetContainer{transform:scale(.8)}.doboard_task_widget a{text-decoration:underline;color:#2f68b7}.doboard_task_widget a:hover{text-decoration:none}.doboard_task_widget{position:fixed;bottom:20px;z-index:9999;vertical-align:middle;transition:top .1s;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}.doboard_task_widget_cursor-pointer{cursor:pointer}.doboard_task_widget-container-maximize .doboard_task_widget-field{display:flex;justify-content:space-between;flex-wrap:wrap;column-gap:32px}.doboard_task_widget-container-maximize .doboard_task_widget-field .doboard_task_widget-submit_button{flex-grow:1;width:none;max-width:40%;min-width:300px!important}.doboard_task_widget-input-container-textarea .tox-tinymce{position:absolute}.doboard_task_widget-container-maximize{width:80vw!important;max-width:780px!important;max-height:75vh!important;min-height:75vh!important;display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-container{width:430px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;-moz-flex-direction:column;min-height:490px}.doboard_task_widget-header{display:flex;min-height:41px;padding:0 16px;background-color:#f3f6f9;border-radius:8px 8px 0 0;border:1px solid #bbc7d1;border-bottom:none;justify-content:space-between;align-items:center;color:#fff}.doboard_task_widget-user_menu-header{display:flex;padding:16px 16px;border:1px #bbc7d1 solid;border-bottom-color:#ebf0f4;border-radius:8px 8px 0 0;flex-direction:column;align-items:center;color:#252a2f;background-color:#f3f6f9}.doboard_task_widget-user_menu-header-top{display:flex;height:fit-content;align-items:center;width:100%;justify-content:space-between}.doboard_task_widget-user_menu-header-avatar{max-width:60px;max-height:60px;width:60px;height:60px;border-radius:50%;margin-bottom:4px}.doboard_task_widget-task_menu-item,.doboard_task_widget-user_menu-item{display:flex;align-items:center;border-bottom:1px #ebf0f4 solid;padding:0 16px;height:52px}.doboard_task_widget-content{flex:1;overflow-y:auto;background:#fff;border-radius:0 0 8px 8px;border:1px;border-style:none solid solid solid;border-color:#bbc7d1;box-shadow:0 4px 15px 8px #cacACA40;scrollbar-width:none;max-height:60vh}.doboard_task_widget-container-maximize .doboard_task_widget-content{max-height:inherit}.doboard_task_widget-element-container{margin-bottom:16px}.doboard_task_widget-element-container span{color:#707a83;font-size:12px;font-weight:400}.doboard_task_widget-wrap{box-shadow:none;position:fixed;right:-50px;padding:0;cursor:pointer;width:69px;height:52px;border-top-left-radius:4px;border-bottom-left-radius:4px;background-color:rgba(255,255,255,.9);border:1px #ebf0f4 solid;display:flex;align-items:center;justify-content:center}.doboard_task_widget-wrap img{width:32px;height:32px;transform:scaleX(-1)}.doboard_task_widget-wrap.hidden{display:none}.wrap_review{width:164px;min-width:164px;display:flex;flex-direction:column;height:fit-content}.wrap_review img{width:28px;height:28px;transform:scaleX(-1)}#doboard_task_widget_goToListButton{width:100%;padding-left:16px}#doboard_task_widget_goToListButton img{transform:none}#doboard_task_widget_goToListButton span{margin-left:16px;color:#707a83!important;font-weight:400;font-size:12px;text-transform:none!important}.wrap_review span{height:54px;display:flex;justify-content:flex-start;align-items:center}.wrap_review:hover{background-color:#fff}@media (max-width:480px){.doboard_task_widget-wrap{right:-70px}}#review_content_button_text{color:#d5991a;margin-left:6px;font-weight:600;font-size:14px;text-transform:none!important}.wrap_review::after{display:none}#doboard_task_widget-task_count{position:absolute;top:-12px;right:4px;width:22px;height:22px;opacity:1;background:#ef8b43;border-radius:50%;color:#fff;text-align:center;line-height:22px}#doboard_task_widget-task_count.hidden{width:0;height:0;opacity:0}.doboard_task_widget-input-container{position:relative;margin-bottom:16px}.doboard_task_widget-hidden,.doboard_task_widget-input-container.hidden{display:none!important}.doboard_task_widget-input-container .doboard_task_widget-field{padding:0 8px;border-radius:4px;border:1px solid #bbc7d1;outline:0!important;appearance:none;width:100%;height:40px;background:#fff;color:#000;max-width:-webkit-fill-available;max-width:-moz-available}.doboard_task_widget-field:focus{border-color:#2f68b7}.doboard_task_widget-input-container textarea.doboard_task_widget-field{min-height:94px;padding-top:11px;padding-bottom:11px}.doboard_task_widget-field+label{color:#252a2f;background:#fff;position:absolute;top:20px;left:8px;transform:translateY(-50%);transition:all .2s ease-in-out;pointer-events:none}.doboard_task_widget-field:focus+label,.doboard_task_widget-field:not(:placeholder-shown)+label{font-size:10px;top:0;left:12px;padding:0 4px;z-index:5}.doboard_task_widget-field:focus+label{color:#2f68b7}.doboard_task_widget-logged-user-name,.doboard_task_widget-login{margin-bottom:16px;border:1px solid #bbc7d1;border-radius:4px;padding:11px 8px 8px 8px}.doboard_task_widget-logged-user-name{display:flex;align-items:center}.doboard_task_widget-login.hidden{display:none}.doboard_task_widget-login .doboard_task_widget-accordion{height:0;overflow:hidden;opacity:0;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-accordion{height:auto;overflow:visible;opacity:1}.doboard_task_widget-accordion i{font-size:12px}.doboard_task_widget-login .doboard_task_widget-input-container:last-child{margin-bottom:0}.doboard_task_widget-login-icon span b{font-weight:600;font-size:12px;display:inline}.doboard_task_widget-login-icon span span{font-size:12px;display:inline}.active .doboard_task_widget-login-icon span b{display:none}.active .doboard_task_widget-login-icon span span{display:none}.active .doboard_task_widget-login-icon img{display:none}.doboard_task_widget-login .doboard_task_widget-login-icon{display:inline-flex;position:relative;width:stretch;padding-right:24px;cursor:pointer}.doboard_task_widget-login .doboard_task_widget-login-icon span::after{position:absolute;top:12px;right:4px;content:"";display:block;width:10px;height:10px;transform:rotate(45deg);border:2px solid #40484f;border-radius:1px;border-top:none;border-left:none;transition:all .2s ease-in-out}.doboard_task_widget-login.active .doboard_task_widget-login-icon span::after{transform:rotate(-135deg);top:7px}.doboard_task_widget-login-icon.doboard_task_widget-login-icon-hidden span::after{display:none}.doboard_task_widget-logged-user-name b{font-weight:600}.doboard_task_widget-logged-user-name{font-size:12px}.doboard_task_widget-submit_button{min-height:48px;width:100%;max-width:500px;border-radius:6px;font-family:Inter,sans-serif;font-size:16px;line-height:150%;cursor:pointer;transition:all .2s ease-in-out;background:0 0;border:1px solid #22a475;color:#22a475;font-weight:600}.doboard_task_widget-submit_button:hover{background:#22a475;color:#fff}.doboard_task_widget-submit_button:disabled{background:rgba(117,148,138,.92);color:#fff;cursor:wait}.doboard_task_widget-submit_button.doboard_task_widget-submit_button-invalid:disabled{background:#bbc7d1;cursor:not-allowed}.doboard_task_widget-login-buttons-wrapper{display:flex;gap:10px;margin-bottom:10px}.doboard_task_widget-login-buttons-wrapper .doboard_task_widget-submit_button{margin-bottom:0;width:auto;min-height:32px;font-size:14px;padding:4px 12px}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-forgot_password-black,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-on_phantom_login_page{flex:1;background:#fff;border:1px solid #22a475;color:#22a475}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-forgot_password-black:hover,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-on_phantom_login_page:hover{background:#f0fdf4;color:#1c7857}.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-login_button,.doboard_task_widget-login-buttons-wrapper #doboard_task_widget-restore_password_button{flex:2}.doboard_task_widget-issue-title{display:inline-flex;flex-direction:column;transform:translateY(-2px);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-issue-title>:last-child{color:#707a83;text-align:center;font-size:10px;font-weight:400}.doboard_task_widget-hidden_element{opacity:0}.doboard_task_widget-message-wrapper{border-radius:4px;padding:8px;margin-bottom:14px;display:grid;justify-items:center}.doboard_task_widget-message-wrapper.hidden{display:none}.doboard_task_widget-error_message{background:#fdd;border:1px solid #cf6868}.doboard_task_widget-notice_message{background:#dde9ff;border:1px solid #68a6cf}.doboard_task_widget-error_message-wrapper.hidden{display:none}#doboard_task_widget-error_message-header{font-weight:600}#doboard_task_widget-error_message{text-align:center}.doboard_task_widget-task_row{display:flex;max-height:67px;cursor:pointer;align-items:center;justify-content:space-between;padding:0 15px}.doboard_task_widget-task_row:last-child{margin-bottom:0}.doboard_task_widget-task-text_bold{font-weight:700}.doboard_task_widget-element_selection,.doboard_task_widget-image_selection,.doboard_task_widget-text_selection,.doboard_task_widget-text_selection.image-highlight>img{background:#fff07e}.doboard_task_widget-issues_list_empty{text-align:center;margin:20px 0}.doboard_task_widget-avatar_container{display:flex;height:44px;width:44px;border-radius:50%;background-repeat:no-repeat;background-position:center;background-size:100%}.doboard_task_widget-avatar_placeholder{min-height:44px;min-width:44px;border-radius:50%;font-size:24px;line-height:1.2083333333;padding:0;background:#1c7857;display:inline-grid;align-content:center;justify-content:center}.doboard_task_widget-avatar-initials{color:#fff;width:inherit;text-align:center}.doboard_task_widget-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover}.doboard_task_widget-description_container{height:62px;width:calc(100% - 44px - 8px);border-bottom:1px solid #ebf0f4;margin-left:8px;padding-top:4px;cursor:default;display:flex;flex-direction:column;justify-content:center}.doboard_task_widget-task_row:last-child .doboard_task_widget-description_container{border-bottom:none}.doboard_task_widget-all_issues{padding-bottom:0}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{overflow:auto;max-height:85vh;display:none}.doboard_task_widget-all_issues-container{scrollbar-width:none;margin-top:10px;min-height:60vh}.doboard_task_widget-content.doboard_task_widget-concrete_issue{padding:0;display:flex;flex-direction:column}.doboard_task_widget-concrete_issues-container{padding:10px 16px 5px;flex-grow:1}.doboard_task_widget-all_issues-container::-webkit-scrollbar,.doboard_task_widget-all_issues::-webkit-scrollbar,.doboard_task_widget-concrete_issues-container::-webkit-scrollbar,.doboard_task_widget-content::-webkit-scrollbar{width:0}.doboard_task_widget-task_title{font-weight:700;display:flex;justify-content:space-between;align-items:center}.doboard_task_widget-task_title span{font-weight:700;display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-task_title-details{display:flex;max-width:calc(100% - 65px);align-items:center}.doboard_task_widget-task_title-unread_block{opacity:0;height:8px;width:8px;background:#f08c43;border-radius:50%;display:inline-block;font-size:8px;font-weight:600;position:relative}.doboard_task_widget-task_title-unread_block.unread{opacity:1}.doboard_task_widget-task_last_message{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:85%;height:36px}.doboard_task_widget-task_page_url{max-width:70%;height:30px;display:flex;align-items:flex-end}.doboard_task_widget-task_page_url a{color:#40484f;text-decoration:none;margin-left:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.doboard_task_widget-bottom{display:flex;justify-content:space-between;align-items:flex-end}.doboard_task_widget-bottom-is-norelevant{padding:4px;border-radius:16px;background-color:#f3f6f9;text-align:center;color:#707a83;font-size:10px;font-weight:400}.doboard_task_widget-bottom-is-fixed{border-radius:10px;font-size:10px;font-weight:400;color:#1c7857;background:#ebfaf4 url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkiIGhlaWdodD0iMTkiIHZpZXdCb3g9IjAgMCAxOSAxOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCjxwYXRoIGQ9Ik03LjA4MTE5IDAuMjIzNDM0QzguOTkxNjkgLTAuMjA4MTY3IDEwLjk5MTMgLTAuMDExMjE5NCAxMi43ODA0IDAuNzg1OTM0QzEzLjE1ODQgMC45NTQ2MjQgMTMuMzI4NiAxLjM5ODAzIDEzLjE2MDMgMS43NzYxN0MxMi45OTE3IDIuMTU0MTkgMTIuNTQ4MiAyLjMyNDI0IDEyLjE3MDEgMi4xNTYwNUMxMC42NzY0IDEuNDkwNTIgOS4wMDcyNiAxLjMyNiA3LjQxMjI1IDEuNjg2MzJDNS44MTcxNyAyLjA0NjcxIDQuMzgwOTcgMi45MTI5NiAzLjMxODUgNC4xNTYwNUMyLjI1NjIzIDUuMzk5MDEgMS42MjQ0MSA2Ljk1MjI5IDEuNTE2NzQgOC41ODM3OUMxLjQwOTI0IDEwLjIxNTQgMS44MzE4NCAxMS44MzkgMi43MjE4MiAxMy4yMTA3QzMuNjExNzkgMTQuNTgyMiA0LjkyMTY0IDE1LjYyOTQgNi40NTUyMSAxNi4xOTYxQzcuOTg5MDIgMTYuNzYyNiA5LjY2NTUzIDE2LjgxODkgMTEuMjMzNSAxNi4zNTUzQzEyLjgwMTYgMTUuODkxNiAxNC4xNzgzIDE0LjkzMzUgMTUuMTU3NCAxMy42MjM4QzE2LjEzNjQgMTIuMzE0MiAxNi42NjYxIDEwLjcyMjcgMTYuNjY3MSA5LjA4NzY5TDE4LjE2NzEgOS4wODg2N0MxOC4xNjU4IDExLjA0NzEgMTcuNTMxMiAxMi45NTM2IDE2LjM1ODUgMTQuNTIyM0MxNS4xODU5IDE2LjA5MDcgMTMuNTM3MyAxNy4yMzg0IDExLjY1OTMgMTcuNzkzN0M5Ljc4MTEgMTguMzQ5MSA3Ljc3MjkzIDE4LjI4MiA1LjkzNTY4IDE3LjYwMzNDNC4wOTg1IDE2LjkyNDYgMi41MjkxMiAxNS42NzAxIDEuNDYzMDMgMTQuMDI3MUMwLjM5NzAzNSAxMi4zODQxIC0wLjEwOTEwOSAxMC40Mzk1IDAuMDE5NjY4MyA4LjQ4NTE1QzAuMTQ4NjA3IDYuNTMwOCAwLjkwNjMyMyA0LjY3MDMzIDIuMTc4ODUgMy4xODE0NEMzLjQ1MTM2IDEuNjkyNjggNS4xNzA4OCAwLjY1NTE2MiA3LjA4MTE5IDAuMjIzNDM0WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPHBhdGggZD0iTTE2Ljg4NTkgMS44OTA0M0MxNy4xNzg2IDEuNTk3NTMgMTcuNjUzNCAxLjU5Nzg0IDE3Ljk0NjQgMS44OTA0M0MxOC4yMzkzIDIuMTgzMTYgMTguMjQwMSAyLjY1Nzk2IDE3Ljk0NzQgMi45NTA5N0w5LjYxMzQyIDExLjI5MjhDOS40NzI4MiAxMS40MzMzIDkuMjgxOTYgMTEuNTEyNCA5LjA4MzE1IDExLjUxMjVDOC44ODQzMiAxMS41MTI1IDguNjkzNDggMTEuNDMzMyA4LjU1Mjg3IDExLjI5MjhMNi4wNTI4NyA4Ljc5Mjc3QzUuNzYwMTQgOC40OTk5IDUuNzYwMTEgOC4wMjUwOCA2LjA1Mjg3IDcuNzMyMjJDNi4zNDU3MiA3LjQzOTM3IDYuODIwNTEgNy40Mzk0NiA3LjExMzQyIDcuNzMyMjJMOS4wODIxNyA5LjcwMDk3TDE2Ljg4NTkgMS44OTA0M1oiIGZpbGw9IiMyMkE0NzUiLz4NCjxwYXRoIGQ9Ik0xNy40MTcxIDcuNTcxMDlDMTcuODMxIDcuNTcxNDQgMTguMTY3IDcuOTA3MTYgMTguMTY3MSA4LjMyMTA5VjkuMDg4NjdMMTcuNDE3MSA5LjA4NzY5SDE2LjY2NzFWOC4zMjEwOUMxNi42NjcyIDcuOTA2OTQgMTcuMDAzIDcuNTcxMDkgMTcuNDE3MSA3LjU3MTA5WiIgZmlsbD0iIzIyQTQ3NSIvPg0KPC9zdmc+) no-repeat 8px center;padding:4px 4px 4px 30px}.doboard_task_widget-bottom-is-fixed-task-block{text-align:center}.doboard_task_widget-bottom-is-fixed-task{background:#f3f6f9;color:#1c7857;display:inline-block;border-radius:10px;padding:5px 8px;margin:0 auto}.doboard_task_widget-task_row-green{background:#f3f6f9}.doboard_task_widget-task_row-green .doboard_task_widget-description_container{border-bottom:1px solid #e5e5e5}.doboard_task_widget_return_to_all{display:flex;gap:8px;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:wrap}.doboard_task_widget-task_title-last_update_time{font-family:Inter,serif;font-weight:400;font-style:normal;font-size:11px;leading-trim:NONE;line-height:100%}.doboard_task_widget-task_title_public_status_img{opacity:50%;margin-left:5px;scale:90%}.doboard_task_widget-description-textarea{resize:none}.doboard_task_widget-switch_row{display:flex;align-items:center;gap:12px;margin:16px 0;justify-content:space-between}.doboard_task_widget-switch-label{font-weight:600;font-size:16px;height:24px;align-content:center}.doboard_task_widget-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}.doboard_task_widget-switch input{opacity:0;width:0;height:0}.doboard_task_widget-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;border-radius:24px;transition:.2s}.doboard_task_widget-slider:before{position:absolute;content:"";height:20px;width:20px;left:2px;bottom:2px;background-color:#fff;border-radius:50%;transition:.2s}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider{background-color:#65d4ac}.doboard_task_widget-switch input:checked+.doboard_task_widget-slider:before{transform:translateX(20px)}.doboard_task_widget-switch-img{width:24px;height:24px;flex-shrink:0}.doboard_task_widget-switch-center{display:flex;gap:2px;flex-direction:column;-moz-flex-direction:column;flex:1 1 auto;min-width:0}.doboard_task_widget-switch-desc{display:block;font-size:12px;color:#707a83;margin:0;line-height:1.2;max-width:180px;word-break:break-word}.doboard_task_widget-concrete_issue-day_content{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-concrete_issue_day_content-month_day{text-align:center;font-weight:400;font-size:12px;line-height:100%;padding:8px;opacity:.75}.doboard_task_widget-concrete_issue_day_content-messages_wrapper{display:flex;flex-direction:column;-moz-flex-direction:column}.doboard_task_widget-comment_data_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;margin-bottom:15px;align-items:flex-end}.doboard_task_widget-comment_text_container{position:relative;width:calc(100% - 44px - 5px);height:auto;margin-left:5px;background:#f3f6f9;border-radius:16px}.doboard_task_widget-comment_text_container:after{content:"";position:absolute;bottom:0;left:-5px;width:13px;height:19px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAxMyAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAuMTEyNTggMTkuMDMzNEM1LjI5NDg2IDE5LjgyMDEgMTAuNjEwNSAxNy45NzQxIDEyLjI3MTUgMTYuMTcxM0MxMi4yNzE1IDE2LjE3MTMgMTAuOTYyMyAtMi43ODEyNCA1LjA5NTU0IDAuMzQ5MDc5QzUuMDc0NCAxLjYxNDU0IDUuMDk1NTQgNS45OTQ5IDUuMDk1NTQgNi43NDA2OUM1LjA5NTU0IDE3LjA2NjIgLTAuODg0MDEyIDE4LjQ0MDEgMC4xMTI1OCAxOS4wMzM0WiIgZmlsbD0iI0YzRjZGOSIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container{background:#ebfaf4}.doboard_task_widget-comment_data_owner .doboard_task_widget-comment_text_container:after{background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAxMyAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAuMTEyNTggMTkuMDMzNEM1LjI5NDg2IDE5LjgyMDEgMTAuNjEwNSAxNy45NzQxIDEyLjI3MTUgMTYuMTcxM0MxMi4yNzE1IDE2LjE3MTMgMTAuOTYyMyAtMi43ODEyNCA1LjA5NTU0IDAuMzQ5MDc5QzUuMDc0NCAxLjYxNDU0IDUuMDk1NTQgNS45OTQ5IDUuMDk1NTQgNi43NDA2OUM1LjA5NTU0IDE3LjA2NjIgLTAuODg0MDEyIDE4LjQ0MDEgMC4xMTI1OCAxOS4wMzM0WiIgZmlsbD0iI2ViZmFmNCIvPgo8L3N2Zz4K)}.doboard_task_widget-comment_body,.doboard_task_widget-comment_time{position:relative;z-index:1}.doboard_task_widget-comment_body{padding:6px 8px;min-height:30px}.doboard_task_widget-comment_body strong{font-variation-settings:"wght" 700}.doboard_task_widget-comment_body blockquote{margin:0;border-left:3px solid #22a475}.doboard_task_widget-comment_body blockquote p{margin:0 10px}.doboard_task_widget-comment_body details .mce-accordion-body{padding-left:20px}.doboard_task_widget-comment_body details .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg transform='rotate(180 0 0)' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") no-repeat 0;padding-left:20px}.doboard_task_widget-comment_body .mce-accordion[open] .mce-accordion-summary{background:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' style='enable-background:new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M10 13.3c-.2 0-.4-.1-.6-.2l-5-5c-.3-.3-.3-.9 0-1.2.3-.3.9-.3 1.2 0l4.4 4.4 4.4-4.4c.3-.3.9-.3 1.2 0 .3.3.3.9 0 1.2l-5 5c-.2.2-.4.2-.6.2z'/%3E%3C/svg%3E") no-repeat 0}.doboard_task_widget-comment_body details .mce-accordion-summary::marker{content:""}.doboard_task_widget-comment_body pre{border:1px solid #d6dde3;border-left-width:8px;border-radius:4px;padding:13px 16px 14px 12px;white-space:pre-wrap}.doboard_task_widget-comment_time{font-weight:400;font-size:11px;opacity:.8;position:absolute;bottom:6px;right:6px}.doboard_task_widget-comment_body-img-strict{max-width:-webkit-fill-available;height:100px;margin-right:5px}.doboard_task_widget-send_message{border-top:1px solid #bbc7d1;position:sticky;background:#fff;bottom:0;z-index:4}.doboard_task_widget-send_message_elements_wrapper{display:flex;flex-direction:row;-moz-flex-direction:row;align-content:center;flex-wrap:nowrap;justify-content:space-between;align-items:end}.doboard_task_widget-send_message_elements_wrapper img{margin:0}.doboard_task_widget-send_message_input_wrapper{position:relative;display:inline-grid;align-items:center;justify-items:center;flex-grow:1;padding:0 6px}.doboard_task_widget-send_message_input_wrapper textarea{position:relative;width:100%;height:37px;border:none;outline:0;box-shadow:none;border-radius:24px;background:#f3f6f9;resize:none;margin-bottom:0!important;transition:height .2s ease-in-out;padding:8px;box-sizing:border-box}.doboard_task_widget-send_message_input_wrapper textarea.high{height:170px}.doboard_task_widget-send_message_input_wrapper textarea:focus{background:#f3f6f9;border-color:#007bff;outline:0}.doboard_task_widget-send_message_button{display:inline-grid;border:none;cursor:pointer;padding:0;width:100%;align-items:center;margin:20px 0 0 0}.doboard_task_widget-send_message_paperclip{display:inline-grid;border:none;background:0 0;cursor:pointer;padding:0;align-items:center;margin:0}.doboard_task_widget-send_message_button:hover,.doboard_task_widget-send_message_paperclip:hover rect{fill:#45a049}.doboard_task_widget-send_message_button:active,.doboard_task_widget-send_message_paperclip:active{transform:scale(.98)}.doboard_task_widget-spinner_wrapper_for_containers{display:flex;justify-content:center;align-items:center;min-height:60px;width:100%}.spotfix_doboard_task_widget_url{background-color:#d6dde3;padding:12px 16px;display:none}.doboard_task_widget-spinner_for_containers{width:40px;height:40px;border-radius:50%;background:conic-gradient(transparent,#1c7857);mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#fff 0);animation:spin 1s linear infinite}.doboard_task_widget-create_issue{padding:10px}.doboard_task_widget__file-upload__wrapper{display:none;border:1px solid #bbc7d1;margin-top:14px;padding:0 10px 10px;border-radius:4px}.doboard_task_widget__file-upload__list-header{text-align:left;font-size:.9em;margin:5px 0;color:#444c529e}.doboard_task_widget__file-upload__file-input-button{display:none}.doboard_task_widget__file-upload__file-list{border:1px solid #ddd;border-radius:5px;padding:6px;max-height:200px;overflow-y:auto;background:#f3f6f9}.doboard_task_widget__file-upload__file-item{display:flex;justify-content:space-between;align-items:center;padding:4px;border-bottom:1px solid #bbc7d16b}.doboard_task_widget__file-upload__file-item:last-child{border-bottom:none}.doboard_task_widget__file-upload__file_info{display:inline-flex;align-items:center}.doboard_task_widget__file-upload__file-name{font-weight:700;font-size:.9em}.doboard_task_widget__file-upload__file-item-content{width:100%}.doboard_task_widget__file-upload__file_size{color:#666;font-size:.8em;margin-left:6px}.doboard_task_widget__file-upload__remove-btn{background:#22a475;color:#fff;border:none;border-radius:3px;cursor:pointer}.doboard_task_widget__file-upload__error{display:block;margin:7px 0 0;padding:7px;border-radius:4px;background:#fdd;border:1px solid #cf6868}.doboard_task_widget-show_button{position:fixed;background:#1c7857;color:#fff;padding:8px 12px;border-radius:4px;font-size:14px;z-index:10000;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);transform:translate(-50%,-100%);margin-top:-8px;white-space:nowrap;border:none;font-family:inherit}@keyframes spin{to{transform:rotate(1turn)}}@media (max-width:480px){.doboard_task_widget{position:fixed;right:0;top:auto;bottom:0;margin:0 20px 20px;box-sizing:border-box;transform:translateZ(0);-moz-transform:translateZ(0);will-change:transform;max-height:90vh}.doboard_task_widget-header{padding:8px}.doboard_task_widget-issue-title{max-width:70px}.doboard_task_widget-container{width:100%;max-width:290px;min-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-container-maximize{width:100%;max-width:290px;margin:0 auto;max-height:90vh}.doboard_task_widget-content{height:auto;max-height:100%;min-height:100%;scrollbar-width:none}.doboard_task_widget-content::-webkit-scrollbar{display:none}.doboard_task_widget-all_issues-container,.doboard_task_widget-concrete_issues-container{max-height:80vh}}@supports (-webkit-overflow-scrolling:touch){.doboard_task_widget{position:fixed}}.doboard_task_widget_tasks_list{background-color:#fff;position:sticky;bottom:0;height:38px;min-height:24px;display:flex;flex-direction:column-reverse;align-items:center;padding-bottom:8px}#doboard_task_widget-user_menu-logout_button{display:inline-flex;align-items:center}.doboard_task_widget-text_selection{position:relative;display:inline-block}.doboard_task_widget-see-task{cursor:pointer;text-decoration:underline}.doboard_task_widget-text_selection_tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:4px 8px;border-radius:4px;font-size:12px;white-space:nowrap;font-weight:500;z-index:9000;border:1px solid #bbc7d1;margin-bottom:8px}.doboard_task_widget-text_selection_tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#fff}.doboard_task_widget-text_selection_tooltip::before{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#bbc7d1;z-index:-1}.doboard_task_widget-text_selection_tooltip_icon{background-image:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDEwMyAxMDAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDEwMyAxMDA7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtmaWxsOiMxNzcyNTA7fQ0KPC9zdHlsZT4NCjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik01MywwSDB2MTAwaDMwLjJINTNDMTE5LjYsMTAwLDExOS42LDAsNTMsMHogTTMwLjIsMTAwYy0xNi42LDAtMzAtMTMuNC0zMC0zMHMxMy40LTMwLDMwLTMwDQoJYzE2LjYsMCwzMCwxMy40LDMwLDMwUzQ2LjgsMTAwLDMwLjIsMTAweiIvPg0KPC9zdmc+DQo=);background-repeat:no-repeat;width:22px;height:22px;margin:5px 3px}.doboard_task_widget-text_selection_tooltip_element{display:flex;justify-content:space-between}.doboard_task_widget-content .tox .tox-toolbar__group{padding:0 8px!important}.doboard_task_widget-spotfix-editor .tox-tinymce{border:none!important}.doboard_task_widget-content .tox-tinymce{border:1px solid #bbc7d1;border-radius:4px}.doboard_task_widget-content ol,.doboard_task_widget-content ul{margin:0 0 0 1em!important}.toggle{position:relative;display:inline-block;width:46px;min-width:46px;height:20px}.toggle input{opacity:0;width:0;height:0;position:absolute}.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#d6dde3;border-radius:24px;transition:.3s;height:14px;width:37px}.slider:before{content:"";position:absolute;height:20px;width:20px;top:-3px;left:-2px;background-color:#fff;border-radius:50%;transition:.3s;box-shadow:0 0 4px rgba(0,0,0,.21)}input:checked+.slider{background-color:#65d4AC80}input:checked+.slider:before{transform:translateX(20px);box-shadow:none;background-color:#65d4ac}.logout_button{font-weight:500;font-size:14px;color:#707a83;cursor:pointer}.doboard_task_widget-forgot_password,.doboard_task_widget-on_phantom_login_page,.doboard_task_widget-show_login_form{display:inline-block;cursor:pointer;color:#2f68b7;margin-bottom:0}.doboard_task_widget-forgot_password{margin-bottom:20px}.doboard_task_widget-login-is-invalid{color:red}.doboard_task_widget-forgot_password_form-menu,.doboard_task_widget-input-container-login-menu{margin:20px}.doboard_task_widget-bottom-eye-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:20px;height:20px;background:#fff url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgMjAgMjAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDIwIDIwOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8cGF0aCBkPSJNMTAsMTcuNGMtNi4yLDAtOS43LTYuOC05LjgtNy4xYy0wLjEtMC4yLTAuMS0wLjUsMC0wLjdDMC4zLDkuNCwzLjgsMi42LDEwLDIuNmM2LjIsMCw5LjcsNi44LDkuOCw3LjENCgljMC4xLDAuMiwwLjEsMC41LDAsMC43QzE5LjcsMTAuNiwxNi4yLDE3LjQsMTAsMTcuNHogTTEuNywxMGMwLjgsMS4zLDMuNyw1LjksOC4zLDUuOWM0LjYsMCw3LjYtNC42LDguMy01LjkNCgljLTAuOC0xLjMtMy43LTUuOS04LjMtNS45QzUuNCw0LjEsMi40LDguNywxLjcsMTB6IE0xMCwxMy4zYy0xLjgsMC0zLjMtMS41LTMuMy0zLjNTOC4yLDYuOCwxMCw2LjhzMy4zLDEuNSwzLjMsMy4zDQoJUzExLjgsMTMuMywxMCwxMy4zeiBNMTAsOC4zQzksOC4zLDguMyw5LDguMywxMFM5LDExLjgsMTAsMTEuOHMxLjgtMC44LDEuOC0xLjhTMTEsOC4zLDEwLDguM3oiLz4NCjwvc3ZnPg0K) no-repeat center center;background-size:16px 16px;cursor:pointer;border-radius:50%;transition:all .2s ease;z-index:10}.doboard_task_widget-bottom-eye-off-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:20px;height:20px;background:#fff url(data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDIwIDIwIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAyMCAyMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggY2xhc3M9InN0MCIgZD0iTTE2LjgsMTMuMmMwLjEsMC4xLDAuMywwLjIsMC41LDAuMmMwLDAsMCwwLDAsMGMwLjIsMCwwLjQtMC4xLDAuNS0wLjNjMC43LTAuOSwxLjQtMS44LDEuOS0yLjgNCgljMC4xLTAuMiwwLjEtMC41LDAtMC43Yy0wLjEtMC4zLTMuNi03LjEtOS44LTcuMWMwLDAsMCwwLDAsMGMtMC42LDAtMS4zLDAuMS0xLjksMC4yQzcuOCwyLjksNy42LDMuMSw3LjUsMy4zczAsMC41LDAuMiwwLjcNCglMMTYuOCwxMy4yeiBNMTAsNC4xYzQuNiwwLDcuNiw0LjYsOC4zLDUuOWMtMC4zLDAuNS0wLjYsMS0xLDEuNUw5LjksNC4xQzkuOSw0LjEsMTAsNC4xLDEwLDQuMXogTTE5LjcsMTguNmwtNC4yLTQuMkw1LjYsNC41DQoJYzAsMCwwLDAsMCwwTDEuNCwwLjNDMS4xLDAsMC42LDAsMC4zLDAuM1MwLDEuMSwwLjMsMS40TDMuOSw1QzIuNCw2LjMsMS4xLDcuOSwwLjIsOS42Yy0wLjEsMC4yLTAuMSwwLjUsMCwwLjcNCgljMC4xLDAuMywzLjYsNy4xLDkuOSw3LjFjMS43LDAsMy40LTAuNSw0LjktMS41bDMuOCwzLjhjMC4xLDAuMSwwLjMsMC4yLDAuNSwwLjJzMC40LTAuMSwwLjUtMC4yQzIwLDE5LjQsMjAsMTguOSwxOS43LDE4LjZ6DQoJIE04LjMsOS40bDIuMywyLjNjLTAuMiwwLjEtMC40LDAuMS0wLjYsMC4xYy0wLjIsMC0wLjUsMC0wLjctMC4xYy0wLjItMC4xLTAuNC0wLjItMC42LTAuNGMtMC4yLTAuMi0wLjMtMC40LTAuNC0wLjYNCgljLTAuMS0wLjItMC4xLTAuNS0wLjEtMC43QzguMiw5LjgsOC4yLDkuNiw4LjMsOS40eiBNMTAsMTUuOWMtNC42LDAtNy42LTQuNi04LjMtNS45YzAuOS0xLjUsMi0yLjgsMy4zLTMuOWwyLjIsMi4yDQoJQzcuMSw4LjQsNyw4LjYsNyw4LjdDNi44LDkuMSw2LjcsOS42LDYuNywxMGMwLDAuNCwwLjEsMC45LDAuMiwxLjNjMC4yLDAuNCwwLjQsMC44LDAuNywxLjFjMC4zLDAuMywwLjcsMC42LDEuMSwwLjcNCgljMC40LDAuMiwwLjgsMC4yLDEuMywwLjJjMC40LDAsMC45LTAuMSwxLjMtMC4zYzAuMi0wLjEsMC4zLTAuMiwwLjUtMC4zbDIuMSwyLjFDMTIuNiwxNS41LDExLjMsMTUuOSwxMCwxNS45eiIvPg0KPC9zdmc+DQo=) no-repeat center center;background-size:16px 16px;cursor:pointer;border-radius:50%;transition:all .2s ease;opacity:.5;z-index:10}.doboard_task_widget-input-container-textarea{position:relative}.doboard_task_widget-field-textarea-label{position:absolute;left:10px;top:10px;padding:0 5px;color:#666;background-color:#fff;transition:.2s ease all;pointer-events:none}.doboard_task_widget-input-container-textarea .doboard_task_widget-field~label{top:-10px;left:14px;font-size:10px;color:#252a2f}.doboard_task_widget-concrete_issue .tox-tinymce .tox-toolbar__group{display:inline-flex!important;width:100%!important;justify-content:space-evenly}.doboard_task_widget-task_title-text{margin-right:6px}.doboard_task_widget-commentsIndicator{width:22px;height:22px;border-radius:50%;color:#fff;font-weight:400;font-size:11px;display:inline-flex;justify-content:center;align-items:center}.doboard_task_widget-visibility-toggle{display:flex;justify-content:space-between;align-items:center;min-width:270px;max-width:420px;margin-top:4px;margin-bottom:16px}.doboard_task_widget-require_full_registration{padding:16px;background-color:#65d4ac;border-radius:8px;margin-bottom:12px}.doboard_task_widget-require_full_registration-title{color:#252a2f;font-weight:500}.doboard_task_widget-auth-inputs-container{display:block;margin-bottom:8px}.doboard_task_widget-auth-inputs-container-maximized{display:flex;justify-content:space-between}.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container{display:flex;justify-content:space-between}.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container .doboard_task_widget-input-container{flex-grow:1}.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container #doboard_task_widget-user_name{margin-right:24px}.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container #doboard_task_widget-user_password{margin-right:24px}.doboard_task_widget-auth-inputs-container-maximized .doboard_task_widget-input-container{flex-grow:1}.doboard_task_widget-container-maximize .doboard_task_widget-auth-inputs-container .doboard_task_widget-input-container{margin-bottom:0}.doboard_task_widget-input-container-phantom{display:flex;flex-direction:column}.doboard_task_widget-auth-inputs-container-maximized #doboard_task_widget-user_name{margin-right:24px}.doboard_task_widget-auth-inputs-container-maximized #doboard_task_widget-user_password{margin-left:24px}.hidden-container{visibility:hidden!important;width:0!important;flex-grow:0!important;margin:0!important}.task-link{overflow-wrap:break-word}.doboard_task_widget-task_menu-item-viewers{display:flex;align-items:center;padding:0 16px;flex-direction:column;height:fit-content;padding-top:8px;max-height:200px;overflow:auto}#spotfix_widget-task-menu_name{color:#252a2f;font-size:16px;font-weight:500;display:inline-flex}#spotfix_widget-task-menu_users{font-size:12px;font-weight:400;color:#707a83}.spotfix_widget-task-menu_user{width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.spotfix_widget-task-menu_user img{height:24px;width:24px;border-radius:50%;margin-right:12px}.spotfix_widget-task-menu_user>:first-child{font-weight:400;font-size:14px;color:#000;display:inline-flex;align-items:center}.spotfix_widget-task-menu_user>:last-child{color:#40484f;font-size:12px;font-weight:400}.doboard_task_widget-comment_attachments{padding:8px 8px 30px 8px;display:flex;flex-direction:column;flex-wrap:nowrap;overflow-x:auto;gap:6px;scrollbar-width:thin;scrollbar-color:#bbc7d1 transparent;margin-bottom:2px}.doboard_task_widget-comment_attachments::-webkit-scrollbar{height:4px}.doboard_task_widget-comment_attachments::-webkit-scrollbar-track{background:0 0}.doboard_task_widget-comment_attachments::-webkit-scrollbar-thumb{background-color:#bbc7d1;border-radius:2px}.doboard_task_widget-attachment_item{display:flex}.doboard_task_widget-attachment_url{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(255,255,255,.8);border-radius:4px;text-decoration:none;color:#40484f!important;font-size:11px;transition:background-color .2s ease;border:1px solid #bbc7d1;flex-shrink:0;white-space:nowrap}.doboard_task_widget-attachment_item:hover{background:#fff;text-decoration:none}.doboard_task_widget-attachment_icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:12px;height:12px}.doboard_task_widget-attachment_filename{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#40484f}.doboard_task_widget-attachment_item.image-attachment{cursor:pointer}.doboard_task_widget-attachment_item:not(.image-attachment){cursor:pointer}.doboard_task_widget-attachment_item.image-attachment img{width:64px;height:64px;object-fit:cover;border-radius:4px;border:1px solid #bbc7d1;transition:transform .2s ease,box-shadow .2s ease}.doboard_task_widget-attachment_item.image-attachment:hover img{transform:scale(1.1);box-shadow:0 2px 8px rgba(0,0,0,.15)}.doboard_task_widget-lightbox{position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s ease}.doboard_task_widget-lightbox.active{opacity:1;visibility:visible}.doboard_task_widget-lightbox-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);cursor:pointer}.doboard_task_widget-lightbox-content{position:relative;max-width:90vw;max-height:90vh;z-index:1}.doboard_task_widget-lightbox-image{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:4px;box-shadow:0 4px 20px rgba(0,0,0,.5)}.doboard_task_widget-lightbox-close{position:absolute;top:20px;right:20px;width:40px;height:40px;background:rgba(255,255,255,.8);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s ease;z-index:2}.doboard_task_widget-lightbox-close:hover{background:rgba(255,255,255,.6)}.doboard_task_widget-lightbox-close img{width:24px;height:24px}.doboard_task_widget-finished_tasks_header{display:flex;justify-content:space-between;align-items:center;padding:16px 15px;cursor:pointer;background-color:#f3f6f9;transform:scaleY(1.1)}.doboard_task_widget-finished_tasks_header:hover{background-color:#f3f6f9}.doboard_task_widget-finished_tasks_title{font-weight:500;font-size:14px;color:#252a2f}.doboard_task_widget-finished_tasks_chevron{display:flex;align-items:center;justify-content:center;transition:transform .3s ease}.doboard_task_widget-finished_tasks_header.expanded .doboard_task_widget-finished_tasks_chevron{transform:rotate(180deg)}.doboard_task_widget-finished_tasks_container{background:#f3f6f9;max-height:0;overflow:hidden;transition:max-height .3s ease-out}.doboard_task_widget-finished_tasks_container.expanded{max-height:max-content;transition:max-height .5s ease-in;padding-bottom:4px}#spotfix_doboard_task_widget_url{display:flex;justify-content:center}#spotfix_doboard_task_widget_url span{color:#707a83;font-weight:400;font-size:12px}#spotfix_widget_task_send_message_container span{color:#40484f;font-weight:400;font-size:16px;display:inline-flex;justify-content:center;align-items:center;padding:0 32px 0 32px;text-align:center}.spotfix-draganddrop-trigger{position:absolute;left:-8px;transform:translateX(-50%);width:16px;height:32px;background-color:rgba(255,255,255,.9);border-bottom-left-radius:4px;border-top-left-radius:4px;display:flex;align-items:center;justify-content:center;cursor:grab;opacity:0;transition:opacity .2s ease;z-index:1000}.spotfix-draganddrop-trigger-left{position:absolute;right:-24px;transform:translateX(-50%);width:16px;height:32px;background-color:rgba(255,255,255,.9);border-bottom-right-radius:4px;border-top-right-radius:4px;display:flex;align-items:center;justify-content:center;cursor:grab;opacity:0;transition:opacity .2s ease;z-index:1000}.spotfix-draganddrop-trigger img{width:fit-content;height:fit-content}.spotfix-draganddrop-trigger-left img{width:fit-content;height:fit-content}.doboard_task_widget-user_menu-item button{cursor:pointer;background:0 0;text-transform:none;margin:0;padding:0;color:#707a83;text-decoration:underline}.doboard_task_widget-user_menu-item button:hover{color:#000;text-decoration:none}.doboard_task_widget-issues_list_empty button{cursor:pointer;background:0 0;text-transform:none;margin:0;padding:0;color:#2f68b7;text-decoration:underline}@media (max-width:480px){.left_mobile{right:unset!important;left:-20px}.left_mobile .doboard_task_widget-wrap{right:-30px!important}.left_mobile .wrap_review{right:-130px!important}}.left_mobile .doboard_task_widget-wrap{right:-50px}.doboard_task_widget-comment_time a{text-decoration:none;color:inherit}.doboard_task_widget-comment_time a:hover{text-decoration:none;color:#000}.doboard_task_widget-logged-user-name img{margin-right:8px;width:28px;height:28px;border-radius:50%}#openUserMenuButton img{width:22px;height:22px;border-radius:50%}.doboard_task_widget-lightbox-text{display:none;align-items:center;justify-content:center;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:999999}.doboard_task_widget-lightbox-text.active{display:flex}.doboard_task_widget-lightbox-text-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);cursor:pointer}.doboard_task_widget-lightbox-text-wrapper{position:relative;width:80vw;height:85vh;max-width:1200px;z-index:10001}.doboard_task_widget-lightbox-text-close{position:absolute;top:-55px;right:-55px;cursor:pointer;border:none;background:rgba(255,255,255,.5);border-radius:50%;padding:6px;display:flex;align-items:center;justify-content:center;transition:background-color .2s ease}.doboard_task_widget-lightbox-text-close:hover{background:rgba(255,255,255,.8)}.doboard_task_widget-lightbox-text-close img{width:20px;height:20px}.doboard_task_widget-lightbox-text-content{width:100%;height:100%;background:#fff;border-radius:8px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.3)}.doboard_task_widget-lightbox-text-header{padding:10px 16px;background:#f8f9fa;border-bottom:1px solid #e0e0e0;font-family:sans-serif;font-size:13px;color:#555;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.doboard_task_widget-lightbox-text-editor{flex-grow:1;width:100%;position:relative}`;
+const spotfixStorage = (() => {
+    const memory = new Map();
+    let storage = null;
+
+    try {
+        storage = window.localStorage;
+    } catch (error) {
+        storage = null;
+    }
+
+    return {
+        getItem(key) {
+            if (memory.has(key)) {
+                return memory.get(key);
+            }
+            try {
+                return storage.getItem(key);
+            } catch (error) {
+                return null;
+            }
+        },
+
+        setItem(key, value) {
+            try {
+                storage.setItem(key, value);
+                memory.delete(key);
+            } catch (error) {
+                memory.set(key, String(value));
+            }
+        },
+
+        removeItem(key) {
+            memory.delete(key);
+            try {
+                storage.removeItem(key);
+            } catch (error) {
+            }
+        },
+    };
+})();
+
 const SPOTFIX_INDEXED_DB_NAME = 'spotfix-localDB';
 const spotfixIndexedDBVersion = 2;
 
@@ -7851,11 +7892,33 @@ const LOCAL_DATA_BASE_TABLE = [
 
 const SPOTFIX_LAST_DB_KEY = 'spotfix_last_db_key';
 
+const SPOTFIX_DB_OPEN_TIMEOUT = 3000;
+const SPOTFIX_DB_RETRY_DELAY = 30000;
+
 let dbPromise = null;
+let dbFailedAt = 0;
+const spotfixMemoryTables = new Map();
+
+function getTableKeyPath(table) {
+    return LOCAL_DATA_BASE_TABLE.find((item) => item.name === table)?.keyPath;
+}
+
+function getRowsWithKey(table, data) {
+    const keyPath = getTableKeyPath(table);
+    const rows = Array.isArray(data) ? data : [data];
+    return rows.filter((row) => row && row[keyPath] !== undefined && row[keyPath] !== null);
+}
+
+function writeMemoryTable(table, rows, isReplace) {
+    const keyPath = getTableKeyPath(table);
+    const memoryTable = (!isReplace && spotfixMemoryTables.get(table)) || new Map();
+    rows.forEach((row) => memoryTable.set(row[keyPath], row));
+    spotfixMemoryTables.set(table, memoryTable);
+}
 
 function getSpotfixDBKey() {
-    const sessionId = localStorage.getItem('spotfix_session_id');
-    const projectToken = localStorage.getItem('spotfix_project_token');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
+    const projectToken = spotfixStorage.getItem('spotfix_project_token');
 
     if (sessionId) return `session:${sessionId}`;
     if (projectToken) return `project:${projectToken}`;
@@ -7869,6 +7932,7 @@ function getDBNameByKey(dbKey) {
 
 function openIndexedDB(name, version) {
     return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error('IndexedDB open timeout')), SPOTFIX_DB_OPEN_TIMEOUT);
         const request = indexedDB.open(name, version);
 
         request.onupgradeneeded = (e) => {
@@ -7890,8 +7954,22 @@ function openIndexedDB(name, version) {
             });
         };
 
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+            clearTimeout(timer);
+            const db = request.result;
+            db.onclose = () => {
+                dbPromise = null;
+            };
+            db.onversionchange = () => {
+                db.close();
+                dbPromise = null;
+            };
+            resolve(db);
+        };
+        request.onerror = () => {
+            clearTimeout(timer);
+            reject(request.error);
+        };
     });
 }
 
@@ -7900,10 +7978,18 @@ function getDB() {
         const dbKey = getSpotfixDBKey();
         if (!dbKey) return null;
 
+        if (Date.now() - dbFailedAt < SPOTFIX_DB_RETRY_DELAY) {
+            return Promise.reject(new Error('IndexedDB is unavailable'));
+        }
+
         dbPromise = openIndexedDB(
             getDBNameByKey(dbKey),
             spotfixIndexedDBVersion
-        );
+        ).catch((error) => {
+            dbPromise = null;
+            dbFailedAt = Date.now();
+            throw error;
+        });
     }
     return dbPromise;
 }
@@ -7925,80 +8011,126 @@ const spotfixIndexedDB = {
             return { needInit: false };
         }
 
-        const lastKey = localStorage.getItem(SPOTFIX_LAST_DB_KEY);
+        const lastKey = spotfixStorage.getItem(SPOTFIX_LAST_DB_KEY);
 
-        if (lastKey && lastKey !== currentKey) {
-            await deleteDBByKey(lastKey);
+        try {
+            if (lastKey && lastKey !== currentKey) {
+                await deleteDBByKey(lastKey);
+            }
+
+            spotfixStorage.setItem(SPOTFIX_LAST_DB_KEY, currentKey);
+
+            dbPromise = null;
+            await getDB();
+        } catch (error) {
+            console.error('SpotFix IndexedDB init error:', error);
         }
-
-        localStorage.setItem(SPOTFIX_LAST_DB_KEY, currentKey);
-
-        dbPromise = null;
-        await getDB();
 
         return { needInit: true };
     },
 
-    withStore: async (table, mode = 'readwrite', callback) => {
+    withStore: async (table, mode = 'readwrite', callback, isRetry = false) => {
         const db = await getDB();
         if (!db) return;
 
+        let tx;
+        try {
+            tx = db.transaction(table, mode);
+        } catch (error) {
+            dbPromise = null;
+            if (isRetry) throw error;
+            return spotfixIndexedDB.withStore(table, mode, callback, true);
+        }
+
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(table, mode);
             const store = tx.objectStore(table);
 
             const result = callback(store);
+            Promise.resolve(result).catch(() => {});
 
             tx.oncomplete = () => resolve(result);
             tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(tx.error || new Error('IndexedDB transaction aborted'));
         });
     },
 
     put: async (table, data) => {
-        return spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
-            if (Array.isArray(data)) {
-                data.forEach((item) => store.put(item));
-            } else {
-                store.put(data);
+        const rows = getRowsWithKey(table, data);
+        try {
+            await spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
+                rows.forEach((item) => store.put(item));
+            });
+            if (spotfixMemoryTables.has(table)) {
+                writeMemoryTable(table, rows, false);
             }
-        });
+        } catch (error) {
+            console.error('SpotFix IndexedDB write error:', error);
+            writeMemoryTable(table, rows, false);
+        }
     },
 
     delete: async (table, key) => {
-        return spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
-            store.delete(key);
-        });
+        spotfixMemoryTables.get(table)?.delete(key);
+        try {
+            await spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
+                store.delete(key);
+            });
+        } catch (error) {
+            console.error('SpotFix IndexedDB delete error:', error);
+        }
     },
 
     clearTable: async (table) => {
-        return spotfixIndexedDB.withStore(table, 'readwrite', (store) =>
-            store.clear()
-        );
+        spotfixMemoryTables.delete(table);
+        try {
+            await spotfixIndexedDB.withStore(table, 'readwrite', (store) =>
+                store.clear()
+            );
+        } catch (error) {
+            console.error('SpotFix IndexedDB clear error:', error);
+        }
     },
 
     clearPut: async (table, data) => {
-        return spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
-            store.clear();
-            if (Array.isArray(data)) {
-                data.forEach((item) => store.put(item));
-            } else {
-                store.put(data);
-            }
-        });
+        const rows = getRowsWithKey(table, data);
+        try {
+            await spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
+                store.clear();
+                rows.forEach((item) => store.put(item));
+            });
+            spotfixMemoryTables.delete(table);
+        } catch (error) {
+            console.error('SpotFix IndexedDB write error:', error);
+            writeMemoryTable(table, rows, true);
+        }
     },
 
     getAll: async (table, indexName, value) => {
-        return spotfixIndexedDB.withStore(table, 'readonly', (store) => {
-            return new Promise((resolve, reject) => {
-                const req =
-                    indexName && value !== undefined
-                        ? store.index(indexName).getAll(value)
-                        : store.getAll();
+        const memoryTable = spotfixMemoryTables.get(table);
+        if (memoryTable) {
+            const memoryRows = [...memoryTable.values()];
+            return indexName && value !== undefined
+                ? memoryRows.filter((row) => row[indexName] === value)
+                : memoryRows;
+        }
 
-                req.onsuccess = () => resolve(req.result);
-                req.onerror = () => reject(req.error);
+        try {
+            const rows = await spotfixIndexedDB.withStore(table, 'readonly', (store) => {
+                return new Promise((resolve, reject) => {
+                    const req =
+                        indexName && value !== undefined
+                            ? store.index(indexName).getAll(value)
+                            : store.getAll();
+
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
             });
-        });
+            return rows || [];
+        } catch (error) {
+            console.error('SpotFix IndexedDB read error:', error);
+            return [];
+        }
     },
 
     getTable: async (table) => {
@@ -8010,6 +8142,7 @@ const spotfixIndexedDB = {
 };
 
 const SPOTFIX_DOBOARD_API_URL = 'https://api.doboard.com';
+const SPOTFIX_API_READ_TIMEOUT = 10000;
 
 /**
  * Makes an API call to the DoBoard endpoint with form data
@@ -8055,21 +8188,31 @@ const spotfixApiCall = async (data, method, accountId = undefined) => {
         throw new Error(`Invalid endpoint URL: ${endpointUrl}`);
     }
 
-    let response;
-    try {
-        response = await fetch(endpointUrl, {
-            method: 'POST',
-            body: formData,
-        });
-    } catch (networkError) {
-        throw new Error(`Network error: ${networkError.message}`);
-    }
+    const controller = new AbortController();
+    const abortTimer = method.endsWith('_get')
+        ? setTimeout(() => controller.abort(), SPOTFIX_API_READ_TIMEOUT)
+        : null;
 
+    let response;
     let responseBody;
     try {
-        responseBody = await response.json();
-    } catch (parseError) {
-        throw new Error('Failed to parse JSON response from server');
+        try {
+            response = await fetch(endpointUrl, {
+                method: 'POST',
+                body: formData,
+                signal: controller.signal,
+            });
+        } catch (networkError) {
+            throw new Error(`Network error: ${networkError.message}`);
+        }
+
+        try {
+            responseBody = await response.json();
+        } catch (parseError) {
+            throw new Error('Failed to parse JSON response from server');
+        }
+    } finally {
+        clearTimeout(abortTimer);
     }
 
     if (!responseBody || typeof responseBody !== 'object') {
@@ -8123,7 +8266,7 @@ const createTaskDoboard = async (sessionId, taskDetails) => {
         session_id: sessionId,
         project_token: taskDetails.projectToken,
         project_id: taskDetails.projectId,
-        user_id: localStorage.getItem('spotfix_user_id'),
+        user_id: spotfixStorage.getItem('spotfix_user_id'),
         name: taskDetails.taskTitle,
         comment: taskDetails.taskDescription,
         meta: taskDetails.taskMeta,
@@ -8177,9 +8320,9 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname) => 
         data.name = nickname;
     }
 
-    if (localStorage.getItem('bot_detector_event_token')) {
+    if (spotfixStorage.getItem('bot_detector_event_token')) {
         try {
-            const botDetectorData = JSON.parse(localStorage.getItem('bot_detector_event_token'));
+            const botDetectorData = JSON.parse(spotfixStorage.getItem('bot_detector_event_token'));
             if (botDetectorData?.value) {
                 data.bot_detector_event_token = botDetectorData?.value;
             }
@@ -8227,8 +8370,8 @@ const forgotPasswordDoboard = async (email) => {
 
 
 const logoutUserDoboard = async (projectToken) => {
-    const sessionId = localStorage.getItem('spotfix_session_id');
-    const accountsString = localStorage.getItem('spotfix_accounts');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
+    const accountsString = spotfixStorage.getItem('spotfix_accounts');
     const accounts = accountsString !== 'undefined' ? JSON.parse(accountsString || '[]') : [];
     const accountId = accounts.length > 0 ? accounts[0].account_id : 1;
 
@@ -8268,7 +8411,9 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
     const result = await spotfixApiCall(data, 'task_get', accountId);
 
     if(result.operation_message === 'Access is denied'){
-        await spotfixIndexedDB.put(SPOTFIX_TABLE_TASKS, {taskId: taskId, task_type: 'PRIVATE', taskMeta:"{}"});
+        if (taskId) {
+            await spotfixIndexedDB.put(SPOTFIX_TABLE_TASKS, {taskId: taskId, task_type: 'PRIVATE', taskMeta:"{}"});
+        }
         return null;
     } else {
         const tasks = result.tasks.map((task) => ({
@@ -8396,7 +8541,7 @@ const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, tim
 };
 
 const getProjectDoboard = async (projectToken, accountId) => {
-    const sessionId = localStorage.getItem('spotfix_session_id');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
     const data = {
         project_token: projectToken,
         with_account_status: 1,
@@ -8443,7 +8588,7 @@ const getNotificationsDoboard = async (projectToken, sessionId, accountId) => {
 };
 
 const updateNotificationsDoboard = async (taskId, projectToken, accountId) => {
-    const sessionId = localStorage.getItem('spotfix_session_id');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
     if (sessionId) {
         const data = {
             session_id: sessionId,
@@ -8457,7 +8602,7 @@ const updateNotificationsDoboard = async (taskId, projectToken, accountId) => {
 };
 
 const updateViewersDoboard = async (usersIds, taskId, projectToken, accountId) => {
-    const sessionId = localStorage.getItem('spotfix_session_id');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
     if (sessionId) {
         const data = {
             session_id: sessionId,
@@ -8479,15 +8624,16 @@ let reconnectTimer = null;
 let isIntentionalClose = false;
 
 const WS_URL = 'wss://ws.doboard.com';
+const WS_STATE_OPEN = 1;
 
-const getSessionId = () => localStorage.getItem('spotfix_session_id');
+const getSessionId = () => spotfixStorage.getItem('spotfix_session_id');
 
 const buildMessage = (action) => ({
-    channel: `account:${localStorage.getItem('spotfix_company_id')}`,
+    channel: `account:${spotfixStorage.getItem('spotfix_company_id')}`,
     action,
-    account_id: localStorage.getItem('spotfix_company_id'),
+    account_id: spotfixStorage.getItem('spotfix_company_id'),
     session_id: getSessionId(),
-    project_token: localStorage.getItem('spotfix_project_token'),
+    project_token: spotfixStorage.getItem('spotfix_project_token'),
 });
 
 const handleIncomingData = async (data) => {
@@ -8571,16 +8717,21 @@ const wsSpotfix = {
             reconnectTimer = null;
         }
 
-        if ((socket && socket.readyState === WebSocket.OPEN) || !getSessionId()) {
+        if ((socket && socket.readyState === WS_STATE_OPEN) || !getSessionId()) {
             return;
         }
 
         isIntentionalClose = false;
-        socket = new WebSocket(WS_URL);
+        try {
+            socket = new WebSocket(WS_URL);
+        } catch (error) {
+            console.error('WS connect error:', error);
+            return;
+        }
 
         socket.onopen = () => {
             heartbeatInterval = setInterval(() => {
-                if (socket?.readyState === WebSocket.OPEN) {
+                if (socket?.readyState === WS_STATE_OPEN) {
                     socket.send('heartbeat');
                 }
             }, 50 * 1000);
@@ -8635,13 +8786,13 @@ const wsSpotfix = {
     },
 
     send(data) {
-        if (socket?.readyState === WebSocket.OPEN) {
+        if (socket?.readyState === WS_STATE_OPEN) {
             socket.send(JSON.stringify(data));
         }
     },
 
     isActive() {
-        return socket !== null && socket.readyState === WebSocket.OPEN;
+        return socket !== null && socket.readyState === WS_STATE_OPEN;
     },
 
     close() {
@@ -8654,13 +8805,13 @@ const wsSpotfix = {
     },
 
     subscribe() {
-        if (socket?.readyState === WebSocket.OPEN) {
+        if (socket?.readyState === WS_STATE_OPEN) {
             wsSpotfix.send(buildMessage('SUBSCRIBE'));
         }
     },
 
     unsubscribe() {
-        if (socket?.readyState === WebSocket.OPEN) {
+        if (socket?.readyState === WS_STATE_OPEN) {
             wsSpotfix.send(buildMessage('UNSUBSCRIBE'));
         }
     },
@@ -8672,21 +8823,22 @@ const wsSpotfix = {
 
 const SPOTFIX_VERSION = "1.1.13";
 const SPOTFIX_MIN_DESCRIPTION_LENGTH = 10;
+const SPOTFIX_WRAP_TASKS_TIMEOUT = 3000;
 
 
 async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
     const result = await spotFixUserConfirmEmailDoboard(emailConfirmationToken);
     // Save session data to LS
     setSpotfixEmail(result.email);
-    localStorage.setItem('spotfix_session_id', result.sessionId);
-    localStorage.setItem('spotfix_user_id', result.userId);
-    localStorage.setItem('spotfix_widget_is_closed', '0');
+    spotfixStorage.setItem('spotfix_session_id', result.sessionId);
+    spotfixStorage.setItem('spotfix_user_id', result.userId);
+    spotfixStorage.setItem('spotfix_widget_is_closed', '0');
     await spotfixIndexedDB.init();
     wsSpotfix.connect();
     wsSpotfix.subscribe();
 
     // Get pending task from LS
-    const pendingTaskRaw = localStorage.getItem('spotfix_pending_task');
+    const pendingTaskRaw = spotfixStorage.getItem('spotfix_pending_task');
     if (!pendingTaskRaw) throw new Error('No pending task data');
 
     let pendingTask;
@@ -8711,7 +8863,7 @@ async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
     // Create task
     const createdTask = await handleCreateTask(result.sessionId, taskDetails);
     // Clear pending task
-    localStorage.removeItem('spotfix_pending_task');
+    spotfixStorage.removeItem('spotfix_pending_task');
 
     // Return created task
     return createdTask;
@@ -8720,7 +8872,7 @@ async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
 async function getTasksFullDetails(params, tasksList, currentActiveTaskId, nonRequesting = false) {
     let tasks = tasksList;
     if (tasks.length > 0) {
-        const sessionId = localStorage.getItem('spotfix_session_id');
+        const sessionId = spotfixStorage.getItem('spotfix_session_id');
         const loadActiveTaskDetails = () => Promise.all([
             getTasksAttachmenDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId),
             getTasksCommentsDoboard(sessionId, params.accountId, params.projectToken, currentActiveTaskId),
@@ -8745,7 +8897,11 @@ async function getTasksFullDetails(params, tasksList, currentActiveTaskId, nonRe
         if (!nonRequesting) {
             requests.push(getUserDoboard(sessionId, params.projectToken, params.accountId));
         }
-        await Promise.all(requests);
+        try {
+            await Promise.all(requests);
+        } catch (error) {
+            console.error('SpotFix task details loading error:', error);
+        }
 
         const [comments, attachments, users] = await Promise.all([
             spotfixIndexedDB.getAll(SPOTFIX_TABLE_COMMENTS),
@@ -8763,11 +8919,12 @@ async function getTasksFullDetails(params, tasksList, currentActiveTaskId, nonRe
             taskName: foundTask?.taskTitle,
         };
     }
+    return {comments: [], users: [], attachments: []};
 }
 
 async function getUserDetails(params, nonRequesting = false) {
-    const sessionId = localStorage.getItem('spotfix_session_id');
-    const currentUserId = localStorage.getItem('spotfix_user_id');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
+    const currentUserId = spotfixStorage.getItem('spotfix_user_id');
     if (currentUserId) {
         if (!nonRequesting) {
             await getUserDoboard(sessionId, params.projectToken, params.accountId, currentUserId);
@@ -8799,7 +8956,7 @@ async function handleCreateTask(sessionId, taskDetails) {
 }
 
 async function addTaskComment(params, taskId, commentText) {
-    const sessionId = localStorage.getItem('spotfix_session_id');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
     if (!sessionId) throw new Error('No session');
     if (!params.projectToken || !params.accountId) throw new Error('Missing params');
     return await createTaskCommentDoboard(params.accountId, sessionId, taskId, commentText, params.projectToken);
@@ -8807,18 +8964,27 @@ async function addTaskComment(params, taskId, commentText) {
 
 async function getAllTasks(params, nonRequesting = false) {
     const projectToken = params.projectToken;
-    const sessionId = localStorage.getItem('spotfix_session_id') || '';
+    const sessionId = spotfixStorage.getItem('spotfix_session_id') || '';
     let tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
 
     if (!nonRequesting || (!tasksData || !tasksData.length) || !wsSpotfix.isActive()) {
-        await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
-        tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+        try {
+            await getTasksDoboard(projectToken, sessionId, params.accountId, params.projectId);
+            tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
+        } catch (error) {
+            console.error('SpotFix tasks loading error:', error);
+        }
     }
 
     storageSaveTasksCount(tasksData);
     // Get only tasks with metadata
     const filteredTaskData = tasksData.filter((task) => {
-        return task.taskMeta;
+        try {
+            const meta = JSON.parse(task.taskMeta);
+            return !!meta && typeof meta === 'object' && !Array.isArray(meta);
+        } catch (error) {
+            return false;
+        }
     });
 
     return filteredTaskData;
@@ -8855,7 +9021,7 @@ function formatDate(dateStr) {
 }
 
 function getTaskAuthorDetails(params, taskId) {
-    const sessionId = localStorage.getItem('spotfix_session_id');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
     const mockUsersData =
 		[
 		    {
@@ -8921,12 +9087,12 @@ function registerUser(taskDetails) {
                 document.getElementById('doboard_task_widget-user_password').focus();
                 return response;
             } else if (response.sessionId) {
-                localStorage.setItem('spotfix_session_id', response.sessionId);
-                localStorage.setItem('spotfix_user_id', response.userId);
+                spotfixStorage.setItem('spotfix_session_id', response.sessionId);
+                spotfixStorage.setItem('spotfix_user_id', response.userId);
                 setSpotfixEmail(response.email);
-                localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
+                spotfixStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
                 spotfixIndexedDB.init();
-                localStorage.setItem('spotfix_widget_is_closed', '0');
+                spotfixStorage.setItem('spotfix_widget_is_closed', '0');
                 wsSpotfix.connect();
                 wsSpotfix.subscribe();
                 userUpdate(projectToken, accountId);
@@ -8963,12 +9129,12 @@ function loginUser(taskDetails) {
     return (showMessageCallback) => loginUserDoboard(userEmail, userPassword)
         .then((response) => {
             if (response.sessionId) {
-                localStorage.setItem('spotfix_session_id', response.sessionId);
-                localStorage.setItem('spotfix_user_id', response.userId);
+                spotfixStorage.setItem('spotfix_session_id', response.sessionId);
+                spotfixStorage.setItem('spotfix_user_id', response.userId);
                 setSpotfixEmail(userEmail);
-                localStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
+                spotfixStorage.setItem('spotfix_accounts', JSON.stringify(response.accounts));
                 checkLogInOutButtonsVisible();
-                localStorage.setItem('spotfix_widget_is_closed', '0');
+                spotfixStorage.setItem('spotfix_widget_is_closed', '0');
                 spotfixIndexedDB.init();
                 wsSpotfix.connect();
                 wsSpotfix.subscribe();
@@ -9012,8 +9178,8 @@ function forgotPassword(userEmail) {
 }
 
 function userUpdate(projectToken, accountId) {
-    const sessionId = localStorage.getItem('spotfix_session_id');
-    const userId = localStorage.getItem('spotfix_user_id');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
+    const userId = spotfixStorage.getItem('spotfix_user_id');
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     return userUpdateDoboard(projectToken, accountId, sessionId, userId, timezone);
@@ -9044,7 +9210,7 @@ function spotFixSplitUrl(url) {
 function setToggleStatus(rootElement) {
     const clickHandler = () => {
         const timer = setTimeout(() => {
-            localStorage.setItem('spotfix_widget_is_closed', '1');
+            spotfixStorage.setItem('spotfix_widget_is_closed', '1');
             wsSpotfix.close();
             rootElement.hide();
             clearTimeout(timer);
@@ -9060,7 +9226,7 @@ function setToggleStatus(rootElement) {
 function checkLogInOutButtonsVisible() {
     const signInLogInButton = document.getElementById('doboard_task_widget-user_menu-signlog_button');
 
-    if (localStorage.getItem('spotfix_session_id')) {
+    if (spotfixStorage.getItem('spotfix_session_id')) {
         if (signInLogInButton) signInLogInButton.style.display = 'none';
         const loginContainer = document.getElementById('doboard_task_widget-input-container-login');
         if (loginContainer) loginContainer.style.display = 'none';
@@ -9084,7 +9250,7 @@ function checkLogInOutButtonsVisible() {
  */
 
 function changeSize(container) {
-    if (container && +localStorage.getItem('maximize')) {
+    if (container && +spotfixStorage.getItem('maximize')) {
         container.classList.add('doboard_task_widget-container-maximize');
     } else if (container) {
         container.classList.remove('doboard_task_widget-container-maximize');
@@ -9213,9 +9379,11 @@ function setupBaseWidgetStyles(widget, signal) {
 }
 
 function restoreWidgetPosition(widget, storageKey) {
-    const savedBottom = localStorage.getItem(storageKey);
+    const savedBottom = spotfixStorage.getItem(storageKey);
     if (savedBottom && savedBottom !== 'NaNpx') {
-        widget.style.bottom = savedBottom;
+        const containerBottom = window.innerHeight - widget.parentElement.getBoundingClientRect().bottom;
+        const maxBottom = Math.max(window.innerHeight - widget.offsetHeight - containerBottom, 0);
+        widget.style.bottom = Math.min(parseFloat(savedBottom) || 0, maxBottom) + 'px';
     }
 }
 
@@ -9288,7 +9456,7 @@ function setupDragAndDropEvents(widget, dragHandle, state, storageKey, signal) {
                 dragHandle.style.opacity = '0';
             }
 
-            localStorage.setItem(storageKey, widget.style.bottom);
+            spotfixStorage.setItem(storageKey, widget.style.bottom);
 
             setTimeout(() => {
                 state.hasDragged = false;
@@ -9330,12 +9498,12 @@ class CleanTalkWidgetDoboard {
         this.selectedData = selectedData || '';
         this.timerToOpenWrap = timerToOpenWrap;
         this.selectedText = selectedData?.selectedText || '';
-        this.descriptionText = localStorage.getItem('spotfix-description-ls') || '';
+        this.descriptionText = spotfixStorage.getItem('spotfix-description-ls') || '';
         this.srcVariables = {
             buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
             iconEllipsesMore: SpotFixSVGLoader.getAsDataURI('iconEllipsesMore'),
             iconPlus: SpotFixSVGLoader.getAsDataURI('iconPlus'),
-            iconMaximize: +localStorage.getItem('maximize')
+            iconMaximize: +spotfixStorage.getItem('maximize')
                 ? SpotFixSVGLoader.getAsDataURI('iconMinimize')
                 : SpotFixSVGLoader.getAsDataURI('iconMaximize'),
             iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
@@ -9401,10 +9569,16 @@ class CleanTalkWidgetDoboard {
             }
         } else {
             // Load all tasks
-            const isWidgetClosed = localStorage.getItem('spotfix_widget_is_closed');
+            const isWidgetClosed = spotfixStorage.getItem('spotfix_widget_is_closed');
             const isTasksLoadNeeded = type !== 'create_issue' && type !== 'all_issues';
             if (((isWidgetClosed && !this.selectedText) || !isWidgetClosed) && isTasksLoadNeeded) {
-                this.allTasksData = await getAllTasks(this.params, this.nonRequesting);
+                const tasksRequest = getAllTasks(this.params, this.nonRequesting);
+                this.allTasksData = type === 'wrap'
+                    ? await Promise.race([
+                        tasksRequest,
+                        new Promise((resolve) => setTimeout(() => resolve([]), SPOTFIX_WRAP_TASKS_TIMEOUT)),
+                    ])
+                    : await tasksRequest;
             }
         }
 
@@ -9415,16 +9589,19 @@ class CleanTalkWidgetDoboard {
             taskHasSiteOwnerUpdate = true;
         } else {
             if (type === 'wrap_review') {
-                taskHasSiteOwnerUpdate = await checkIfTasksHasSiteOwnerUpdates(
-                    this.allTasksData,
-                    this.params
-                );
+                try {
+                    taskHasSiteOwnerUpdate = await checkIfTasksHasSiteOwnerUpdates(
+                        this.allTasksData,
+                        this.params
+                    );
+                } catch (error) {
+                    console.error('SpotFix tasks updates check error:', error);
+                }
             }
         }
         storageSaveTasksUpdateData(this.allTasksData);
-        //check to hide on first run
         if (!storageWidgetCloseIsSet()) {
-            storageSetWidgetIsClosed(true);
+            storageSetWidgetIsClosed(false);
         }
         //check to show if any task has site owner updates
         if (taskHasSiteOwnerUpdate) {
@@ -9451,9 +9628,9 @@ class CleanTalkWidgetDoboard {
             // Fallback to spotfixConfig when URL has no params or they are incomplete (e.g. WordPress plugin)
             params = {
                 ...params,
-                projectToken: params.projectToken || config.projectToken || '',
-                projectId: params.projectId || config.projectId || '',
-                accountId: params.accountId || config.accountId || ''
+                projectToken: params.projectToken || config?.projectToken || '',
+                projectId: params.projectId || config?.projectId || '',
+                accountId: params.accountId || config?.accountId || ''
             };
 
         } else {
@@ -9470,10 +9647,10 @@ class CleanTalkWidgetDoboard {
         }
 
         if (params.accountId) {
-            localStorage.setItem('spotfix_company_id', params.accountId);
+            spotfixStorage.setItem('spotfix_company_id', params.accountId);
         }
         if (params.projectToken) {
-            localStorage.setItem('spotfix_project_token', params.projectToken);
+            spotfixStorage.setItem('spotfix_project_token', params.projectToken);
         }
         return params;
     }
@@ -9525,7 +9702,7 @@ class CleanTalkWidgetDoboard {
                 let userEmail = '';
                 let userPassword = '';
                 const loginSectionElement = document.querySelector('.doboard_task_widget-login');
-                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+                const sessionIdExists = !!spotfixStorage.getItem('spotfix_session_id');
 
                 if ( !sessionIdExists && loginSectionElement && loginSectionElement.classList.contains('active') ) {
                     const userEmailElement = document.getElementById('doboard_task_widget-user_email');
@@ -9615,7 +9792,7 @@ class CleanTalkWidgetDoboard {
                     }
 
                     // Save pending task in LS
-                    localStorage.setItem('spotfix_pending_task', JSON.stringify({
+                    spotfixStorage.setItem('spotfix_pending_task', JSON.stringify({
                         ...this.selectedData,
                         description: taskDescription
                     }));
@@ -9630,7 +9807,7 @@ class CleanTalkWidgetDoboard {
                     }
 
                     if (this.fileUploader?.hasFiles() && submitTaskResult?.initialComment?.commentId) {
-                        const sessionId = localStorage.getItem('spotfix_session_id');
+                        const sessionId = spotfixStorage.getItem('spotfix_session_id');
                         try {
                             const attachmentsSendResult = await this.fileUploader.sendAttachmentsForComment(
                                 this.params,
@@ -9910,7 +10087,7 @@ class CleanTalkWidgetDoboard {
                 } catch (error) {
                     document.querySelector('.doboard_task_widget-login-is-invalid').classList.remove('doboard_task_widget-hidden');
                 }
-                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+                const sessionIdExists = !!spotfixStorage.getItem('spotfix_session_id');
                 const email = getSpotfixEmail();
                 if (sessionIdExists && email && !email.includes('spotfix_')) {
                     const loginEl= document.querySelector('.doboard_task_widget-login');
@@ -10035,7 +10212,7 @@ class CleanTalkWidgetDoboard {
                         registerOnlyButton.classList.add('doboard_task_widget-hidden');
 
                         this.registrationShowMessage('Account already exists. Please login with your password.', 'notice');
-                    } else if (localStorage.getItem('spotfix_session_id')) {
+                    } else if (spotfixStorage.getItem('spotfix_session_id')) {
                         // Redraw widget after successful registration
                         await this.createWidgetElement('create_issue');
                     }
@@ -10068,8 +10245,8 @@ class CleanTalkWidgetDoboard {
         let templateVariables = {};
 
         const config = window.SpotfixWidgetConfig;
-        const savedVerticalPosition = localStorage.getItem('doboardWidgetPosBottom');
-        const savedHorizontalPosition = localStorage.getItem('horizontalPosition');
+        const savedVerticalPosition = spotfixStorage.getItem('doboardWidgetPosBottom');
+        const savedHorizontalPosition = spotfixStorage.getItem('horizontalPosition');
         const horizontalPosition = savedHorizontalPosition === 'left' || savedHorizontalPosition === 'right'
         ? savedHorizontalPosition
         : config?.horizontalPosition;
@@ -10089,11 +10266,11 @@ class CleanTalkWidgetDoboard {
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
             templateVariables = {
-                selectedText: this.selectedText || localStorage.getItem('spotfix-title-ls') || '',
+                selectedText: this.selectedText || spotfixStorage.getItem('spotfix-title-ls') || '',
                 currentDomain: document.location.hostname || '',
-                descriptionText: this.descriptionText || localStorage.getItem('spotfix-description-ls') || '',
+                descriptionText: this.descriptionText || spotfixStorage.getItem('spotfix-description-ls') || '',
                 buttonCloseScreen: SpotFixSVGLoader.getAsDataURI('buttonCloseScreen'),
-                iconMaximize: +localStorage.getItem('maximize')
+                iconMaximize: +spotfixStorage.getItem('maximize')
                     ? SpotFixSVGLoader.getAsDataURI('iconMinimize')
                     : SpotFixSVGLoader.getAsDataURI('iconMaximize'),
                 iconPublic: SpotFixSVGLoader.getAsDataURI('iconPublic'),
@@ -10102,7 +10279,7 @@ class CleanTalkWidgetDoboard {
                 ...this.srcVariables
             };
 
-            const userId = localStorage.getItem('spotfix_user_id') || 0;
+            const userId = spotfixStorage.getItem('spotfix_user_id') || 0;
             templateVariables.userAvatarLoginBlock = SpotFixSVGLoader.getAsDataURI('iconGuestAvatarDark') || '';
             templateVariables.userNameLoginBlock = 'Guest';
             if(userId) {
@@ -10143,7 +10320,7 @@ class CleanTalkWidgetDoboard {
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
             this.srcVariables.userAvatar = SpotFixSVGLoader.getAsDataURI('iconGuestAvatarDark');
-            const userIdAI = localStorage.getItem('spotfix_user_id') || 0;
+            const userIdAI = spotfixStorage.getItem('spotfix_user_id') || 0;
             if(userIdAI) {
                 const usersList = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
                 this.srcVariables.userAvatar = usersList.find(user => +user?.user_id === +userIdAI)?.avatar?.s || SpotFixSVGLoader.getAsDataURI('iconGuestAvatarDark') || '';
@@ -10154,7 +10331,7 @@ class CleanTalkWidgetDoboard {
             templateName = 'user_menu';
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
-            const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+            const userMenuVersion = spotfixStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
             templateVariables = {
                 spotfixVersion: userMenuVersion ? 'Spotfix version ' + userMenuVersion + '.' : '',
                 avatar: SpotFixSVGLoader.getAsDataURI('iconAvatar'),
@@ -10170,7 +10347,7 @@ class CleanTalkWidgetDoboard {
             templateName = 'spot_menu';
             this.socket_type_name = templateName;
             this.nonRequesting = nonRequesting;
-            const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+            const spotMenuVersion = spotfixStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
             templateVariables = {
                 spotfixVersion: spotMenuVersion ? 'Spotfix version ' + spotMenuVersion + '.' : '',
                 chevronBackDark: SpotFixSVGLoader.getAsDataURI('chevronBackDark'),
@@ -10212,6 +10389,7 @@ class CleanTalkWidgetDoboard {
         if(!nonRequesting) {
             widgetContainer.innerHTML = this.loadTemplate(templateName, templateVariables);
             document.body.appendChild(widgetContainer);
+            spotFixWidgetContainer = widgetContainer;
 
             // remove highlights before any screen called
             spotFixRemoveHighlights();
@@ -10222,14 +10400,14 @@ class CleanTalkWidgetDoboard {
             if(!nonRequesting) {
                 document.getElementById('spotfix-widget-create-task-visibility').checked = this.new_task_type === 'PUBLIC';
 
-                if (container && +localStorage.getItem('maximize')) {
+                if (container && +spotfixStorage.getItem('maximize')) {
                     container.classList.add('doboard_task_widget-container-maximize');
                 } else if (container) {
                     container.classList.remove('doboard_task_widget-container-maximize');
                 }
                 // highlight selected item during task creation
                 const selection = window.getSelection();
-                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+                const sessionIdExists = !!spotfixStorage.getItem('spotfix_session_id');
                 const email = getSpotfixEmail();
 
                 if (sessionIdExists && email && !email.includes('spotfix_')) {
@@ -10247,12 +10425,12 @@ class CleanTalkWidgetDoboard {
 
                 const loggedUserNameBlock = document.querySelector('.doboard_task_widget-logged-user-name');
                 if(loggedUserNameBlock) {
-                    if(localStorage.getItem('spotfix_session_id') && !(localStorage.getItem('spotfix_email')?.includes('spotfix_'))) {
+                    if(spotfixStorage.getItem('spotfix_session_id') && !(spotfixStorage.getItem('spotfix_email')?.includes('spotfix_'))) {
                         loggedUserNameBlock.style.display = 'flex';
                     } else loggedUserNameBlock.style.display = 'none';
                 }
 
-                const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
+                const requireFullRegistration = spotfixStorage.getItem('spotfix_require_full_registration') === '1';
                 const titleContainer = document.getElementById('doboard_task_widget-title')?.closest('.doboard_task_widget-input-container');
                 const descriptionContainer = document.getElementById('doboard_task_widget-description-container');
                 const requireFullRegistrationMessage = document.getElementById('doboard_task_widget-require_full_registration');
@@ -10319,7 +10497,7 @@ class CleanTalkWidgetDoboard {
 
                 }
 
-                const savedDescription = localStorage.getItem('spotfix-description-ls') || '';
+                const savedDescription = spotfixStorage.getItem('spotfix-description-ls') || '';
                 const fileUploaderDesc = this.fileUploader;
                 const updateSubmitState = (content) => this.updateCreateTaskSubmitState(content);
 
@@ -10335,7 +10513,7 @@ class CleanTalkWidgetDoboard {
                     window.DescriptionEditorIframe.create({
                         savedContent: savedDescription,
                         onChange: function(content) {
-                            localStorage.setItem('spotfix-description-ls', content);
+                            spotfixStorage.setItem('spotfix-description-ls', content);
                             updateSubmitState(content);
                         },
                         onInput: updateSubmitState,
@@ -10352,7 +10530,7 @@ class CleanTalkWidgetDoboard {
                     });
                 }
 
-                const spotfix_license_status = localStorage.getItem('spotfix_license_status');
+                const spotfix_license_status = spotfixStorage.getItem('spotfix_license_status');
                 if(spotfix_license_status && spotfix_license_status !== "ACTIVE") {
                     this.registrationShowMessage('Your license has expired. Please renew it under the organization owner\'s account by navigating to Profile Picture → Company settings', 'error', true);
                     document.querySelector('.doboard_task_widget-visibility-toggle').style.display = 'none';
@@ -10368,7 +10546,6 @@ class CleanTalkWidgetDoboard {
             }
             break;
         case 'wrap':
-            await this.getTaskCount();
             const wrap = document.querySelector('.doboard_task_widget-wrap');
             if(!nonRequesting && wrap) {
                 wrap?.addEventListener('click', async (e) => {
@@ -10383,10 +10560,11 @@ class CleanTalkWidgetDoboard {
                 });
             };
             hideContainersSpinner(false);
-            if (horizontalPosition === 'left') {
+            if (wrap && horizontalPosition === 'left') {
                 wrap.style.borderTopRightRadius = '4px';
                 wrap.style.borderBottomRightRadius = '4px';
             }
+            this.getTaskCount().catch((error) => console.error('SpotFix task count error:', error));
             break;
         case 'wrap_review':
             const wrapReview = document.querySelector('#doboard_task_widget_button');
@@ -10427,7 +10605,7 @@ class CleanTalkWidgetDoboard {
             spotFixRemoveHighlights();
 
             const nowAI = Date.now();
-            const currentSessionIdAI = localStorage.getItem('spotfix_session_id') || '';
+            const currentSessionIdAI = spotfixStorage.getItem('spotfix_session_id') || '';
             const isSessionStateValidAI = (this.cachedSessionIdAI === currentSessionIdAI);
             const isCacheValid = this.htmlCacheTimestamp && (nowAI - this.htmlCacheTimestamp < 60000) && isSessionStateValidAI;
 
@@ -10478,7 +10656,7 @@ class CleanTalkWidgetDoboard {
             }
             // If there is no cache or it has expired, fetch fresh data.
             let issuesQuantityOnPage = 0;
-            const sessionId = localStorage.getItem('spotfix_session_id');
+            const sessionId = spotfixStorage.getItem('spotfix_session_id');
 
 
             const notificationsRequest = this.nonRequesting ? [] : getNotificationsDoboard(
@@ -10590,7 +10768,7 @@ class CleanTalkWidgetDoboard {
                             iconOfVisibility: elTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicSmall : this.srcVariables.iconLockSmall,
                             iconLinkChain: isTaskWithoutReference ? SpotFixSVGLoader.getAsDataURI('iconCrossedLinkChain') : this.srcVariables.iconLinkChain,
                             taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
-                            taskPageUrl: isTaskWithoutReference ? 'No link with content' : localStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
+                            taskPageUrl: isTaskWithoutReference ? 'No link with content' : spotfixStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
                             taskLastUpdate: formatToDotMonthDate(elTask.taskLastUpdate),
                             nodePath: this.sanitizeNodePath(taskNodePath),
                             taskId: taskId,
@@ -10605,7 +10783,7 @@ class CleanTalkWidgetDoboard {
                             amountOfComments
                         };
 
-                        if (this.isSpotHaveToBeHighlighted(taskData)) {
+                        if (taskData && this.isSpotHaveToBeHighlighted(taskData)) {
                             spotsToBeHighlighted.push(taskData);
                         }
                         clearTimeout(this.timerToOpenWrap);
@@ -10706,7 +10884,7 @@ class CleanTalkWidgetDoboard {
                 this.cachedHTML = finalContainer.innerHTML;
                 this.cachedSpotsToBeHighlighted = spotsToBeHighlighted;
                 this.htmlCacheTimestamp = Date.now();
-                this.cachedSessionIdAI = localStorage.getItem('spotfix_session_id') || '';
+                this.cachedSessionIdAI = spotfixStorage.getItem('spotfix_session_id') || '';
             }
 
             this.bindIssuesClick();
@@ -10719,7 +10897,7 @@ class CleanTalkWidgetDoboard {
             const user = await getUserDetails(this.params, this.nonRequesting);
             if(!this.nonRequesting) await getReleaseVersion();
             let userMenuSpotfixVersion = '';
-            const userMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+            const userMenuVersion = spotfixStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
             userMenuSpotfixVersion = userMenuVersion ? `Spotfix version ${userMenuVersion}.` : '';
 
             templateVariables.spotfixVersion = userMenuSpotfixVersion || '';
@@ -10744,19 +10922,19 @@ class CleanTalkWidgetDoboard {
             }
 
             buttonLeft?.addEventListener('click', () => {
-                localStorage.setItem('horizontalPosition', 'left');
+                spotfixStorage.setItem('horizontalPosition', 'left');
                 this.createWidgetElement('user_menu');
             });
             buttonRight?.addEventListener('click', () => {
-                localStorage.setItem('horizontalPosition', 'right');
+                spotfixStorage.setItem('horizontalPosition', 'right');
                 this.createWidgetElement('user_menu');
             });
 
             const screenDblckickToggle = document.getElementById('spofix-screen-dblckick-list');
             if (screenDblckickToggle) {
-                screenDblckickToggle.checked = !!+localStorage.getItem('spofix-screen-dblckick');
+                screenDblckickToggle.checked = !!+spotfixStorage.getItem('spofix-screen-dblckick');
                 screenDblckickToggle.addEventListener('change', (el) => {
-                    localStorage.setItem('spofix-screen-dblckick', `${+el.target.checked}`)
+                    spotfixStorage.setItem('spofix-screen-dblckick', `${+el.target.checked}`)
                 });
             }
 
@@ -10784,7 +10962,7 @@ class CleanTalkWidgetDoboard {
                     document.body.appendChild(widgetContainer);
                 }
 
-                const currentUserId = localStorage.getItem('spotfix_user_id') || 0;
+                const currentUserId = spotfixStorage.getItem('spotfix_user_id') || 0;
                 const unsubscribeElem = document.getElementById('unsubscribe_from_spot');
                 const highlightElem = document.getElementById('highlight_the_spot');
 
@@ -10792,10 +10970,10 @@ class CleanTalkWidgetDoboard {
                     unsubscribeElem.checked = true;
                 }
                 if (highlightElem && currentUserId) {
-                    const highlightStatuses = JSON.parse(localStorage.getItem('spotfix_highlight_statuses') || '{}');
+                    const highlightStatuses = JSON.parse(spotfixStorage.getItem('spotfix_highlight_statuses') || '{}');
                     highlightElem.checked = highlightStatuses[currentUserId]?.[currentTaskIdSM] ?? true;
                 }
-                if (!localStorage.getItem('spotfix_session_id')) {
+                if (!spotfixStorage.getItem('spotfix_session_id')) {
                     if (unsubscribeElem) unsubscribeElem.disabled = true;
                     if (highlightElem) highlightElem.disabled = true;
                 }
@@ -10806,7 +10984,7 @@ class CleanTalkWidgetDoboard {
             if (!this.nonRequesting) await getReleaseVersion();
 
             let spotfixVersion = '';
-            const spotMenuVersion = localStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
+            const spotMenuVersion = spotfixStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
             spotfixVersion = spotMenuVersion ? `Spotfix version ${spotMenuVersion}.` : '';
             templateVariables.spotfixVersion = spotfixVersion || '';
 
@@ -10821,10 +10999,10 @@ class CleanTalkWidgetDoboard {
 
             templateVariables.taskName = currentTask.taskTitle;
             templateVariables.taskType = currentTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicDark : this.srcVariables.iconLockDark;
-            templateVariables.doboardLink = `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}?token=${currentTask.taskToken}`;
-            templateVariables.doboardLinkShort = `https://app.doboard.com/${localStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}`;
+            templateVariables.doboardLink = `https://app.doboard.com/${spotfixStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}?token=${currentTask.taskToken}`;
+            templateVariables.doboardLinkShort = `https://app.doboard.com/${spotfixStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}`;
 
-            const currentUserId = localStorage.getItem('spotfix_user_id') || 0;
+            const currentUserId = spotfixStorage.getItem('spotfix_user_id') || 0;
 
             const users = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
             const usersFiltered = users.filter(user => currentTask?.viewers?.includes(user.user_id));
@@ -10850,10 +11028,10 @@ class CleanTalkWidgetDoboard {
                 unsubscribeElem.checked = true;
             }
             if (currentUserId && highlightElem) {
-                const highlightStatuses = JSON.parse(localStorage.getItem('spotfix_highlight_statuses') || '{}');
+                const highlightStatuses = JSON.parse(spotfixStorage.getItem('spotfix_highlight_statuses') || '{}');
                 highlightElem.checked = highlightStatuses[currentUserId]?.[this.currentActiveTaskId] ?? true;
             }
-            if (!localStorage.getItem('spotfix_session_id')) {
+            if (!spotfixStorage.getItem('spotfix_session_id')) {
                 if (unsubscribeElem) unsubscribeElem.disabled = true;
                 if (highlightElem) highlightElem.disabled = true;
             }
@@ -10881,7 +11059,7 @@ class CleanTalkWidgetDoboard {
             const currentTaskId = this.currentActiveTaskId;
             const taskCache = this.concreteIssueCache[currentTaskId];
 
-            const currentSessionId = localStorage.getItem('spotfix_session_id') || '';
+            const currentSessionId = spotfixStorage.getItem('spotfix_session_id') || '';
             const isSessionStateValid = taskCache && (taskCache.sessionId === currentSessionId);
             const isConcreteCacheValid = taskCache && (nowCI - taskCache.timestamp < 15000) && !this.nonRequesting && isSessionStateValid;
 
@@ -10915,7 +11093,7 @@ class CleanTalkWidgetDoboard {
                     window.MessageEditorIframe.remove();
                 }
 
-                let savedComments = localStorage.getItem('spotfix_comment_draft');
+                let savedComments = spotfixStorage.getItem('spotfix_comment_draft');
                 let savedDraftText = '';
                 if (savedComments) {
                     try { savedDraftText = JSON.parse(savedComments)[`${currentTaskId}`] || ''; } catch (err){}
@@ -10932,20 +11110,20 @@ class CleanTalkWidgetDoboard {
                     },
                     handlers: {
                         onChange: function(content) {
-                            let contentForSaving = localStorage.getItem('spotfix_comment_draft');
+                            let contentForSaving = spotfixStorage.getItem('spotfix_comment_draft');
                             contentForSaving = contentForSaving ? JSON.parse(contentForSaving) : {};
                             contentForSaving[`${currentTaskId}`] = content;
-                            try { localStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving)); } catch (err){}
+                            try { spotfixStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving)); } catch (err){}
                         },
                         onAttachmentClick: function() { mainThis.fileUploader?.fileInput?.click(); },
                         onScreenshotClick: function() { mainThis.fileUploader?.makeScreenshot(); },
                         onSendComment: function(eventData) {
                             clickHandler(mainThis, null, eventData.content);
-                            let contentForSaving = localStorage.getItem('spotfix_comment_draft');
+                            let contentForSaving = spotfixStorage.getItem('spotfix_comment_draft');
                             if (contentForSaving) {
                                 contentForSaving = JSON.parse(contentForSaving);
                                 delete contentForSaving[`${currentTaskId}`];
-                                localStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
+                                spotfixStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
                             }
                         },
                     },
@@ -10960,9 +11138,10 @@ class CleanTalkWidgetDoboard {
 
             if(!this.nonRequesting && this.currentActiveTaskId) {
                 updateNotificationsDoboard(this.currentActiveTaskId, this.params.projectToken, this.params.accountId)
+                    .catch((error) => console.error('SpotFix notifications update error:', error));
             }
 
-            const userId = localStorage.getItem('spotfix_user_id') || 0;
+            const userId = spotfixStorage.getItem('spotfix_user_id') || 0;
             if(userId) {
                 const usersList = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_USERS);
                 templateVariables.userAvatar = usersList.find(user => +user?.user_id === +userId)?.avatar?.s || templateVariables.userAvatar;
@@ -11018,7 +11197,7 @@ class CleanTalkWidgetDoboard {
                 }
             }
 
-            templateVariables.contenerClasess = +localStorage.getItem('maximize')
+            templateVariables.contenerClasess = +spotfixStorage.getItem('maximize')
                 ? 'doboard_task_widget-container-maximize doboard_task_widget-container' : 'doboard_task_widget-container'
             if (this.nonRequesting) {
                 const containerEl = document.getElementById('doboard_task_widget_concrete-container');
@@ -11044,7 +11223,7 @@ class CleanTalkWidgetDoboard {
             if (!issuesCommentsContainer) return;
 
             let dayMessagesData = [];
-            const initIssuerID = localStorage.getItem('spotfix_user_id');
+            const initIssuerID = spotfixStorage.getItem('spotfix_user_id');
             let userIsIssuer = false;
             if ( taskDetails.issueComments.length > 0 ) {
                 storageRemoveUnreadUpdateForTaskID(taskDetails.taskId);
@@ -11158,7 +11337,7 @@ class CleanTalkWidgetDoboard {
             }
             if(!this.nonRequesting) {
                 const draftKey =  mainThis.currentActiveTaskId ;
-                let savedComments = localStorage.getItem('spotfix_comment_draft')
+                let savedComments = spotfixStorage.getItem('spotfix_comment_draft')
                 let savedDraftText = '';
                 if (savedComments) {
                     try {
@@ -11188,22 +11367,22 @@ class CleanTalkWidgetDoboard {
                     },
                     handlers: {
                         onChange: function(content) {
-                            let contentForSaving = localStorage.getItem('spotfix_comment_draft');
+                            let contentForSaving = spotfixStorage.getItem('spotfix_comment_draft');
                             contentForSaving = contentForSaving ? JSON.parse(contentForSaving) : {};
                             contentForSaving[`${mainThis.currentActiveTaskId}`] = content;
                             try {
-                                localStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
+                                spotfixStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
                             } catch (err){}
                         },
                         onAttachmentClick: function() { fileUploader?.fileInput?.click(); },
                         onScreenshotClick: function() { fileUploader?.makeScreenshot(); },
                         onSendComment: function(eventData) {
                             clickHandler(mainThis, null, eventData.content);
-                            let contentForSaving = localStorage.getItem('spotfix_comment_draft');
+                            let contentForSaving = spotfixStorage.getItem('spotfix_comment_draft');
                             if (contentForSaving) {
                                 contentForSaving = JSON.parse(contentForSaving);
                                 delete contentForSaving[`${mainThis.currentActiveTaskId}`];
-                                localStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
+                                spotfixStorage.setItem('spotfix_comment_draft', JSON.stringify(contentForSaving));
                             }
                         },
                     },
@@ -11238,10 +11417,10 @@ class CleanTalkWidgetDoboard {
                 issueTitle: templateVariables.issueTitle,
                 meta: meta,
                 nodePath: nodePath,
-                sessionId: localStorage.getItem('spotfix_session_id') || ''
+                sessionId: spotfixStorage.getItem('spotfix_session_id') || ''
             };
 
-            const spotfix_license_status = localStorage.getItem('spotfix_license_status');
+            const spotfix_license_status = spotfixStorage.getItem('spotfix_license_status');
             const messageContainer = document.getElementById('spotfix_widget_task_send_message_container');
             if(spotfix_license_status && spotfix_license_status !== "ACTIVE") {
                 this.registrationShowMessage('Your license has expired. Please renew it under the organization owner\'s account by navigating to Profile Picture → Company settings', 'error', true);
@@ -11290,7 +11469,7 @@ class CleanTalkWidgetDoboard {
             }
 
             if (mainThis && mainThis?.fileUploader?.hasFiles() && newCommentResponse !== null && newCommentResponse?.hasOwnProperty('commentId')) {
-                const sessionId = localStorage.getItem('spotfix_session_id');
+                const sessionId = spotfixStorage.getItem('spotfix_session_id');
                 const attachmentsSendResult = await mainThis?.fileUploader?.sendAttachmentsForComment(mainThis?.params, sessionId, newCommentResponse?.commentId);
             }
 
@@ -11344,7 +11523,7 @@ class CleanTalkWidgetDoboard {
             }) || '';
         }
         document.querySelector('#unsubscribe_from_spot')?.addEventListener('change', () => {
-            const currentUserId = +localStorage.getItem('spotfix_user_id');
+            const currentUserId = +spotfixStorage.getItem('spotfix_user_id');
 
             if (!currentUserId) return;
 
@@ -11374,11 +11553,11 @@ class CleanTalkWidgetDoboard {
         }) || '';
 
         document.querySelector('#highlight_the_spot')?.addEventListener('change', (e) => {
-            const currentUserId = localStorage.getItem('spotfix_user_id');
+            const currentUserId = spotfixStorage.getItem('spotfix_user_id');
             if (!currentUserId) return;
 
             const highlightStatuses = JSON.parse(
-                localStorage.getItem('spotfix_highlight_statuses') || '{}'
+                spotfixStorage.getItem('spotfix_highlight_statuses') || '{}'
             );
 
             if (!highlightStatuses[currentUserId]) {
@@ -11387,7 +11566,7 @@ class CleanTalkWidgetDoboard {
 
             highlightStatuses[currentUserId][this.currentActiveTaskId] = e.target.checked;
 
-            localStorage.setItem(
+            spotfixStorage.setItem(
                 'spotfix_highlight_statuses',
                 JSON.stringify(highlightStatuses)
             );
@@ -11412,11 +11591,11 @@ class CleanTalkWidgetDoboard {
             const authInputsContainer = document.querySelector('.doboard_task_widget-auth-inputs-container');
 
             const isMaximized =
-                +localStorage.getItem('maximize') &&
+                +spotfixStorage.getItem('maximize') &&
                 container.classList.contains('doboard_task_widget-container-maximize');
 
             if (isMaximized) {
-                localStorage.setItem('maximize', '0');
+                spotfixStorage.setItem('maximize', '0');
                 container.classList.remove('doboard_task_widget-container-maximize');
                 document.querySelector('#maximizeWidgetContainer img').src = SpotFixSVGLoader.getAsDataURI('iconMaximize');
 
@@ -11434,7 +11613,7 @@ class CleanTalkWidgetDoboard {
                         .forEach(el => (el.style.display = 'inline'));
                 }
             } else {
-                localStorage.setItem('maximize', '1');
+                spotfixStorage.setItem('maximize', '1');
                 container.classList.add('doboard_task_widget-container-maximize');
 
                 document.querySelector('#maximizeWidgetContainer img').src = SpotFixSVGLoader.getAsDataURI('iconMinimize');
@@ -11479,8 +11658,8 @@ class CleanTalkWidgetDoboard {
             const context = this;
             accordionController.addEventListener('click', function() {
                 const loginSection = this.closest('.doboard_task_widget-login');
-                const requireFullRegistration = localStorage.getItem('spotfix_require_full_registration') === '1';
-                const sessionIdExists = !!localStorage.getItem('spotfix_session_id');
+                const requireFullRegistration = spotfixStorage.getItem('spotfix_require_full_registration') === '1';
+                const sessionIdExists = !!spotfixStorage.getItem('spotfix_session_id');
 
                 if (requireFullRegistration && !sessionIdExists) {
                     loginSection.classList.add('active');
@@ -11491,7 +11670,7 @@ class CleanTalkWidgetDoboard {
                 // Scroll
                 context.positionWidgetContainer();
                 setTimeout(() => {
-                    if( +localStorage.getItem('maximize') ) {
+                    if( +spotfixStorage.getItem('maximize') ) {
                         document.querySelector('.doboard_task_widget-auth-inputs-container')
                             .classList.add('doboard_task_widget-auth-inputs-container-maximized');
                     } else {
@@ -11515,7 +11694,7 @@ class CleanTalkWidgetDoboard {
         }
 
         document.getElementById('doboard_task_widget-title')?.addEventListener('change', (e) => {
-            localStorage.setItem('spotfix-title-ls', e.target.value);
+            spotfixStorage.setItem('spotfix-title-ls', e.target.value);
             if (e.target.value.length < 1) {
                 document.querySelector('.spotfix_placeholder_title').style.display = 'block';
             }
@@ -11656,14 +11835,14 @@ class CleanTalkWidgetDoboard {
     };
 
     async getTaskCount() {
-        if (!localStorage.getItem('spotfix_session_id')) {
+        if (!spotfixStorage.getItem('spotfix_session_id')) {
             return {};
         }
 
         const projectToken = this.params.projectToken;
-        const sessionId = localStorage.getItem('spotfix_session_id');
+        const sessionId = spotfixStorage.getItem('spotfix_session_id');
 
-        const tasksCountLS = localStorage.getItem('spotfix_tasks_count');
+        const tasksCountLS = spotfixStorage.getItem('spotfix_tasks_count');
 
         let tasksCount;
         let tasks = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
@@ -11686,16 +11865,16 @@ class CleanTalkWidgetDoboard {
             notificationsCount = await getNotificationsDoboard(this.params.projectToken, sessionId, this.params.accountId, this.params.projectId);
             notificationsCount = [...new Map(notificationsCount.map((item) => [item.task_id, item])).values()];
             notificationsCount = notificationsCount.filter((item) => activeTasksIds.includes(item.task_id)).length;
-            localStorage.setItem('spotfix-tasks-notifications-count', `${notificationsCount}`);
+            spotfixStorage.setItem('spotfix-tasks-notifications-count', `${notificationsCount}`);
         } else {
-            notificationsCount = localStorage.getItem('spotfix-tasks-notifications-count');
+            notificationsCount = spotfixStorage.getItem('spotfix-tasks-notifications-count');
         }
 
         const taskCountElement = document.getElementById('doboard_task_widget-task_count');
         if ( taskCountElement && +notificationsCount ) {
             taskCountElement.innerText = ksesFilter(notificationsCount);
             taskCountElement.classList.remove('hidden');
-            if (localStorage.getItem('horizontalPosition') === 'left' || window.SpotfixWidgetConfig?.horizontalPosition === 'left') taskCountElement.style.left = '10px';
+            if (spotfixStorage.getItem('horizontalPosition') === 'left' || window.SpotfixWidgetConfig?.horizontalPosition === 'left') taskCountElement.style.left = '10px';
         }
     }
 
@@ -11710,7 +11889,7 @@ class CleanTalkWidgetDoboard {
      * Submit the task
      */
     async submitTask(taskDetails) {
-        if (!localStorage.getItem('spotfix_session_id')) {
+        if (!spotfixStorage.getItem('spotfix_session_id')) {
             await registerUser(taskDetails)(this.registrationShowMessage);
             if ( taskDetails.userPassword ) {
                 await loginUser(taskDetails)(this.registrationShowMessage);
@@ -11718,7 +11897,7 @@ class CleanTalkWidgetDoboard {
             }
         }
 
-        const sessionId = localStorage.getItem('spotfix_session_id');
+        const sessionId = spotfixStorage.getItem('spotfix_session_id');
 
         if ( ! sessionId ) {
             // @ToDo move this return in register block code
@@ -12142,7 +12321,7 @@ class CleanTalkWidgetDoboard {
 
         // Get user data
         let userData = null;
-        if (localStorage.getItem('spotfix_session_id')) {
+        if (spotfixStorage.getItem('spotfix_session_id')) {
             try {
                 userData = await getUserDetails(params);
             } catch (error) {
@@ -12187,6 +12366,8 @@ var spotFixShowDelayTimeout = null;
 let spotFixLastHandledSelectionRange = null;
 const SPOTFIX_DEBUG = false;
 const SPOTFIX_SHOW_DELAY = 1000;
+const SPOTFIX_WIDGET_WATCH_INTERVAL = 1000;
+let spotFixWidgetContainer = null;
 
 
 if( document.readyState !== 'loading' ) {
@@ -12200,7 +12381,7 @@ window.addEventListener('dblclick', (event) => {
     const selection = window.getSelection();
     const selectedData = spotFixGetSelectedData(selection);
 
-    if (!document.querySelector('.doboard_task_widget-container') && !selectedData && +localStorage.getItem('spofix-screen-dblckick')) {
+    if (!document.querySelector('.doboard_task_widget-container') && !selectedData && +spotfixStorage.getItem('spofix-screen-dblckick')) {
         window.getSelection().removeAllRanges();
         new CleanTalkWidgetDoboard({}, 'all_issues')
     }
@@ -12233,26 +12414,28 @@ window.addEventListener('hashchange', checkUrl);
 window.addEventListener('popstate', checkUrl);
 
 function spotFixInit() {
+    storageResetLegacyWidgetHiddenState();
     spotfixIndexedDB.init();
     wsSpotfix.connect();
     wsSpotfix.subscribe();
     new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
-    if(!localStorage.getItem('spotfix_session_id')) {
+    setInterval(spotFixRestoreDetachedWidget, SPOTFIX_WIDGET_WATCH_INTERVAL);
+    if(!spotfixStorage.getItem('spotfix_session_id')) {
         loadBotDetector();
     }
 
-    const projectToken = localStorage.getItem('spotfix_project_token');
-    const accountId = localStorage.getItem('spotfix_company_id');
+    const projectToken = spotfixStorage.getItem('spotfix_project_token');
+    const accountId = spotfixStorage.getItem('spotfix_company_id');
     if (projectToken && accountId) {
         getProjectDoboard(projectToken, accountId)
             .then(result => {
                 if (result && result?.projects && result?.projects[0]) {
-                    localStorage.setItem('spotfix_license_status', result.account_status);
+                    spotfixStorage.setItem('spotfix_license_status', result.account_status);
                     const project = result?.projects[0];
 
                     if (project?.require_full_registration !== undefined) {
-                        localStorage.setItem('spotfix_require_full_registration', project?.require_full_registration);
+                        spotfixStorage.setItem('spotfix_require_full_registration', project?.require_full_registration);
                     }
                 }
             })
@@ -12261,6 +12444,18 @@ function spotFixInit() {
 
     checkUrl();
 
+}
+
+function spotFixRestoreDetachedWidget() {
+    if (!spotFixWidgetContainer) {
+        return;
+    }
+    if (!spotFixWidgetContainer.isConnected) {
+        document.body.appendChild(spotFixWidgetContainer);
+    }
+    if (!document.getElementById('spotfix_css')) {
+        new SpotFixSourcesLoader();
+    }
 }
 
 function loadBotDetector() {
@@ -12523,7 +12718,7 @@ function isAnyTaskUpdated(allTasksData) {
 
     for (let i = 0; i < allTasksData.length; i++) {
         const currentStateOfTask = allTasksData[i];
-        const issuerId = localStorage.getItem('spotfix_user_id');
+        const issuerId = spotfixStorage.getItem('spotfix_user_id');
         if (
             currentStateOfTask.taskId &&
             currentStateOfTask.taskLastUpdate &&
@@ -12557,7 +12752,7 @@ async function checkIfTasksHasSiteOwnerUpdates(allTasksData, params) {
                 const lastMessage = updatedTaskData.comments[0];
                 if (
                     lastMessage.commentUserId !== undefined &&
-                    lastMessage.commentUserId !== localStorage.getItem('spotfix_user_id') &&
+                    lastMessage.commentUserId !== spotfixStorage.getItem('spotfix_user_id') &&
                     lastMessage.commentAuthorName !== 'Anonymous'
                 ) {
                     storageAddUnreadUpdateForTaskID(updatedTaskId);
@@ -12810,8 +13005,8 @@ function spotFixGetSelectedData(selection) {
  * @param widgetInstance
  */
 function spotFixHighlightElements(spotsToBeHighlighted, widgetInstance) {
-    const currentUserId = localStorage.getItem('spotfix_user_id');
-    const highlightStatuses = localStorage.getItem('spotfix_highlight_statuses');
+    const currentUserId = spotfixStorage.getItem('spotfix_user_id');
+    const highlightStatuses = spotfixStorage.getItem('spotfix_highlight_statuses');
 
     if (currentUserId && highlightStatuses) {
         const userHighlightStatuses = JSON.parse(highlightStatuses)[currentUserId];
@@ -13293,7 +13488,7 @@ function spotFixRetrieveNodeFromPath(path) {
  * @returns {boolean}
  */
 function storageGetWidgetIsClosed() {
-    return localStorage.getItem('spotfix_widget_is_closed') === '1';
+    return spotfixStorage.getItem('spotfix_widget_is_closed') === '1';
 }
 
 /**
@@ -13301,7 +13496,7 @@ function storageGetWidgetIsClosed() {
  * @returns {boolean}
  */
 function storageWidgetCloseIsSet() {
-    return localStorage.getItem('spotfix_widget_is_closed') !== null;
+    return spotfixStorage.getItem('spotfix_widget_is_closed') !== null;
 }
 
 /**
@@ -13309,7 +13504,7 @@ function storageWidgetCloseIsSet() {
  * @param visible
  */
 function storageSetWidgetIsClosed(visible) {
-    localStorage.setItem('spotfix_widget_is_closed', visible ? '1' : '0');
+    spotfixStorage.setItem('spotfix_widget_is_closed', visible ? '1' : '0');
     if(visible) {
         wsSpotfix.close();
     } else {
@@ -13318,12 +13513,22 @@ function storageSetWidgetIsClosed(visible) {
     }
 }
 
+function storageResetLegacyWidgetHiddenState() {
+    if (spotfixStorage.getItem('spotfix_widget_hidden_state_reset')) {
+        return;
+    }
+    spotfixStorage.setItem('spotfix_widget_hidden_state_reset', '1');
+    if (storageGetWidgetIsClosed()) {
+        spotfixStorage.setItem('spotfix_widget_is_closed', '0');
+    }
+}
+
 /**
  * Return bool if user is defined in local storage
  * @returns {boolean}
  */
 function storageGetUserIsDefined() {
-    return localStorage.getItem('spotfix_user_id') !== null;
+    return spotfixStorage.getItem('spotfix_user_id') !== null;
 }
 
 /**
@@ -13337,7 +13542,7 @@ function storageSaveTasksUpdateData(tasks) {
 
     let storedTasks = {};
     try {
-        storedTasks = JSON.parse(localStorage.getItem('spotfix_task_updates') || '{}');
+        storedTasks = JSON.parse(spotfixStorage.getItem('spotfix_task_updates') || '{}');
     } catch (error) {
         storedTasks = {};
     }
@@ -13351,7 +13556,7 @@ function storageSaveTasksUpdateData(tasks) {
         }
     });
 
-    localStorage.setItem('spotfix_task_updates', JSON.stringify(storedTasks));
+    spotfixStorage.setItem('spotfix_task_updates', JSON.stringify(storedTasks));
 }
 
 function storageSaveTasksCount(tasks) {
@@ -13363,7 +13568,7 @@ function storageSaveTasksCount(tasks) {
         return task.taskMeta;
     })?.length;
 
-    localStorage.setItem('spotfix_tasks_count', `${count}`);
+    spotfixStorage.setItem('spotfix_tasks_count', `${count}`);
 }
 
 /**
@@ -13379,7 +13584,7 @@ function storageCheckTaskUpdate(taskId, currentLastUpdate) {
 
     let storedTasks = {};
     try {
-        storedTasks = JSON.parse(localStorage.getItem('spotfix_task_updates') || '{}');
+        storedTasks = JSON.parse(spotfixStorage.getItem('spotfix_task_updates') || '{}');
     } catch (error) {
         storedTasks = {};
     }
@@ -13405,7 +13610,7 @@ function storageAddUnreadUpdateForTaskID(taskId) {
 
     let storedUnread = [];
     try {
-        storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+        storedUnread = JSON.parse(spotfixStorage.getItem('spotfix_unread_updates') || '[]');
     } catch (error) {
         storedUnread = [];
     }
@@ -13414,7 +13619,7 @@ function storageAddUnreadUpdateForTaskID(taskId) {
         storedUnread.push(taskId);
     }
 
-    localStorage.setItem('spotfix_unread_updates', JSON.stringify(storedUnread));
+    spotfixStorage.setItem('spotfix_unread_updates', JSON.stringify(storedUnread));
 }
 
 /**
@@ -13428,12 +13633,12 @@ function storageRemoveUnreadUpdateForTaskID(taskId) {
 
     let storedUnread = [];
     try {
-        storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+        storedUnread = JSON.parse(spotfixStorage.getItem('spotfix_unread_updates') || '[]');
     } catch (error) {
         storedUnread = [];
     }
     storedUnread = storedUnread.filter(id => id !== taskId);
-    localStorage.setItem('spotfix_unread_updates', JSON.stringify(storedUnread));
+    spotfixStorage.setItem('spotfix_unread_updates', JSON.stringify(storedUnread));
 }
 
 /**
@@ -13443,7 +13648,7 @@ function storageRemoveUnreadUpdateForTaskID(taskId) {
 function storageTasksHasUnreadUpdates() {
     let storedUnread = [];
     try {
-        storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+        storedUnread = JSON.parse(spotfixStorage.getItem('spotfix_unread_updates') || '[]');
     } catch (error) {
         storedUnread = [];
     }
@@ -13463,7 +13668,7 @@ function storageProvidedTaskHasUnreadUpdates(taskId) {
 
     let storedUnread = [];
     try {
-        storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+        storedUnread = JSON.parse(spotfixStorage.getItem('spotfix_unread_updates') || '[]');
     } catch (error) {
         storedUnread = [];
     }
@@ -13473,18 +13678,17 @@ function storageProvidedTaskHasUnreadUpdates(taskId) {
 
 function storageSaveSpotfixVersion (version) {
     if(version) {
-        localStorage.setItem('spotfix_app_version', `${version}`);
+        spotfixStorage.setItem('spotfix_app_version', `${version}`);
     } else {
-        localStorage.setItem('spotfix_app_version', '');
+        spotfixStorage.setItem('spotfix_app_version', '');
     }
 }
 
 function clearLocalstorageOnLogout () {
-    localStorage.removeItem('spotfix_email');
-    localStorage.removeItem('spotfix_session_id');
-    localStorage.removeItem('spotfix_user_id');
-    localStorage.removeItem('spotfix_accounts');
-    localStorage.setItem('spotfix_widget_is_closed', '1');
+    spotfixStorage.removeItem('spotfix_email');
+    spotfixStorage.removeItem('spotfix_session_id');
+    spotfixStorage.removeItem('spotfix_user_id');
+    spotfixStorage.removeItem('spotfix_accounts');
     wsSpotfix.close();
 }
 
@@ -13506,7 +13710,7 @@ function isValidSpotfixEmail(email) {
  * @returns {string|null}
  */
 function getSpotfixEmail() {
-    const email = localStorage.getItem('spotfix_email');
+    const email = spotfixStorage.getItem('spotfix_email');
     return isValidSpotfixEmail(email) ? email : null;
 }
 
@@ -13516,9 +13720,9 @@ function getSpotfixEmail() {
  */
 function setSpotfixEmail(email) {
     if (isValidSpotfixEmail(email)) {
-        localStorage.setItem('spotfix_email', email);
+        spotfixStorage.setItem('spotfix_email', email);
     } else {
-        localStorage.removeItem('spotfix_email');
+        spotfixStorage.removeItem('spotfix_email');
     }
 }
 /**
@@ -15399,6 +15603,7 @@ class DescriptionEditorIframe {
                     }
                 });
                 window.tinymce.init({
+                license_key: 'gpl',
                 target: document.getElementById("tinymce-editor"),
                 icons: "icon_pack_SpotFix",
                 plugins: 'link lists',
@@ -15723,6 +15928,7 @@ class MessageEditorIframe {
                     }
                     });
                     window.tinymce.init({
+                    license_key: 'gpl',
                     
                     target: document.getElementById("tinymce-editor"),
                     icons: "icon_pack_SpotFix",

@@ -2,6 +2,8 @@ var spotFixShowDelayTimeout = null;
 let spotFixLastHandledSelectionRange = null;
 const SPOTFIX_DEBUG = false;
 const SPOTFIX_SHOW_DELAY = 1000;
+const SPOTFIX_WIDGET_WATCH_INTERVAL = 1000;
+let spotFixWidgetContainer = null;
 
 
 if( document.readyState !== 'loading' ) {
@@ -15,7 +17,7 @@ window.addEventListener('dblclick', (event) => {
     const selection = window.getSelection();
     const selectedData = spotFixGetSelectedData(selection);
 
-    if (!document.querySelector('.doboard_task_widget-container') && !selectedData && +localStorage.getItem('spofix-screen-dblckick')) {
+    if (!document.querySelector('.doboard_task_widget-container') && !selectedData && +spotfixStorage.getItem('spofix-screen-dblckick')) {
         window.getSelection().removeAllRanges();
         new CleanTalkWidgetDoboard({}, 'all_issues')
     }
@@ -48,26 +50,28 @@ window.addEventListener('hashchange', checkUrl);
 window.addEventListener('popstate', checkUrl);
 
 function spotFixInit() {
+    storageResetLegacyWidgetHiddenState();
     spotfixIndexedDB.init();
     wsSpotfix.connect();
     wsSpotfix.subscribe();
     new SpotFixSourcesLoader();
     new CleanTalkWidgetDoboard({}, 'wrap');
-    if(!localStorage.getItem('spotfix_session_id')) {
+    setInterval(spotFixRestoreDetachedWidget, SPOTFIX_WIDGET_WATCH_INTERVAL);
+    if(!spotfixStorage.getItem('spotfix_session_id')) {
         loadBotDetector();
     }
 
-    const projectToken = localStorage.getItem('spotfix_project_token');
-    const accountId = localStorage.getItem('spotfix_company_id');
+    const projectToken = spotfixStorage.getItem('spotfix_project_token');
+    const accountId = spotfixStorage.getItem('spotfix_company_id');
     if (projectToken && accountId) {
         getProjectDoboard(projectToken, accountId)
             .then(result => {
                 if (result && result?.projects && result?.projects[0]) {
-                    localStorage.setItem('spotfix_license_status', result.account_status);
+                    spotfixStorage.setItem('spotfix_license_status', result.account_status);
                     const project = result?.projects[0];
 
                     if (project?.require_full_registration !== undefined) {
-                        localStorage.setItem('spotfix_require_full_registration', project?.require_full_registration);
+                        spotfixStorage.setItem('spotfix_require_full_registration', project?.require_full_registration);
                     }
                 }
             })
@@ -76,6 +80,18 @@ function spotFixInit() {
 
     checkUrl();
 
+}
+
+function spotFixRestoreDetachedWidget() {
+    if (!spotFixWidgetContainer) {
+        return;
+    }
+    if (!spotFixWidgetContainer.isConnected) {
+        document.body.appendChild(spotFixWidgetContainer);
+    }
+    if (!document.getElementById('spotfix_css')) {
+        new SpotFixSourcesLoader();
+    }
 }
 
 function loadBotDetector() {
@@ -338,7 +354,7 @@ function isAnyTaskUpdated(allTasksData) {
 
     for (let i = 0; i < allTasksData.length; i++) {
         const currentStateOfTask = allTasksData[i];
-        const issuerId = localStorage.getItem('spotfix_user_id');
+        const issuerId = spotfixStorage.getItem('spotfix_user_id');
         if (
             currentStateOfTask.taskId &&
             currentStateOfTask.taskLastUpdate &&
@@ -372,7 +388,7 @@ async function checkIfTasksHasSiteOwnerUpdates(allTasksData, params) {
                 const lastMessage = updatedTaskData.comments[0];
                 if (
                     lastMessage.commentUserId !== undefined &&
-                    lastMessage.commentUserId !== localStorage.getItem('spotfix_user_id') &&
+                    lastMessage.commentUserId !== spotfixStorage.getItem('spotfix_user_id') &&
                     lastMessage.commentAuthorName !== 'Anonymous'
                 ) {
                     storageAddUnreadUpdateForTaskID(updatedTaskId);

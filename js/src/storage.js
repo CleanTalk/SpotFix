@@ -3,7 +3,7 @@
  * @returns {boolean}
  */
 function storageGetWidgetIsClosed() {
-    return localStorage.getItem('spotfix_widget_is_closed') === '1';
+    return spotfixStorage.getItem('spotfix_widget_is_closed') === '1';
 }
 
 /**
@@ -11,7 +11,7 @@ function storageGetWidgetIsClosed() {
  * @returns {boolean}
  */
 function storageWidgetCloseIsSet() {
-    return localStorage.getItem('spotfix_widget_is_closed') !== null;
+    return spotfixStorage.getItem('spotfix_widget_is_closed') !== null;
 }
 
 /**
@@ -19,7 +19,7 @@ function storageWidgetCloseIsSet() {
  * @param visible
  */
 function storageSetWidgetIsClosed(visible) {
-    localStorage.setItem('spotfix_widget_is_closed', visible ? '1' : '0');
+    spotfixStorage.setItem('spotfix_widget_is_closed', visible ? '1' : '0');
     if(visible) {
         wsSpotfix.close();
     } else {
@@ -28,12 +28,22 @@ function storageSetWidgetIsClosed(visible) {
     }
 }
 
+function storageResetLegacyWidgetHiddenState() {
+    if (spotfixStorage.getItem('spotfix_widget_hidden_state_reset')) {
+        return;
+    }
+    spotfixStorage.setItem('spotfix_widget_hidden_state_reset', '1');
+    if (storageGetWidgetIsClosed()) {
+        spotfixStorage.setItem('spotfix_widget_is_closed', '0');
+    }
+}
+
 /**
  * Return bool if user is defined in local storage
  * @returns {boolean}
  */
 function storageGetUserIsDefined() {
-    return localStorage.getItem('spotfix_user_id') !== null;
+    return spotfixStorage.getItem('spotfix_user_id') !== null;
 }
 
 /**
@@ -47,7 +57,7 @@ function storageSaveTasksUpdateData(tasks) {
 
     let storedTasks = {};
     try {
-        storedTasks = JSON.parse(localStorage.getItem('spotfix_task_updates') || '{}');
+        storedTasks = JSON.parse(spotfixStorage.getItem('spotfix_task_updates') || '{}');
     } catch (error) {
         storedTasks = {};
     }
@@ -61,7 +71,7 @@ function storageSaveTasksUpdateData(tasks) {
         }
     });
 
-    localStorage.setItem('spotfix_task_updates', JSON.stringify(storedTasks));
+    spotfixStorage.setItem('spotfix_task_updates', JSON.stringify(storedTasks));
 }
 
 function storageSaveTasksCount(tasks) {
@@ -73,7 +83,7 @@ function storageSaveTasksCount(tasks) {
         return task.taskMeta;
     })?.length;
 
-    localStorage.setItem('spotfix_tasks_count', `${count}`);
+    spotfixStorage.setItem('spotfix_tasks_count', `${count}`);
 }
 
 /**
@@ -89,7 +99,7 @@ function storageCheckTaskUpdate(taskId, currentLastUpdate) {
 
     let storedTasks = {};
     try {
-        storedTasks = JSON.parse(localStorage.getItem('spotfix_task_updates') || '{}');
+        storedTasks = JSON.parse(spotfixStorage.getItem('spotfix_task_updates') || '{}');
     } catch (error) {
         storedTasks = {};
     }
@@ -115,7 +125,7 @@ function storageAddUnreadUpdateForTaskID(taskId) {
 
     let storedUnread = [];
     try {
-        storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+        storedUnread = JSON.parse(spotfixStorage.getItem('spotfix_unread_updates') || '[]');
     } catch (error) {
         storedUnread = [];
     }
@@ -124,7 +134,7 @@ function storageAddUnreadUpdateForTaskID(taskId) {
         storedUnread.push(taskId);
     }
 
-    localStorage.setItem('spotfix_unread_updates', JSON.stringify(storedUnread));
+    spotfixStorage.setItem('spotfix_unread_updates', JSON.stringify(storedUnread));
 }
 
 /**
@@ -138,12 +148,12 @@ function storageRemoveUnreadUpdateForTaskID(taskId) {
 
     let storedUnread = [];
     try {
-        storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+        storedUnread = JSON.parse(spotfixStorage.getItem('spotfix_unread_updates') || '[]');
     } catch (error) {
         storedUnread = [];
     }
     storedUnread = storedUnread.filter(id => id !== taskId);
-    localStorage.setItem('spotfix_unread_updates', JSON.stringify(storedUnread));
+    spotfixStorage.setItem('spotfix_unread_updates', JSON.stringify(storedUnread));
 }
 
 /**
@@ -153,7 +163,7 @@ function storageRemoveUnreadUpdateForTaskID(taskId) {
 function storageTasksHasUnreadUpdates() {
     let storedUnread = [];
     try {
-        storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+        storedUnread = JSON.parse(spotfixStorage.getItem('spotfix_unread_updates') || '[]');
     } catch (error) {
         storedUnread = [];
     }
@@ -173,7 +183,7 @@ function storageProvidedTaskHasUnreadUpdates(taskId) {
 
     let storedUnread = [];
     try {
-        storedUnread = JSON.parse(localStorage.getItem('spotfix_unread_updates') || '[]');
+        storedUnread = JSON.parse(spotfixStorage.getItem('spotfix_unread_updates') || '[]');
     } catch (error) {
         storedUnread = [];
     }
@@ -183,18 +193,17 @@ function storageProvidedTaskHasUnreadUpdates(taskId) {
 
 function storageSaveSpotfixVersion (version) {
     if(version) {
-        localStorage.setItem('spotfix_app_version', `${version}`);
+        spotfixStorage.setItem('spotfix_app_version', `${version}`);
     } else {
-        localStorage.setItem('spotfix_app_version', '');
+        spotfixStorage.setItem('spotfix_app_version', '');
     }
 }
 
 function clearLocalstorageOnLogout () {
-    localStorage.removeItem('spotfix_email');
-    localStorage.removeItem('spotfix_session_id');
-    localStorage.removeItem('spotfix_user_id');
-    localStorage.removeItem('spotfix_accounts');
-    localStorage.setItem('spotfix_widget_is_closed', '1');
+    spotfixStorage.removeItem('spotfix_email');
+    spotfixStorage.removeItem('spotfix_session_id');
+    spotfixStorage.removeItem('spotfix_user_id');
+    spotfixStorage.removeItem('spotfix_accounts');
     wsSpotfix.close();
 }
 
@@ -216,7 +225,7 @@ function isValidSpotfixEmail(email) {
  * @returns {string|null}
  */
 function getSpotfixEmail() {
-    const email = localStorage.getItem('spotfix_email');
+    const email = spotfixStorage.getItem('spotfix_email');
     return isValidSpotfixEmail(email) ? email : null;
 }
 
@@ -226,8 +235,8 @@ function getSpotfixEmail() {
  */
 function setSpotfixEmail(email) {
     if (isValidSpotfixEmail(email)) {
-        localStorage.setItem('spotfix_email', email);
+        spotfixStorage.setItem('spotfix_email', email);
     } else {
-        localStorage.removeItem('spotfix_email');
+        spotfixStorage.removeItem('spotfix_email');
     }
 }

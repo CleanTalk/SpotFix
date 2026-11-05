@@ -7,15 +7,16 @@ let reconnectTimer = null;
 let isIntentionalClose = false;
 
 const WS_URL = 'wss://ws.doboard.com';
+const WS_STATE_OPEN = 1;
 
-const getSessionId = () => localStorage.getItem('spotfix_session_id');
+const getSessionId = () => spotfixStorage.getItem('spotfix_session_id');
 
 const buildMessage = (action) => ({
-    channel: `account:${localStorage.getItem('spotfix_company_id')}`,
+    channel: `account:${spotfixStorage.getItem('spotfix_company_id')}`,
     action,
-    account_id: localStorage.getItem('spotfix_company_id'),
+    account_id: spotfixStorage.getItem('spotfix_company_id'),
     session_id: getSessionId(),
-    project_token: localStorage.getItem('spotfix_project_token'),
+    project_token: spotfixStorage.getItem('spotfix_project_token'),
 });
 
 const handleIncomingData = async (data) => {
@@ -99,16 +100,21 @@ const wsSpotfix = {
             reconnectTimer = null;
         }
 
-        if ((socket && socket.readyState === WebSocket.OPEN) || !getSessionId()) {
+        if ((socket && socket.readyState === WS_STATE_OPEN) || !getSessionId()) {
             return;
         }
 
         isIntentionalClose = false;
-        socket = new WebSocket(WS_URL);
+        try {
+            socket = new WebSocket(WS_URL);
+        } catch (error) {
+            console.error('WS connect error:', error);
+            return;
+        }
 
         socket.onopen = () => {
             heartbeatInterval = setInterval(() => {
-                if (socket?.readyState === WebSocket.OPEN) {
+                if (socket?.readyState === WS_STATE_OPEN) {
                     socket.send('heartbeat');
                 }
             }, 50 * 1000);
@@ -163,13 +169,13 @@ const wsSpotfix = {
     },
 
     send(data) {
-        if (socket?.readyState === WebSocket.OPEN) {
+        if (socket?.readyState === WS_STATE_OPEN) {
             socket.send(JSON.stringify(data));
         }
     },
 
     isActive() {
-        return socket !== null && socket.readyState === WebSocket.OPEN;
+        return socket !== null && socket.readyState === WS_STATE_OPEN;
     },
 
     close() {
@@ -182,13 +188,13 @@ const wsSpotfix = {
     },
 
     subscribe() {
-        if (socket?.readyState === WebSocket.OPEN) {
+        if (socket?.readyState === WS_STATE_OPEN) {
             wsSpotfix.send(buildMessage('SUBSCRIBE'));
         }
     },
 
     unsubscribe() {
-        if (socket?.readyState === WebSocket.OPEN) {
+        if (socket?.readyState === WS_STATE_OPEN) {
             wsSpotfix.send(buildMessage('UNSUBSCRIBE'));
         }
     },

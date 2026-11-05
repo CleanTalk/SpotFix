@@ -1,4 +1,5 @@
 const SPOTFIX_DOBOARD_API_URL = 'https://api.doboard.com';
+const SPOTFIX_API_READ_TIMEOUT = 10000;
 
 /**
  * Makes an API call to the DoBoard endpoint with form data
@@ -44,21 +45,31 @@ const spotfixApiCall = async (data, method, accountId = undefined) => {
         throw new Error(`Invalid endpoint URL: ${endpointUrl}`);
     }
 
-    let response;
-    try {
-        response = await fetch(endpointUrl, {
-            method: 'POST',
-            body: formData,
-        });
-    } catch (networkError) {
-        throw new Error(`Network error: ${networkError.message}`);
-    }
+    const controller = new AbortController();
+    const abortTimer = method.endsWith('_get')
+        ? setTimeout(() => controller.abort(), SPOTFIX_API_READ_TIMEOUT)
+        : null;
 
+    let response;
     let responseBody;
     try {
-        responseBody = await response.json();
-    } catch (parseError) {
-        throw new Error('Failed to parse JSON response from server');
+        try {
+            response = await fetch(endpointUrl, {
+                method: 'POST',
+                body: formData,
+                signal: controller.signal,
+            });
+        } catch (networkError) {
+            throw new Error(`Network error: ${networkError.message}`);
+        }
+
+        try {
+            responseBody = await response.json();
+        } catch (parseError) {
+            throw new Error('Failed to parse JSON response from server');
+        }
+    } finally {
+        clearTimeout(abortTimer);
     }
 
     if (!responseBody || typeof responseBody !== 'object') {
@@ -112,7 +123,7 @@ const createTaskDoboard = async (sessionId, taskDetails) => {
         session_id: sessionId,
         project_token: taskDetails.projectToken,
         project_id: taskDetails.projectId,
-        user_id: localStorage.getItem('spotfix_user_id'),
+        user_id: spotfixStorage.getItem('spotfix_user_id'),
         name: taskDetails.taskTitle,
         comment: taskDetails.taskDescription,
         meta: taskDetails.taskMeta,
@@ -166,9 +177,9 @@ const registerUserDoboard = async (projectToken, accountId, email, nickname) => 
         data.name = nickname;
     }
 
-    if (localStorage.getItem('bot_detector_event_token')) {
+    if (spotfixStorage.getItem('bot_detector_event_token')) {
         try {
-            const botDetectorData = JSON.parse(localStorage.getItem('bot_detector_event_token'));
+            const botDetectorData = JSON.parse(spotfixStorage.getItem('bot_detector_event_token'));
             if (botDetectorData?.value) {
                 data.bot_detector_event_token = botDetectorData?.value;
             }
@@ -216,8 +227,8 @@ const forgotPasswordDoboard = async (email) => {
 
 
 const logoutUserDoboard = async (projectToken) => {
-    const sessionId = localStorage.getItem('spotfix_session_id');
-    const accountsString = localStorage.getItem('spotfix_accounts');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
+    const accountsString = spotfixStorage.getItem('spotfix_accounts');
     const accounts = accountsString !== 'undefined' ? JSON.parse(accountsString || '[]') : [];
     const accountId = accounts.length > 0 ? accounts[0].account_id : 1;
 
@@ -257,7 +268,9 @@ const getTasksDoboard = async (projectToken, sessionId, accountId, projectId, us
     const result = await spotfixApiCall(data, 'task_get', accountId);
 
     if(result.operation_message === 'Access is denied'){
-        await spotfixIndexedDB.put(SPOTFIX_TABLE_TASKS, {taskId: taskId, task_type: 'PRIVATE', taskMeta:"{}"});
+        if (taskId) {
+            await spotfixIndexedDB.put(SPOTFIX_TABLE_TASKS, {taskId: taskId, task_type: 'PRIVATE', taskMeta:"{}"});
+        }
         return null;
     } else {
         const tasks = result.tasks.map((task) => ({
@@ -385,7 +398,7 @@ const userUpdateDoboard = async (projectToken, accountId, sessionId, userId, tim
 };
 
 const getProjectDoboard = async (projectToken, accountId) => {
-    const sessionId = localStorage.getItem('spotfix_session_id');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
     const data = {
         project_token: projectToken,
         with_account_status: 1,
@@ -432,7 +445,7 @@ const getNotificationsDoboard = async (projectToken, sessionId, accountId) => {
 };
 
 const updateNotificationsDoboard = async (taskId, projectToken, accountId) => {
-    const sessionId = localStorage.getItem('spotfix_session_id');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
     if (sessionId) {
         const data = {
             session_id: sessionId,
@@ -446,7 +459,7 @@ const updateNotificationsDoboard = async (taskId, projectToken, accountId) => {
 };
 
 const updateViewersDoboard = async (usersIds, taskId, projectToken, accountId) => {
-    const sessionId = localStorage.getItem('spotfix_session_id');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
     if (sessionId) {
         const data = {
             session_id: sessionId,

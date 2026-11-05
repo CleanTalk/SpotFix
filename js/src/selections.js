@@ -142,8 +142,8 @@ function spotFixGetSelectedData(selection) {
  * @param widgetInstance
  */
 function spotFixHighlightElements(spotsToBeHighlighted, widgetInstance) {
-    const currentUserId = localStorage.getItem('spotfix_user_id');
-    const highlightStatuses = localStorage.getItem('spotfix_highlight_statuses');
+    const currentUserId = spotfixStorage.getItem('spotfix_user_id');
+    const highlightStatuses = spotfixStorage.getItem('spotfix_highlight_statuses');
 
     if (currentUserId && highlightStatuses) {
         const userHighlightStatuses = JSON.parse(highlightStatuses)[currentUserId];

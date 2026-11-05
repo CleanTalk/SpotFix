@@ -15,11 +15,33 @@ const LOCAL_DATA_BASE_TABLE = [
 
 const SPOTFIX_LAST_DB_KEY = 'spotfix_last_db_key';
 
+const SPOTFIX_DB_OPEN_TIMEOUT = 3000;
+const SPOTFIX_DB_RETRY_DELAY = 30000;
+
 let dbPromise = null;
+let dbFailedAt = 0;
+const spotfixMemoryTables = new Map();
+
+function getTableKeyPath(table) {
+    return LOCAL_DATA_BASE_TABLE.find((item) => item.name === table)?.keyPath;
+}
+
+function getRowsWithKey(table, data) {
+    const keyPath = getTableKeyPath(table);
+    const rows = Array.isArray(data) ? data : [data];
+    return rows.filter((row) => row && row[keyPath] !== undefined && row[keyPath] !== null);
+}
+
+function writeMemoryTable(table, rows, isReplace) {
+    const keyPath = getTableKeyPath(table);
+    const memoryTable = (!isReplace && spotfixMemoryTables.get(table)) || new Map();
+    rows.forEach((row) => memoryTable.set(row[keyPath], row));
+    spotfixMemoryTables.set(table, memoryTable);
+}
 
 function getSpotfixDBKey() {
-    const sessionId = localStorage.getItem('spotfix_session_id');
-    const projectToken = localStorage.getItem('spotfix_project_token');
+    const sessionId = spotfixStorage.getItem('spotfix_session_id');
+    const projectToken = spotfixStorage.getItem('spotfix_project_token');
 
     if (sessionId) return `session:${sessionId}`;
     if (projectToken) return `project:${projectToken}`;
@@ -33,6 +55,7 @@ function getDBNameByKey(dbKey) {
 
 function openIndexedDB(name, version) {
     return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error('IndexedDB open timeout')), SPOTFIX_DB_OPEN_TIMEOUT);
         const request = indexedDB.open(name, version);
 
         request.onupgradeneeded = (e) => {
@@ -54,8 +77,22 @@ function openIndexedDB(name, version) {
             });
         };
 
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+            clearTimeout(timer);
+            const db = request.result;
+            db.onclose = () => {
+                dbPromise = null;
+            };
+            db.onversionchange = () => {
+                db.close();
+                dbPromise = null;
+            };
+            resolve(db);
+        };
+        request.onerror = () => {
+            clearTimeout(timer);
+            reject(request.error);
+        };
     });
 }
 
@@ -64,10 +101,18 @@ function getDB() {
         const dbKey = getSpotfixDBKey();
         if (!dbKey) return null;
 
+        if (Date.now() - dbFailedAt < SPOTFIX_DB_RETRY_DELAY) {
+            return Promise.reject(new Error('IndexedDB is unavailable'));
+        }
+
         dbPromise = openIndexedDB(
             getDBNameByKey(dbKey),
             spotfixIndexedDBVersion
-        );
+        ).catch((error) => {
+            dbPromise = null;
+            dbFailedAt = Date.now();
+            throw error;
+        });
     }
     return dbPromise;
 }
@@ -89,80 +134,126 @@ const spotfixIndexedDB = {
             return { needInit: false };
         }
 
-        const lastKey = localStorage.getItem(SPOTFIX_LAST_DB_KEY);
+        const lastKey = spotfixStorage.getItem(SPOTFIX_LAST_DB_KEY);
 
-        if (lastKey && lastKey !== currentKey) {
-            await deleteDBByKey(lastKey);
+        try {
+            if (lastKey && lastKey !== currentKey) {
+                await deleteDBByKey(lastKey);
+            }
+
+            spotfixStorage.setItem(SPOTFIX_LAST_DB_KEY, currentKey);
+
+            dbPromise = null;
+            await getDB();
+        } catch (error) {
+            console.error('SpotFix IndexedDB init error:', error);
         }
-
-        localStorage.setItem(SPOTFIX_LAST_DB_KEY, currentKey);
-
-        dbPromise = null;
-        await getDB();
 
         return { needInit: true };
     },
 
-    withStore: async (table, mode = 'readwrite', callback) => {
+    withStore: async (table, mode = 'readwrite', callback, isRetry = false) => {
         const db = await getDB();
         if (!db) return;
 
+        let tx;
+        try {
+            tx = db.transaction(table, mode);
+        } catch (error) {
+            dbPromise = null;
+            if (isRetry) throw error;
+            return spotfixIndexedDB.withStore(table, mode, callback, true);
+        }
+
         return new Promise((resolve, reject) => {
-            const tx = db.transaction(table, mode);
             const store = tx.objectStore(table);
 
             const result = callback(store);
+            Promise.resolve(result).catch(() => {});
 
             tx.oncomplete = () => resolve(result);
             tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(tx.error || new Error('IndexedDB transaction aborted'));
         });
     },
 
     put: async (table, data) => {
-        return spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
-            if (Array.isArray(data)) {
-                data.forEach((item) => store.put(item));
-            } else {
-                store.put(data);
+        const rows = getRowsWithKey(table, data);
+        try {
+            await spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
+                rows.forEach((item) => store.put(item));
+            });
+            if (spotfixMemoryTables.has(table)) {
+                writeMemoryTable(table, rows, false);
             }
-        });
+        } catch (error) {
+            console.error('SpotFix IndexedDB write error:', error);
+            writeMemoryTable(table, rows, false);
+        }
     },
 
     delete: async (table, key) => {
-        return spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
-            store.delete(key);
-        });
+        spotfixMemoryTables.get(table)?.delete(key);
+        try {
+            await spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
+                store.delete(key);
+            });
+        } catch (error) {
+            console.error('SpotFix IndexedDB delete error:', error);
+        }
     },
 
     clearTable: async (table) => {
-        return spotfixIndexedDB.withStore(table, 'readwrite', (store) =>
-            store.clear()
-        );
+        spotfixMemoryTables.delete(table);
+        try {
+            await spotfixIndexedDB.withStore(table, 'readwrite', (store) =>
+                store.clear()
+            );
+        } catch (error) {
+            console.error('SpotFix IndexedDB clear error:', error);
+        }
     },
 
     clearPut: async (table, data) => {
-        return spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
-            store.clear();
-            if (Array.isArray(data)) {
-                data.forEach((item) => store.put(item));
-            } else {
-                store.put(data);
-            }
-        });
+        const rows = getRowsWithKey(table, data);
+        try {
+            await spotfixIndexedDB.withStore(table, 'readwrite', (store) => {
+                store.clear();
+                rows.forEach((item) => store.put(item));
+            });
+            spotfixMemoryTables.delete(table);
+        } catch (error) {
+            console.error('SpotFix IndexedDB write error:', error);
+            writeMemoryTable(table, rows, true);
+        }
     },
 
     getAll: async (table, indexName, value) => {
-        return spotfixIndexedDB.withStore(table, 'readonly', (store) => {
-            return new Promise((resolve, reject) => {
-                const req =
-                    indexName && value !== undefined
-                        ? store.index(indexName).getAll(value)
-                        : store.getAll();
+        const memoryTable = spotfixMemoryTables.get(table);
+        if (memoryTable) {
+            const memoryRows = [...memoryTable.values()];
+            return indexName && value !== undefined
+                ? memoryRows.filter((row) => row[indexName] === value)
+                : memoryRows;
+        }
 
-                req.onsuccess = () => resolve(req.result);
-                req.onerror = () => reject(req.error);
+        try {
+            const rows = await spotfixIndexedDB.withStore(table, 'readonly', (store) => {
+                return new Promise((resolve, reject) => {
+                    const req =
+                        indexName && value !== undefined
+                            ? store.index(indexName).getAll(value)
+                            : store.getAll();
+
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
             });
-        });
+            return rows || [];
+        } catch (error) {
+            console.error('SpotFix IndexedDB read error:', error);
+            return [];
+        }
     },
 
     getTable: async (table) => {
