@@ -138,6 +138,7 @@ async function addTaskComment(params, taskId, commentText) {
 async function getAllTasks(params, nonRequesting = false) {
     const projectToken = params.projectToken;
     const sessionId = spotfixStorage.getItem('spotfix_session_id') || '';
+    const dbKey = getSpotfixDBKey();
     let tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
 
     if (!nonRequesting || (!tasksData || !tasksData.length) || !wsSpotfix.isActive()) {
@@ -147,6 +148,10 @@ async function getAllTasks(params, nonRequesting = false) {
         } catch (error) {
             console.error('SpotFix tasks loading error:', error);
         }
+    }
+
+    if (dbKey !== getSpotfixDBKey()) {
+        tasksData = await spotfixIndexedDB.getAll(SPOTFIX_TABLE_TASKS);
     }
 
     storageSaveTasksCount(tasksData);
