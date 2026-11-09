@@ -37,6 +37,8 @@ async function spotFixConfirmUserEmail(emailConfirmationToken, params) {
     const createdTask = await handleCreateTask(result.sessionId, taskDetails);
     // Clear pending task
     spotfixStorage.removeItem('spotfix_pending_task');
+    spotfixStorage.removeItem('spotfix-title-ls');
+    spotfixStorage.removeItem('spotfix-description-ls');
 
     // Return created task
     return createdTask;
@@ -107,25 +109,68 @@ async function getUserDetails(params, nonRequesting = false) {
     }
 }
 
-async function handleCreateTask(sessionId, taskDetails) {
-    try {
-        const result = await createTaskDoboard(sessionId, taskDetails);
-        if (result && result.taskId && (taskDetails.taskDescription || taskDetails.has_files)) {
-            const sign = `<br><br><br><em>The spot has been posted at the following URL <a href="${window.location.href}"><span class="task-link task-link--done">${window.location.href}</span></a></em>`;
+const SPOTFIX_EMPTY_DESCRIPTION_ERROR = 'Please provide at least a few words describing the issue.';
+const SPOTFIX_INITIAL_COMMENT_ATTEMPTS = 3;
+let spotFixTaskWithoutComment = null;
 
-            try {
-                result.initialComment = await addTaskComment({
-                    projectToken: taskDetails.projectToken,
-                    accountId: taskDetails.accountId,
-                }, result.taskId, (taskDetails.taskDescription ?? '') + sign);
-            } catch (commentErr) {
-                console.error(commentErr);
-            }
-        }
-        return result;
-    } catch (err) {
-        throw err;
+function spotFixIsDescriptionValid(description) {
+    const tmp = document.createElement('template');
+    tmp.innerHTML = description || '';
+    return (tmp.content.textContent || '').trim().length >= SPOTFIX_MIN_DESCRIPTION_LENGTH;
+}
+
+async function handleCreateTask(sessionId, taskDetails) {
+    if (!spotFixIsDescriptionValid(taskDetails.taskDescription)) {
+        throw new Error(SPOTFIX_EMPTY_DESCRIPTION_ERROR);
     }
+
+    const taskKey = JSON.stringify([
+        sessionId,
+        taskDetails.accountId,
+        taskDetails.projectId,
+        taskDetails.projectToken,
+        taskDetails.task_type,
+        taskDetails.taskTitle,
+        taskDetails.taskMeta,
+    ]);
+
+    let result;
+    if (spotFixTaskWithoutComment && spotFixTaskWithoutComment.taskKey === taskKey) {
+        result = {taskId: spotFixTaskWithoutComment.taskId};
+    } else {
+        spotFixTaskWithoutComment = null;
+        result = await createTaskDoboard(sessionId, taskDetails);
+    }
+    if (!result || !result.taskId) {
+        throw new Error('The spot was not created. Please try again.');
+    }
+    spotFixTaskWithoutComment = {taskId: result.taskId, taskKey: taskKey};
+
+    const sign = `<br><br><br><em>The spot has been posted at the following URL <a href="${window.location.href}"><span class="task-link task-link--done">${window.location.href}</span></a></em>`;
+    const commentParams = {
+        projectToken: taskDetails.projectToken,
+        accountId: taskDetails.accountId,
+    };
+
+    let lastCommentError = null;
+    for (let attempt = 1; attempt <= SPOTFIX_INITIAL_COMMENT_ATTEMPTS; attempt++) {
+        try {
+            result.initialComment = await addTaskComment(commentParams, result.taskId, taskDetails.taskDescription + sign);
+            if (result.initialComment) {
+                spotFixTaskWithoutComment = null;
+                return result;
+            }
+        } catch (commentErr) {
+            lastCommentError = commentErr;
+            console.error(commentErr);
+        }
+        if (attempt < SPOTFIX_INITIAL_COMMENT_ATTEMPTS) {
+            await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+        }
+    }
+
+    throw new Error('The spot description could not be saved. Please press the button again to retry.' +
+        (lastCommentError?.message ? ` (${lastCommentError.message})` : ''));
 }
 
 async function addTaskComment(params, taskId, commentText) {
@@ -517,6 +562,20 @@ function getSafeUrl(url) {
     } catch (e) {
     }
     return '#';
+}
+
+function spotFixGetTaskBaseUrl(taskMeta) {
+    let baseUrl = '';
+    try {
+        const meta = (typeof taskMeta === 'string' ? JSON.parse(taskMeta) : taskMeta) || {};
+        const safePageUrl = meta.pageURL ? getSafeUrl(meta.pageURL) : '';
+        baseUrl = safePageUrl ? safePageUrl.split('#')[0] : '';
+    } catch (e) {}
+    return baseUrl || window.location.href.split('#')[0];
+}
+
+function spotFixGetSpotLink(task) {
+    return `${spotFixGetTaskBaseUrl(task?.taskMeta)}#spotfix_${task?.taskId}`;
 }
 
 function initSpotfixWidget({horizontalPosition}) {

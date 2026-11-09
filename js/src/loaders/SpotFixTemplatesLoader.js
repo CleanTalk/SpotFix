@@ -300,9 +300,9 @@ class SpotFixTemplatesLoader {
         <div class="doboard_task_widget-bottom">
             <div class="doboard_task_widget-task_page_url">
                 <img src="{{iconLinkChain}}" />
-                   <a class="spotfix_widget_task_url" title="The spot is located on this {{taskPageUrlFull}}">{{taskPageUrl}}</a>
-                   <a class="spotfix_widget_task_url-short" style="display: none" title="The spot is located on this {{taskPageUrlFull}}">{{taskFormattedPageUrl}}</a>
-                   <a class="spotfix_widget_task_url-full" style="display: none" title="The spot is located on this {{taskPageUrlFull}}">{{taskPageUrlFull}}</a>
+                   <a class="spotfix_widget_task_url" title="{{taskPageUrlTitle}}">{{taskPageUrl}}</a>
+                   <a class="spotfix_widget_task_url-short" style="display: none" title="{{taskPageUrlTitle}}">{{taskFormattedPageUrl}}</a>
+                   <a class="spotfix_widget_task_url-full" style="display: none" title="{{taskPageUrlTitle}}">{{taskPageUrlFull}}</a>
              </div>
                 {{statusFixedHtml}}
                 {{amountOfComments}}
@@ -492,6 +492,15 @@ class SpotFixTemplatesLoader {
                     <span style="font-weight: 400; font-size: 14px; color: #252A2F; display: inline-flex; flex-direction: column;">
                         Link the doBoard task
                         <a href={{doboardLink}} target="_blank" rel="noopener noreferrer" style="font-weight: 400; font-size: 14px;">{{doboardLinkShort}}</a>
+                        </span>
+                </div>
+            </div>
+            <div class="doboard_task_widget-task_menu-item" style="height: 60px">
+                <img src="{{iconLinkChainDark}}" alt="" style="margin-right: 12px">
+                <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
+                    <span style="font-weight: 400; font-size: 14px; color: #252A2F; display: inline-flex; flex-direction: column;">
+                        Link to the spot
+                        <a href="{{spotLink}}" rel="nofollow" style="font-weight: 400; font-size: 14px; word-break: break-all;">{{spotLink}}</a>
                         </span>
                 </div>
             </div>
