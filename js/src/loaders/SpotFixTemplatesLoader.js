@@ -55,7 +55,7 @@ class SpotFixTemplatesLoader {
             <span title="Return to all spots list"> All {{issuesCounter}}</span>
         </div>
         <div class="doboard_task_widget-issue-title">
-            <span class="doboard_task_widget-issue-title" style="text-align: center">{{issueTitle}}</span>
+            <span class="doboard_task_widget-issue-title-text" title="{{issueTitle}}">{{issueTitle}}</span>
             <span>{{amountOfComments}}</span>
         </div>
         <div class="doboard_task_widget-header-icons">
@@ -421,7 +421,7 @@ class SpotFixTemplatesLoader {
             
         </div>
         </div>
-        <div style="padding: 16px; font-size: 13px; position: sticky; bottom: 0; margin-top: 12px">
+        <div class="doboard_task_widget-menu-footer">
             <span>{{spotfixVersion}}</span>
             <span>Powered by
             <a rel="nofollow" target="_blank" href="https://doboard.com">
@@ -458,8 +458,8 @@ class SpotFixTemplatesLoader {
         </div>
     </div>
     <div class="doboard_task_widget-content" style="min-height:200px ">
-        <div style="height: 392px">
-        <div style="position: sticky; top: 0; margin-top: 8px">
+        <div style="min-height: 392px">
+        <div style="margin-top: 8px">
             <div class="doboard_task_widget-task_menu-item">
                 <img src="{{iconHighlight}}" alt="" style="margin-right: 12px">
                 <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
@@ -486,22 +486,18 @@ class SpotFixTemplatesLoader {
                     </label>
                 </div>
             </div>
-            <div class="doboard_task_widget-task_menu-item" style="height: 60px">
+            <div class="doboard_task_widget-task_menu-item doboard_task_widget-task_menu-item-link">
                 <img src="{{iconLinkChainDark}}" alt="" style="margin-right: 12px">
-                <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
-                    <span style="font-weight: 400; font-size: 14px; color: #252A2F; display: inline-flex; flex-direction: column;">
-                        Link the doBoard task
-                        <a href={{doboardLink}} target="_blank" rel="noopener noreferrer" style="font-weight: 400; font-size: 14px;">{{doboardLinkShort}}</a>
-                        </span>
+                <div class="doboard_task_widget-task_menu-item-link-body">
+                    <span>Link the doBoard task</span>
+                    <a href="{{doboardLink}}" target="_blank" rel="noopener noreferrer">{{doboardLinkShort}}</a>
                 </div>
             </div>
-            <div class="doboard_task_widget-task_menu-item" style="height: 60px">
+            <div class="doboard_task_widget-task_menu-item doboard_task_widget-task_menu-item-link">
                 <img src="{{iconLinkChainDark}}" alt="" style="margin-right: 12px">
-                <div style="display: flex; justify-content: space-between; flex-grow: 1; align-items: center">
-                    <span style="font-weight: 400; font-size: 14px; color: #252A2F; display: inline-flex; flex-direction: column;">
-                        Link to the spot
-                        <a href="{{spotLink}}" rel="nofollow" style="font-weight: 400; font-size: 14px; word-break: break-all;">{{spotLink}}</a>
-                        </span>
+                <div class="doboard_task_widget-task_menu-item-link-body">
+                    <span>Link to the spot</span>
+                    <a href="{{spotLink}}" rel="nofollow">{{spotLink}}</a>
                 </div>
             </div>
             <div class="doboard_task_widget-task_menu-item-viewers" >
@@ -509,7 +505,7 @@ class SpotFixTemplatesLoader {
             </div>
         </div>
         </div>
-        <div style="padding: 16px; font-size: 13px; position: sticky; bottom: 0; margin-top: 12px">
+        <div class="doboard_task_widget-menu-footer">
             <span>{{spotfixVersion}}</span>
             <span>Powered by
             <a rel="nofollow" target="_blank" href="https://doboard.com">

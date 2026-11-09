@@ -1615,9 +1615,10 @@ class CleanTalkWidgetDoboard {
                     issuesCommentsContainer.innerHTML = taskCache.commentsHTML;
                 }
 
-                const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
+                const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title-text');
                 if (issueTitleElement) {
                     issueTitleElement.innerText = ksesFilter(taskCache.issueTitle);
+                    issueTitleElement.title = issueTitleElement.innerText;
                 }
 
                 spotFixRemoveHighlights();
@@ -1692,9 +1693,10 @@ class CleanTalkWidgetDoboard {
 
             const taskName = taskDetails.task_type === 'PRIVATE' ? '' : tasksFullDetails.taskName || taskDetails?.issueTitle;
 
-            const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title');
+            const issueTitleElement = document.querySelector('.doboard_task_widget-issue-title-text');
             if (issueTitleElement) {
-                issueTitleElement.innerText = ksesFilter(taskName);
+                issueTitleElement.innerText = ksesFilter(taskName || '');
+                issueTitleElement.title = issueTitleElement.innerText;
             }
 
             templateVariables.issueTitle = taskName;
@@ -2120,13 +2122,13 @@ class CleanTalkWidgetDoboard {
             }) || '';
         }
 
-        document.getElementById('maximizeWidgetContainer')?.addEventListener('click', () => {
+        const maximizeButton = document.getElementById('maximizeWidgetContainer');
+        if (maximizeButton) maximizeButton.onclick = () => {
             const container = document.querySelector('.doboard_task_widget-container');
+            if (!container) return;
             const authInputsContainer = document.querySelector('.doboard_task_widget-auth-inputs-container');
 
-            const isMaximized =
-                +spotfixStorage.getItem('maximize') &&
-                container.classList.contains('doboard_task_widget-container-maximize');
+            const isMaximized = container.classList.contains('doboard_task_widget-container-maximize');
 
             if (isMaximized) {
                 spotfixStorage.setItem('maximize', '0');
@@ -2167,7 +2169,7 @@ class CleanTalkWidgetDoboard {
                 }
 
             }
-        });
+        };
 
 
         document.querySelector('#doboard_task_widget-user_menu-signlog_button')?.addEventListener('click', () => {
