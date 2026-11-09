@@ -26,7 +26,7 @@ window.addEventListener('dblclick', (event) => {
 let lastProcessedHash = null;
 function checkUrl() {
     const currentUrl = window.location.href;
-    const regex = /#spotfix_comment_(\d+)_(\d+)/;
+    const regex = /#spotfix_(?:comment_(\d+)_(\d+)|(\d+)(?!\w))/;
     const match = currentUrl.match(regex);
 
     if (match) {
@@ -38,9 +38,11 @@ function checkUrl() {
 
         lastProcessedHash = currentHash;
 
-        const num1 = Number(match[1]);
-        const num2 = Number(match[2]);
-        new CleanTalkWidgetDoboard({}, 'concrete_issue', null, {taskId: num1, commentId: num2});
+        if (match[3]) {
+            new CleanTalkWidgetDoboard({}, 'concrete_issue', null, {taskId: Number(match[3])});
+        } else {
+            new CleanTalkWidgetDoboard({}, 'concrete_issue', null, {taskId: Number(match[1]), commentId: Number(match[2])});
+        }
     } else {
         lastProcessedHash = null;
     }

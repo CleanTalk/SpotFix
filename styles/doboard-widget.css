@@ -2143,3 +2143,16 @@ input:checked + .slider:before {
     width: 100%;
     position: relative;
 }
+
+.spotfix-tinymce-wrapper iframe.spotfix-tinymce-iframe {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    box-sizing: border-box !important;
+}

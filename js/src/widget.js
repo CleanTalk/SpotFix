@@ -288,6 +288,10 @@ class CleanTalkWidgetDoboard {
                 submitButton.innerText = ksesFilter('Creating spot...');
 
                 try {
+                    const taskMetaData = {
+                        ...(this.selectedData || {}),
+                        pageURL: this.selectedData?.pageURL || window.location.href,
+                    };
                     let taskDetails = {
                         taskTitle: taskTitle,
                         taskDescription: taskDescription,
@@ -298,8 +302,7 @@ class CleanTalkWidgetDoboard {
                         accountId: this.params.accountId,
                         has_files: this.fileUploader.hasFiles(),
                         task_type: this.new_task_type,
-                        taskMeta: JSON.stringify(
-                            this.selectedData ? this.selectedData : { pageURL: window.location.href }),
+                        taskMeta: JSON.stringify(taskMetaData),
                     };
 
                     if ( userEmail ) {
@@ -316,7 +319,7 @@ class CleanTalkWidgetDoboard {
 
                     // Save pending task in LS
                     spotfixStorage.setItem('spotfix_pending_task', JSON.stringify({
-                        ...this.selectedData,
+                        ...taskMetaData,
                         description: taskDescription
                     }));
 
@@ -365,6 +368,10 @@ class CleanTalkWidgetDoboard {
                     }
 
                     this.selectedData = {};
+                    this.selectedText = '';
+                    this.descriptionText = '';
+                    spotfixStorage.removeItem('spotfix-title-ls');
+                    spotfixStorage.removeItem('spotfix-description-ls');
                     await this.createWidgetElement('all_issues');
                     storageSetWidgetIsClosed(false);
                     hideContainersSpinner(false);
@@ -391,9 +398,7 @@ class CleanTalkWidgetDoboard {
 
     updateCreateTaskSubmitState(description) {
         const submitButton = document.getElementById('doboard_task_widget-submit_button');
-        const tmp = document.createElement('template');
-        tmp.innerHTML = description || '';
-        const isValid = (tmp.content.textContent || '').trim().length >= SPOTFIX_MIN_DESCRIPTION_LENGTH;
+        const isValid = spotFixIsDescriptionValid(description);
 
         if (submitButton) {
             submitButton.disabled = !isValid || !!this.isSubmittingTask;
@@ -401,7 +406,7 @@ class CleanTalkWidgetDoboard {
             if (isValid) {
                 submitButton.removeAttribute('title');
             } else {
-                submitButton.title = 'Please provide at least a few words describing the issue.';
+                submitButton.title = SPOTFIX_EMPTY_DESCRIPTION_ERROR;
             }
         }
 
@@ -1265,7 +1270,7 @@ class CleanTalkWidgetDoboard {
                         const isDone = elTask.taskStatus === 'DONE';
                         const meta = JSON.parse(elTask.taskMeta);
                         const isNoRelevant = meta.pageURL && meta.pageURL === window.location.href && meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath);
-                        const isTaskWithoutReference = !((meta.nodePath || meta.selectedText) && meta?.pageURL);
+                        const isTaskWithoutReference = !meta?.pageURL;
 
                         const elementBgCSSClass = isFinishedGroup
                             ? 'doboard_task_widget-task_row-grey'
@@ -1287,10 +1292,11 @@ class CleanTalkWidgetDoboard {
                             taskPublicStatusImgSrc: taskPublicStatusImgSrc,
                             taskPublicStatusHint: taskPublicStatusHint,
                             taskLastMessage: ksesFilter(taskFullDetails.lastMessageText),
-                            taskPageUrlFull: currentPageURL,
+                            taskPageUrlFull: isTaskWithoutReference ? 'No link with content' : currentPageURL,
+                            taskPageUrlTitle: isTaskWithoutReference ? '' : `The spot is located on this ${currentPageURL}`,
                             iconOfVisibility: elTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicSmall : this.srcVariables.iconLockSmall,
                             iconLinkChain: isTaskWithoutReference ? SpotFixSVGLoader.getAsDataURI('iconCrossedLinkChain') : this.srcVariables.iconLinkChain,
-                            taskFormattedPageUrl: spotFixSplitUrl(currentPageURL),
+                            taskFormattedPageUrl: isTaskWithoutReference ? 'No link with content' : spotFixSplitUrl(currentPageURL),
                             taskPageUrl: isTaskWithoutReference ? 'No link with content' : spotfixStorage.getItem('maximize') === '1' ? currentPageURL : spotFixSplitUrl(currentPageURL),
                             taskLastUpdate: formatToDotMonthDate(elTask.taskLastUpdate),
                             nodePath: this.sanitizeNodePath(taskNodePath),
@@ -1419,6 +1425,9 @@ class CleanTalkWidgetDoboard {
 
             const user = await getUserDetails(this.params, this.nonRequesting);
             if(!this.nonRequesting) await getReleaseVersion();
+            if (this.socket_type_name !== 'user_menu') {
+                return widgetContainer;
+            }
             let userMenuSpotfixVersion = '';
             const userMenuVersion = spotfixStorage.getItem('spotfix_app_version') || SPOTFIX_VERSION;
             userMenuSpotfixVersion = userMenuVersion ? `Spotfix version ${userMenuVersion}.` : '';
@@ -1518,12 +1527,17 @@ class CleanTalkWidgetDoboard {
                 this.allTasksData = allTasks;
             }
 
+            if (this.socket_type_name !== 'spot_menu') {
+                return widgetContainer;
+            }
+
             const currentTask = allTasks.find(task => +task.taskId === +this.currentActiveTaskId);
 
             templateVariables.taskName = currentTask.taskTitle;
             templateVariables.taskType = currentTask.task_type === 'PUBLIC' ? this.srcVariables.iconPublicDark : this.srcVariables.iconLockDark;
             templateVariables.doboardLink = `https://app.doboard.com/${spotfixStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}?token=${currentTask.taskToken}`;
             templateVariables.doboardLinkShort = `https://app.doboard.com/${spotfixStorage.getItem('spotfix_company_id')}/task/${currentTask.taskId}`;
+            templateVariables.spotLink = spotFixGetSpotLink(currentTask);
 
             const currentUserId = spotfixStorage.getItem('spotfix_user_id') || 0;
 
@@ -1538,6 +1552,10 @@ class CleanTalkWidgetDoboard {
             <span><img alt="" src="${user?.avatar?.s || templateVariables.avatar}" />${user.name || 'Anonymous'}</span><span>${user?.position || ''}</span>
         </div>`
                 }).join('');
+            }
+
+            if (this.socket_type_name !== 'spot_menu') {
+                return widgetContainer;
             }
 
             widgetContainer.innerHTML = this.loadTemplate('spot_menu', templateVariables);
@@ -1711,12 +1729,12 @@ class CleanTalkWidgetDoboard {
             if (meta && (isPageUrlString || issueLinkElement)) {
                 if (meta.pageURL && meta.pageURL === window.location.href && meta.nodePath && !spotFixRetrieveNodeFromPath(meta.nodePath)) {
                     templateVariables.taskFormattedPageUrl = `<span>The link to the content has been lost because the content was changed, deleted, or moved to another URL.</span>`;
-                } else if ((meta.nodePath || meta.selectedText) && meta?.pageURL) {
+                } else if (meta?.pageURL) {
                     const safeUrl = this.escapeHtml(getSafeUrl(meta.pageURL));
                     const safeText = this.escapeHtml(taskFormattedPageUrl);
                     templateVariables.taskFormattedPageUrl = `<a rel="nofollow" style="word-break: break-all" href="${safeUrl}">${safeText}</a>`;
                 } else {
-                    templateVariables.taskFormattedPageUrl = `<span>This spot not have link because it created without selecting a content.</span>`;
+                    templateVariables.taskFormattedPageUrl = `<span>This spot does not have a link to the page.</span>`;
                 }
             }
 
@@ -1782,15 +1800,9 @@ class CleanTalkWidgetDoboard {
                         }
                     }
 
-                    let commentLink = '';
-                    try {
-                        const taskMeta = JSON.parse(currentTaskData.taskMeta) || {};
-                        const safePageUrl = getSafeUrl(taskMeta.pageURL || '');
-                        const baseCommentUrl = safePageUrl ? safePageUrl.split('#')[0] : '';
-                        commentLink = baseCommentUrl
-                            ? `${baseCommentUrl}#spotfix_comment_${currentTaskData?.taskId}_${comment?.commentId}`
-                            : '';
-                    } catch (e){}
+                    const baseCommentUrl = spotFixGetTaskBaseUrl(currentTaskData?.taskMeta);
+                    const commentTaskId = currentTaskData?.taskId ?? taskDetails?.taskId;
+                    const commentLink = `${baseCommentUrl}#spotfix_comment_${commentTaskId}_${comment?.commentId}`;
 
                     const commentData = {
                         commentAuthorName: comment.commentAuthorName,
@@ -2036,14 +2048,13 @@ class CleanTalkWidgetDoboard {
             this.hide();
         }) || '';
 
-        if(!nonRequesting) {
-            document.querySelector('#openUserMenuButton')?.addEventListener('click', () => {
-                this.createWidgetElement('user_menu');
-            }) || '';
-
-            document.querySelector('#openSpotMenuButton')?.addEventListener('click', () => {
-                this.createWidgetElement('spot_menu');
-            }) || '';
+        const openUserMenuButton = document.querySelector('#openUserMenuButton');
+        if (openUserMenuButton) {
+            openUserMenuButton.onclick = () => this.createWidgetElement('user_menu');
+        }
+        const openSpotMenuButton = document.querySelector('#openSpotMenuButton');
+        if (openSpotMenuButton) {
+            openSpotMenuButton.onclick = () => this.createWidgetElement('spot_menu');
         }
         document.querySelector('#unsubscribe_from_spot')?.addEventListener('change', () => {
             const currentUserId = +spotfixStorage.getItem('spotfix_user_id');
@@ -2164,11 +2175,12 @@ class CleanTalkWidgetDoboard {
             if(loginContainer) loginContainer.style.display = 'block';
         }) || '';
 
-        if(!nonRequesting) {
-            document.querySelector('#spotfix_back_button')?.addEventListener('click', () => {
-                this.createWidgetElement(this.type_name);
+        const backButton = document.querySelector('#spotfix_back_button');
+        if (backButton) {
+            backButton.onclick = async () => {
+                await this.createWidgetElement(this.type_name);
                 this.bindWidgetInputsInteractive();
-            }) || '';
+            };
         }
 
         wsSpotfix.onMessage(() => {
