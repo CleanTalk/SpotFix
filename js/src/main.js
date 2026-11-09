@@ -446,7 +446,7 @@ function ksesFilter(html, options = false) {
     };
     let allowedAttrs = {
         a: ['href', 'title', 'target', 'rel', 'style', 'class'],
-        span: ['style', 'class', 'id'],
+        span: ['style', 'class', 'id', 'title'],
         p: ['style', 'class'],
         div: ['style', 'class', 'id', 'data-node-path', 'data-task-id', 'data-attachment-url', 'data-is-image'],
         img: ['src', 'alt', 'title', 'class', 'style', 'width', 'height'],

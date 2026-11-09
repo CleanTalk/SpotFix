@@ -185,6 +185,46 @@
     height: 52px;
 }
 
+.doboard_task_widget-task_menu-item-link {
+    height: auto;
+    min-height: 60px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    box-sizing: border-box;
+}
+
+.doboard_task_widget-task_menu-item-link > img {
+    flex-shrink: 0;
+}
+
+.doboard_task_widget-task_menu-item-link-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-width: 0;
+    font-weight: 400;
+    font-size: 14px;
+    color: #252A2F;
+}
+
+.doboard_task_widget-task_menu-item-link-body a {
+    font-weight: 400;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+}
+
+.doboard_task_widget-menu-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    margin-top: 12px;
+    padding: 16px;
+    font-size: 13px;
+    background: #FFFFFF;
+    border-top: 1px solid #EBF0F4;
+}
+
 .doboard_task_widget-content {
     flex: 1;
     overflow-y: auto;
@@ -552,6 +592,19 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.doboard_task_widget-issue-title-text {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+.doboard_task_widget-container-maximize .doboard_task_widget-issue-title {
+    max-width: max(200px, calc(100% - 260px));
 }
 
 .doboard_task_widget-issue-title > :last-child {
