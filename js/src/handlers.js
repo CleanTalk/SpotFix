@@ -124,16 +124,27 @@ async function handleCreateTask(sessionId, taskDetails) {
         throw new Error(SPOTFIX_EMPTY_DESCRIPTION_ERROR);
     }
 
+    const taskKey = JSON.stringify([
+        sessionId,
+        taskDetails.accountId,
+        taskDetails.projectId,
+        taskDetails.projectToken,
+        taskDetails.task_type,
+        taskDetails.taskTitle,
+        taskDetails.taskMeta,
+    ]);
+
     let result;
-    if (spotFixTaskWithoutComment && spotFixTaskWithoutComment.taskTitle === taskDetails.taskTitle) {
+    if (spotFixTaskWithoutComment && spotFixTaskWithoutComment.taskKey === taskKey) {
         result = {taskId: spotFixTaskWithoutComment.taskId};
     } else {
+        spotFixTaskWithoutComment = null;
         result = await createTaskDoboard(sessionId, taskDetails);
     }
     if (!result || !result.taskId) {
         throw new Error('The spot was not created. Please try again.');
     }
-    spotFixTaskWithoutComment = {taskId: result.taskId, taskTitle: taskDetails.taskTitle};
+    spotFixTaskWithoutComment = {taskId: result.taskId, taskKey: taskKey};
 
     const sign = `<br><br><br><em>The spot has been posted at the following URL <a href="${window.location.href}"><span class="task-link task-link--done">${window.location.href}</span></a></em>`;
     const commentParams = {
